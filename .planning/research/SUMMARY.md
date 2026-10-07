@@ -12,7 +12,7 @@ Lafu replaces a public schedule spreadsheet and WhatsApp reservations with publi
 
 The strongest recommendation across the research is one authoritative reservation lifecycle shared by customers, admins, scheduled jobs, and availability views. Group acquisition must be atomic; repeated requests must have one effect. Preserve the original five-hour deadline, hold places while accepted proof awaits review, and release on rejection when that deadline has passed. Keep payment evidence, verified receipt, booking allocation, and manual refund obligations distinguishable. Compare the existing React/TypeScript/Vite starter with other rendering approaches and evaluate transactional persistence, private storage, managed OTP, and durable jobs separately; no framework, database, API, or infrastructure is selected.
 
-The user selected **Community matchday**, with a code-led build path inspired by the AYO Android publisher screenshots. The detailed UI brief still awaits confirmation; no implementation, mockup, design tokens, or direction contract is approved or built. Carry that direction into novice-friendly session summaries and explicit next actions, while validating complete customer and admin tasks on real phones. The largest unresolved risks are near-start reservation eligibility, pending places disappearing after a successful minimum check, booked recurrence edits, and financial effects of partial group changes or moves. Resolve those policies before their dependent workflows are implemented.
+The user selected **Community matchday**, with a code-led build path inspired by the AYO Android publisher screenshots, and confirmed the detailed UI brief on 2026-10-07. No implementation, mockup, design tokens, or direction contract is approved or built. Carry that direction into novice-friendly session summaries and explicit next actions, while validating complete customer and admin tasks on real phones. The largest unresolved risks are near-start reservation eligibility, pending places disappearing after a successful minimum check, booked recurrence edits, and financial effects of partial group changes or moves. Resolve those policies before their dependent workflows are implemented.
 
 ## Key Findings
 
@@ -71,7 +71,7 @@ The following are suggested **phase topics and dependencies**, not final phase n
 
 ### Topic A: Policy, technical evaluation, and guided UI brief
 
-Agree lifecycle examples, near-start eligibility, minimum/cutoff semantics, timezone/currency, and implementation ownership before dependent behavior. Confirm the detailed Community matchday brief through the selected code-led path. Deliver explicit decisions and acceptance scenarios, not an inferred design contract. Avoid silently choosing technology, shortening holds, or inventing financial terms.
+Agree lifecycle examples, near-start eligibility, minimum/cutoff semantics, timezone/currency, and implementation ownership before dependent behavior. Use the confirmed detailed Community matchday brief through the selected code-led path. Deliver explicit decisions and acceptance scenarios, not an inferred design contract. Avoid silently choosing technology, shortening holds, or inventing financial terms.
 
 ### Topic B: Public schedule and independent session operations
 
@@ -124,11 +124,11 @@ The research seam classified verified websearch as MEDIUM. Features/architecture
 - **Recurrence:** edit scope, existing bookings/prices, exceptions, booking horizon, and all-coach/venue overlap policy.
 - **Admin/financial exceptions:** partial groups, moved deadlines, price differences, partial/duplicate/late payments, refund amounts, and corrections.
 - **Identity and operation:** primary sign-in, OTP provider/channel, recovery and admin-created customer claiming; review responsibility and real delivery performance.
-- **Presentation/communication:** club timezone/currency, translation ownership, nearly-full threshold, proof formats/retention, notification channels/manual fallback, and confirmed detailed UI brief.
+- **Presentation/communication:** club timezone/currency, translation ownership, nearly-full threshold, proof formats/retention, and notification channels/manual fallback. The detailed UI brief is confirmed.
 
 ## Sources
 
-Primary product authority: [PROJECT.md](../PROJECT.md), [PRODUCT.md](../../PRODUCT.md), and subsequent user selection of Community matchday. Detailed provenance and full source inventories: [STACK.md](STACK.md), [FEATURES.md](FEATURES.md), [ARCHITECTURE.md](ARCHITECTURE.md), [PITFALLS.md](PITFALLS.md), [UI.md](UI.md). Earlier UI selection-pending language is superseded by that user selection only.
+Primary product authority: [PROJECT.md](../PROJECT.md), [PRODUCT.md](../../PRODUCT.md), and subsequent user selection of Community matchday and confirmation of [UI-BRIEF.md](../UI-BRIEF.md). Detailed provenance and full source inventories: [STACK.md](STACK.md), [FEATURES.md](FEATURES.md), [ARCHITECTURE.md](ARCHITECTURE.md), [PITFALLS.md](PITFALLS.md), [UI.md](UI.md). Earlier UI selection-pending and brief-confirmation-pending language is superseded by those user decisions.
 
 Additional primary sources, accessed by researchers on 2026-10-07:
 

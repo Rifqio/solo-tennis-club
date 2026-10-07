@@ -50,7 +50,7 @@ A focused tennis club application that preserves the club's group-booking and ma
 
 ## Brand Commitments
 
-The confirmed name is Lawu Fun Tennis Club, abbreviated Lafu. The application should feel like a tennis club product. The user likes AYO's Android app and requested analysis of its Google Play screenshots, rather than its website: https://play.google.com/store/apps/details?id=coid.ayo.ayo_mobile_app&hl=en. This is a presentation reference, not permission to copy AYO's identity or introduce its unrelated features. The user selected the Community matchday presentation: a familiar contemporary sports app with clear session facts and guided booking. Its detailed UI brief awaits confirmation; no design system, exact typography, or club logo has been finalized.
+The confirmed name is Lawu Fun Tennis Club, abbreviated Lafu. The application should feel like a tennis club product. The user likes AYO's Android app and requested analysis of its Google Play screenshots, rather than its website: https://play.google.com/store/apps/details?id=coid.ayo.ayo_mobile_app&hl=en. This is a presentation reference, not permission to copy AYO's identity or introduce its unrelated features. The user selected the Community matchday presentation: a familiar contemporary sports app with clear session facts and guided booking. Its detailed UI brief was confirmed on 2026-10-07; no design system, exact typography, or club logo has been finalized.
 
 ## Evidence on Hand
 

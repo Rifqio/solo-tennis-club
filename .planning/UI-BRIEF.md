@@ -1,7 +1,7 @@
 # Lafu UI brief: Community matchday
 
 **Date:** 2026-10-07
-**Status:** Direction selected; this detailed brief awaits user confirmation.
+**Status:** Community matchday direction and detailed brief confirmed by the user on 2026-10-07.
 **Method:** Impeccable shape. Planning only; no implementation or direction contract.
 
 ## Job and audience
@@ -69,4 +69,4 @@ Handle multiple coaches, long participant/venue names, groups spanning several p
 
 ## Review
 
-Confirm this brief or identify corrections before it informs the detailed UI specification. Selecting a concept on the direction page chose the presentation; this review confirms its intended customer/admin experience.
+The user confirmed this brief on 2026-10-07. It can inform the detailed UI specification during planning. Final design tokens, component specifications, and implementation remain subject to the later planning workflow.

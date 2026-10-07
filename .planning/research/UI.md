@@ -1,7 +1,7 @@
 # Lafu UI research and brainstorming inputs
 
 **Date:** 2026-10-07
-**Status:** Reference analysis with Community matchday selected by the user; the detailed UI brief awaits confirmation. No application UI has been implemented.
+**Status:** Reference analysis with Community matchday and the detailed UI brief confirmed by the user on 2026-10-07. No application UI has been implemented.
 **Method:** Impeccable `init` and `shape` guidance, with antislop applied during planning/building at the user's request.
 
 ## Confirmed brief
@@ -76,7 +76,7 @@ Seven grounded visual sources considered across sports identity, civic wayfindin
 
 The sources influence type, palette, density, and one purposeful interaction. They must not replace familiar web navigation or controls with literal signs, printed tickets, maps, or instruments.
 
-The user selected **Community matchday** (`model-pick`) on decision page `15d298d3`, retaining `buildPath: code` without flipping it. The choice selects the contemporary sports-app presentation and guided flow; it does not start implementation. No decision mockup was generated, so no approved or rendered comp exists. The detailed proposal is `.planning/UI-BRIEF.md` and remains subject to confirmation.
+The user selected **Community matchday** (`model-pick`) on decision page `15d298d3`, retaining `buildPath: code` without flipping it. The choice selects the contemporary sports-app presentation and guided flow; it does not start implementation. No decision mockup was generated, so no approved or rendered comp exists. The detailed proposal in `.planning/UI-BRIEF.md` was subsequently confirmed by the user on 2026-10-07.
 
 ### Options to present
 

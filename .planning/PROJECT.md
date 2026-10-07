@@ -92,7 +92,7 @@ The confirmed club name is Lawu Fun Tennis Club, abbreviated Lafu. The applicati
 
 The user wants booking to feel easy and guided even for people unfamiliar with technology, and likes the AYO Android application's presentation. The reference is its Google Play listing and app screenshots at https://play.google.com/store/apps/details?id=coid.ayo.ayo_mobile_app&hl=en, specifically not the AYO website. This is inspiration for mobile presentation; no AYO features or visual identity are automatically adopted.
 
-The user selected Community matchday on the Impeccable direction page: a familiar sports-app presentation with date-led session summaries and guided booking/payment tasks. The detailed UI brief is in `.planning/UI-BRIEF.md` and awaits confirmation. This selection does not authorize bypassing GSD planning or implementation gates.
+The user selected Community matchday on the Impeccable direction page: a familiar sports-app presentation with date-led session summaries and guided booking/payment tasks. The detailed UI brief in `.planning/UI-BRIEF.md` was confirmed on 2026-10-07 and will inform subsequent UI planning. GSD planning and implementation gates still apply.
 
 ## Constraints
 

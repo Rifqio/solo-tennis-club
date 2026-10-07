@@ -1,0 +1,160 @@
+{
+  "title": "Lafu: choose the mobile experience",
+  "question": "All three directions keep booking public, guided, and easy to follow. Choose the presentation that feels right for Lawu Fun Tennis Club.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Club wayfinding",
+      "kicker": "EXPLORE",
+      "lineage": "Community park wayfinding",
+      "thesis": "Always show where you are and the one action that takes you toward your class.",
+      "palette": ["#164B3A", "#F3F8F5", "#142B36", "#FFFFFF"],
+      "materials": ["Readable humanist type", "Solid club-green header", "Clear white task surfaces"],
+      "viewport": "Lafu header, a readable date strip, chronological session summaries, and a short next-action guide; admin opens directly to Today and pending reviews.",
+      "risk": "Too much guidance can slow regular players; instructions must become compact after the first booking.",
+      "raised": [
+        {"from": "Emission-line rail", "raise": "Align times, counts and states consistently, while explaining every state in words."},
+        {"from": "Transit diagram", "raise": "Keep the booking stage and next step visible without making people interpret a map."},
+        {"from": "Star atlas", "raise": "Give the current task unmistakable visual priority over secondary details."},
+        {"from": "Lexicon", "raise": "Keep a stable reading order and let longer session details expand deliberately."},
+        {"from": "High-density web", "raise": "Make admin summaries compact through disclosure, with comfortable text and tap targets."}
+      ],
+      "wireframe": {"cols":12,"rows":20,"regions":[
+        {"label":"Lafu / language","x":0,"y":0,"w":12,"h":2,"accent":true},
+        {"label":"Choose a date","x":0,"y":2,"w":12,"h":3},
+        {"label":"Session / places left","x":0,"y":5,"w":12,"h":4},
+        {"label":"Session / places left","x":0,"y":9,"w":12,"h":4},
+        {"label":"Your next step","x":0,"y":13,"w":12,"h":4,"accent":true},
+        {"label":"Schedule / bookings / account","x":0,"y":18,"w":12,"h":2}
+      ]},
+      "comp": ".impeccable/mocks/decision/lafu-wayfinding.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "Community matchday",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Contemporary community sports apps; AYO presentation reference",
+      "thesis": "Find a class at a glance, then follow a simple booking flow with clear payment instructions.",
+      "palette": ["#164D45", "#FFFFFF", "#1D252C", "#EDF4F1"],
+      "materials": ["Bold readable sans", "Activity summaries", "Real club imagery when supplied"],
+      "viewport": "Date choices above large session summaries with level, coaches, venue, price and remaining places; the selected session opens a clear booking action and guided flow.",
+      "risk": "This is the familiar sports-app direction; Lafu's identity must come from its real club content and careful booking states.",
+      "wireframe": {"cols":12,"rows":20,"regions":[
+        {"label":"Lafu / language","x":0,"y":0,"w":12,"h":2,"accent":true},
+        {"label":"Dates / simple filters","x":0,"y":2,"w":12,"h":3},
+        {"label":"Class / coach / venue","x":0,"y":5,"w":12,"h":6},
+        {"label":"Price / places / book","x":0,"y":11,"w":12,"h":2,"accent":true},
+        {"label":"Next class summary","x":0,"y":13,"w":12,"h":4},
+        {"label":"Schedule / bookings / account","x":0,"y":18,"w":12,"h":2}
+      ]},
+      "comp": ".impeccable/mocks/decision/lafu-matchday.png"
+    },
+    {
+      "id": "challenger-vernacular-ephemera-boarding-pass-and-gate-board",
+      "label": "Session pass",
+      "verdict": "competitive",
+      "lineage": "Scheduled-pass information and persistent change notices",
+      "thesis": "Your booking stays together as an easy-to-read summary with its current status and next action.",
+      "palette": ["#172D3B", "#FFFFFF", "#EEF2F4", "#E8B53C"],
+      "materials": ["Segmented booking facts", "Tabular times", "Persistent status messages"],
+      "viewport": "A time-led session list above a compact booking summary; after reservation, date, venue, participants, deadline and upload action stay together, while admins review the same facts beside proof.",
+      "case": "Keeps the scheduled booking and changed status easy to understand, though it feels less social than the sports-app direction.",
+      "risk": "Ticket styling could imply instant confirmation; pending verification must be explained explicitly and no check-in barcode is added.",
+      "wireframe": {"cols":12,"rows":20,"regions":[
+        {"label":"Lafu / date","x":0,"y":0,"w":12,"h":2,"accent":true},
+        {"label":"Time-led session list","x":0,"y":2,"w":12,"h":6},
+        {"label":"Booking / status","x":0,"y":8,"w":12,"h":3,"accent":true},
+        {"label":"Venue / people / deadline","x":0,"y":11,"w":12,"h":4},
+        {"label":"Upload proof / next action","x":0,"y":15,"w":12,"h":2},
+        {"label":"Schedule / bookings / account","x":0,"y":18,"w":12,"h":2}
+      ]},
+      "comp": ".impeccable/mocks/decision/lafu-session-pass.png",
+      "board": "https://impeccable.style/worlds/cards/vernacular-ephemera-boarding-pass-and-gate-board.webp",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-boarding-pass-and-gate-board-hero.webp"
+    },
+    {
+      "id": "challenger-operate-c-emission-line-rail",
+      "label": "Emission-line rail",
+      "verdict": "declined",
+      "lineage": "Instrument graphics",
+      "thesis": "Rank aligned activity signals with precise line treatments.",
+      "palette": ["#25282B", "#EEECE5", "#D6AF35"],
+      "materials": ["Charcoal panels", "Hairline marks", "Aligned labels"],
+      "viewport": "A dark schedule with aligned signals would need extra plain-language state labels for booking.",
+      "case": "Weak tennis-club identification and harder state decoding for a nontechnical customer.",
+      "kept": "Consistent alignment and visibly distinct states, explained in words.",
+      "risk": "Tiny labels and line-only signals undermine comfortable phone use."
+    },
+    {
+      "id": "challenger-wayfinding-cartography-signage-midnight-transit-diagram",
+      "label": "Transit journey",
+      "verdict": "declined",
+      "lineage": "Metropolitan wayfinding",
+      "thesis": "Keep a booking journey legible as a sequence of named stages.",
+      "palette": ["#122641", "#FFFFFF", "#D6AA3E", "#257452"],
+      "materials": ["High-contrast labels", "Named stages", "Selected-route emphasis"],
+      "viewport": "Normal schedule and booking controls with a persistent stage indicator; no literal transport map.",
+      "case": "Useful orientation, but the transport appearance is less direct than Lafu's club guidance.",
+      "kept": "A visible current stage and one obvious next step.",
+      "risk": "A map metaphor can make a simple booking feel more complicated."
+    },
+    {
+      "id": "challenger-notation-diagram-systems-star-atlas",
+      "label": "Star atlas",
+      "verdict": "declined",
+      "lineage": "Astronomical information graphics",
+      "thesis": "Give the most relevant session the strongest visual priority.",
+      "palette": ["#17283D", "#F2F4F7", "#BD784B"],
+      "materials": ["Ranked emphasis", "Dark field", "Secondary annotations"],
+      "viewport": "A standard session list with a strongly emphasized relevant entry, without spatial star navigation.",
+      "case": "The visual source adds no tennis-club identification and requires avoidable decoding.",
+      "kept": "Unmistakable priority for the current task over secondary facts.",
+      "risk": "Astronomical decoration could compete with class availability."
+    },
+    {
+      "id": "challenger-rw-lexicon-shoulder-and-plate",
+      "label": "Lexicon clarity",
+      "verdict": "declined",
+      "lineage": "Reference-book reading order",
+      "thesis": "Keep session facts in a stable order with secondary detail clearly bounded.",
+      "palette": ["#29241F", "#F4EEE2", "#8A423C"],
+      "materials": ["Text hierarchy", "Long-form measures", "Bounded detail panels"],
+      "viewport": "A text-led schedule with expandable descriptions; normal controls replace printed-mark conventions.",
+      "case": "Dense reference-page character is a weaker match for quick beginner booking than the proposed directions.",
+      "kept": "A stable reading order and deliberately expandable detail.",
+      "risk": "Reading-heavy entries slow date and availability scanning."
+    },
+    {
+      "id": "challenger-japanese-high-density-web",
+      "label": "Compact operations",
+      "verdict": "declined",
+      "lineage": "High-density utility interfaces",
+      "thesis": "Expose operational facts efficiently to experienced administrators.",
+      "palette": ["#FFFFFF", "#24282C", "#B83D3A", "#E8ECEF"],
+      "materials": ["Compact modules", "Functional labels", "Direct comparisons"],
+      "viewport": "An admin-first summary that would need progressive disclosure and larger type to serve phones.",
+      "case": "Packed modules and tiny text conflict with guided booking for people unfamiliar with technology.",
+      "kept": "Compact admin summaries through disclosure instead of shrinking text.",
+      "risk": "Information density can crowd important actions and touch targets."
+    }
+  ],
+  "reroll": {"registers":["safer","bolder"]},
+  "buildPath": {"value":"code","toggle":true},
+  "canon": true,
+  "canonCard": {
+    "label": "Familiar sports-app standard",
+    "thesis": "Use the expected mobile sports-booking presentation at a high craft level.",
+    "palette": ["#FFFFFF", "#222B33", "#27644F"],
+    "materials": ["Standard activity summaries", "Date choices", "Clear labeled controls"],
+    "viewport": "Dates, filters and class summaries lead into familiar booking steps, using AYO's app as a presentation benchmark.",
+    "risk": "Very familiar by design; product identity depends on Lafu's actual content and thoughtful details.",
+    "wireframe": {"cols":12,"rows":20,"regions":[
+      {"label":"Lafu","x":0,"y":0,"w":12,"h":2,"accent":true},
+      {"label":"Dates / filters","x":0,"y":2,"w":12,"h":3},
+      {"label":"Session summaries","x":0,"y":5,"w":12,"h":12},
+      {"label":"Schedule / bookings / account","x":0,"y":18,"w":12,"h":2}
+    ]},
+    "comp": ".impeccable/mocks/decision/lafu-familiar.png"
+  },
+  "steer": true
+}

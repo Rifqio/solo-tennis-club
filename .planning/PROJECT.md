@@ -1,8 +1,8 @@
-# Tennis Club Booking
+# Lafu — Lawu Fun Tennis Club
 
 ## What This Is
 
-A mobile-first web application for a tennis coaching club, replacing a shared schedule spreadsheet and WhatsApp booking workflow with customer self-service and an operational admin portal. Visitors can explore the club and browse schedules without signing in, then reserve places, pay by static QRIS or bank transfer, and submit payment proof from their phones. Administrators can manage schedules, participants, bookings, and payment verification comfortably from their phones, with expanded layouts on tablets and desktops.
+A mobile-first web application for Lawu Fun Tennis Club (Lafu), replacing a shared schedule spreadsheet and WhatsApp booking workflow with customer self-service and an operational admin portal. Visitors can explore the club and browse schedules without signing in, then reserve places, pay by static QRIS or bank transfer, and submit payment proof from their phones. Customers and administrators can use the application in Indonesian or English, with expanded layouts on tablets and desktops.
 
 ## Core Value
 
@@ -46,6 +46,8 @@ Customers can book tennis classes from their phones with clear, reliable availab
 - [ ] Cancelled paid bookings or sessions can have refunds tracked as due or completed, while admins handle the actual money manually.
 - [ ] Admins can manage classes, individual sessions, recurring schedules, coaches, venues, class levels, prices, and capacity.
 - [ ] Essential customer and admin workflows work fully on mobile, and tablet and desktop layouts expand the same experience.
+- [ ] Customers and administrators can use the application in Indonesian and English.
+- [ ] Customers unfamiliar with technology can follow the booking flow through clear instructions, visible next actions, and understandable status explanations.
 
 ### Out of Scope
 
@@ -86,7 +88,11 @@ Details such as cutoff configuration scope, recurring-series edit behavior, book
 
 The workspace is `E:\Code\TApp`. It contains a React, TypeScript, and Vite starter with a package name of `mybooking`; the current screen is the framework starter and has no tennis booking functionality. A Git repository has been initialized here. The user chose to skip codebase mapping and define the product first. This project's planning files belong in `E:\Code\TApp\.planning`, independently of planning files in the parent directory.
 
-The title Tennis Club Booking is a descriptive working title, not a decided club brand or final product name.
+The confirmed club name is Lawu Fun Tennis Club, abbreviated Lafu. The application supports Indonesian and English. Logo assets and a visual identity have not yet been supplied or selected. Impeccable is being used to brainstorm the UI before implementation, and the user selected building directly from an agreed design brief instead of generating a mockup first.
+
+The user wants booking to feel easy and guided even for people unfamiliar with technology, and likes the AYO Android application's presentation. The reference is its Google Play listing and app screenshots at https://play.google.com/store/apps/details?id=coid.ayo.ayo_mobile_app&hl=en, specifically not the AYO website. This is inspiration for mobile presentation; no AYO features or visual identity are automatically adopted.
+
+The user selected Community matchday on the Impeccable direction page: a familiar sports-app presentation with date-led session summaries and guided booking/payment tasks. The detailed UI brief is in `.planning/UI-BRIEF.md` and awaits confirmation. This selection does not authorize bypassing GSD planning or implementation gates.
 
 ## Constraints
 
@@ -97,6 +103,7 @@ The title Tennis Club Booking is a descriptive working title, not a decided club
 - **Reservation deadline**: The original unpaid reservation window is five hours; rejected proof does not reset it.
 - **Payment**: Initial payments and refunds use manual handling. The architecture must allow future payment providers without requiring gateway integration now.
 - **Product identity**: The application should feel like a focused tennis club product, with clear booking states and simple daily operations.
+- **Language**: Both the customer experience and the admin portal support Indonesian and English; interface labels and booking/payment messages must retain their meaning in both languages.
 - **Architecture decisions**: Framework selection, database and API design, infrastructure, and implementation details will be defined separately. The existing starter is context, not a finalized architecture decision.
 
 ## Key Decisions
@@ -118,6 +125,9 @@ The title Tennis Club Booking is a descriptive working title, not a decided club
 | Count confirmed and active pending-payment places toward session minimums | Match the current spreadsheet's confirmed and red-name participants | Pending |
 | Track refunds while moving money manually | Handle paid cancellations within the initial manual-payment scope | Pending |
 | Defer technical architecture decisions | Product rules should be established before selecting implementation details | Pending |
+| Use Lawu Fun Tennis Club / Lafu as the product's club identity | The user confirmed the actual club name | Pending |
+| Support Indonesian and English in customer and admin workflows | The user confirmed both application languages | Pending |
+| Select Community matchday as the UI presentation direction | It matches the user's AYO app reference while keeping Lafu booking and payment states understandable | Pending |
 
 ## Evolution
 
@@ -138,4 +148,4 @@ After each milestone:
 5. Update Context with users, feedback, and current operations.
 
 ---
-*Last updated: 2026-10-07 after project definition approval*
+*Last updated: 2026-10-07 after project definition approval and club identity/language clarification*

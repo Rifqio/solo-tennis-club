@@ -288,7 +288,8 @@ Flat and tonal. Depth comes from stepping surface containers (mist ground, pale 
 
 ### Shadow Vocabulary
 - **Menu** (`box-shadow: 0 2px 6px rgba(29, 37, 44, 0.16), 0 1px 2px rgba(29, 37, 44, 0.12)`): the language menu.
-- **Sheet** (`box-shadow: 0 -8px 24px rgba(29, 37, 44, 0.16)`): reserved for the session detail sheet (not yet built).
+- **Sheet** (`box-shadow: 0 -8px 24px rgba(29, 37, 44, 0.16)`): bottom sheets (the phone language sheet now; the session detail sheet later).
+- **Bar** (`box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18)`): the signboard app bar, only while content scrolls beneath it; at rest the bar is flat.
 
 ### Named Rules
 **The Tonal First Rule.** If a surface sits on the page, it differs by tone. A shadow means it floats.
@@ -323,15 +324,25 @@ Availability words with a 16px drawn mark that only echoes the word: filled circ
 
 ### Navigation
 - **Top app bar:** signboard green, routed LAFU wordmark plus the club name in Signboard Mist; focus outlines turn white here.
-- **Language menu:** translate glyph plus the current code (ID / EN) as a 48px full-round action; opens an 8px-rounded menu on surface-container with the menu shadow, each language in its own name, a green check on the current one.
+- **Language menu:** translate glyph plus the current code (ID / EN) as a 48px full-round action. On phones (below 640px) it opens a bottom sheet (28px top corners, drag handle, scrim, drag down to dismiss) with 56px rows, each language in its own name and a green check on the current one. From 640px it opens an 8px-rounded menu on surface-container with the menu shadow, scaling in from its anchor.
 - **Navigation bar / rail:** surface-container. Each destination is a 24px icon inside a 64 by 32px full-round indicator with the label beneath; active is sage indicator, bolder stroke, bold ink label; inactive is Moss Grey.
-- **Destination change:** Material fade-through (90ms out, 210ms in with a 0.98 scale, emphasized easing); app bar and navigation stay put. Reduced motion removes it.
+- **Destination change:** Material fade-through (90ms out, 210ms in with a 0.98 scale, emphasized easing); app bar and navigation stay live and do not crossfade. Tapping the active destination scrolls back to the top. Reduced motion removes the fade.
+- **Active indicator:** one shared pill that springs from the previous destination to the new one.
+
+### Motion and Feedback
+Motion explains what changed and where it went; nothing moves on its own or loops. One spring vocabulary (`motion` library, loaded after first paint): selection spring (stiffness 520, damping 40) for the day tile and nav pill, content spring (380 / 36) for list entry, pop spring (600 / 32) for chips. Springs are interruptible, so a second tap never waits.
+- **Day change:** the selected day tile is one shared element that slides to the new day; the session list leaves toward the opposite side in 90ms and enters 28px from the side you are travelling to (shared axis X). The strip glides the selected day into view.
+- **Swipe:** on touch screens the list pages a day left or right (72px or a quick flick), with rubber-band resistance at rest; the strip, arrows, and picker remain the primary path.
+- **Press:** every tappable surface scales to 0.96 on touch (0.98 with a mouse) within 60ms and springs back, on top of the Material state layer.
+- **Haptics:** an 8ms selection tick on day, tab, and language changes on Android touch devices; silent on iOS, desktop, and under reduced motion.
+- **Appearances:** the Today chip pops in and out; loading placeholders wait 150ms before showing so fast answers never flash.
+- **Reduced motion:** springs, slides, and fades are removed; state still changes instantly.
 
 ### Club Fact List
 A Material list on the lowest container (12px radius, hairline dividers): 40px sage disc with leading icon, bold label, supporting value. Missing content reads as an explicit "unavailable" word, never invented.
 
 ### Not Yet Built
-The drawn trail line between posts, date-change motion, a signboard-language club page, the session detail sheet (plan 01-07), and admin surfaces are open. Admin surfaces inherit this system. The app icon is a text-based LAFU placeholder until the club supplies a logo.
+The drawn trail line between posts, a signboard-language club page, the session detail sheet (plan 01-07), and admin surfaces are open. Admin surfaces inherit this system. The app icon is a text-based LAFU placeholder until the club supplies a logo.
 
 ## Do's and Don'ts
 
@@ -350,6 +361,7 @@ The drawn trail line between posts, date-change motion, a signboard-language clu
 - **Don't** label anything twice; if the app bar or tab already names it, the page does not repeat it visibly.
 - **Don't** put eyebrow or kicker labels above headings.
 - **Don't** use a third font weight or a third typeface.
-- **Don't** put shadows on rows, plates, or panels; shadows are for menus and sheets.
+- **Don't** put shadows on rows, plates, or panels; shadows are for menus, sheets, and the scrolled app bar.
+- **Don't** animate anything that did not change, loop motion, or block input while a spring settles.
 - **Don't** add spinners, shimmer, or pulse to loading; use static placeholders and named pending labels.
 - **Don't** show a places count beside "Full", or any places for an ended session.

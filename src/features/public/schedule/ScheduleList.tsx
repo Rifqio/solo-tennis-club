@@ -16,7 +16,7 @@ export function ScheduleList({ sessions, timings, now }: { sessions: PublicSessi
 // Static placeholders shaped like plates and facts while a date loads; no shimmer or pulse.
 export function ScheduleListPlaceholder() {
   return (
-    <ul aria-hidden="true" className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-10">
+    <ul aria-hidden="true" className="appear-late grid grid-cols-1 lg:grid-cols-2 lg:gap-x-10">
       {[0, 1, 2, 3].map(index => (
         <li key={index} className="grid grid-cols-[5rem_minmax(0,1fr)] gap-x-4 border-t border-outline-variant py-4 first:border-t-0 sm:grid-cols-[6rem_minmax(0,1fr)] lg:[&:nth-child(2)]:border-t-0">
           <div className="h-[4.75rem] rounded-md bg-surface-container-high" />

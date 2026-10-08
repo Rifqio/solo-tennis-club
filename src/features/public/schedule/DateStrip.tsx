@@ -1,9 +1,11 @@
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { addClubDays, isClubDate } from '@shared/club-time'
 import { IconButton } from '@/components/ui/button'
 import { clubDayOfMonth, formatClubDateLong, formatClubMonthYear, formatClubWeekdayShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
+import { popSpring, selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { scheduleMessages } from './schedule.messages'
 
@@ -38,10 +40,11 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
     return () => observer.disconnect()
   }, [dates.length])
 
-  // On narrow phones the strip scrolls inside its own row; keep the selected marker in view without moving the page.
+  const reduceMotion = useReducedMotion()
+  // On narrow phones the strip scrolls inside its own row; glide the selected marker into view without moving the page.
   useEffect(() => {
-    stripRef.current?.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
-  }, [selected])
+    stripRef.current?.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' })
+  }, [selected, reduceMotion])
 
   const openPicker = () => {
     const input = pickerRef.current
@@ -63,11 +66,23 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-1">
         <p className="mr-auto font-display text-title font-bold uppercase tracking-wide text-on-surface">{formatClubMonthYear(selected, language)}</p>
-        {selected !== today && (
-          <button type="button" onClick={() => onSelect(today)} className="state-layer mr-1 inline-flex min-h-12 items-center rounded-sm px-1">
-            <span className="rounded-sm border border-outline px-3 py-1.5 text-label font-bold text-on-surface">{t(scheduleMessages.today)}</span>
-          </button>
-        )}
+        {/* The Today chip only exists away from today; it pops in and out so its appearance reads as a response, not a jump. */}
+        <AnimatePresence initial={false}>
+          {selected !== today && (
+            <m.button
+              key="today"
+              type="button"
+              onClick={() => onSelect(today)}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.12 } }}
+              transition={popSpring}
+              className="pressable mr-1 inline-flex min-h-12 items-center px-1"
+            >
+              <span className="state-layer rounded-sm border border-outline px-3 py-1.5 text-label font-bold text-on-surface">{t(scheduleMessages.today)}</span>
+            </m.button>
+          )}
+        </AnimatePresence>
         <IconButton label={t(scheduleMessages.previousDate)} disabled={selected <= minDate} onClick={() => onSelect(addClubDays(selected, -1))}>
           <ChevronLeft aria-hidden="true" className="size-6" />
         </IconButton>
@@ -114,14 +129,17 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
               aria-pressed={isSelected}
               aria-label={`${weekday} ${clubDayOfMonth(date)}, ${isToday ? t(scheduleMessages.today) + ', ' : ''}${formatClubDateLong(date, language)}`}
               onClick={() => onSelect(date)}
-              className="flex min-h-[4.75rem] snap-start px-0.5 py-1"
+              className="pressable flex min-h-[4.75rem] snap-start px-0.5 py-1"
             >
               <span className={cn(
-                'state-layer flex flex-1 flex-col items-center justify-center gap-1 rounded-md transition-colors duration-200',
-                isSelected ? 'bg-primary text-on-primary' : isToday ? 'text-primary ring-2 ring-inset ring-primary' : 'text-on-surface',
+                'relative flex flex-1 flex-col items-center justify-center gap-1 rounded-md transition-colors duration-200',
+                isSelected ? 'text-on-primary' : isToday ? 'text-primary ring-2 ring-inset ring-primary' : 'text-on-surface',
               )}>
-                <span className={cn('text-label leading-none', isSelected || isToday ? 'font-bold' : 'text-on-surface-variant')}>{weekday}</span>
-                <span className="font-display text-headline font-bold leading-none tabular-nums">{clubDayOfMonth(date)}</span>
+                {/* One shared selection tile springs from the previous day to this one. */}
+                {isSelected && <m.span layoutId="day-selection" transition={selectionSpring} className="absolute inset-0 rounded-md bg-primary" />}
+                <span className="state-layer absolute inset-0 rounded-md" />
+                <span className={cn('relative text-label leading-none transition-colors duration-200', isSelected || isToday ? 'font-bold' : 'text-on-surface-variant')}>{weekday}</span>
+                <span className="relative font-display text-headline font-bold leading-none tabular-nums">{clubDayOfMonth(date)}</span>
               </span>
             </button>
           )

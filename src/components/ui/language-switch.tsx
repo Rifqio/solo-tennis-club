@@ -1,9 +1,13 @@
 import { Check, Languages } from 'lucide-react'
 import { DropdownMenu } from 'radix-ui'
+import { useState } from 'react'
+import { Drawer } from 'vaul'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
 import { isLanguage } from '@/i18n/types'
 import type { Language } from '@/i18n/types'
+import { selectionHaptic } from '@/lib/haptics'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { cn } from '@/lib/utils'
 
 const options: { language: Language; code: string; name: string }[] = [
@@ -11,23 +15,79 @@ const options: { language: Language; code: string; name: string }[] = [
   { language: 'en', code: 'EN', name: commonMessages.languageEnglish.en },
 ]
 
-// App-bar action: a translate glyph plus the current code opens a Material menu listing each language in its own name.
+const triggerClass = 'state-layer pressable inline-flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-full px-3 text-label font-bold text-on-signboard'
+
+function TriggerContent({ code }: { code: string }) {
+  return (
+    <>
+      <Languages aria-hidden="true" className="size-5" />
+      <span aria-hidden="true">{code}</span>
+    </>
+  )
+}
+
+// App-bar language action. Phones get a bottom sheet you can drag away (thumb-reachable, like a native action sheet);
+// tablets and desktops get a Material menu anchored to the button.
 export function LanguageMenu({ className }: { className?: string }) {
   const { language, setLanguage, t } = useI18n()
+  const isPhone = useMediaQuery('(max-width: 39.99rem)')
+  const [sheetOpen, setSheetOpen] = useState(false)
   const current = options.find(option => option.language === language) ?? options[0]
+  const label = `${current.code}, ${t(commonMessages.languageGroup)}: ${current.name}`
+
+  const choose = (next: Language) => {
+    if (next !== language) { setLanguage(next); selectionHaptic() }
+  }
+
+  if (isPhone) {
+    return (
+      <Drawer.Root open={sheetOpen} onOpenChange={setSheetOpen}>
+        <Drawer.Trigger className={cn(triggerClass, className)} aria-label={label}>
+          <TriggerContent code={current.code} />
+        </Drawer.Trigger>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 z-40 bg-scrim" />
+          <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-xl bg-surface-container-low pb-[max(1rem,env(safe-area-inset-bottom))] text-on-surface shadow-sheet outline-none">
+            <div aria-hidden="true" className="mx-auto mb-2 mt-3 h-1 w-8 rounded-full bg-outline" />
+            <Drawer.Title className="px-6 pb-2 pt-2 text-title font-bold">{t(commonMessages.languageGroup)}</Drawer.Title>
+            <Drawer.Description className="sr-only">{current.name}</Drawer.Description>
+            <ul role="radiogroup" aria-label={t(commonMessages.languageGroup)} className="flex flex-col px-2 pb-2">
+              {options.map(option => {
+                const selected = option.language === language
+                return (
+                  <li key={option.language}>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      lang={option.language}
+                      onClick={() => { choose(option.language); setSheetOpen(false) }}
+                      className="state-layer pressable flex min-h-14 w-full items-center gap-4 rounded-md px-4 text-left text-body"
+                    >
+                      <span className="flex size-6 items-center justify-center">
+                        {selected && <Check aria-hidden="true" className="size-6 text-primary" />}
+                      </span>
+                      <span className={selected ? 'font-bold' : undefined}>{option.name}</span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
+    )
+  }
+
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger
-        className={cn('state-layer inline-flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-full px-3 text-label font-bold text-on-signboard', className)}
-        aria-label={`${current.code}, ${t(commonMessages.languageGroup)}: ${current.name}`}
-      >
-        <Languages aria-hidden="true" className="size-5" />
-        <span aria-hidden="true">{current.code}</span>
+      <DropdownMenu.Trigger className={cn(triggerClass, className)} aria-label={label}>
+        <TriggerContent code={current.code} />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content align="end" sideOffset={4} className="z-50 min-w-52 rounded-sm bg-surface-container py-2 text-on-surface shadow-menu data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+        <DropdownMenu.Content align="end" sideOffset={4} className="z-50 min-w-52 origin-[var(--radix-dropdown-menu-content-transform-origin)] rounded-sm bg-surface-container py-2 text-on-surface shadow-menu data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
           <DropdownMenu.Label className="px-4 py-1 text-label text-on-surface-variant">{t(commonMessages.languageGroup)}</DropdownMenu.Label>
-          <DropdownMenu.RadioGroup value={language} onValueChange={value => { if (isLanguage(value)) setLanguage(value) }}>
+          <DropdownMenu.RadioGroup value={language} onValueChange={value => { if (isLanguage(value)) choose(value) }}>
             {options.map(option => (
               <DropdownMenu.RadioItem
                 key={option.language}

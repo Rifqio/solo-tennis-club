@@ -136,6 +136,8 @@
   /* Tonal elevation first; shadows only for floating menus and the sheet. */
   --shadow-*: initial;
   --shadow-menu: 0 2px 6px rgba(29, 37, 44, 0.16), 0 1px 2px rgba(29, 37, 44, 0.12);
+  /* The app bar lifts only while content scrolls beneath it, so the edge between board and page stays readable. */
+  --shadow-bar: 0 2px 8px rgba(0, 0, 0, 0.18);
   --shadow-sheet: 0 -8px 24px rgba(29, 37, 44, 0.16);
 
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
@@ -171,6 +173,9 @@
     outline-offset: 2px;
   }
   input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
+  /* Headings break into even lines; body text avoids a lone last word. */
+  h1, h2, h3 { text-wrap: balance; }
+  p, dd { text-wrap: pretty; }
 }
 
 /* Page gutters: 16px phones, 24px from 640px, 32px from 1024px, never inside a device's safe area. */
@@ -209,9 +214,29 @@
   &:disabled::after, &[aria-disabled="true"]::after { opacity: 0; }
 }
 
+/* Press feedback: tappable things give a little under the finger within 100ms and spring back on release. */
+@utility pressable {
+  transition: transform 160ms var(--ease-emphasized);
+  @media (pointer: coarse) {
+    &:active:not(:disabled):not([aria-disabled="true"]) { transform: scale(0.96); transition-duration: 60ms; }
+  }
+  @media (pointer: fine) {
+    &:active:not(:disabled):not([aria-disabled="true"]) { transform: scale(0.98); transition-duration: 60ms; }
+  }
+}
+
+/* Loading placeholders wait 150ms before appearing, so a fast answer never flashes a skeleton. */
+@utility appear-late {
+  animation: lafu-appear 160ms var(--ease-standard) 150ms both;
+}
+@keyframes lafu-appear { from { opacity: 0; } }
+
 /* Destination changes fade through (Material); the app bar and navigation stay put. */
 ::view-transition-old(root) { animation: 90ms var(--ease-standard) both lafu-fade-out; }
 ::view-transition-new(root) { animation: 210ms var(--ease-emphasized) 90ms both lafu-fade-in; }
+/* Persistent chrome shows live content during the transition, so the sliding nav indicator is never crossfaded away. */
+::view-transition-old(app-bar), ::view-transition-old(nav-bar) { display: none; }
+::view-transition-new(app-bar), ::view-transition-new(nav-bar) { animation: none; }
 @keyframes lafu-fade-out { to { opacity: 0; } }
 @keyframes lafu-fade-in { from { opacity: 0; transform: scale(0.98); } }
 

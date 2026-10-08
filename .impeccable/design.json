@@ -4,68 +4,361 @@
   "title": "Design System: Lafu (Lawu Fun Tennis Club)",
   "extensions": {
     "colorMeta": {
-      "primary": { "role": "primary", "displayName": "Lawu Club Green", "canonical": "#164D45", "dark": "#93D2C3", "tonalRamp": ["#071E1A", "#0D2E29", "#164D45", "#2E6B61", "#4F8C81", "#93D2C3", "#C9E7DE", "#EDF4F1"] },
-      "on-primary": { "role": "primary", "displayName": "White", "canonical": "#FFFFFF", "dark": "#00382F" },
-      "signboard": { "role": "primary", "displayName": "Signboard Green", "canonical": "#164D45", "dark": "#164D45", "tonalRamp": ["#071E1A", "#0D2E29", "#164D45", "#2E6B61", "#4F8C81", "#93D2C3", "#C9E7DE", "#EDF4F1"] },
-      "on-signboard": { "role": "primary", "displayName": "Signboard White", "canonical": "#FFFFFF" },
-      "on-signboard-variant": { "role": "primary", "displayName": "Signboard Mist", "canonical": "#B8DDD3" },
-      "secondary-container": { "role": "secondary", "displayName": "Plate Sage", "canonical": "#C9E7DE", "dark": "#2B4A43", "tonalRamp": ["#0D2E29", "#1F3B35", "#2B4A43", "#4F6F67", "#7FA69C", "#A8CFC4", "#C9E7DE", "#EDF4F1"] },
-      "on-secondary-container": { "role": "secondary", "displayName": "Plate Ink", "canonical": "#0D2E29", "dark": "#C9E7DE" },
-      "plate": { "role": "secondary", "displayName": "Post Plate Sage", "canonical": "#C9E7DE", "dark": "#2B4A43" },
-      "on-plate": { "role": "secondary", "displayName": "Post Plate Ink", "canonical": "#0D2E29", "dark": "#C9E7DE" },
-      "surface": { "role": "neutral", "displayName": "Mist Ground", "canonical": "#F5F9F7", "dark": "#0E1916", "tonalRamp": ["#0A1412", "#0E1916", "#16241F", "#1F302A", "#DCE7E2", "#E5EEEA", "#EDF4F1", "#F5F9F7"] },
-      "surface-container-lowest": { "role": "neutral", "displayName": "Lowest Container", "canonical": "#FFFFFF", "dark": "#0A1412" },
-      "surface-container-low": { "role": "neutral", "displayName": "Pale Club Green", "canonical": "#EDF4F1", "dark": "#121F1B" },
-      "surface-container": { "role": "neutral", "displayName": "Container", "canonical": "#E5EEEA", "dark": "#16241F" },
-      "surface-container-high": { "role": "neutral", "displayName": "High Container", "canonical": "#DCE7E2", "dark": "#1F302A" },
-      "on-surface": { "role": "neutral", "displayName": "Lawu Ink", "canonical": "#1D252C", "dark": "#E3ECE8" },
-      "on-surface-variant": { "role": "neutral", "displayName": "Moss Grey", "canonical": "#4B5D57", "dark": "#A9BDB6" },
-      "outline": { "role": "neutral", "displayName": "Outline", "canonical": "#4B5D57", "dark": "#7F968F" },
-      "outline-variant": { "role": "neutral", "displayName": "Hairline", "canonical": "#C6D3CD", "dark": "#2E403A" },
-      "error": { "role": "status", "displayName": "Brick", "canonical": "#B42318", "dark": "#FFB4A8" },
-      "error-container": { "role": "status", "displayName": "Brick Container", "canonical": "#FEECE8", "dark": "#3A0F0A" },
-      "on-error-container": { "role": "status", "displayName": "Brick Ink", "canonical": "#7A1A11", "dark": "#FFDAD4" },
-      "warning": { "role": "status", "displayName": "Trail Amber", "canonical": "#805000", "dark": "#F5C46A" },
-      "warning-container": { "role": "status", "displayName": "Amber Container", "canonical": "#FFF4D6", "dark": "#2E2205" },
-      "scrim": { "role": "neutral", "displayName": "Scrim", "canonical": "rgba(29, 37, 44, 0.4)", "dark": "rgba(0, 0, 0, 0.6)" }
+      "primary": {
+        "role": "primary",
+        "displayName": "Lawu Club Green",
+        "canonical": "#164D45",
+        "dark": "#93D2C3",
+        "tonalRamp": [
+          "#071E1A",
+          "#0D2E29",
+          "#164D45",
+          "#2E6B61",
+          "#4F8C81",
+          "#93D2C3",
+          "#C9E7DE",
+          "#EDF4F1"
+        ]
+      },
+      "on-primary": {
+        "role": "primary",
+        "displayName": "White",
+        "canonical": "#FFFFFF",
+        "dark": "#00382F"
+      },
+      "signboard": {
+        "role": "primary",
+        "displayName": "Signboard Green",
+        "canonical": "#164D45",
+        "dark": "#164D45",
+        "tonalRamp": [
+          "#071E1A",
+          "#0D2E29",
+          "#164D45",
+          "#2E6B61",
+          "#4F8C81",
+          "#93D2C3",
+          "#C9E7DE",
+          "#EDF4F1"
+        ]
+      },
+      "on-signboard": {
+        "role": "primary",
+        "displayName": "Signboard White",
+        "canonical": "#FFFFFF"
+      },
+      "on-signboard-variant": {
+        "role": "primary",
+        "displayName": "Signboard Mist",
+        "canonical": "#B8DDD3"
+      },
+      "secondary-container": {
+        "role": "secondary",
+        "displayName": "Plate Sage",
+        "canonical": "#C9E7DE",
+        "dark": "#2B4A43",
+        "tonalRamp": [
+          "#0D2E29",
+          "#1F3B35",
+          "#2B4A43",
+          "#4F6F67",
+          "#7FA69C",
+          "#A8CFC4",
+          "#C9E7DE",
+          "#EDF4F1"
+        ]
+      },
+      "on-secondary-container": {
+        "role": "secondary",
+        "displayName": "Plate Ink",
+        "canonical": "#0D2E29",
+        "dark": "#C9E7DE"
+      },
+      "plate": {
+        "role": "secondary",
+        "displayName": "Post Plate Sage",
+        "canonical": "#C9E7DE",
+        "dark": "#2B4A43"
+      },
+      "on-plate": {
+        "role": "secondary",
+        "displayName": "Post Plate Ink",
+        "canonical": "#0D2E29",
+        "dark": "#C9E7DE"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Mist Ground",
+        "canonical": "#F5F9F7",
+        "dark": "#0E1916",
+        "tonalRamp": [
+          "#0A1412",
+          "#0E1916",
+          "#16241F",
+          "#1F302A",
+          "#DCE7E2",
+          "#E5EEEA",
+          "#EDF4F1",
+          "#F5F9F7"
+        ]
+      },
+      "surface-container-lowest": {
+        "role": "neutral",
+        "displayName": "Lowest Container",
+        "canonical": "#FFFFFF",
+        "dark": "#0A1412"
+      },
+      "surface-container-low": {
+        "role": "neutral",
+        "displayName": "Pale Club Green",
+        "canonical": "#EDF4F1",
+        "dark": "#121F1B"
+      },
+      "surface-container": {
+        "role": "neutral",
+        "displayName": "Container",
+        "canonical": "#E5EEEA",
+        "dark": "#16241F"
+      },
+      "surface-container-high": {
+        "role": "neutral",
+        "displayName": "High Container",
+        "canonical": "#DCE7E2",
+        "dark": "#1F302A"
+      },
+      "on-surface": {
+        "role": "neutral",
+        "displayName": "Lawu Ink",
+        "canonical": "#1D252C",
+        "dark": "#E3ECE8"
+      },
+      "on-surface-variant": {
+        "role": "neutral",
+        "displayName": "Moss Grey",
+        "canonical": "#4B5D57",
+        "dark": "#A9BDB6"
+      },
+      "outline": {
+        "role": "neutral",
+        "displayName": "Outline",
+        "canonical": "#4B5D57",
+        "dark": "#7F968F"
+      },
+      "outline-variant": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#C6D3CD",
+        "dark": "#2E403A"
+      },
+      "error": {
+        "role": "status",
+        "displayName": "Brick",
+        "canonical": "#B42318",
+        "dark": "#FFB4A8"
+      },
+      "error-container": {
+        "role": "status",
+        "displayName": "Brick Container",
+        "canonical": "#FEECE8",
+        "dark": "#3A0F0A"
+      },
+      "on-error-container": {
+        "role": "status",
+        "displayName": "Brick Ink",
+        "canonical": "#7A1A11",
+        "dark": "#FFDAD4"
+      },
+      "warning": {
+        "role": "status",
+        "displayName": "Trail Amber",
+        "canonical": "#805000",
+        "dark": "#F5C46A"
+      },
+      "warning-container": {
+        "role": "status",
+        "displayName": "Amber Container",
+        "canonical": "#FFF4D6",
+        "dark": "#2E2205"
+      },
+      "scrim": {
+        "role": "neutral",
+        "displayName": "Scrim",
+        "canonical": "rgba(29, 37, 44, 0.4)",
+        "dark": "rgba(0, 0, 0, 0.6)"
+      }
     },
     "contrastEvidence": [
-      { "pair": "on-surface / surface (light)", "ratio": 14.61 },
-      { "pair": "on-surface-variant / surface (light)", "ratio": 6.59 },
-      { "pair": "on-surface-variant / surface-container-high (light)", "ratio": 5.52 },
-      { "pair": "primary / surface (light)", "ratio": 9.06 },
-      { "pair": "on-plate / plate (light)", "ratio": 11.09 },
-      { "pair": "on-plate / plate (dark)", "ratio": 7.38 },
-      { "pair": "on-signboard / signboard", "ratio": 9.63 },
-      { "pair": "on-surface / surface (dark)", "ratio": 14.91 },
-      { "pair": "primary / surface (dark)", "ratio": 10.47 },
-      { "pair": "warning", "ratio": 6.25 },
-      { "pair": "error", "ratio": 5.75 }
+      {
+        "pair": "on-surface / surface (light)",
+        "ratio": 14.61
+      },
+      {
+        "pair": "on-surface-variant / surface (light)",
+        "ratio": 6.59
+      },
+      {
+        "pair": "on-surface-variant / surface-container-high (light)",
+        "ratio": 5.52
+      },
+      {
+        "pair": "primary / surface (light)",
+        "ratio": 9.06
+      },
+      {
+        "pair": "on-plate / plate (light)",
+        "ratio": 11.09
+      },
+      {
+        "pair": "on-plate / plate (dark)",
+        "ratio": 7.38
+      },
+      {
+        "pair": "on-signboard / signboard",
+        "ratio": 9.63
+      },
+      {
+        "pair": "on-surface / surface (dark)",
+        "ratio": 14.91
+      },
+      {
+        "pair": "primary / surface (dark)",
+        "ratio": 10.47
+      },
+      {
+        "pair": "warning",
+        "ratio": 6.25
+      },
+      {
+        "pair": "error",
+        "ratio": 5.75
+      }
     ],
     "typographyMeta": {
-      "numeral": { "displayName": "Numeral", "purpose": "Post-plate start times and the next-day shortcut numeral. Routed trail-sign voice." },
-      "headline": { "displayName": "Headline", "purpose": "Page headings in the system face." },
-      "headline-display": { "displayName": "Headline (routed)", "purpose": "LAFU wordmark (uppercase) and day-marker numerals." },
-      "title": { "displayName": "Title", "purpose": "Session class names, selected date, empty-state heading." },
-      "title-display": { "displayName": "Title (routed)", "purpose": "Month and year above the day markers, uppercase." },
-      "body": { "displayName": "Body", "purpose": "Facts, prices, button labels (700), list values capped at 65ch." },
-      "label": { "displayName": "Label", "purpose": "Weekdays, end times, availability words, navigation labels, notices." }
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "Post-plate start times and the next-day shortcut numeral. Routed trail-sign voice."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page headings in the system face."
+      },
+      "headline-display": {
+        "displayName": "Headline (routed)",
+        "purpose": "LAFU wordmark (uppercase) and day-marker numerals."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Session class names, selected date, empty-state heading."
+      },
+      "title-display": {
+        "displayName": "Title (routed)",
+        "purpose": "Month and year above the day markers, uppercase."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Facts, prices, button labels (700), list values capped at 65ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Weekdays, end times, availability words, navigation labels, notices."
+      }
     },
     "shadows": [
-      { "name": "menu", "value": "0 2px 6px rgba(29, 37, 44, 0.16), 0 1px 2px rgba(29, 37, 44, 0.12)", "purpose": "Floating menus (language menu)." },
-      { "name": "sheet", "value": "0 -8px 24px rgba(29, 37, 44, 0.16)", "purpose": "Reserved for the session detail sheet; defined, not yet exercised." }
+      {
+        "name": "menu",
+        "value": "0 2px 6px rgba(29, 37, 44, 0.16), 0 1px 2px rgba(29, 37, 44, 0.12)",
+        "purpose": "Floating menus (language menu)."
+      },
+      {
+        "name": "sheet",
+        "value": "0 -8px 24px rgba(29, 37, 44, 0.16)",
+        "purpose": "Bottom sheets: the phone language sheet now, the session detail sheet later."
+      },
+      {
+        "name": "bar",
+        "value": "0 2px 8px rgba(0, 0, 0, 0.18)",
+        "purpose": "Signboard app bar only while content scrolls beneath it."
+      }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "State layers and color transitions (150 to 200ms)." },
-      { "name": "ease-emphasized", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "Fade-through incoming view." },
-      { "name": "fade-through", "value": "out 90ms; in 210ms after 90ms, from opacity 0 and scale 0.98", "purpose": "Destination changes via view transitions; app bar and navigation stay put. Removed under reduced motion." },
-      { "name": "state-layer", "value": "currentColor overlay: hover 0.08, focus 0.1, pressed 0.12, 150ms", "purpose": "Press and hover feedback on every touchable surface." }
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "State layers and color transitions (150 to 200ms)."
+      },
+      {
+        "name": "ease-emphasized",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "Fade-through incoming view."
+      },
+      {
+        "name": "fade-through",
+        "value": "out 90ms; in 210ms after 90ms, from opacity 0 and scale 0.98",
+        "purpose": "Destination changes via view transitions; app bar and navigation stay put. Removed under reduced motion."
+      },
+      {
+        "name": "state-layer",
+        "value": "currentColor overlay: hover 0.08, focus 0.1, pressed 0.12, 150ms",
+        "purpose": "Press and hover feedback on every touchable surface."
+      },
+      {
+        "name": "selection-spring",
+        "value": "spring stiffness 520, damping 40, mass 0.7",
+        "purpose": "Shared day tile and navigation pill moving to the new choice."
+      },
+      {
+        "name": "content-spring",
+        "value": "spring stiffness 380, damping 36, mass 0.8",
+        "purpose": "Session list entering after a day change."
+      },
+      {
+        "name": "pop-spring",
+        "value": "spring stiffness 600, damping 32",
+        "purpose": "Today chip appearing and leaving."
+      },
+      {
+        "name": "shared-axis-x",
+        "value": "exit 90ms toward the opposite side; enter from 28px on the travel side",
+        "purpose": "Day change direction."
+      },
+      {
+        "name": "press",
+        "value": "scale 0.96 touch / 0.98 mouse, 60ms in, 160ms emphasized out",
+        "purpose": "Immediate press feedback on every tappable surface."
+      },
+      {
+        "name": "haptic",
+        "value": "navigator.vibrate(8), coarse pointer only, off under reduced motion",
+        "purpose": "Selection tick on day, tab, and language changes (Android)."
+      },
+      {
+        "name": "appear-late",
+        "value": "160ms fade after 150ms delay",
+        "purpose": "Loading placeholders never flash on fast responses."
+      },
+      {
+        "name": "swipe-day",
+        "value": "drag x, elastic 0.18, threshold 72px or 500px/s flick",
+        "purpose": "Page between days on touch screens."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px", "purpose": "Navigation rail replaces bottom bar; state cell becomes third column; gutters 24px; plate column 96px." },
-      { "name": "lg", "value": "1024px", "purpose": "Two-column session list; gutters 32px; content max 72rem." }
+      {
+        "name": "sm",
+        "value": "640px",
+        "purpose": "Navigation rail replaces bottom bar; state cell becomes third column; gutters 24px; plate column 96px."
+      },
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "Two-column session list; gutters 32px; content max 72rem."
+      }
     ],
-    "focus": { "outline": "2px solid var(--md-primary)", "offset": "2px", "onSignboard": "white" },
+    "focus": {
+      "outline": "2px solid var(--md-primary)",
+      "offset": "2px",
+      "onSignboard": "white"
+    },
     "touchTarget": "48px minimum"
   },
   "components": [
@@ -155,13 +448,41 @@
       "Light and dark follow the phone."
     ],
     "rules": [
-      { "name": "The Green Budget Rule", "body": "Full club green appears only on the chosen thing: the selected day, the one primary action, and the signboard. Post plates are tonal sage, never full green.", "section": "colors" },
-      { "name": "The Board Stays Green Rule", "body": "The signboard keeps #164D45 in dark mode; only interactive primary lifts to a light tone.", "section": "colors" },
-      { "name": "The Routed Voice Rule", "body": "Barlow Condensed is used only for the wordmark, month, day numerals, and plate times. Any other text in it is a defect.", "section": "typography" },
-      { "name": "The Two Weights Rule", "body": "Only 400 and 700 exist. Emphasis is weight or size, never a third weight.", "section": "typography" },
-      { "name": "The Uppercase Belongs To The Sign Rule", "body": "Uppercase appears only in the routed voice (wordmark, month). System-face text stays in sentence case.", "section": "typography" },
-      { "name": "The State Cell Reflow Rule", "body": "Availability is a third column from 640px. On phones it reflows as one unit under the facts, because a right cell at 390px forces class titles onto three lines. This is a recorded phone adaptation, not drift.", "section": "layout" },
-      { "name": "The Tonal First Rule", "body": "If a surface sits on the page, it differs by tone. A shadow means it floats.", "section": "elevation" }
+      {
+        "name": "The Green Budget Rule",
+        "body": "Full club green appears only on the chosen thing: the selected day, the one primary action, and the signboard. Post plates are tonal sage, never full green.",
+        "section": "colors"
+      },
+      {
+        "name": "The Board Stays Green Rule",
+        "body": "The signboard keeps #164D45 in dark mode; only interactive primary lifts to a light tone.",
+        "section": "colors"
+      },
+      {
+        "name": "The Routed Voice Rule",
+        "body": "Barlow Condensed is used only for the wordmark, month, day numerals, and plate times. Any other text in it is a defect.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two Weights Rule",
+        "body": "Only 400 and 700 exist. Emphasis is weight or size, never a third weight.",
+        "section": "typography"
+      },
+      {
+        "name": "The Uppercase Belongs To The Sign Rule",
+        "body": "Uppercase appears only in the routed voice (wordmark, month). System-face text stays in sentence case.",
+        "section": "typography"
+      },
+      {
+        "name": "The State Cell Reflow Rule",
+        "body": "Availability is a third column from 640px. On phones it reflows as one unit under the facts, because a right cell at 390px forces class titles onto three lines. This is a recorded phone adaptation, not drift.",
+        "section": "layout"
+      },
+      {
+        "name": "The Tonal First Rule",
+        "body": "If a surface sits on the page, it differs by tone. A shadow means it floats.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do keep full club green (#164D45) to the selected day, the one filled action, and the signboard.",

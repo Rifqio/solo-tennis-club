@@ -31,7 +31,7 @@ describe('design token guard', () => {
   })
 
   it('has no gradient, glow, blur, or ad-hoc shadow effects', () => {
-    expect(offenders(/\bbg-(?:linear|radial|conic|gradient)\b|\bbg-gradient-|\bbackdrop-blur|\bblur(?:-\w+)?\b|\bdrop-shadow|\bshadow-(?!sheet\b|menu\b)[\w[]/g)).toEqual([])
+    expect(offenders(/\bbg-(?:linear|radial|conic|gradient)\b|\bbg-gradient-|\bbackdrop-blur|\bblur(?:-\w+)?\b|\bdrop-shadow|\bshadow-(?!sheet\b|menu\b|bar\b)[\w[]/g)).toEqual([])
   })
 
   it('keeps hex colors in index.css only', () => {

@@ -73,7 +73,9 @@ export function PublicLayout() {
         </div></div>
       </header>
 
-      <main className="pb-[calc(5rem+env(safe-area-inset-bottom)+1rem)] sm:pb-8 sm:pl-20">
+      {/* Horizontal motion (day slides, swipe) must never widen the page: on phones a wider page makes the browser
+          zoom out, which resizes the viewport and moves the fixed navigation bar. clip, unlike hidden, adds no scroll container. */}
+      <main className="overflow-x-clip pb-[calc(5rem+env(safe-area-inset-bottom)+1rem)] sm:pb-8 sm:pl-20">
         <Outlet />
       </main>
 

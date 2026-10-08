@@ -59,3 +59,27 @@ test('schedule load failure names the problem and retries', async ({ page }) => 
   await expect(page.getByRole('listitem').filter({ hasText: 'Sample tennis class' })).toBeVisible()
   expect(requests).toBe(2)
 })
+
+// Regression: day-change slides once widened the page by 12px for a few frames; on phones the browser then
+// zoomed out and the fixed navigation bar jumped down and back up.
+test('changing day never widens the page or moves the navigation bar', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  const sample = () => page.evaluate(() => new Promise<{ widest: number; navTops: number[] }>(done => {
+    const nav = document.querySelector('nav[aria-label]')!
+    let widest = 0
+    const navTops = new Set<number>()
+    const start = performance.now()
+    const tick = () => {
+      widest = Math.max(widest, document.documentElement.scrollWidth)
+      navTops.add(Math.round(nav.getBoundingClientRect().top))
+      if (performance.now() - start < 700) requestAnimationFrame(tick); else done({ widest, navTops: [...navTops] })
+    }
+    requestAnimationFrame(tick)
+  }))
+  const pending = sample()
+  await page.getByRole('button', { name: 'Tanggal berikutnya' }).click()
+  const { widest, navTops } = await pending
+  expect(widest).toBeLessThanOrEqual(390)
+  expect(navTops).toHaveLength(1)
+})

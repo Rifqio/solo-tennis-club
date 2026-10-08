@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { getJson } from '@/lib/api'
 import type { ApiResult } from '@/lib/api'
 import type { PublicScheduleResponse } from '@shared/api/public'
@@ -8,15 +9,18 @@ const statusText = { available: 'Tersedia', nearly_full: 'Hampir penuh', full: '
 const priceFormat = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 })
 const dateFormat = new Intl.DateTimeFormat('id-ID', { dateStyle: 'full', timeZone: CLUB_TIME_ZONE })
 export function SchedulePage() {
+  const [searchParams] = useSearchParams()
+  const selectedDate = searchParams.get('date')
+  const schedulePath = '/api/public/schedule' + (selectedDate === null ? '' : '?date=' + encodeURIComponent(selectedDate))
   const [attempt, setAttempt] = useState(0)
   const [result, setResult] = useState<ApiResult<PublicScheduleResponse> | null>(null)
   useEffect(() => {
     const controller = new AbortController()
-    void getJson<PublicScheduleResponse>('/api/public/schedule', { signal: controller.signal }).then(value => {
+    void getJson<PublicScheduleResponse>(schedulePath, { signal: controller.signal }).then(value => {
       if (!controller.signal.aborted) setResult(value)
     })
     return () => controller.abort()
-  }, [attempt])
+  }, [attempt, schedulePath])
   const retry = () => { setResult(null); setAttempt(value => value + 1) }
   return <main className="mx-auto min-h-svh max-w-3xl px-4 pb-[max(24px,env(safe-area-inset-bottom))] pt-6">
     <header className="mb-8"><p className="text-base font-semibold text-primary">Lafu · Lawu Fun Tennis Club</p><h1 className="mt-4 text-3xl font-semibold">Jadwal</h1></header>

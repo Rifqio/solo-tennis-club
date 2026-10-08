@@ -48,6 +48,9 @@ test('denial matrix protects known and unknown admin paths, including anonymous 
     await expectCode(await fetch(server.baseUrl + '/api/admin' + path, { method }), 401, 'UNAUTHENTICATED')
     await expectCode(await fetch(server.baseUrl + '/api/admin' + path, { method, headers: { Cookie: 'lafu_admin=forged' } }), 401, 'UNAUTHENTICATED')
   }
+  for (const body of ['{broken', JSON.stringify({ payload: 'x'.repeat(33000) })]) {
+    await expectCode(await fetch(server.baseUrl + '/api/admin/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }), 401, 'UNAUTHENTICATED')
+  }
 })
 test('CSRF rejects missing and another session token; origin and content type are enforced', async () => {
   const auth = await signInAs(server.baseUrl, credentials), other = await signInAs(server.baseUrl, credentials)
@@ -58,6 +61,7 @@ test('CSRF rejects missing and another session token; origin and content type ar
   await expectCode(await mutate({ Origin: '' }), 403, 'ORIGIN_REJECTED')
   await expectCode(await mutate({ 'Content-Type': 'text/plain' }), 415, 'UNSUPPORTED_MEDIA_TYPE')
   await expectCode(await signIn(credentials.email, credentials.password, { Origin: 'http://evil.example' }), 403, 'ORIGIN_REJECTED')
+  await expectCode(await adminFetch(server.baseUrl, auth, '/sessions', { method: 'POST', headers: { 'X-CSRF-Token': '' }, body: '{broken' }), 403, 'CSRF_FAILED')
 })
 test('sign-out revocation makes the old cookie unusable', async () => {
   const auth = await signInAs(server.baseUrl, credentials)

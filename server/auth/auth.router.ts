@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, json } from 'express'
 import { z } from 'zod'
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import type { RuntimeConfig } from '../config/runtime-config.ts'
@@ -11,7 +11,7 @@ import { checkSignInThrottle, recordSignInAttempt, signInKeys } from './throttle
 const signInInput = z.strictObject({ email: z.string().trim().toLowerCase().pipe(z.email().max(254)), password: z.string().min(1).max(256) })
 export function createSignInRouter(prisma: PrismaClient, config: RuntimeConfig) {
   const router = Router()
-  router.post('/auth/sign-in', requireSameOrigin(config), requireJson, async (req, res) => {
+  router.post('/auth/sign-in', requireSameOrigin(config), requireJson, json({ limit: '32kb' }), async (req, res) => {
     const parsed = signInInput.safeParse(req.body)
     if (!parsed.success) throw new ApiError(401, 'SIGN_IN_FAILED')
     const keys = signInKeys(parsed.data.email, req.ip ?? req.socket.remoteAddress ?? 'unknown')

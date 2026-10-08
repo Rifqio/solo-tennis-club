@@ -88,7 +88,7 @@ Details such as cutoff configuration scope, recurring-series edit behavior, book
 
 The workspace is `E:\Code\TApp`. It contains a React, TypeScript, and Vite starter with a package name of `mybooking`; the current screen is the framework starter and has no tennis booking functionality. A Git repository has been initialized here. The user chose to skip codebase mapping and define the product first. This project's planning files belong in `E:\Code\TApp\.planning`, independently of planning files in the parent directory.
 
-The confirmed club name is Lawu Fun Tennis Club, abbreviated Lafu. The application supports Indonesian and English. Logo assets and a visual identity have not yet been supplied or selected. Impeccable is being used to brainstorm the UI before implementation, and the user selected building directly from an agreed design brief instead of generating a mockup first.
+The confirmed club name is Lawu Fun Tennis Club, abbreviated Lafu. The application supports Indonesian and English. Logo assets and a final visual identity have not yet been supplied or selected. Impeccable supplied UI brainstorming before implementation, and the user selected building directly from an agreed design brief instead of generating a mockup first. The user confirmed Antislop for UI validation during planning and building on 2026-10-08; apply its core, UI, and mobile-layout checks alongside functional, browser, and accessibility verification.
 
 The user wants booking to feel easy and guided even for people unfamiliar with technology, and likes the AYO Android application's presentation. The reference is its Google Play listing and app screenshots at https://play.google.com/store/apps/details?id=coid.ayo.ayo_mobile_app&hl=en, specifically not the AYO website. This is inspiration for mobile presentation; no AYO features or visual identity are automatically adopted.
 
@@ -128,6 +128,7 @@ The user selected Community matchday on the Impeccable direction page: a familia
 | Use Lawu Fun Tennis Club / Lafu as the product's club identity | The user confirmed the actual club name | Pending |
 | Support Indonesian and English in customer and admin workflows | The user confirmed both application languages | Pending |
 | Select Community matchday as the UI presentation direction | It matches the user's AYO app reference while keeping Lafu booking and payment states understandable | Pending |
+| Use Impeccable for UI brainstorming and Antislop for validation during planning/building | User confirmed this workflow; the agreed direction informs evidence-based UI checks | Pending |
 
 ## Evolution
 
@@ -148,4 +149,4 @@ After each milestone:
 5. Update Context with users, feedback, and current operations.
 
 ---
-*Last updated: 2026-10-07 after project definition approval and club identity/language clarification*
+*Last updated: 2026-10-08 after roadmap approval and UI validation preference confirmation*

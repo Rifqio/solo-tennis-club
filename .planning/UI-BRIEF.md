@@ -70,3 +70,9 @@ Handle multiple coaches, long participant/venue names, groups spanning several p
 ## Review
 
 The user confirmed this brief on 2026-10-07. It can inform the detailed UI specification during planning. Final design tokens, component specifications, and implementation remain subject to the later planning workflow.
+
+## UI validation
+
+On 2026-10-08, the user confirmed Antislop for UI validation during planning and building. Impeccable supplied the brainstorming and direction above. Apply Antislop core plus its UI and mobile-layout skills to the later design specification and implemented screens: product-specific hierarchy and identity, purposeful styling, mobile reflow, touch targets, safe areas, readable states, and complete interactions. Declare the design read and dials during detailed UI planning, using the confirmed direction.
+
+Before delivering implemented UI, record the Antislop Delivery Gate and applicable checklist evidence alongside browser/build, keyboard/contrast, responsive, and complete booking/admin workflow checks. This brief's approval is not a claim that implemented UI has passed those checks.

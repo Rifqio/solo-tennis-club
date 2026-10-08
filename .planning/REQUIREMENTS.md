@@ -1,7 +1,7 @@
 # Requirements: Lafu — Lawu Fun Tennis Club
 
 **Defined:** 2026-10-07
-**Status:** All 67 first-release requirements approved by the user on 2026-10-08; implementation and roadmap mapping pending.
+**Status:** All 67 first-release requirements and their five-phase roadmap approved by the user on 2026-10-08; implementation pending.
 **Core Value:** Customers can book tennis classes from their phones with clear, reliable availability, while club admins can manage those bookings and payments without spreadsheets.
 
 ## v1 Requirements
@@ -117,6 +117,8 @@ No additional features have been approved for a later release. Waitlists, attend
 
 The confirmed [UI brief](UI-BRIEF.md), Community matchday direction, and code-led build preference inform subsequent UI planning. Detailed navigation, design tokens, fonts, and components are not finalized here. Frameworks, database, API, infrastructure, and implementation architecture will be selected separately. Payment design must accommodate future providers without requiring a gateway in v1.
 
+Impeccable supplied UI brainstorming; the user confirmed Antislop for UI validation during planning and building. Its core Delivery Gate and UI/mobile-layout checklists supplement functional, browser, accessibility, and user-task verification. No implemented UI has been validated yet.
+
 The following policies must be decided before dependent implementation and reflected in acceptance scenarios. They do not remove or silently change the requirements above:
 
 - Reservation start relative to OTP/account entry; booking eligibility near session start; treatment of unpaid or awaiting-review bookings at session start. Preserve the five-hour window and submitted-proof review hold.
@@ -130,16 +132,84 @@ The following policies must be decided before dependent implementation and refle
 
 ## Traceability
 
-Phase mappings will be filled during roadmap creation. Requirements were confirmed on 2026-10-08.
+Requirements and roadmap were confirmed on 2026-10-08. Each maps to one acceptance-owner phase in the approved roadmap. Cross-cutting mobile, bilingual, accessibility, and privacy behavior applies from the first relevant workflow; a later acceptance owner verifies the integrated result.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| DISC-01 | Phase 1 | Pending |
+| DISC-02 | Phase 1 | Pending |
+| DISC-03 | Phase 1 | Pending |
+| DISC-04 | Phase 1 | Pending |
+| DISC-05 | Phase 1 | Pending |
+| AUTH-01 | Phase 2 | Pending |
+| AUTH-02 | Phase 2 | Pending |
+| AUTH-03 | Phase 2 | Pending |
+| AUTH-04 | Phase 2 | Pending |
+| AUTH-05 | Phase 3 | Pending |
+| AUTH-06 | Phase 1 | Pending |
+| BOOK-01 | Phase 2 | Pending |
+| BOOK-02 | Phase 2 | Pending |
+| BOOK-03 | Phase 2 | Pending |
+| BOOK-04 | Phase 2 | Pending |
+| BOOK-05 | Phase 2 | Pending |
+| BOOK-06 | Phase 2 | Pending |
+| BOOK-07 | Phase 2 | Pending |
+| BOOK-08 | Phase 2 | Pending |
+| BOOK-09 | Phase 2 | Pending |
+| BOOK-10 | Phase 4 | Pending |
+| PAY-01 | Phase 3 | Pending |
+| PAY-02 | Phase 3 | Pending |
+| PAY-03 | Phase 3 | Pending |
+| PAY-04 | Phase 3 | Pending |
+| PAY-05 | Phase 3 | Pending |
+| PAY-06 | Phase 3 | Pending |
+| PAY-07 | Phase 3 | Pending |
+| PAY-08 | Phase 3 | Pending |
+| OPER-01 | Phase 2 | Pending |
+| OPER-02 | Phase 2 | Pending |
+| OPER-03 | Phase 2 | Pending |
+| OPER-04 | Phase 2 | Pending |
+| OPER-05 | Phase 3 | Pending |
+| OPER-06 | Phase 2 | Pending |
+| OPER-07 | Phase 2 | Pending |
+| OPER-08 | Phase 3 | Pending |
+| OPER-09 | Phase 4 | Pending |
+| OPER-10 | Phase 4 | Pending |
+| OPER-11 | Phase 4 | Pending |
+| SCHED-01 | Phase 1 | Pending |
+| SCHED-02 | Phase 1 | Pending |
+| SCHED-03 | Phase 5 | Pending |
+| SCHED-04 | Phase 1 | Pending |
+| SCHED-05 | Phase 1 | Pending |
+| SCHED-06 | Phase 1 | Pending |
+| SCHED-07 | Phase 1 | Pending |
+| SCHED-08 | Phase 1 | Pending |
+| SCHED-09 | Phase 1 | Pending |
+| CANC-01 | Phase 4 | Pending |
+| CANC-02 | Phase 5 | Pending |
+| CANC-03 | Phase 5 | Pending |
+| CANC-04 | Phase 5 | Pending |
+| CANC-05 | Phase 5 | Pending |
+| CANC-06 | Phase 5 | Pending |
+| CANC-07 | Phase 4 | Pending |
+| CANC-08 | Phase 4 | Pending |
+| CANC-09 | Phase 4 | Pending |
+| UX-01 | Phase 3 | Pending |
+| UX-02 | Phase 3 | Pending |
+| UX-03 | Phase 5 | Pending |
+| UX-04 | Phase 5 | Pending |
+| UX-05 | Phase 5 | Pending |
+| UX-06 | Phase 3 | Pending |
+| UX-07 | Phase 5 | Pending |
+| UX-08 | Phase 3 | Pending |
+| UX-09 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 67 total
-- Mapped to phases: 0
-- Unmapped: 67 — roadmap creation pending
+- Mapped to phases: 67
+- Unmapped: 0
+- Duplicate phase assignments: 0
 
 ---
 *Requirements defined: 2026-10-07*
-*Last updated: 2026-10-08 after detailed requirements approval*
+*Last updated: 2026-10-08 after roadmap approval and Antislop validation preference confirmation*

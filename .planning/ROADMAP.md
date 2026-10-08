@@ -43,15 +43,15 @@ Integer phases are planned first-release work. Decimal phases are reserved for l
 3. An authorized administrator can manage classes, dated sessions, coaches, venues, levels, prices, participant limits, and each session's venue and one or more coaches; capacity changes cannot create an overbooked session.
 4. Administrators can authenticate to manage the schedule, while visitors and customers cannot access those management actions; published changes are visible in public session details.
 
-**Plans:** 1/10 plans executed
+**Plans:** 3/10 plans executed
 
 Plans:
 **Wave 1**
 - [x] 01-01-PLAN.md — Walking skeleton read path: architecture checkpoint, Prisma/SQLite migrations, public schedule API and page, persistence tests (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 01-02-PLAN.md — Admin provisioning, cookie-session auth, protected publish API, validated idempotent session create (wave 2)
-- [ ] 01-03-PLAN.md — Bilingual public shell, design tokens and wrappers, About Lafu page (wave 2)
+- [x] 01-02-PLAN.md — Admin provisioning, cookie-session auth, protected publish API, validated idempotent session create (wave 2)
+- [x] 01-03-PLAN.md — Bilingual public shell, design tokens and wrappers, About Lafu page (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 01-04-PLAN.md — Admin sign-in, admin shell with working-only navigation, Sessions list (wave 3)
@@ -159,7 +159,7 @@ Phases execute in order: 1 → 2 → 3 → 4 → 5. Discussion, policy decisions
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Publish and Browse Sessions | 1/10 | In Progress | - |
+| 1. Publish and Browse Sessions | 3/10 | In Progress | - |
 | 2. Reserve Places and See Daily Rosters | 0/TBD | Not started | - |
 | 3. Pay and Verify Bookings | 0/TBD | Not started | - |
 | 4. Adjust Bookings and Settle Cancellations | 0/TBD | Not started | - |

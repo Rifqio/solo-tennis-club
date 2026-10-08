@@ -43,7 +43,36 @@ Integer phases are planned first-release work. Decimal phases are reserved for l
 3. An authorized administrator can manage classes, dated sessions, coaches, venues, levels, prices, participant limits, and each session's venue and one or more coaches; capacity changes cannot create an overbooked session.
 4. Administrators can authenticate to manage the schedule, while visitors and customers cannot access those management actions; published changes are visible in public session details.
 
-**Plans:** TBD
+**Plans:** 10 plans
+
+Plans:
+**Wave 1**
+- [ ] 01-01-PLAN.md — Walking skeleton read path: architecture checkpoint, Prisma/SQLite migrations, public schedule API and page, persistence tests (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 01-02-PLAN.md — Admin provisioning, cookie-session auth, protected publish API, validated idempotent session create (wave 2)
+- [ ] 01-03-PLAN.md — Bilingual public shell, design tokens and wrappers, About Lafu page (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 01-04-PLAN.md — Admin sign-in, admin shell with working-only navigation, Sessions list (wave 3)
+- [ ] 01-05-PLAN.md — Schedule date strip, picker, next-date shortcut, summary rows and states (wave 3)
+- [ ] 01-06-PLAN.md — Backup/restore, labeled sample seed, operations README (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 01-07-PLAN.md — Session detail bottom sheet and exact availability states (wave 4)
+- [ ] 01-08-PLAN.md — Coaches, venues, levels management, Manage hub, discard confirmation (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 01-09-PLAN.md — Class management with future-only defaults and coach checklist (wave 5)
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 01-10-PLAN.md — Guided session create/edit, safe capacity edits, Phase 1 acceptance (wave 6)
+
+**Cross-cutting constraints:**
+- E7 loading: save disables submit with a named pending label and prevents duplicate records
+- E7 error: validation and save failures show associated field errors and an inline save error with retry; values are preserved
+- E7 overflow: forms reflow to one column at 320px with the action region reachable above keyboard and fixed navigation
+
 **UI hint:** yes
 
 **Planning prerequisites:** Select the framework/rendering approach, persistence and API ownership, deployment baseline, and admin identity/provisioning required for this slice. Decide club timezone/currency, nearly-full threshold, required schedule content, and bilingual content responsibility. Establish stable dated-session identity and historical-value handling before bookings depend on them. Public browsing must expose no private customer, participant, or payment information.

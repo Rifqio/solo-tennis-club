@@ -3,185 +3,147 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 
-@custom-variant dark (&:is(.dark *));
-
+/*
+  Lafu, Community matchday tokens (UI-SPEC Phase 1, D-23, D-24).
+  Brand: club green #164D45, white #FFFFFF, ink #1D252C, pale green #EDF4F1.
+  Fixed light theme: the app is used outdoors at the club on phones; no dark theme ships.
+*/
 :root {
-  --text: #4b5d57;
-  --text-h: #1d252c;
-  --bg: #fff;
-  --border: oklch(0.922 0 0);
-  --code-bg: #f4f3ec;
-  --accent: #edf4f1;
-  --accent-bg: rgba(22, 77, 69, 0.1);
-  --accent-border: rgba(22, 77, 69, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: 'Inter Variable', system-ui, 'Segoe UI', sans-serif;
-  --heading: var(--sans);
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
   color-scheme: light;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --lafu-green: #164D45;
+  --lafu-white: #FFFFFF;
+  --lafu-ink: #1D252C;
+  --lafu-pale: #EDF4F1;
+  --lafu-muted: #4B5D57;
+  --lafu-error: #B42318;
+  --lafu-error-surface: #FEECE8;
+  --lafu-warning: #805000;
+  --lafu-warning-surface: #FFF4D6;
 
-  --background: #ffffff;
-
-  --foreground: #1d252c;
-
-  --card: #ffffff;
-
-  --card-foreground: #1d252c;
-
-  --popover: #ffffff;
-
-  --popover-foreground: #1d252c;
-
-  --primary: #164d45;
-
-  --primary-foreground: #ffffff;
-
-  --secondary: #edf4f1;
-
-  --secondary-foreground: #1d252c;
-
-  --muted: #edf4f1;
-
-  --muted-foreground: #4b5d57;
-
-  --accent-foreground: #164d45;
-
-  --destructive: oklch(0.577 0.245 27.325);
-
-  --input: oklch(0.922 0 0);
-
-  --ring: #164d45;
-
-  --chart-1: oklch(0.87 0 0);
-
-  --chart-2: oklch(0.556 0 0);
-
-  --chart-3: oklch(0.439 0 0);
-
-  --chart-4: oklch(0.371 0 0);
-
-  --chart-5: oklch(0.269 0 0);
-
-  --radius: 0.625rem;
-
-  --sidebar: oklch(0.985 0 0);
-
-  --sidebar-foreground: oklch(0.145 0 0);
-
-  --sidebar-primary: #164d45;
-
-  --sidebar-primary-foreground: #ffffff;
-
-  --sidebar-accent: oklch(0.97 0 0);
-
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-
-  --sidebar-border: oklch(0.922 0 0);
-
-  --sidebar-ring: oklch(0.708 0 0)
+  /* shadcn variable mapping. shadcn's "accent" stays a pale-green hover surface; the visual accent is club green. */
+  --background: var(--lafu-white);
+  --foreground: var(--lafu-ink);
+  --card: var(--lafu-white);
+  --card-foreground: var(--lafu-ink);
+  --popover: var(--lafu-white);
+  --popover-foreground: var(--lafu-ink);
+  --primary: var(--lafu-green);
+  --primary-foreground: var(--lafu-white);
+  --secondary: var(--lafu-pale);
+  --secondary-foreground: var(--lafu-ink);
+  --muted: var(--lafu-pale);
+  --muted-foreground: var(--lafu-muted);
+  --accent: var(--lafu-pale);
+  --accent-foreground: var(--lafu-green);
+  --destructive: var(--lafu-error);
+  --border: var(--lafu-pale);
+  --input: var(--lafu-muted);
+  --ring: var(--lafu-green);
 }
-
-body { margin: 0; }
 
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: 'Inter Variable', sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
+  /* Only Lafu colors exist as utilities; Tailwind's default palette is removed so off-system colors cannot creep in. */
+  --color-*: initial;
+  --color-white: var(--lafu-white);
   --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-error: var(--lafu-error);
+  --color-error-surface: var(--lafu-error-surface);
+  --color-warning: var(--lafu-warning);
+  --color-warning-surface: var(--lafu-warning-surface);
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.448 0.119 151.328);
-  --primary-foreground: oklch(0.982 0.018 155.826);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.723 0.219 149.579);
-  --sidebar-primary-foreground: oklch(0.982 0.018 155.826);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Inter for legible bilingual facts and clear numerals in times, prices, and counts. */
+  --font-*: initial;
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+  --font-heading: var(--font-sans);
+
+  /* Exactly four sizes and two weights. */
+  --text-*: initial;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.5;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  --text-heading: 1.25rem;
+  --text-heading--line-height: 1.2;
+  --text-display: 1.75rem;
+  --text-display--line-height: 1.2;
+  --font-weight-*: initial;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+
+  /* Status labels 4px, controls 8px, sheet top corners 16px. */
+  --radius-*: initial;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  /* The one elevation: the detail sheet above the schedule. */
+  --shadow-*: initial;
+  --shadow-sheet: 0 -8px 24px rgba(29, 37, 44, 0.16);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;}
-  body {
-    @apply bg-background text-foreground;}
-  button:not(:disabled), [role="button"]:not(:disabled) {
-    cursor: pointer;}
+  *, ::before, ::after { border-color: var(--border); }
   html {
-    @apply font-sans;}}
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 400;
+    caret-color: var(--lafu-green);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--lafu-green); color: var(--lafu-white); }
+  a { color: inherit; text-underline-offset: 0.2em; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
+  :focus-visible {
+    outline: 2px solid var(--lafu-green);
+    outline-offset: 2px;
+  }
+}
+
+/* Page gutters: 16px phones, 24px from 640px, 32px from 1024px, never inside a device's safe area. */
+@utility page-gutter {
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  @media (width >= 40rem) {
+    padding-left: max(24px, env(safe-area-inset-left));
+    padding-right: max(24px, env(safe-area-inset-right));
+  }
+  @media (width >= 64rem) {
+    padding-left: max(32px, env(safe-area-inset-left));
+    padding-right: max(32px, env(safe-area-inset-right));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

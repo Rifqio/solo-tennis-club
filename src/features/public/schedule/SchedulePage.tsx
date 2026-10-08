@@ -1,14 +1,25 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { StatusPanel } from '@/components/ui/status-panel'
 import { getJson } from '@/lib/api'
 import type { ApiResult } from '@/lib/api'
+import { commonMessages } from '@/i18n/common.messages'
+import { formatClubDateLong, formatClubTime, formatIdr, formatRemainingPlaces } from '@/i18n/format'
+import { useI18n } from '@/i18n/use-i18n'
+import type { AvailabilityStatus } from '@shared/availability'
 import type { PublicScheduleResponse } from '@shared/api/public'
-import { CLUB_TIME_ZONE } from '@shared/club-time'
+import { scheduleMessages } from './schedule.messages'
 
-const statusText = { available: 'Tersedia', nearly_full: 'Hampir penuh', full: 'Penuh', cancelled: 'Dibatalkan' }
-const priceFormat = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 })
-const dateFormat = new Intl.DateTimeFormat('id-ID', { dateStyle: 'full', timeZone: CLUB_TIME_ZONE })
+// Text always carries the state; color only reinforces it (UI-SPEC availability label).
+const statusClasses: Record<AvailabilityStatus, string> = {
+  available: 'bg-secondary text-primary',
+  nearly_full: 'bg-warning-surface text-warning',
+  full: 'bg-secondary text-foreground',
+  cancelled: 'bg-secondary text-foreground',
+}
+
 export function SchedulePage() {
+  const { language, t } = useI18n()
   const [searchParams] = useSearchParams()
   const selectedDate = searchParams.get('date')
   const schedulePath = '/api/public/schedule' + (selectedDate === null ? '' : '?date=' + encodeURIComponent(selectedDate))
@@ -22,20 +33,41 @@ export function SchedulePage() {
     return () => controller.abort()
   }, [attempt, schedulePath])
   const retry = () => { setResult(null); setAttempt(value => value + 1) }
-  return <main className="mx-auto min-h-svh max-w-3xl px-4 pb-[max(24px,env(safe-area-inset-bottom))] pt-6">
-    <header className="mb-8"><p className="text-base font-semibold text-primary">Lafu · Lawu Fun Tennis Club</p><h1 className="mt-4 text-3xl font-semibold">Jadwal</h1></header>
-    {result === null ? <p role="status">Memuat jadwal...</p> : result.kind !== 'ok' ? <section role="alert"><p>Jadwal belum dapat dimuat. Coba lagi.</p><button className="mt-4 min-h-12 rounded-md border border-primary px-4 focus-visible:outline-2 focus-visible:outline-offset-4" onClick={retry}>Coba lagi</button></section> : <>
-      <p className="mb-6">{dateFormat.format(new Date(result.data.date + 'T12:00:00+07:00'))} · WIB</p>
-      {result.data.sessions.length === 0 ? <h2 className="text-xl font-semibold">Tidak ada sesi pada tanggal ini</h2> : <ul>
-        {result.data.sessions.map(session => <li key={session.id} className="border-t py-5 break-words">
-          {session.isSample && <p className="mb-3 text-sm">Data contoh untuk pengujian, bukan jadwal klub.</p>}
-          <p className="font-semibold">{session.startTime}–{session.endTime} WIB</p>
-          <h2 className="mt-2 text-xl font-semibold">{session.className}</h2>
-          <p>{session.levelName} · {session.venueName}</p>
-          <p className="mt-2">{priceFormat.format(session.priceIdr)}</p>
-          <p className="mt-2">Tersisa {session.remainingPlaces} tempat · {statusText[session.availability]}</p>
-        </li>)}
-      </ul>}
-    </>}
-  </main>
+
+  return (
+    <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-6 py-6 lg:py-8">
+      <h1 className="text-heading font-bold lg:text-display">{t(scheduleMessages.heading)}</h1>
+      {result === null ? (
+        <StatusPanel tone="info" title={t(scheduleMessages.loading)} />
+      ) : result.kind !== 'ok' ? (
+        <StatusPanel tone="error" title={t(scheduleMessages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />
+      ) : (
+        <section aria-labelledby="schedule-date" className="flex flex-col gap-4">
+          <h2 id="schedule-date" className="text-body font-bold">{formatClubDateLong(result.data.date, language)} · WIB</h2>
+          {result.data.sessions.length === 0 ? (
+            <p className="text-heading font-bold">{t(scheduleMessages.emptyHeading)}</p>
+          ) : (
+            <ul className="flex flex-col divide-y divide-border border-y border-border">
+              {result.data.sessions.map(session => (
+                <li key={session.id} className="flex flex-col gap-2 py-4 break-words">
+                  {session.isSample && <p className="text-label text-muted-foreground">{t(scheduleMessages.sampleData)}</p>}
+                  <p className="text-heading font-bold tabular-nums">{formatClubTime(session.startsAt)}–{formatClubTime(session.endsAt)} <span className="text-label">WIB</span></p>
+                  <h3 className="text-body font-bold">{session.className}</h3>
+                  <p className="text-muted-foreground">{session.levelName} · {session.venueName}</p>
+                  <p>
+                    <span className="sr-only">{t(scheduleMessages.pricePerPlace)}: </span>
+                    <span className="font-bold tabular-nums">{formatIdr(session.priceIdr, language)}</span>
+                  </p>
+                  <p className="flex flex-wrap items-center gap-2">
+                    <span className={`rounded-sm px-2 py-1 text-label font-bold ${statusClasses[session.availability]}`}>{t(scheduleMessages.status[session.availability])}</span>
+                    <span className="tabular-nums">{formatRemainingPlaces(session.remainingPlaces, language)}</span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+    </div>
+  )
 }

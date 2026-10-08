@@ -43,7 +43,7 @@ Integer phases are planned first-release work. Decimal phases are reserved for l
 3. An authorized administrator can manage classes, dated sessions, coaches, venues, levels, prices, participant limits, and each session's venue and one or more coaches; capacity changes cannot create an overbooked session.
 4. Administrators can authenticate to manage the schedule, while visitors and customers cannot access those management actions; published changes are visible in public session details.
 
-**Plans:** 3/10 plans executed
+**Plans:** 4/10 plans executed
 
 Plans:
 **Wave 1**
@@ -56,7 +56,7 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 01-04-PLAN.md — Admin sign-in, admin shell with working-only navigation, Sessions list (wave 3)
 - [ ] 01-05-PLAN.md — Schedule date strip, picker, next-date shortcut, summary rows and states (wave 3)
-- [ ] 01-06-PLAN.md — Backup/restore, labeled sample seed, operations README (wave 3)
+- [x] 01-06-PLAN.md — Backup/restore, labeled sample seed, operations README (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 01-07-PLAN.md — Session detail bottom sheet and exact availability states (wave 4)
@@ -159,7 +159,7 @@ Phases execute in order: 1 → 2 → 3 → 4 → 5. Discussion, policy decisions
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Publish and Browse Sessions | 3/10 | In Progress | - |
+| 1. Publish and Browse Sessions | 4/10 | In Progress | - |
 | 2. Reserve Places and See Daily Rosters | 0/TBD | Not started | - |
 | 3. Pay and Verify Bookings | 0/TBD | Not started | - |
 | 4. Adjust Bookings and Settle Cancellations | 0/TBD | Not started | - |

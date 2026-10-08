@@ -3,7 +3,7 @@ gsd_state_version: "1.0"
 current_phase: 1
 current_phase_name: Publish and Browse Sessions
 status: executing
-stopped_at: Jalur Lawu redesign and DESIGN.md committed; 01-05 largely delivered by the redesign; next 01-04; browser verification manual pending
+stopped_at: 01-06 backup/restore/sample seed/README done; Club Calendar picker shipped; next 01-04; browser verification manual pending
 last_updated: "2026-10-08T14:45:00.000Z"
 last_activity: 2026-10-08
 last_activity_desc: Plan 01-03 bilingual public shell and tokens executed by hand
@@ -11,8 +11,8 @@ progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 10
-  completed_plans: 3
-  percent: 30
+  completed_plans: 4
+  percent: 40
 ---
 
 # Project State
@@ -28,10 +28,10 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 
 Phase: 1 (Publish and Browse Sessions) — EXECUTING
 Plan: 4 of 10
-Status: Ready to execute (wave 3: 01-04, 01-06; 01-05 needs only its e2e specs and SUMMARY)
+Status: Ready to execute (01-04 next; 01-05 needs only its e2e specs and SUMMARY)
 Last activity: 2026-10-08, plan 01-03 completed
 
-Progress: [███░░░░░░░] 30%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
@@ -71,6 +71,8 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - [Phase 1]: User explicitly disabled Chromium/browser verification as too heavy and will assess manually. Continue build, lint, unit, API, database and security checks; browser/UI acceptance remains manual pending, never report it passed.
 - [Phase 1]: From 2026-10-08 the user has plans executed by hand without GSD skills, with Antislop DURING alongside Impeccable.
 - [Phase 1]: User requested a full native-app redesign (2026-10-08): Material 3 idiom, club palette kept as tonal roles, light and dark follow the phone, installable manifest. Impeccable direction "Jalur Lawu" (seed b5fc1590) chosen. Root DESIGN.md (Google Labs DESIGN.md spec) is now the visual source of truth and supersedes 01-UI-SPEC visual sections; later UI plans (01-04, 01-07 to 01-10, admin) inherit it.
+- [Phase 1]: User chose react-day-picker for the date picker (2026-10-08): Club Calendar in a bottom sheet on phones and a popover from 640px, replacing UI-SPEC's native input; recorded in DESIGN.md.
+- [Phase 1]: 01-06 sample seed is richer than planned at the user's request (two weeks, empty days, cancelled, long names) and gained --refresh; still isSample, "Contoh"-named, development only.
 - [Phase 1]: The redesign delivered most of plan 01-05 (schedule window API with nextDate/minDate/maxDate, date strip, picker, summary rows, states); 01-05's e2e specs and SUMMARY remain.
 - [Phase 1]: Schema gate push-event heuristic skipped per documented GSD_SKIP_SCHEMA_CHECK after real committed migrate deploy/status and clean-file tests passed; do not substitute db push for migration history.
 

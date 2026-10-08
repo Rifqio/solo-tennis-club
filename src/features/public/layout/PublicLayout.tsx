@@ -1,38 +1,61 @@
+import { CalendarDays, Info } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { LanguageSwitch } from '@/components/ui/language-switch'
+import { LanguageMenu } from '@/components/ui/language-switch'
 import { useI18n } from '@/i18n/use-i18n'
+import type { Message } from '@/i18n/types'
 import { cn } from '@/lib/utils'
 import { clubContent } from '../club/club-content'
 import { publicMessages } from './public.messages'
 
-const navLinkClass = ({ isActive }: { isActive: boolean }) => cn(
-  'inline-flex min-h-12 items-center border-b-4 px-3 pt-1 text-body font-bold transition-colors duration-150 hover:text-primary',
-  isActive ? 'border-primary text-primary' : 'border-transparent text-foreground',
-)
+const destinations: { to: string; end: boolean; label: Message; Icon: LucideIcon }[] = [
+  { to: '/', end: true, label: publicMessages.schedule, Icon: CalendarDays },
+  { to: '/club', end: false, label: publicMessages.club, Icon: Info },
+]
+
+// One destination: icon inside the Material active-indicator pill, label beneath. Bar on phones, rail from 640px.
+function Destination({ to, end, label, Icon }: (typeof destinations)[number]) {
+  const { t } = useI18n()
+  return (
+    <NavLink to={to} end={end} viewTransition className="group flex min-h-16 flex-1 flex-col items-center justify-center gap-1 py-2 sm:min-h-0 sm:flex-none sm:py-0">
+      {({ isActive }) => (
+        <>
+          <span className={cn('state-layer flex h-8 w-16 items-center justify-center rounded-full transition-colors duration-200', isActive ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface-variant')}>
+            <Icon aria-hidden="true" className="size-6" strokeWidth={isActive ? 2.5 : 2} />
+          </span>
+          <span className={cn('text-label', isActive ? 'font-bold text-on-surface' : 'text-on-surface-variant')}>{t(label)}</span>
+        </>
+      )}
+    </NavLink>
+  )
+}
 
 export function PublicLayout() {
   const { t } = useI18n()
   return (
-    <div className="flex min-h-svh flex-col">
-      <header className="pt-[env(safe-area-inset-top)]">
-        <div className="page-gutter mx-auto flex w-full max-w-[70rem] flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4">
+    <div className="min-h-dvh bg-surface">
+      {/* Signboard app bar: the club's green trail board. Focus turns white here because green would vanish on it. */}
+      <header className="sticky top-0 z-30 bg-signboard pt-[env(safe-area-inset-top)] text-on-signboard [view-transition-name:app-bar] [&_:focus-visible]:outline-white">
+        <div className="sm:pl-20"><div className="page-gutter mx-auto flex h-16 w-full max-w-[50rem] items-center justify-between gap-3 lg:max-w-[72rem]">
           {/* Text identity until the club supplies a logo (R-23); no image is invented. */}
-          <p className="flex min-w-0 flex-col">
-            <span className="text-display font-bold leading-none text-foreground">{clubContent.shortName}</span>
-            <span className="mt-1 text-label text-muted-foreground">{clubContent.name}</span>
+          <p className="flex min-w-0 items-baseline gap-3">
+            <span className="font-display text-headline font-bold uppercase leading-none tracking-wide">{clubContent.shortName}</span>
+            <span className="truncate text-label text-on-signboard-variant">{clubContent.name}</span>
           </p>
-          <LanguageSwitch className="w-full sm:w-auto sm:min-w-[20rem]" />
-        </div>
-        <nav aria-label={t(publicMessages.navLabel)} className="bg-secondary">
-          <ul className="page-gutter mx-auto flex w-full max-w-[70rem] flex-wrap gap-x-2">
-            <li><NavLink to="/" end className={navLinkClass}>{t(publicMessages.schedule)}</NavLink></li>
-            <li><NavLink to="/club" className={navLinkClass}>{t(publicMessages.about)}</NavLink></li>
-          </ul>
-        </nav>
+          <LanguageMenu className="-mr-3" />
+        </div></div>
       </header>
-      <main className="flex-1 pb-[max(24px,env(safe-area-inset-bottom))]">
+
+      <main className="pb-[calc(5rem+env(safe-area-inset-bottom)+1rem)] sm:pb-8 sm:pl-20">
         <Outlet />
       </main>
+
+      <nav
+        aria-label={t(publicMessages.navLabel)}
+        className="fixed inset-x-0 bottom-0 z-30 flex bg-surface-container pb-[env(safe-area-inset-bottom)] [view-transition-name:nav-bar] sm:inset-x-auto sm:bottom-0 sm:left-0 sm:top-[calc(4rem+env(safe-area-inset-top))] sm:w-20 sm:flex-col sm:items-center sm:gap-3 sm:pb-0 sm:pt-4"
+      >
+        {destinations.map(destination => <Destination key={destination.to} {...destination} />)}
+      </nav>
     </div>
   )
 }

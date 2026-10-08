@@ -18,5 +18,9 @@ export interface PublicScheduleResponse {
   date: string
   today: string
   timeZone: string
+  // First club date after `date` with any session (cancelled included), or null within the window.
+  nextDate: string | null
+  minDate: string
+  maxDate: string
   sessions: PublicSessionSummary[]
 }

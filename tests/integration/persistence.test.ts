@@ -6,7 +6,7 @@ import { afterAll, beforeAll, expect, test } from 'vitest'
 import { createPrismaClient, initializeDatabase } from '../../server/db.ts'
 import { projectRoot } from '../../server/config/database-file.ts'
 import { getPublicSchedule } from '../../server/features/public/schedule.service.ts'
-import { clubDateTimeToInstant } from '../../shared/club-time.ts'
+import { addClubDays, clubDateTimeToInstant, clubToday } from '../../shared/club-time.ts'
 import type { PublicScheduleResponse } from '../../shared/api/public.ts'
 import { createTestDatabase } from '../support/test-db.ts'
 import { createSampleCatalog, createSampleSession } from '../support/fixtures.ts'
@@ -34,6 +34,9 @@ test('clean-file migration deploy enables WAL, 5000ms busy timeout and foreign k
   expect(Number(keys[0].foreign_keys)).toBe(1)
 })
 
+// The public window starts at today, so boundary checks run against a fixed club day.
+const scheduleNow = clubDateTimeToInstant('2026-10-08', '12:00')
+
 test('WIB boundary instants round-trip exactly and appear only within their half-open club date', async () => {
   const dates = ['2026-12-30', '2026-12-31', '2027-01-01']
   const records = []
@@ -47,12 +50,12 @@ test('WIB boundary instants round-trip exactly and appear only within their half
     }
   }
   for (const date of dates) {
-    const result = await getPublicSchedule(db.prisma, date)
+    const result = await getPublicSchedule(db.prisma, date, scheduleNow)
     expect(result.sessions.map(row => row.id)).toEqual(records.filter(row => row.date === date).map(row => row.id))
     expect(result.sessions.map(row => row.startTime)).toEqual(['00:00', '23:30', '23:59'])
   }
-  expect((await getPublicSchedule(db.prisma, '2026-12-29')).sessions).toEqual([])
-  expect((await getPublicSchedule(db.prisma, '2027-01-02')).sessions).toEqual([])
+  expect((await getPublicSchedule(db.prisma, '2026-12-29', scheduleNow)).sessions).toEqual([])
+  expect((await getPublicSchedule(db.prisma, '2027-01-02', scheduleNow)).sessions).toEqual([])
 })
 
 test('client reopen preserves a session on the same SQLite file', async () => {
@@ -66,14 +69,15 @@ test('client reopen preserves a session on the same SQLite file', async () => {
 })
 
 test('process restart serves persisted sessions through the public API', async () => {
-  const sample = await createSampleSession(db.prisma, { catalog, startsAt: clubDateTimeToInstant('2027-03-04', '18:00') })
+  const restartDate = addClubDays(clubToday(), 30)
+  const sample = await createSampleSession(db.prisma, { catalog, startsAt: clubDateTimeToInstant(restartDate, '18:00') })
   const listener = createServer()
   await new Promise<void>(resolveListen => listener.listen(0, '127.0.0.1', resolveListen))
   const address = listener.address()
   if (!address || typeof address === 'string') throw new Error('Missing free port')
   const port = address.port
   await new Promise<void>((resolveClose, reject) => listener.close(error => error ? reject(error) : resolveClose()))
-  const url = 'http://127.0.0.1:' + port + '/api/public/schedule?date=2027-03-04'
+  const url = 'http://127.0.0.1:' + port + '/api/public/schedule?date=' + restartDate
   for (let run = 0; run < 2; run++) {
     let output = ''
     child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {

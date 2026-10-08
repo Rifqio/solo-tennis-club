@@ -5,9 +5,9 @@ import { Button } from './button'
 type Tone = 'info' | 'error' | 'success'
 
 const toneClasses: Record<Tone, string> = {
-  info: 'bg-secondary text-foreground',
-  error: 'bg-error-surface text-foreground',
-  success: 'bg-secondary text-primary',
+  info: 'bg-surface-container text-on-surface',
+  error: 'bg-error-container text-on-error-container',
+  success: 'bg-secondary-container text-on-secondary-container',
 }
 
 interface StatusPanelProps {
@@ -22,12 +22,12 @@ interface StatusPanelProps {
 export function StatusPanel({ tone, title, children, action, className }: StatusPanelProps) {
   const live = tone === 'error' ? { role: 'alert' } : { role: 'status', 'aria-live': 'polite' as const }
   return (
-    <div {...live} className={cn('flex flex-col items-start gap-4 rounded-md p-4 text-body break-words', toneClasses[tone], className)}>
+    <div {...live} className={cn('flex flex-col items-start gap-3 rounded-md p-4 text-body break-words', toneClasses[tone], className)}>
       <div className="flex min-w-0 flex-col gap-1">
-        <p className={cn('font-bold', tone === 'error' && 'text-error')}>{title}</p>
+        <p className="font-bold">{title}</p>
         {children}
       </div>
-      {action && <Button variant="secondary" onClick={action.onAction}>{action.label}</Button>}
+      {action && <Button variant={tone === 'error' ? 'outlined' : 'tonal'} onClick={action.onAction}>{action.label}</Button>}
     </div>
   )
 }

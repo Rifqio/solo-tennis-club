@@ -1,73 +1,113 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { getJson } from '@/lib/api'
-import type { ApiResult } from '@/lib/api'
 import { commonMessages } from '@/i18n/common.messages'
-import { formatClubDateLong, formatClubTime, formatIdr, formatRemainingPlaces } from '@/i18n/format'
+import { clubDayOfMonth, formatClubDateLong, formatClubDateMedium, formatClubWeekdayShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
-import type { AvailabilityStatus } from '@shared/availability'
-import type { PublicScheduleResponse } from '@shared/api/public'
+import { clubToday, isClubDate } from '@shared/club-time'
+import { publicScheduleWindow } from '@shared/schedule-window'
+import { computeStripWindow } from './date-strip-window'
+import { DateStrip } from './DateStrip'
+import { SampleDataNotice } from './SampleDataNotice'
+import { ScheduleList, ScheduleListPlaceholder } from './ScheduleList'
 import { scheduleMessages } from './schedule.messages'
-
-// Text always carries the state; color only reinforces it (UI-SPEC availability label).
-const statusClasses: Record<AvailabilityStatus, string> = {
-  available: 'bg-secondary text-primary',
-  nearly_full: 'bg-warning-surface text-warning',
-  full: 'bg-secondary text-foreground',
-  cancelled: 'bg-secondary text-foreground',
-}
+import { sessionTimings } from './session-timing'
+import { useNow } from './use-now'
+import { useSchedule } from './use-schedule'
 
 export function SchedulePage() {
   const { language, t } = useI18n()
-  const [searchParams] = useSearchParams()
-  const selectedDate = searchParams.get('date')
-  const schedulePath = '/api/public/schedule' + (selectedDate === null ? '' : '?date=' + encodeURIComponent(selectedDate))
-  const [attempt, setAttempt] = useState(0)
-  const [result, setResult] = useState<ApiResult<PublicScheduleResponse> | null>(null)
-  useEffect(() => {
-    const controller = new AbortController()
-    void getJson<PublicScheduleResponse>(schedulePath, { signal: controller.signal }).then(value => {
-      if (!controller.signal.aborted) setResult(value)
-    })
-    return () => controller.abort()
-  }, [attempt, schedulePath])
-  const retry = () => { setResult(null); setAttempt(value => value + 1) }
+  const [searchParams, setSearchParams] = useSearchParams()
+  const param = searchParams.get('date')
+  const requestedDate = isClubDate(param) ? param : null
+  const schedule = useSchedule(requestedDate)
+  const [stripStart, setStripStart] = useState<string | null>(null)
+
+  // The server decides today in WIB; until it answers, the device's WIB date keeps the controls usable.
+  const fallbackToday = clubToday()
+  const bounds = schedule.status === 'ready'
+    ? { today: schedule.data.today, minDate: schedule.data.minDate, maxDate: schedule.data.maxDate }
+    : { today: fallbackToday, ...publicScheduleWindow(fallbackToday) }
+  const selected = requestedDate ?? (schedule.status === 'ready' ? schedule.data.date : bounds.today)
+  const dates = computeStripWindow({ selected, currentStart: stripStart, ...bounds })
+  const selectedLabel = formatClubDateLong(selected, language)
+
+  const selectDate = (date: string) => {
+    setStripStart(computeStripWindow({ selected: date, currentStart: dates[0], ...bounds })[0])
+    setSearchParams({ date }, { preventScrollReset: true })
+  }
+
+  const sessionCount = schedule.status === 'ready' ? schedule.data.sessions.length : 0
+  const now = useNow()
+  const timings = schedule.status === 'ready' && selected === schedule.data.today ? sessionTimings(schedule.data.sessions, now) : null
 
   return (
-    <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-6 py-6 lg:py-8">
-      <h1 className="text-heading font-bold lg:text-display">{t(scheduleMessages.heading)}</h1>
-      {result === null ? (
-        <StatusPanel tone="info" title={t(scheduleMessages.loading)} />
-      ) : result.kind !== 'ok' ? (
-        <StatusPanel tone="error" title={t(scheduleMessages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />
-      ) : (
-        <section aria-labelledby="schedule-date" className="flex flex-col gap-4">
-          <h2 id="schedule-date" className="text-body font-bold">{formatClubDateLong(result.data.date, language)} · WIB</h2>
-          {result.data.sessions.length === 0 ? (
-            <p className="text-heading font-bold">{t(scheduleMessages.emptyHeading)}</p>
-          ) : (
-            <ul className="flex flex-col divide-y divide-border border-y border-border">
-              {result.data.sessions.map(session => (
-                <li key={session.id} className="flex flex-col gap-2 py-4 break-words">
-                  {session.isSample && <p className="text-label text-muted-foreground">{t(scheduleMessages.sampleData)}</p>}
-                  <p className="text-heading font-bold tabular-nums">{formatClubTime(session.startsAt)}–{formatClubTime(session.endsAt)} <span className="text-label">WIB</span></p>
-                  <h3 className="text-body font-bold">{session.className}</h3>
-                  <p className="text-muted-foreground">{session.levelName} · {session.venueName}</p>
-                  <p>
-                    <span className="sr-only">{t(scheduleMessages.pricePerPlace)}: </span>
-                    <span className="font-bold tabular-nums">{formatIdr(session.priceIdr, language)}</span>
-                  </p>
-                  <p className="flex flex-wrap items-center gap-2">
-                    <span className={`rounded-sm px-2 py-1 text-label font-bold ${statusClasses[session.availability]}`}>{t(scheduleMessages.status[session.availability])}</span>
-                    <span className="tabular-nums">{formatRemainingPlaces(session.remainingPlaces, language)}</span>
-                  </p>
-                </li>
-              ))}
-            </ul>
+    <>
+      {/* The tab already names this screen; the heading exists for assistive technology only. */}
+      <h1 className="sr-only">{t(scheduleMessages.heading)}</h1>
+
+      <section aria-label={t(scheduleMessages.dateControls)} className="border-b border-outline-variant bg-surface-container-low">
+        <div className="page-gutter mx-auto w-full max-w-[50rem] pb-2 pt-3 lg:max-w-[72rem]">
+          <div>
+          <DateStrip dates={dates} selected={selected} onSelect={selectDate} {...bounds} />
+          </div>
+        </div>
+      </section>
+
+      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-4 lg:max-w-[72rem]">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 className="text-title font-bold text-on-surface">
+            {formatClubDateMedium(selected, language)}
+            <span className="ml-2 text-label font-normal text-on-surface-variant">WIB</span>
+          </h2>
+          {schedule.status === 'ready' && sessionCount > 0 && (
+            <p role="status" className="text-label font-bold text-on-surface-variant">
+              <span className="sr-only">{selectedLabel}: </span>
+              {sessionCount === 1 ? t(scheduleMessages.sessionCountOne) : t(scheduleMessages.sessionCount, { count: sessionCount })}
+            </p>
           )}
-        </section>
-      )}
-    </div>
+        </div>
+
+        {schedule.status === 'loading' ? (
+          <>
+            <p role="status" className="sr-only">{t(scheduleMessages.loadingFor, { date: selectedLabel })}</p>
+            <ScheduleListPlaceholder />
+          </>
+        ) : schedule.status === 'error' ? (
+          <StatusPanel tone="error" title={t(scheduleMessages.error)} action={{ label: t(commonMessages.retry), onAction: schedule.retry }}>
+            <p>{t(scheduleMessages.errorFor, { date: selectedLabel })}</p>
+          </StatusPanel>
+        ) : sessionCount === 0 ? (
+          <div role="status" className="flex flex-col items-start gap-4 rounded-md bg-surface-container-lowest p-5">
+            <div className="flex flex-col gap-1">
+              <p className="text-title font-bold text-on-surface">{t(scheduleMessages.emptyHeading)}</p>
+              {schedule.data.nextDate === null && <p className="text-on-surface-variant">{t(scheduleMessages.emptyNoFuture)}</p>}
+            </div>
+            {schedule.data.nextDate !== null && (
+              // The next post on the trail: one control carrying the next scheduled day.
+              <button
+                type="button"
+                onClick={() => selectDate(schedule.data.nextDate!)}
+                className="state-layer flex w-full max-w-md items-center gap-4 rounded-md bg-primary p-2 pr-5 text-left text-on-primary"
+              >
+                <span aria-hidden="true" className="flex w-16 shrink-0 flex-col items-center rounded-sm bg-plate px-1 py-2 text-on-plate">
+                  <span className="text-label font-bold">{formatClubWeekdayShort(schedule.data.nextDate, language)}</span>
+                  <span className="font-display text-numeral font-bold tabular-nums">{clubDayOfMonth(schedule.data.nextDate)}</span>
+                </span>
+                <span className="flex flex-col">
+                  <span className="text-label">{t(scheduleMessages.emptyShortcut)}</span>
+                  <span className="font-bold">{formatClubDateMedium(schedule.data.nextDate, language)}</span>
+                </span>
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
+            {schedule.data.sessions.some(session => session.isSample) && <SampleDataNotice />}
+            <ScheduleList sessions={schedule.data.sessions} timings={timings} now={now} />
+          </>
+        )}
+      </div>
+    </>
   )
 }

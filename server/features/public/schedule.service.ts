@@ -2,6 +2,8 @@ import type { PrismaClient, Prisma } from '../../generated/prisma/client.ts'
 import { CLUB_TIME_ZONE, clubDateOf, clubDayRange, clubTimeOf, clubToday } from '../../../shared/club-time.ts'
 import { deriveAvailability } from '../../../shared/availability.ts'
 import type { PublicScheduleResponse, PublicSessionSummary } from '../../../shared/api/public.ts'
+import { publicScheduleWindow } from '../../../shared/schedule-window.ts'
+import { ApiError } from '../../http/errors.ts'
 import { getOccupiedPlaceCounts } from '../capacity/occupancy.ts'
 
 const summarySelect = {
@@ -25,11 +27,23 @@ export function toPublicSessionSummary(session: SummaryRecord, occupiedPlaces = 
   }
 }
 export async function getPublicSchedule(db: PrismaClient | Prisma.TransactionClient, date: string, now = new Date()): Promise<PublicScheduleResponse> {
+  const today = clubToday(now)
+  const { minDate, maxDate } = publicScheduleWindow(today)
+  if (date < minDate || date > maxDate) throw new ApiError(400, 'DATE_OUT_OF_RANGE')
   const { start, end } = clubDayRange(date)
-  const sessions = await db.classSession.findMany({
-    where: { startsAt: { gte: start, lt: end } },
-    select: summarySelect, orderBy: [{ startsAt: 'asc' }, { id: 'asc' }],
-  })
+  const [sessions, next] = await Promise.all([
+    db.classSession.findMany({
+      where: { startsAt: { gte: start, lt: end } },
+      select: summarySelect, orderBy: [{ startsAt: 'asc' }, { id: 'asc' }],
+    }),
+    db.classSession.findFirst({
+      where: { startsAt: { gte: end, lt: clubDayRange(maxDate).end } },
+      select: { startsAt: true }, orderBy: { startsAt: 'asc' },
+    }),
+  ])
   const occupied = await getOccupiedPlaceCounts(db, sessions.map(session => session.id))
-  return { date, today: clubToday(now), timeZone: CLUB_TIME_ZONE, sessions: sessions.map(session => toPublicSessionSummary(session, occupied.get(session.id) ?? 0)) }
+  return {
+    date, today, timeZone: CLUB_TIME_ZONE, nextDate: next ? clubDateOf(next.startsAt) : null, minDate, maxDate,
+    sessions: sessions.map(session => toPublicSessionSummary(session, occupied.get(session.id) ?? 0)),
+  }
 }

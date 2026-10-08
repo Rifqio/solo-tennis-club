@@ -15,7 +15,10 @@
     "pretest:e2e": "npm run build",
     "db:generate": "prisma generate",
     "db:migrate:dev": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy"
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:backup": "tsx scripts/db-backup.ts",
+    "db:restore": "tsx scripts/db-restore.ts",
+    "db:seed:sample": "tsx scripts/seed-sample.ts"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "5.3.0",

@@ -6,6 +6,8 @@ import { projectRoot } from '../../../server/config/database-file.ts'
 import { createPrismaClient, initializeDatabase } from '../../../server/db.ts'
 import { startServer } from '../../../server/start.ts'
 import { createSampleCatalog, createSampleSession } from '../../support/fixtures.ts'
+import { provisionAdmin } from '../../../server/auth/provisioning.ts'
+import { e2eAdminEmail, e2eAdminPassword } from './e2e-credentials.ts'
 
 const root = resolve(tmpdir(), 'lafu-e2e')
 const databaseFile = resolve(process.env.LAFU_DATABASE_FILE ?? '')
@@ -19,6 +21,8 @@ execFileSync(process.execPath, [resolve(projectRoot, 'node_modules/prisma/build/
 const prisma = createPrismaClient(databaseFile)
 try {
   await initializeDatabase(prisma)
+  await provisionAdmin(prisma, { email: e2eAdminEmail, password: e2eAdminPassword, displayName: 'E2E administrator' })
   await createSampleSession(prisma, { catalog: await createSampleCatalog(prisma) })
 } finally { await prisma.$disconnect() }
+process.env.LAFU_COOKIE_SECURE = 'false'
 await startServer({ mode: 'production', databaseFile })

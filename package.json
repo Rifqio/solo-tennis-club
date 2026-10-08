@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "admin:provision": "tsx scripts/admin-provision.ts",
     "dev": "tsx watch server/dev.ts",
     "build": "prisma generate && tsc -b && vite build",
     "lint": "eslint .",

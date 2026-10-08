@@ -69,6 +69,8 @@ rounded:
   xs: "4px"
   sm: "8px"
   md: "12px"
+  lg: "16px"
+  xl: "28px"
   full: "9999px"
 spacing:
   xs: "4px"
@@ -190,13 +192,26 @@ components:
     textColor: "{colors.on-surface}"
     rounded: "{rounded.md}"
     padding: "12px 16px"
-  date-field:
-    backgroundColor: "{colors.surface}"
+  calendar-day:
+    backgroundColor: "transparent"
     textColor: "{colors.on-surface}"
-    typography: "{typography.body}"
-    rounded: "{rounded.sm}"
-    padding: "0 16px"
-    height: "48px"
+    typography: "{typography.title-display}"
+    rounded: "{rounded.md}"
+    size: "48px"
+  calendar-day-selected:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.on-primary}"
+    typography: "{typography.title-display}"
+    rounded: "{rounded.md}"
+    size: "48px"
+  calendar-surface:
+    backgroundColor: "{colors.surface-container-low}"
+    textColor: "{colors.on-surface}"
+    rounded: "{rounded.lg}"
+  bottom-sheet:
+    backgroundColor: "{colors.surface-container-low}"
+    textColor: "{colors.on-surface}"
+    rounded: "{rounded.xl}"
 ---
 
 # Design System: Lafu (Lawu Fun Tennis Club)
@@ -296,7 +311,7 @@ Flat and tonal. Depth comes from stepping surface containers (mist ground, pale 
 
 ## Shapes
 
-Material shape scale: 4px for placeholder bars, 8px for fields, menus, the "today" chip, and notices, 12px for post plates, day markers, panels, and the list container, and full-round for every button, icon button, and navigation indicator. Cancelled plates switch to a dashed outline with no fill, so the shape survives while the session reads as void. Borders are 1px hairlines; the only 2px strokes are the today ring and focus outlines.
+Material shape scale: 4px for placeholder bars, 8px for fields, menus, the "today" chip, and notices, 12px for post plates, day markers, calendar day tiles, panels, and the list container, 16px for the calendar popover, 28px for the top corners of bottom sheets, and full-round for every button, icon button, and navigation indicator. Cancelled plates switch to a dashed outline with no fill, so the shape survives while the session reads as void. Borders are 1px hairlines; the only 2px strokes are the today ring and focus outlines.
 
 ## Components
 
@@ -314,7 +329,14 @@ Material shape scale: 4px for placeholder bars, 8px for fields, menus, the "toda
 The trail post. A 12px-rounded sage plate leading each session row, with the start time in the 2rem routed numeral and "s.d. / until" end time in label beneath. Ended sessions drop to surface-container-high with Moss Grey ink; cancelled sessions become a dashed outline. The empty state reuses a small plate inside the green next-day shortcut.
 
 ### Day Markers
-A band on pale club green holds the month (routed, uppercase), an outlined "Today" chip when away from today, previous/next/calendar icon buttons, and seven whole-cell markers. Each marker stacks the weekday label over a routed numeral. Selected: filled club green. Today (unselected): 2px inset green ring and green text. The calendar button opens the native date picker, falling back to a labeled 48px field with an inline error.
+A band on pale club green holds the month (routed, uppercase), an outlined "Today" chip when away from today, previous/next/calendar icon buttons, and seven whole-cell markers. Each marker stacks the weekday label over a routed numeral. Selected: filled club green. Today (unselected): 2px inset green ring and green text. The calendar button opens the Club Calendar.
+
+### Club Calendar
+A month grid (react-day-picker, loaded on demand when the calendar button is touched or hovered) in the same sign voice as the strip. On phones it sits in a bottom sheet (drag handle, scrim, drag to dismiss) whose header names the task in a bold label and repeats the current choice as a routed uppercase headline; from 640px it is a 368px popover on surface-container-low with the menu shadow, scaling in from its button.
+- **Caption:** routed uppercase month and year at title size, with 48px previous/next month buttons; months slide on the same shared axis as day changes (28px plus fade, 240ms in, 120ms out).
+- **Weekdays:** label size, Moss Grey, Monday first in both languages.
+- **Day tiles:** 48px, 12px radius, routed numerals at title size. Selected: filled club green. Today: 2px inset green ring and green numeral. Outside the public window (before today, beyond a year): regular weight, Moss Grey at reduced opacity, not selectable.
+- **Behavior:** one tap applies the day and closes, with the selection haptic and focus returned to the calendar button; arrow keys move by day and week, Enter chooses, Escape closes. Club dates are plain calendar days, so the grid works on floating local dates and is never shifted by the device's time zone.
 
 ### State Cell
 Availability words with a 16px drawn mark that only echoes the word: filled circle open (green), half-filled nearly full (amber), hollow full (ink), struck cancelled (Moss Grey). Only open and nearly full carry a remaining-places count; "Full" stands alone. On today's list it adds timing: "Next, starts in ..." or "In progress" in bold green, and ended sessions show "Selesai / Ended" with a check mark and claim no places.

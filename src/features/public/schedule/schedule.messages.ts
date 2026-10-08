@@ -5,7 +5,6 @@ export const scheduleMessages = {
   previousDate: { id: 'Tanggal sebelumnya', en: 'Previous date' },
   nextDate: { id: 'Tanggal berikutnya', en: 'Next date' },
   chooseDate: { id: 'Pilih tanggal', en: 'Choose date' },
-  dateOutOfRange: { id: 'Pilih tanggal antara {min} dan {max}.', en: 'Choose a date between {min} and {max}.' },
   sessionCount: { id: '{count} sesi', en: '{count} sessions' },
   sessionCountOne: { id: '1 sesi', en: '1 session' },
   loading: { id: 'Memuat jadwal...', en: 'Loading schedule...' },

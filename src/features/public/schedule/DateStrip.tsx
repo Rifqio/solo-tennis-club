@@ -1,12 +1,13 @@
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
-import { useEffect, useId, useRef, useState } from 'react'
-import { addClubDays, isClubDate } from '@shared/club-time'
+import { useEffect, useRef, useState } from 'react'
+import { addClubDays } from '@shared/club-time'
 import { IconButton } from '@/components/ui/button'
 import { clubDayOfMonth, formatClubDateLong, formatClubMonthYear, formatClubWeekdayShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { popSpring, selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
+import { CalendarPicker } from './CalendarPicker'
 import { scheduleMessages } from './schedule.messages'
 
 interface DateStripProps {
@@ -22,11 +23,6 @@ interface DateStripProps {
 export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }: DateStripProps) {
   const { language, t } = useI18n()
   const stripRef = useRef<HTMLDivElement>(null)
-  const pickerRef = useRef<HTMLInputElement>(null)
-  const pickerId = useId()
-  const errorId = useId()
-  const [pickerError, setPickerError] = useState(false)
-  const [showInlinePicker, setShowInlinePicker] = useState(false)
   // Whole cells only: as many 48px day markers as fit, each sized to fill the row exactly, so none rests cut in half.
   const [visibleCells, setVisibleCells] = useState(dates.length)
 
@@ -45,22 +41,6 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
   useEffect(() => {
     stripRef.current?.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' })
   }, [selected, reduceMotion])
-
-  const openPicker = () => {
-    const input = pickerRef.current
-    if (input && typeof input.showPicker === 'function') {
-      try { input.showPicker(); return } catch { /* Some browsers refuse showPicker; fall through to the visible field. */ }
-    }
-    setShowInlinePicker(true)
-    requestAnimationFrame(() => pickerRef.current?.focus())
-  }
-
-  const pick = (value: string) => {
-    if (!value) return
-    if (!isClubDate(value) || value < minDate || value > maxDate) { setPickerError(true); return }
-    setPickerError(false)
-    if (value !== selected) onSelect(value)
-  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -89,32 +69,7 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
         <IconButton label={t(scheduleMessages.nextDate)} disabled={selected >= maxDate} onClick={() => onSelect(addClubDays(selected, 1))}>
           <ChevronRight aria-hidden="true" className="size-6" />
         </IconButton>
-        <IconButton label={t(scheduleMessages.chooseDate)} aria-controls={pickerId} onClick={openPicker}>
-          <CalendarDays aria-hidden="true" className="size-6" />
-        </IconButton>
-      </div>
-
-      {/* Native date picker: opened by the calendar button, and shown as a labeled field where showPicker is unavailable. */}
-      <div className={cn('flex flex-col gap-1', showInlinePicker || pickerError ? '' : 'sr-only')}>
-        <label htmlFor={pickerId} className="text-label font-bold">{t(scheduleMessages.chooseDate)}</label>
-        <input
-          ref={pickerRef}
-          id={pickerId}
-          type="date"
-          value={selected}
-          min={minDate}
-          max={maxDate}
-          tabIndex={showInlinePicker ? 0 : -1}
-          aria-invalid={pickerError || undefined}
-          aria-describedby={pickerError ? errorId : undefined}
-          onChange={event => pick(event.target.value)}
-          className={cn('min-h-12 w-full rounded-sm border bg-surface px-4 text-body text-on-surface sm:max-w-72', pickerError ? 'border-error' : 'border-outline')}
-        />
-        {pickerError && (
-          <p id={errorId} role="alert" className="text-label text-error">
-            {t(scheduleMessages.dateOutOfRange, { min: formatClubDateLong(minDate, language), max: formatClubDateLong(maxDate, language) })}
-          </p>
-        )}
+        <CalendarPicker selected={selected} today={today} minDate={minDate} maxDate={maxDate} onSelect={onSelect} />
       </div>
 
       <div ref={stripRef} style={{ gridAutoColumns: `calc(100% / ${visibleCells})` }} className="grid snap-x snap-mandatory grid-flow-col overflow-x-auto [scrollbar-width:none] lg:max-w-[42rem]">

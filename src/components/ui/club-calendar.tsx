@@ -1,0 +1,90 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { DayPicker } from 'react-day-picker'
+import type { ChevronProps } from 'react-day-picker'
+import { enGB, id } from 'react-day-picker/locale'
+import { useI18n } from '@/i18n/use-i18n'
+import { cn } from '@/lib/utils'
+
+const calendarMessages = {
+  previousMonth: { id: 'Bulan sebelumnya', en: 'Previous month' },
+  nextMonth: { id: 'Bulan berikutnya', en: 'Next month' },
+}
+
+function CalendarChevron({ orientation, className }: ChevronProps) {
+  const Icon = orientation === 'left' ? ChevronLeft : ChevronRight
+  return <Icon aria-hidden="true" className={cn('size-6', className)} />
+}
+
+interface ClubCalendarProps {
+  selected: string
+  today: string
+  minDate: string
+  maxDate: string
+  onSelect: (date: string) => void
+}
+
+// Club dates are plain calendar days (YYYY-MM-DD, already decided in WIB by the server). The calendar works on
+// floating local dates built from those numbers and reads the same numbers back, so the device's own time zone
+// can never shift a day. (DayPicker's experimental timeZone mode broke the grid on devices far from WIB.)
+const toLocal = (date: string) => {
+  const [year, month, day] = date.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+const fromLocal = (date: Date) => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-')
+
+// The month grid in the trail-sign voice: routed month caption, 48px day tiles with sign numerals,
+// the selected day as the full club-green tile, today as an inset green ring.
+export function ClubCalendar({ selected, today, minDate, maxDate, onSelect }: ClubCalendarProps) {
+  const { language, t } = useI18n()
+  const selectedDay = toLocal(selected)
+
+  return (
+    <DayPicker
+      mode="single"
+      required
+      locale={language === 'id' ? id : enGB}
+      today={toLocal(today)}
+      selected={selectedDay}
+      defaultMonth={selectedDay}
+      startMonth={toLocal(minDate)}
+      endMonth={toLocal(maxDate)}
+      disabled={[{ before: toLocal(minDate) }, { after: toLocal(maxDate) }]}
+      onSelect={date => { if (date) onSelect(fromLocal(date)) }}
+      animate
+      autoFocus
+      navLayout="after"
+      labels={{ labelPrevious: () => t(calendarMessages.previousMonth), labelNext: () => t(calendarMessages.nextMonth) }}
+      components={{ Chevron: CalendarChevron }}
+      classNames={{
+        root: 'w-full select-none',
+        months: 'relative flex flex-col',
+        month: 'flex flex-col gap-1',
+        month_caption: 'flex h-12 items-center pl-1',
+        caption_label: 'font-display text-title font-bold uppercase tracking-wide text-on-surface',
+        nav: 'absolute right-0 top-0 z-10 flex gap-1',
+        button_previous: 'state-layer pressable inline-flex size-12 items-center justify-center rounded-full text-on-surface-variant disabled:cursor-not-allowed disabled:opacity-40',
+        button_next: 'state-layer pressable inline-flex size-12 items-center justify-center rounded-full text-on-surface-variant disabled:cursor-not-allowed disabled:opacity-40',
+        month_grid: 'w-full border-collapse overflow-hidden',
+        weekdays: '',
+        weekday: 'h-10 text-center text-label font-normal text-on-surface-variant',
+        weeks: 'relative',
+        week: '',
+        day: 'group p-0.5 text-center',
+        day_button: 'state-layer pressable relative mx-auto flex size-12 items-center justify-center rounded-md font-display text-title font-bold tabular-nums text-on-surface transition-colors duration-200 group-data-[selected=true]:bg-primary group-data-[selected=true]:text-on-primary group-data-[today=true]:ring-2 group-data-[today=true]:ring-inset group-data-[today=true]:ring-primary group-data-[today=true]:text-primary group-data-[selected=true]:ring-0 group-data-[selected=true]:group-data-[today=true]:text-on-primary disabled:cursor-not-allowed disabled:font-normal disabled:text-on-surface-variant disabled:opacity-45',
+        selected: '',
+        today: '',
+        disabled: '',
+        outside: 'invisible',
+        hidden: 'invisible',
+        weeks_before_enter: 'cal-enter-from-left',
+        weeks_after_enter: 'cal-enter-from-right',
+        weeks_before_exit: 'cal-exit-to-right',
+        weeks_after_exit: 'cal-exit-to-left',
+        caption_after_enter: 'cal-fade-in',
+        caption_before_enter: 'cal-fade-in',
+        caption_after_exit: 'cal-fade-out',
+        caption_before_exit: 'cal-fade-out',
+      }}
+    />
+  )
+}

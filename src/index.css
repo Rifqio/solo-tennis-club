@@ -231,6 +231,18 @@
 }
 @keyframes lafu-appear { from { opacity: 0; } }
 
+/* Calendar month change: the same shared axis as day changes, 28px travel plus fade, emphasized easing. */
+@utility cal-enter-from-right { animation: cal-in-right 240ms var(--ease-emphasized) both; }
+@utility cal-enter-from-left { animation: cal-in-left 240ms var(--ease-emphasized) both; }
+@utility cal-exit-to-left { animation: cal-out-left 120ms var(--ease-standard) both; }
+@utility cal-exit-to-right { animation: cal-out-right 120ms var(--ease-standard) both; }
+@utility cal-fade-in { animation: lafu-appear 200ms var(--ease-standard) both; }
+@utility cal-fade-out { animation: lafu-fade-out 100ms var(--ease-standard) both; }
+@keyframes cal-in-right { from { opacity: 0; transform: translateX(28px); } }
+@keyframes cal-in-left { from { opacity: 0; transform: translateX(-28px); } }
+@keyframes cal-out-left { to { opacity: 0; transform: translateX(-28px); } }
+@keyframes cal-out-right { to { opacity: 0; transform: translateX(28px); } }
+
 /* Destination changes fade through (Material); the app bar and navigation stay put. */
 ::view-transition-old(root) { animation: 90ms var(--ease-standard) both lafu-fade-out; }
 ::view-transition-new(root) { animation: 210ms var(--ease-emphasized) 90ms both lafu-fade-in; }

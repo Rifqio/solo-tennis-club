@@ -1,0 +1,110 @@
+[
+ {
+  "id": "E1",
+  "text": "Public schedule list: Initial load shows schedule-loading copy and nonanimated row placeholders matching the eventual row hierarchy. Zero results use the relevant empty copy/shortcut. One result remains one full-width row; many results form a chronological vertical list. Load failure retains date controls and offers retry for that date.",
+  "elements": [
+   "list-collection",
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E2",
+  "text": "Date strip: Locally scrolling row of 48px-minimum-width date buttons, 8px gaps, weekday label and 20px bold day. Current selection has green fill/white text and accessible selected state. Visible previous/next date controls and a labeled date picker also work without swipe. Native date picker: Labeled native input type=date, 48px height, full-width phone field, shared field colors and focus treatment.",
+  "elements": [
+   "form",
+   "list-collection",
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E3",
+  "text": "Detail sheet/Dialog: White, 16px top-corner radius, 24px inner spacing, ink overlay at 40% opacity, one elevation shadow. Name/time header, labeled close control, grouped facts, internal scrolling. Preserve Radix focus/keyboard behavior. Detail fact order: class/level, localized date/time and WIB, venue, all coaches as separate readable names, price per place, remaining places, minimum participants, maximum capacity.",
+  "elements": [
+   "interactive-control",
+   "list-collection",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E4",
+  "text": "Navigation/language: Only implemented destinations exist. Long labels wrap without losing 48px targets. Language changes preserve selected date/open session and form values. Failed protected navigation shows access/load recovery, not dead links.",
+  "elements": [
+   "nav",
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E5",
+  "text": "Admin sign-in: Fixed-account email/password form, language control, public schedule return. Sign-in fields: Email / Password / Show password / Hide password. Session expired: Your admin session has ended. Sign in again to continue.",
+  "elements": [
+   "form",
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E6",
+  "text": "Guided admin session creation/edit: Use four short steps by default: Class and time, Venue and coaches, Price and participant limits, Review. Show localized Step n of 4, current step name, and editable summary on review. Empty fields keep labels/hints; class-prefilled values remain editable. Partial progress retains entries through steps and same-tab reference navigation. Field errors and failed saves preserve values. Disabled submit indicates the specific pending operation.",
+  "elements": [
+   "form",
+   "list-collection",
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E7",
+  "text": "Class and reference management use labeled create/edit forms and the same field/save feedback treatments. The class default form includes level, duration, price, min/max, venue, and multiple coaches. The separate reference screens are reachable on phones before creating a valid session.",
+  "elements": [
+   "form",
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E8",
+  "text": "Admin session/reference lists: Distinguish loading, truly empty, load failure, and forbidden access. Zero/one/many use the same usable list composition. Failed requests never masquerade as zero items. Long names/actions wrap.",
+  "elements": [
+   "list-collection",
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E9",
+  "text": "Coach multi-select: Vertical labeled checkbox rows with 48px targets and 8px gaps; show all selected coach names in review. A checklist replaces a dense tag-only control on phones. Coach options: Zero options links to separate coach management; one option is still explicitly selected; many options stay vertically scrollable with each name readable. Selected coaches remain visible in review.",
+  "elements": [
+   "form",
+   "list-collection",
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E10",
+  "text": "Club information/media: Publish supplied facts with genuine bilingual content. Missing photography/logo means text identity and no fabricated media. Missing factual content stays visibly unavailable in development and is an explicit content prerequisite before a real club launch.",
+  "elements": [
+   "static-content",
+   "media"
+  ]
+ },
+ {
+  "id": "E11",
+  "text": "AlertDialog: 20px title, 16px explanation, 16px padding/gaps; stacked phone actions. Destructive discard is red; Keep editing is the safe default and initial focus. Destructive actions in Phase 1: discard unsaved form changes only. Trigger an AlertDialog when leaving a changed form, preserve input when declined, and clear it only after explicit discard.",
+  "elements": [
+   "interactive-control",
+   "static-content"
+  ]
+ },
+ {
+  "id": "E12",
+  "text": "Validation/status panel: Inline, 16px readable body, named operation, text recovery action. Errors are announced and associated with the affected fields; successful save is visible text near the returned record, not a transient toast alone. Availability label: 14px bold text, 4px vertical/8px horizontal padding, 4px radius, no glow/dot. Text and exact remaining count always accompany color.",
+  "elements": [
+   "interactive-control",
+   "static-content"
+  ]
+ }
+]

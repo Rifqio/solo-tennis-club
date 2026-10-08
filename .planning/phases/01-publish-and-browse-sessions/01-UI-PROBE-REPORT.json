@@ -1,0 +1,716 @@
+{
+ "items": [
+  {
+   "requirement_id": "E1",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Zero sessions for the selected date shows the Copywriting empty-schedule copy and a next-scheduled-date shortcut only when such a date exists; date controls stay usable.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E1",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Loading names the requested date, shows nonanimated row placeholders matching the row hierarchy, keeps the selected date, and never labels the previous date's rows as current.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E1",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Load failure keeps date controls, names the failed date load, and offers Retry for that date; a failure is never rendered as an empty schedule.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E1",
+   "category": "populated",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Sessions render as chronological full-width rows with time, class, availability label plus exact remaining count, and open the detail sheet.",
+   "reason": null,
+   "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+  },
+  {
+   "requirement_id": "E1",
+   "category": "partial",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "A row missing a fact shows it as unavailable (never zero) while keeping supplied facts.",
+   "reason": null,
+   "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+  },
+  {
+   "requirement_id": "E1",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long lists scroll vertically in page flow; no page-wide horizontal scroll at 320px; bottom safe area and fixed regions are reserved.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E1",
+   "category": "zero-one-many",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Zero uses the empty state, one remains a single full-width row, many form a chronological vertical list; remaining-place counts keep pluralized units in both languages.",
+   "reason": null,
+   "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+  },
+  {
+   "requirement_id": "E1",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long class/venue names and Indonesian labels wrap without ellipsis on required facts; body text stays 16px and row targets stay at least 48px.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E2",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "The native date input always keeps its label and hint; with no picked value it shows the currently selected strip date.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E2",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "While a date's sessions load, the activated date stays selected and focused; rapid repeated choices discard stale responses.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E2",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "An invalid or out-of-range picked date shows an associated inline error and keeps the previous valid selection.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E2",
+   "category": "populated",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Seven deterministic date buttons show weekday label and 20px bold day; the selected date has green fill, white text, and an accessible selected state.",
+   "reason": null,
+   "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+  },
+  {
+   "requirement_id": "E2",
+   "category": "partial",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Choosing a date outside the visible strip via picker or previous/next keeps the strip in sync with that date.",
+   "reason": null,
+   "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+  },
+  {
+   "requirement_id": "E2",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "The strip scrolls locally inside its own row; previous/next buttons and the picker work without swipe; the page never scrolls sideways.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E2",
+   "category": "zero-one-many",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "The strip always shows a fixed set of seven dates; per-date session counts never change button count or width.",
+   "reason": null,
+   "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+  },
+  {
+   "requirement_id": "E2",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Indonesian weekday labels and the picker label fit or wrap inside 48px-minimum buttons without shrinking below readable size.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E3",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "A session with no supplied coaches or facts shows each missing fact as unavailable with the incomplete-data message; nothing is fabricated.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E3",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Opening or refreshing the sheet shows a named loading state while Close remains operable and focus stays inside the dialog.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E3",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Detail load failure shows a named error with Retry and working Close; focus returns to the originating row on close.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E3",
+   "category": "populated",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Facts appear in contract order: class/level, localized date/time with WIB, venue, every coach as a separate name, price per place, remaining places, minimum participants, maximum capacity.",
+   "reason": null,
+   "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+  },
+  {
+   "requirement_id": "E3",
+   "category": "partial",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Partial detail keeps valid facts, marks missing ones unavailable, and shows the Copywriting incomplete-data message; an unknown remaining-place count is never shown as 0.",
+   "reason": null,
+   "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+  },
+  {
+   "requirement_id": "E3",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long content scrolls inside the sheet with header and Close visible; bottom safe area is respected.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E3",
+   "category": "zero-one-many",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Coaches render as a vertical list: zero shows unavailable, one shows a single name, many show every name without truncation.",
+   "reason": null,
+   "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+  },
+  {
+   "requirement_id": "E3",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long names, prices, and bilingual labels wrap inside the sheet; no required fact is ellipsized.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E4",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Navigation keeps its label and current-destination state while the destination loads.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E4",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Failed protected navigation shows access/load recovery (sign in or retry), never a dead link.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E4",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Admin bottom navigation reserves 64px plus safe-area inset; page scroll padding clears it; the header wraps rather than overflowing.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E4",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long Indonesian/English navigation and language labels wrap while every target stays at least 48px; switching language preserves selected date, open session, and form values.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E5",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Empty email/password fields keep visible labels and hints; submitting empty fields shows associated required errors.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E5",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Signing in disables submit with a named pending label and prevents duplicate submission while keeping the entered email.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E5",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Invalid credentials or network failure show an associated, announced error with email preserved; session expiry shows the Copywriting session-ended message.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E5",
+   "category": "partial",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "With one field filled, its value is kept and only the missing field is flagged.",
+   "reason": null,
+   "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+  },
+  {
+   "requirement_id": "E5",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "The form fits at 320px and 200% zoom with the submit action reachable above the on-screen keyboard.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E5",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long error messages and translated labels wrap; the Show/Hide password toggle keeps a 48px target and localized name.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E6",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "New-session steps show empty fields with labels/hints; class-prefilled defaults appear and remain editable.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E6",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Saving disables final submit with a named pending operation; entered values remain intact.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E6",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Field errors are associated per field and the step containing errors is identified; a failed save keeps all values and offers retry.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E6",
+   "category": "populated",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "The review step shows Step 4 of 4 with an editable summary of class/time, venue, every selected coach, price, and min/max limits.",
+   "reason": null,
+   "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+  },
+  {
+   "requirement_id": "E6",
+   "category": "partial",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Partial progress persists across steps and same-tab reference navigation; review blocks final save until all required fields and at least one coach are set.",
+   "reason": null,
+   "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+  },
+  {
+   "requirement_id": "E6",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long forms scroll in document flow; the last field, error, and action region sit above fixed navigation and safe area.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E6",
+   "category": "zero-one-many",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Selected coaches in review list zero (save blocked with message), one, or many as readable vertical names.",
+   "reason": null,
+   "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+  },
+  {
+   "requirement_id": "E6",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long field labels, hints, and errors wrap in both languages; inputs keep 16px text and 48px height.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E7",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Class/reference create forms show empty labeled fields with hints; required errors appear after submit or blur.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E7",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Save disables submit with a named pending label and prevents duplicate records.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E7",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Validation and save failures show associated field errors and an inline save error with retry; values are preserved.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E7",
+   "category": "partial",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Partially filled class defaults keep values and flag only invalid/missing fields, including minimum greater than maximum.",
+   "reason": null,
+   "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+  },
+  {
+   "requirement_id": "E7",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Forms reflow to one column at 320px with the action region reachable above keyboard and fixed navigation.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E7",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long class, venue, and coach names and translated labels wrap; success shows persistent text near the saved record.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E8",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "A truly empty admin list names the relevant Add action.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E8",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Lists show a named loading state with static placeholders; add/edit actions stay reachable.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E8",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Load failure and forbidden access show distinct messages with retry or sign-in recovery; failures never render as zero items.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E8",
+   "category": "populated",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Records show readable names and key facts with add/edit actions per record.",
+   "reason": null,
+   "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+  },
+  {
+   "requirement_id": "E8",
+   "category": "partial",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Records missing optional facts show them as unavailable without hiding the record.",
+   "reason": null,
+   "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+  },
+  {
+   "requirement_id": "E8",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long lists scroll vertically; on wide screens columns expand without dropping actions.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E8",
+   "category": "zero-one-many",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Zero shows the empty state with Add, one shows a single full record, many use the same vertical composition.",
+   "reason": null,
+   "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+  },
+  {
+   "requirement_id": "E8",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long names and statuses wrap; action labels stay visible with 48px targets.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E9",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Zero coach options show a message linking to coach management.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E9",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Coach options show a named loading state; existing selections are preserved.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E9",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Coach option load failure shows retry and keeps prior selections.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E9",
+   "category": "populated",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Coaches render as vertical labeled checkbox rows with 48px targets and 8px gaps.",
+   "reason": null,
+   "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+  },
+  {
+   "requirement_id": "E9",
+   "category": "partial",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Selected coaches that are no longer available are flagged in review rather than silently dropped.",
+   "reason": null,
+   "probe": "What is shown for partial or incomplete data — some fields or rows present, others missing?"
+  },
+  {
+   "requirement_id": "E9",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Many coaches scroll vertically with each name fully readable.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E9",
+   "category": "zero-one-many",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Zero links to management, one still requires explicit selection, many remain a vertical checklist.",
+   "reason": null,
+   "probe": "How does the layout read at zero, one, and many items (singular vs plural copy, spacing)?"
+  },
+  {
+   "requirement_id": "E9",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long coach names wrap within checkbox rows without truncation.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E10",
+   "category": "empty",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Missing logo/photography renders a text identity; missing facts show visible unavailable text in development; no media is fabricated.",
+   "reason": null,
+   "probe": "What is shown when there is no data — zero items, an unfilled form, or absent media?"
+  },
+  {
+   "requirement_id": "E10",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Text facts render immediately; supplied media loading never blocks reading facts.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E10",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Failed media load falls back to text identity with facts intact.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E10",
+   "category": "populated",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Only supplied bilingual club facts and assets are published.",
+   "reason": null,
+   "probe": "What does the normal populated (happy-path) state look like at a typical volume of content?"
+  },
+  {
+   "requirement_id": "E10",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Club information wraps and scrolls in page flow without horizontal scrolling.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E10",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long bilingual club descriptions wrap at readable width; no required fact is truncated.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E11",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "The discard confirmation has fixed local content and shows no server loading state.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E11",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "If leaving is declined or fails, the form and its input remain intact.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E11",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Phone actions stack; dialog content scrolls internally at 200% zoom.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E11",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long translated title/explanation wraps; Keep editing remains the initial focus and safe default.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  },
+  {
+   "requirement_id": "E12",
+   "category": "loading",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Pending status names the owning operation inline in context.",
+   "reason": null,
+   "probe": "What is shown while data or content is still loading (skeleton, spinner, progressive reveal)?"
+  },
+  {
+   "requirement_id": "E12",
+   "category": "error",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Errors are announced, associated with affected fields, and include a text recovery action.",
+   "reason": null,
+   "probe": "What is shown when the load or submit fails (message, retry affordance, partial fallback)?"
+  },
+  {
+   "requirement_id": "E12",
+   "category": "overflow",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Long status messages wrap inside the panel without covering fields.",
+   "reason": null,
+   "probe": "What happens when content exceeds its container — scroll, clip, wrap, or truncate?"
+  },
+  {
+   "requirement_id": "E12",
+   "category": "long-text",
+   "status": "resolved",
+   "verification": "explicit",
+   "resolution": "Availability labels show text and exact remaining count together and wrap in both languages; color is never the only signal.",
+   "reason": null,
+   "probe": "What happens with unusually long text — truncation, wrapping, ellipsis, or reflow?"
+  }
+ ],
+ "coverage": {
+  "applicable": 78,
+  "resolved": 78,
+  "unresolved": 0,
+  "unclassified": 0,
+  "byVerification": {
+   "explicit": 78,
+   "backstop": 0
+  }
+ }
+}

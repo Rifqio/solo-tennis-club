@@ -104,7 +104,8 @@ The user selected Community matchday on the Impeccable direction page: a familia
 - **Payment**: Initial payments and refunds use manual handling. The architecture must allow future payment providers without requiring gateway integration now.
 - **Product identity**: The application should feel like a focused tennis club product, with clear booking states and simple daily operations.
 - **Language**: Both the customer experience and the admin portal support Indonesian and English; interface labels and booking/payment messages must retain their meaning in both languages.
-- **Architecture decisions**: Framework selection, database and API design, infrastructure, and implementation details will be defined separately. The existing starter is context, not a finalized architecture decision.
+- **Persistence**: Start with SQLite and use Prisma as the ORM, as selected during Phase 1 planning on 2026-10-08. Supabase is excluded. Database access stays server-side; hosting needs durable local storage and backups.
+- **Architecture decisions**: Framework selection, API design, infrastructure, and remaining implementation details will be defined separately. The existing starter is context, not a finalized architecture decision.
 
 ## Key Decisions
 
@@ -125,6 +126,7 @@ The user selected Community matchday on the Impeccable direction page: a familia
 | Count confirmed and active pending-payment places toward session minimums | Match the current spreadsheet's confirmed and red-name participants | Pending |
 | Track refunds while moving money manually | Handle paid cancellations within the initial manual-payment scope | Pending |
 | Defer technical architecture decisions | Product rules should be established before selecting implementation details | Pending |
+| Start with SQLite and Prisma; exclude Supabase | User selected a simple initial database and ORM during Phase 1 planning | Selected 2026-10-08; implementation pending |
 | Use Lawu Fun Tennis Club / Lafu as the product's club identity | The user confirmed the actual club name | Pending |
 | Support Indonesian and English in customer and admin workflows | The user confirmed both application languages | Pending |
 | Select Community matchday as the UI presentation direction | It matches the user's AYO app reference while keeping Lafu booking and payment states understandable | Pending |

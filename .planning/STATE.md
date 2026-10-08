@@ -2,11 +2,11 @@
 gsd_state_version: "1.0"
 current_phase: 1
 current_phase_name: Publish and Browse Sessions
-status: Ready for planning
-stopped_at: Phase 1 context gathered; ready for research, UI specification, and planning
-last_updated: "2026-10-08T02:47:31.943Z"
+status: Awaiting UI contract
+stopped_at: Phase 1 research recorded with SQLite/Prisma; generate UI-SPEC before planning
+last_updated: "2026-10-08T03:19:58.438Z"
 last_activity: 2026-10-08
-last_activity_desc: Captured and committed Phase 1 decisions across all four discussion areas.
+last_activity_desc: Recorded SQLite/Prisma selection and research; UI contract required before plans.
 progress:
   total_phases: 5
   completed_phases: 0
@@ -22,14 +22,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-08)
 
 **Core value:** Customers can book tennis classes from their phones with clear, reliable availability, while club admins can manage those bookings and payments without spreadsheets.
-**Current focus:** Plan Phase 1: Publish and Browse Sessions using the confirmed context. No implementation has started.
+**Current focus:** Generate Phase 1 UI contract, then finish plans using SQLite and Prisma; no implementation has started.
 
 ## Current Position
 
 Phase: 1 of 5 (Publish and Browse Sessions)
 Plan: 0 of TBD in current phase
-Status: Ready for planning
-Last activity: 2026-10-08 - Captured and committed Phase 1 decisions across all four discussion areas.
+Status: Awaiting UI contract
+Last activity: 2026-10-08 - Recorded SQLite/Prisma selection and research; UI contract required before plans.
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -65,6 +65,7 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - Mobile-first, Indonesian/English, accessible text-based states, and privacy apply from each workflow's first delivery; later UX ownership is integrated acceptance.
 - Framework/database/API/infrastructure remain unselected. Discuss architecture and open policies before dependent implementation. Workflow is interactive with auto-advance disabled.
 - [Phase 1]: Customer, publishing, regional/availability, and admin decisions are confirmed in .planning/phases/01-publish-and-browse-sessions/01-CONTEXT.md; Impeccable direction and Antislop validation remain in force.
+- [Phase 1]: User selected SQLite with Prisma for initial persistence and excluded Supabase; remaining framework/API/hosting choices are open. — Start with a simple local database behind the application server; preserve transactional booking and admin authorization rules.
 
 ### Pending Todos
 
@@ -85,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-08T02:46:42.680Z
-Stopped at: Phase 1 context gathered; ready for research, UI specification, and planning
-Resume file: .planning/phases/01-publish-and-browse-sessions/01-CONTEXT.md
+Last session: 2026-10-08T03:19:58.401Z
+Stopped at: Phase 1 research recorded with SQLite/Prisma; generate UI-SPEC before planning
+Resume file: .planning/phases/01-publish-and-browse-sessions/01-RESEARCH.md

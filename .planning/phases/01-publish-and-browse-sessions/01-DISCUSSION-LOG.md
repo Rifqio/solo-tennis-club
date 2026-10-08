@@ -227,3 +227,9 @@ No explicit additional product-decision delegation was made. Technical implement
 ## Deferred Ideas
 
 No new features were introduced. Later-phase features retain their approved roadmap scope.
+
+## Planning Clarifications (2026-10-08)
+
+- User: "Hold up, for database we don't want to use supabase. Can we start simple using sqlite?" Selected SQLite for initial persistence and excluded Supabase (D-21).
+- User: "And we can use prisma for the orm". Selected Prisma for data access and migrations (D-22).
+- These explicit instructions supersede the earlier advisory database recommendation. No application code or dependency installation was requested by these clarifications.

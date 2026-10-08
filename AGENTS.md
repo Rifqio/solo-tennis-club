@@ -27,7 +27,8 @@ A mobile-first web application for Lawu Fun Tennis Club (Lafu), replacing a shar
 - **Payment**: Initial payments and refunds use manual handling. The architecture must allow future payment providers without requiring gateway integration now.
 - **Product identity**: The application should feel like a focused tennis club product, with clear booking states and simple daily operations.
 - **Language**: Both the customer experience and the admin portal support Indonesian and English; interface labels and booking/payment messages must retain their meaning in both languages.
-- **Architecture decisions**: Framework selection, database and API design, infrastructure, and implementation details will be defined separately. The existing starter is context, not a finalized architecture decision.
+- **Persistence**: SQLite with Prisma is selected for the initial version. Supabase is excluded. Access the database only from server code and plan persistent local storage and backups.
+- **Architecture decisions**: Framework selection, API design, infrastructure, and remaining implementation details will be defined separately. The existing starter is context, not a finalized architecture decision.
 
 <!-- GSD:project-end -->
 
@@ -35,7 +36,7 @@ A mobile-first web application for Lawu Fun Tennis Club (Lafu), replacing a shar
 
 ## Technology Stack
 
-No implementation stack has been selected. The workspace contains a React, TypeScript, and Vite starter; it has no tennis booking capabilities. Evaluate the advisory candidates in `.planning/research/STACK.md` during phase discussion/planning. Research candidates are not approved dependencies or architectural decisions.
+The user selected SQLite and Prisma on 2026-10-08 and excluded Supabase. Remaining framework/API/hosting choices are open. The workspace contains a React, TypeScript, and Vite starter; it has no tennis booking capabilities. Phase 1 context and research supersede earlier database recommendations in `.planning/research/STACK.md`. Other research candidates remain advisory.
 
 <!-- GSD:stack-end -->
 

@@ -3,7 +3,7 @@
 **Domain:** Mobile-first tennis class booking and club operations  
 **Researched:** 2026-10-07  
 **Confidence:** MEDIUM  
-**Decision status:** Advisory comparison. Framework, database, API, infrastructure, and exact dependency versions remain open for a separate technical decision.
+**Decision status:** Historical advisory comparison. On 2026-10-08 the user selected SQLite with Prisma and excluded Supabase. The earlier PostgreSQL/Supabase shortlist below is superseded for initial persistence. Use Phase 1 context and research for the current direction; framework/API/hosting and exact dependency versions remain open.
 
 ## Scope and evidence
 

@@ -10,7 +10,7 @@ Visitors can explore Lafu and browse complete dated session information without 
 
 The approved Phase 1 requirements are DISC-01 through DISC-05, AUTH-06, SCHED-01 through SCHED-02, and SCHED-04 through SCHED-09 (14 requirements). Customer identity/reservations and rosters belong to Phase 2; payment review to Phase 3; booking/session cancellation and refunds to Phase 4; recurrence and minimum-cutoff automation to Phase 5. Public cancelled-state presentation is defined here without moving cancellation operations into this phase.
 
-No phase-specific SPEC.md exists. The approved roadmap and requirements remain the scope authority. This discussion clarifies behavior without choosing a framework, database, API, or infrastructure.
+No phase-specific SPEC.md exists. The approved roadmap and requirements remain the scope authority. The discussion clarified behavior; the later planning clarification selects SQLite and Prisma. Framework, API, and hosting choices remain for technical planning.
 </domain>
 
 <decisions>
@@ -53,7 +53,10 @@ No phase-specific SPEC.md exists. The approved roadmap and requirements remain t
 
 ### Implementation choices remaining for research and planning
 
-No additional product decision was delegated explicitly during these questions. Select technical implementation through research/planning rather than treating the starter or advisory research as an approved stack. Open implementation choices include admin authentication/provisioning and recovery mechanics, persistence and API ownership, deployment, exact navigation labels/routes, bottom-sheet accessibility and larger-screen adaptation, field validation, and final design tokens/components.
+- **D-21 (planning clarification, 2026-10-08):** Start with SQLite as the database. The user excludes Supabase; earlier service recommendations are superseded. Keep the SQLite file server-side behind the application API.
+- **D-22 (planning clarification, 2026-10-08):** Use Prisma as the ORM. Choose a compatible release and SQLite adapter during setup, apply actual migrations, and verify real persistence. ORM use does not replace transactional capacity checks or server authorization.
+
+Select the remaining technical implementation through research/planning rather than treating the starter or advisory research as an approved stack. Open implementation choices include admin authentication/provisioning and recovery mechanics, API ownership, deployment, exact navigation labels/routes, bottom-sheet accessibility and larger-screen adaptation, field validation, and final design tokens/components. SQLite and Prisma are selected; no hosted database provider or final framework has been selected.
 
 Club descriptions, actual coaches/venues/levels, prices, session data, logo, and photos have not been supplied. Use honest labeled fixtures/placeholders when necessary; do not invent production content, promotional claims, or attendance. Snapshot the selected class defaults into stable dated-session values so later booking/recurrence work can preserve existing sessions.
 </decisions>

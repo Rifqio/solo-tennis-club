@@ -2,7 +2,7 @@
 
 **Phase:** 1
 **Generated:** 2026-10-08 (draft); reconciled during plan-phase on 2026-10-08
-**Status:** Proposed. Plan 01-01 Task 1 (`checkpoint:decision`, blocking-human) must confirm the architecture before any implementation task runs. If the user selects a different option, re-run `/gsd-plan-phase 1` so every Phase 1 plan is regenerated for that stack.
+**Status:** Approved. The user selected `express-spa` verbatim at Plan 01-01 Task 1 during execution on 2026-10-08. The framework, API, fixed-admin authentication, persistent single-host baseline and persisted data contract below are confirmed.
 
 ## Capability Proven End-to-End
 

@@ -49,7 +49,7 @@ coverage:
     verification: []
     human_judgment: true
     rationale: "User explicitly chose manual browser assessment. Chromium was stopped; this UI has not passed browser or Antislop delivery validation."
-duration: 125min
+duration: not measured across interrupted sessions
 completed: 2026-10-08
 status: complete
 ---

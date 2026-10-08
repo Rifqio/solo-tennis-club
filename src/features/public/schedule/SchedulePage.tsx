@@ -1,6 +1,6 @@
 import { AnimatePresence, m } from 'motion/react'
 import type { PanInfo } from 'motion/react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
@@ -41,8 +41,16 @@ export function SchedulePage() {
   const [direction, setDirection] = useState(1)
   const isTouch = useMediaQuery('(pointer: coarse)')
 
+  // Day changes must never collapse the page: on phones a sudden drop in page height makes the browser toolbar
+  // show or hide, which resizes the viewport and makes the fixed navigation bar jump. The results area keeps its
+  // previous height until the new day's data arrives, and the outgoing list is lifted out of flow (popLayout)
+  // instead of leaving an empty gap while it fades.
+  const resultsRef = useRef<HTMLDivElement>(null)
+  const [heldHeight, setHeldHeight] = useState<number | null>(null)
+
   const selectDate = (date: string) => {
     if (date === selected) return
+    setHeldHeight(resultsRef.current?.offsetHeight ?? null)
     setDirection(date > selected ? 1 : -1)
     setStripStart(computeStripWindow({ selected: date, currentStart: dates[0], ...bounds })[0])
     setSearchParams({ date }, { preventScrollReset: true })
@@ -89,7 +97,8 @@ export function SchedulePage() {
           )}
         </div>
 
-        <AnimatePresence mode="wait" initial={false} custom={direction}>
+        <div ref={resultsRef} className="relative" style={{ minHeight: schedule.status === 'ready' ? undefined : heldHeight ?? undefined }}>
+        <AnimatePresence mode="popLayout" initial={false} custom={direction}>
           <m.div
             key={selected}
             custom={direction}
@@ -151,6 +160,7 @@ export function SchedulePage() {
             )}
           </m.div>
         </AnimatePresence>
+        </div>
       </div>
     </>
   )

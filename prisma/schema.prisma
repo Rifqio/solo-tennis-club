@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client"
+  output = "../server/generated/prisma"
+  moduleFormat = "esm"
+  runtime = "nodejs"
+}
+datasource db { 
+  provider = "sqlite"
+}
+model AdminAccount {
+  id String @id @default(cuid())
+  email String @unique
+  displayName String
+  passwordHash String
+  isActive Boolean @default(true)
+  passwordUpdatedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions AdminSession[]
+  createdSessions ClassSession[] @relation("CreatedBy")
+  updatedSessions ClassSession[] @relation("UpdatedBy")
+}
+model AdminSession {
+  id String @id @default(cuid())
+  tokenHash String @unique
+  csrfToken String
+  adminId String
+  admin AdminAccount @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  lastSeenAt DateTime
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([adminId])
+}
+model LoginAttempt {
+  id String @id @default(cuid())
+  emailKey String
+  ipKey String
+  succeeded Boolean
+  createdAt DateTime @default(now())
+  @@index([emailKey, createdAt])
+  @@index([ipKey, createdAt])
+}
+model Coach {
+  id String @id @default(cuid())
+  name String
+  nameKey String @unique
+  createRequestId String? @unique
+  version Int @default(1)
+  isSample Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  defaultClasses ClassDefaultCoach[]
+  sessions SessionCoach[]
+}
+model Venue {
+  id String @id @default(cuid())
+  name String
+  nameKey String @unique
+  address String?
+  createRequestId String? @unique
+  version Int @default(1)
+  isSample Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  classes TennisClass[]
+  sessions ClassSession[]
+}
+model Level {
+  id String @id @default(cuid())
+  name String
+  nameKey String @unique
+  createRequestId String? @unique
+  version Int @default(1)
+  isSample Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  classes TennisClass[]
+  sessions ClassSession[]
+}
+model TennisClass {
+  id String @id @default(cuid())
+  name String
+  nameKey String @unique
+  defaultLevelId String
+  defaultLevel Level @relation(fields: [defaultLevelId], references: [id], onDelete: Restrict)
+  defaultVenueId String
+  defaultVenue Venue @relation(fields: [defaultVenueId], references: [id], onDelete: Restrict)
+  defaultDurationMinutes Int
+  defaultPriceIdr Int
+  defaultMinParticipants Int
+  defaultMaxParticipants Int
+  createRequestId String? @unique
+  version Int @default(1)
+  isSample Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  defaultCoaches ClassDefaultCoach[]
+  sessions ClassSession[]
+}
+model ClassDefaultCoach {
+  classId String
+  coachId String
+  position Int
+  class TennisClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  coach Coach @relation(fields: [coachId], references: [id], onDelete: Restrict)
+  @@id([classId, coachId])
+  @@unique([classId, position])
+}
+model ClassSession {
+  id String @id @default(cuid())
+  classId String
+  class TennisClass @relation(fields: [classId], references: [id], onDelete: Restrict)
+  levelId String
+  level Level @relation(fields: [levelId], references: [id], onDelete: Restrict)
+  venueId String
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Restrict)
+  startsAt DateTime
+  durationMinutes Int
+  priceIdr Int
+  minParticipants Int
+  maxParticipants Int
+  status String @default("scheduled")
+  isSample Boolean @default(false)
+  createRequestId String? @unique
+  version Int @default(1)
+  createdById String?
+  createdBy AdminAccount? @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById String?
+  updatedBy AdminAccount? @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  coaches SessionCoach[]
+  @@index([startsAt])
+}
+model SessionCoach {
+  sessionId String
+  coachId String
+  position Int
+  session ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  coach Coach @relation(fields: [coachId], references: [id], onDelete: Restrict)
+  @@id([sessionId, coachId])
+  @@unique([sessionId, position])
+}

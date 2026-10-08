@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-08T00:00:00Z",
+  "title": "Design System: Lafu (Lawu Fun Tennis Club)",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Lawu Club Green", "canonical": "#164D45", "dark": "#93D2C3", "tonalRamp": ["#071E1A", "#0D2E29", "#164D45", "#2E6B61", "#4F8C81", "#93D2C3", "#C9E7DE", "#EDF4F1"] },
+      "on-primary": { "role": "primary", "displayName": "White", "canonical": "#FFFFFF", "dark": "#00382F" },
+      "signboard": { "role": "primary", "displayName": "Signboard Green", "canonical": "#164D45", "dark": "#164D45", "tonalRamp": ["#071E1A", "#0D2E29", "#164D45", "#2E6B61", "#4F8C81", "#93D2C3", "#C9E7DE", "#EDF4F1"] },
+      "on-signboard": { "role": "primary", "displayName": "Signboard White", "canonical": "#FFFFFF" },
+      "on-signboard-variant": { "role": "primary", "displayName": "Signboard Mist", "canonical": "#B8DDD3" },
+      "secondary-container": { "role": "secondary", "displayName": "Plate Sage", "canonical": "#C9E7DE", "dark": "#2B4A43", "tonalRamp": ["#0D2E29", "#1F3B35", "#2B4A43", "#4F6F67", "#7FA69C", "#A8CFC4", "#C9E7DE", "#EDF4F1"] },
+      "on-secondary-container": { "role": "secondary", "displayName": "Plate Ink", "canonical": "#0D2E29", "dark": "#C9E7DE" },
+      "plate": { "role": "secondary", "displayName": "Post Plate Sage", "canonical": "#C9E7DE", "dark": "#2B4A43" },
+      "on-plate": { "role": "secondary", "displayName": "Post Plate Ink", "canonical": "#0D2E29", "dark": "#C9E7DE" },
+      "surface": { "role": "neutral", "displayName": "Mist Ground", "canonical": "#F5F9F7", "dark": "#0E1916", "tonalRamp": ["#0A1412", "#0E1916", "#16241F", "#1F302A", "#DCE7E2", "#E5EEEA", "#EDF4F1", "#F5F9F7"] },
+      "surface-container-lowest": { "role": "neutral", "displayName": "Lowest Container", "canonical": "#FFFFFF", "dark": "#0A1412" },
+      "surface-container-low": { "role": "neutral", "displayName": "Pale Club Green", "canonical": "#EDF4F1", "dark": "#121F1B" },
+      "surface-container": { "role": "neutral", "displayName": "Container", "canonical": "#E5EEEA", "dark": "#16241F" },
+      "surface-container-high": { "role": "neutral", "displayName": "High Container", "canonical": "#DCE7E2", "dark": "#1F302A" },
+      "on-surface": { "role": "neutral", "displayName": "Lawu Ink", "canonical": "#1D252C", "dark": "#E3ECE8" },
+      "on-surface-variant": { "role": "neutral", "displayName": "Moss Grey", "canonical": "#4B5D57", "dark": "#A9BDB6" },
+      "outline": { "role": "neutral", "displayName": "Outline", "canonical": "#4B5D57", "dark": "#7F968F" },
+      "outline-variant": { "role": "neutral", "displayName": "Hairline", "canonical": "#C6D3CD", "dark": "#2E403A" },
+      "error": { "role": "status", "displayName": "Brick", "canonical": "#B42318", "dark": "#FFB4A8" },
+      "error-container": { "role": "status", "displayName": "Brick Container", "canonical": "#FEECE8", "dark": "#3A0F0A" },
+      "on-error-container": { "role": "status", "displayName": "Brick Ink", "canonical": "#7A1A11", "dark": "#FFDAD4" },
+      "warning": { "role": "status", "displayName": "Trail Amber", "canonical": "#805000", "dark": "#F5C46A" },
+      "warning-container": { "role": "status", "displayName": "Amber Container", "canonical": "#FFF4D6", "dark": "#2E2205" },
+      "scrim": { "role": "neutral", "displayName": "Scrim", "canonical": "rgba(29, 37, 44, 0.4)", "dark": "rgba(0, 0, 0, 0.6)" }
+    },
+    "contrastEvidence": [
+      { "pair": "on-surface / surface (light)", "ratio": 14.61 },
+      { "pair": "on-surface-variant / surface (light)", "ratio": 6.59 },
+      { "pair": "on-surface-variant / surface-container-high (light)", "ratio": 5.52 },
+      { "pair": "primary / surface (light)", "ratio": 9.06 },
+      { "pair": "on-plate / plate (light)", "ratio": 11.09 },
+      { "pair": "on-plate / plate (dark)", "ratio": 7.38 },
+      { "pair": "on-signboard / signboard", "ratio": 9.63 },
+      { "pair": "on-surface / surface (dark)", "ratio": 14.91 },
+      { "pair": "primary / surface (dark)", "ratio": 10.47 },
+      { "pair": "warning", "ratio": 6.25 },
+      { "pair": "error", "ratio": 5.75 }
+    ],
+    "typographyMeta": {
+      "numeral": { "displayName": "Numeral", "purpose": "Post-plate start times and the next-day shortcut numeral. Routed trail-sign voice." },
+      "headline": { "displayName": "Headline", "purpose": "Page headings in the system face." },
+      "headline-display": { "displayName": "Headline (routed)", "purpose": "LAFU wordmark (uppercase) and day-marker numerals." },
+      "title": { "displayName": "Title", "purpose": "Session class names, selected date, empty-state heading." },
+      "title-display": { "displayName": "Title (routed)", "purpose": "Month and year above the day markers, uppercase." },
+      "body": { "displayName": "Body", "purpose": "Facts, prices, button labels (700), list values capped at 65ch." },
+      "label": { "displayName": "Label", "purpose": "Weekdays, end times, availability words, navigation labels, notices." }
+    },
+    "shadows": [
+      { "name": "menu", "value": "0 2px 6px rgba(29, 37, 44, 0.16), 0 1px 2px rgba(29, 37, 44, 0.12)", "purpose": "Floating menus (language menu)." },
+      { "name": "sheet", "value": "0 -8px 24px rgba(29, 37, 44, 0.16)", "purpose": "Reserved for the session detail sheet; defined, not yet exercised." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "State layers and color transitions (150 to 200ms)." },
+      { "name": "ease-emphasized", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "Fade-through incoming view." },
+      { "name": "fade-through", "value": "out 90ms; in 210ms after 90ms, from opacity 0 and scale 0.98", "purpose": "Destination changes via view transitions; app bar and navigation stay put. Removed under reduced motion." },
+      { "name": "state-layer", "value": "currentColor overlay: hover 0.08, focus 0.1, pressed 0.12, 150ms", "purpose": "Press and hover feedback on every touchable surface." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px", "purpose": "Navigation rail replaces bottom bar; state cell becomes third column; gutters 24px; plate column 96px." },
+      { "name": "lg", "value": "1024px", "purpose": "Two-column session list; gutters 32px; content max 72rem." }
+    ],
+    "focus": { "outline": "2px solid var(--md-primary)", "offset": "2px", "onSignboard": "white" },
+    "touchTarget": "48px minimum"
+  },
+  "components": [
+    {
+      "name": "Filled Button",
+      "kind": "button",
+      "refersTo": "button-filled",
+      "description": "The one primary action on a screen. Full-round, 48px.",
+      "html": "<button class=\"ds-btn ds-btn-filled\">Pesan tempat</button>",
+      "css": ".ds-btn { position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 8px 24px; border: none; border-radius: 9999px; font: 700 1rem/1.5 system-ui, Roboto, 'Segoe UI', Arial, sans-serif; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2, 0, 0, 1); } .ds-btn::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; pointer-events: none; transition: opacity 150ms cubic-bezier(0.2, 0, 0, 1); } .ds-btn:hover::after { opacity: 0.08; } .ds-btn:focus-visible { outline: 2px solid var(--md-primary, #164D45); outline-offset: 2px; } .ds-btn:focus-visible::after { opacity: 0.1; } .ds-btn:active::after { opacity: 0.12; } .ds-btn-filled { background: var(--md-primary, #164D45); color: var(--md-on-primary, #FFFFFF); }"
+    },
+    {
+      "name": "Tonal Button",
+      "kind": "button",
+      "refersTo": "button-tonal",
+      "description": "Default and secondary action on sage.",
+      "html": "<button class=\"ds-btn-tonal\">Coba lagi</button>",
+      "css": ".ds-btn-tonal { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 8px 24px; border: none; border-radius: 9999px; background: var(--md-secondary-container, #C9E7DE); color: var(--md-on-secondary-container, #0D2E29); font: 700 1rem/1.5 system-ui, Roboto, Arial, sans-serif; cursor: pointer; } .ds-btn-tonal::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; transition: opacity 150ms; } .ds-btn-tonal:hover::after { opacity: 0.08; } .ds-btn-tonal:active::after { opacity: 0.12; } .ds-btn-tonal:focus-visible { outline: 2px solid var(--md-primary, #164D45); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outlined Button",
+      "kind": "button",
+      "refersTo": "button-outlined",
+      "description": "Secondary action; used for retry inside error panels.",
+      "html": "<button class=\"ds-btn-outlined\">Coba lagi</button>",
+      "css": ".ds-btn-outlined { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 8px 24px; border: 1px solid var(--md-outline, #4B5D57); border-radius: 9999px; background: transparent; color: var(--md-primary, #164D45); font: 700 1rem/1.5 system-ui, Roboto, Arial, sans-serif; cursor: pointer; } .ds-btn-outlined::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; transition: opacity 150ms; } .ds-btn-outlined:hover::after { opacity: 0.08; } .ds-btn-outlined:active::after { opacity: 0.12; } .ds-btn-outlined:focus-visible { outline: 2px solid var(--md-primary, #164D45); outline-offset: 2px; }"
+    },
+    {
+      "name": "Top App Bar (Signboard)",
+      "kind": "nav",
+      "refersTo": "top-app-bar",
+      "description": "Green signboard with the routed LAFU wordmark, club name, and language action.",
+      "html": "<header class=\"ds-appbar\"><p class=\"ds-appbar-id\"><span class=\"ds-appbar-mark\">LAFU</span><span class=\"ds-appbar-name\">Lawu Fun Tennis Club</span></p><button class=\"ds-appbar-lang\" aria-label=\"ID, Bahasa: Bahasa Indonesia\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 8 6 6\"/><path d=\"m4 14 6-6 2-3\"/><path d=\"M2 5h12\"/><path d=\"M7 2h1\"/><path d=\"m22 22-5-10-5 10\"/><path d=\"M14 18h6\"/></svg><span aria-hidden=\"true\">ID</span></button></header>",
+      "css": ".ds-appbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 64px; padding: 0 16px; background: var(--md-signboard, #164D45); color: var(--md-on-signboard, #FFFFFF); } .ds-appbar-id { display: flex; align-items: baseline; gap: 12px; margin: 0; min-width: 0; } .ds-appbar-mark { font: 700 1.75rem/1 'Barlow Condensed', system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.025em; } .ds-appbar-name { font: 400 0.875rem/1.43 system-ui, Roboto, Arial, sans-serif; color: var(--md-on-signboard-variant, #B8DDD3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-appbar-lang { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; min-width: 48px; padding: 0 12px; border: none; border-radius: 9999px; background: transparent; color: inherit; font: 700 0.875rem/1.43 system-ui, Roboto, Arial, sans-serif; cursor: pointer; } .ds-appbar-lang:hover { background: rgba(255, 255, 255, 0.08); } .ds-appbar-lang:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "navigation-bar",
+      "description": "Bottom bar on phones (rail from 640px): icon inside a full-round active indicator, label beneath.",
+      "html": "<nav class=\"ds-navbar\" aria-label=\"Navigasi\"><a class=\"ds-nav-dest is-active\" href=\"#\" aria-current=\"page\"><span class=\"ds-nav-ind\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/></svg></span><span class=\"ds-nav-label\">Jadwal</span></a><a class=\"ds-nav-dest\" href=\"#\"><span class=\"ds-nav-ind\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4M12 8h.01\"/></svg></span><span class=\"ds-nav-label\">Klub</span></a></nav>",
+      "css": ".ds-navbar { display: flex; background: var(--md-surface-container, #E5EEEA); } .ds-nav-dest { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 64px; padding: 8px 0; text-decoration: none; color: var(--md-on-surface-variant, #4B5D57); } .ds-nav-ind { display: flex; align-items: center; justify-content: center; width: 64px; height: 32px; border-radius: 9999px; transition: background-color 200ms cubic-bezier(0.2, 0, 0, 1); } .ds-nav-dest:hover .ds-nav-ind { background: rgba(75, 93, 87, 0.08); } .ds-nav-dest:focus-visible { outline: 2px solid var(--md-primary, #164D45); outline-offset: -2px; } .ds-nav-label { font: 400 0.875rem/1.43 system-ui, Roboto, Arial, sans-serif; } .ds-nav-dest.is-active .ds-nav-ind { background: var(--md-secondary-container, #C9E7DE); color: var(--md-on-secondary-container, #0D2E29); } .ds-nav-dest.is-active .ds-nav-label { font-weight: 700; color: var(--md-on-surface, #1D252C); }"
+    },
+    {
+      "name": "Day Markers",
+      "kind": "chip",
+      "refersTo": "day-marker-selected",
+      "description": "Whole-cell weekday markers; selected is full green, today carries a 2px inset ring.",
+      "html": "<div class=\"ds-days\"><button class=\"ds-day is-selected\" aria-pressed=\"true\"><span class=\"ds-day-wd\">Kam</span><span class=\"ds-day-num\">8</span></button><button class=\"ds-day\" aria-pressed=\"false\"><span class=\"ds-day-wd\">Jum</span><span class=\"ds-day-num\">9</span></button><button class=\"ds-day is-today\" aria-pressed=\"false\"><span class=\"ds-day-wd\">Sab</span><span class=\"ds-day-num\">10</span></button></div>",
+      "css": ".ds-days { display: grid; grid-auto-flow: column; grid-auto-columns: 64px; background: var(--md-surface-container-low, #EDF4F1); padding: 4px; } .ds-day { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 76px; margin: 0 2px; border: none; border-radius: 12px; background: transparent; color: var(--md-on-surface, #1D252C); cursor: pointer; transition: background-color 200ms cubic-bezier(0.2, 0, 0, 1); } .ds-day:hover { background: rgba(29, 37, 44, 0.08); } .ds-day:focus-visible { outline: 2px solid var(--md-primary, #164D45); outline-offset: 2px; } .ds-day-wd { font: 400 0.875rem/1 system-ui, Roboto, Arial, sans-serif; color: var(--md-on-surface-variant, #4B5D57); } .ds-day-num { font: 700 1.75rem/1 'Barlow Condensed', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-day.is-selected { background: var(--md-primary, #164D45); color: var(--md-on-primary, #FFFFFF); } .ds-day.is-selected .ds-day-wd, .ds-day.is-today .ds-day-wd { font-weight: 700; color: inherit; } .ds-day.is-today { color: var(--md-primary, #164D45); box-shadow: inset 0 0 0 2px var(--md-primary, #164D45); }"
+    },
+    {
+      "name": "Session Row with Post Plate",
+      "kind": "custom",
+      "refersTo": "post-plate",
+      "description": "Signature: tonal trail-post plate with the routed start time, facts beside, state cell (third column from 640px, under the facts on phones).",
+      "html": "<ul class=\"ds-rows\"><li class=\"ds-row\"><div class=\"ds-plate\"><p class=\"ds-plate-time\">16:00</p><p class=\"ds-plate-end\">s.d. 17:30</p></div><div class=\"ds-facts\"><h3 class=\"ds-facts-title\">Drill Forehand dan Backhand</h3><p class=\"ds-facts-meta\">Menengah &middot; Lapangan B</p><p class=\"ds-facts-price\"><b>Rp 150.000</b> <span>per tempat</span></p></div><div class=\"ds-state\"><p class=\"ds-state-word ds-warn\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"6.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M8 1a7 7 0 0 1 0 14z\" fill=\"currentColor\"/></svg>Hampir penuh</p><p class=\"ds-state-count\">Tersisa 1 tempat</p><p class=\"ds-state-next\">Berikutnya &middot; mulai 15 mnt lagi</p></div></li></ul>",
+      "css": ".ds-rows { list-style: none; margin: 0; padding: 0; background: var(--md-surface, #F5F9F7); } .ds-row { display: grid; grid-template-columns: 5rem minmax(0, 1fr); column-gap: 16px; row-gap: 8px; padding: 16px 0; border-top: 1px solid var(--md-outline-variant, #C6D3CD); } .ds-row:first-child { border-top: 0; } .ds-plate { grid-row: span 2; align-self: start; display: flex; flex-direction: column; align-items: center; padding: 12px 4px; border-radius: 12px; background: var(--md-plate, #C9E7DE); color: var(--md-on-plate, #0D2E29); } .ds-plate p { margin: 0; } .ds-plate-time { font: 700 2rem/1 'Barlow Condensed', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-plate-end { margin-top: 4px !important; font: 400 0.875rem/1.43 system-ui, Roboto, Arial, sans-serif; } .ds-facts { display: flex; flex-direction: column; gap: 4px; min-width: 0; font: 400 1rem/1.5 system-ui, Roboto, Arial, sans-serif; } .ds-facts p, .ds-facts h3 { margin: 0; } .ds-facts-title { font-size: 1.25rem; line-height: 1.3; font-weight: 700; color: var(--md-on-surface, #1D252C); } .ds-facts-meta { color: var(--md-on-surface-variant, #4B5D57); } .ds-facts-price span { color: var(--md-on-surface-variant, #4B5D57); } .ds-state { grid-column-start: 2; display: flex; flex-direction: column; gap: 2px; font: 400 0.875rem/1.43 system-ui, Roboto, Arial, sans-serif; } .ds-state p { margin: 0; } .ds-state-word { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; } .ds-warn { color: var(--md-warning, #805000); } .ds-state-count { color: var(--md-on-surface, #1D252C); font-variant-numeric: tabular-nums; } .ds-state-next { font-weight: 700; color: var(--md-primary, #164D45); } @media (min-width: 640px) { .ds-row { grid-template-columns: 6rem minmax(0, 1fr) 9rem; } .ds-plate { grid-row: auto; } .ds-state { grid-column-start: 3; grid-row-start: 1; padding-top: 4px; } }"
+    },
+    {
+      "name": "Error Status Panel",
+      "kind": "card",
+      "refersTo": "status-panel-error",
+      "description": "Tonal panel with a bold named problem first and an outlined retry.",
+      "html": "<div class=\"ds-panel ds-panel-error\" role=\"alert\"><p class=\"ds-panel-title\">Jadwal belum bisa dimuat.</p><p>Periksa koneksi lalu coba lagi.</p><button class=\"ds-panel-action\">Coba lagi</button></div>",
+      "css": ".ds-panel { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 12px; font: 400 1rem/1.5 system-ui, Roboto, Arial, sans-serif; } .ds-panel p { margin: 0; } .ds-panel-title { font-weight: 700; } .ds-panel-error { background: var(--md-error-container, #FEECE8); color: var(--md-on-error-container, #7A1A11); } .ds-panel-action { min-height: 48px; padding: 8px 24px; border: 1px solid var(--md-outline, #4B5D57); border-radius: 9999px; background: transparent; color: var(--md-primary, #164D45); font: 700 1rem/1.5 system-ui, Roboto, Arial, sans-serif; cursor: pointer; } .ds-panel-action:hover { background: rgba(22, 77, 69, 0.08); } .ds-panel-action:focus-visible { outline: 2px solid var(--md-primary, #164D45); outline-offset: 2px; }"
+    },
+    {
+      "name": "Club Fact List",
+      "kind": "card",
+      "refersTo": "list-container",
+      "description": "Material list on the lowest container: sage icon disc, bold label, value.",
+      "html": "<dl class=\"ds-list\"><div class=\"ds-list-item\"><span class=\"ds-list-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg></span><div><dt>Alamat</dt><dd>Belum tersedia</dd></div></div></dl>",
+      "css": ".ds-list { margin: 0; border-radius: 12px; overflow: hidden; background: var(--md-surface-container-lowest, #FFFFFF); } .ds-list-item { display: flex; align-items: flex-start; gap: 16px; padding: 12px 16px; border-top: 1px solid var(--md-outline-variant, #C6D3CD); } .ds-list-item:first-child { border-top: 0; } .ds-list-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; margin-top: 2px; border-radius: 9999px; background: var(--md-secondary-container, #C9E7DE); color: var(--md-on-secondary-container, #0D2E29); } .ds-list dt { font: 700 0.875rem/1.43 system-ui, Roboto, Arial, sans-serif; color: var(--md-on-surface-variant, #4B5D57); } .ds-list dd { margin: 0; font: 400 1rem/1.5 system-ui, Roboto, Arial, sans-serif; color: var(--md-on-surface, #1D252C); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Jalur Lawu",
+    "overview": "Every session reads like a post on a Mount Lawu trail: where you are, what is next, how long until you get there. The club green is the trail board. It runs across the top of the app as a signboard bar carrying the routed white LAFU wordmark, and it marks the one thing a member has chosen. Everything else stands on a pale mist ground in light mode and a night-forest ground in dark mode, with tonal Material 3 surfaces doing the layering.\n\nThe idiom is Material 3, chosen for an Android-first membership of mixed tech comfort, often reading outdoors at the courts. Reading text uses the phone's own UI face (Roboto on Android), so nothing feels foreign. A single routed sign voice, Barlow Condensed Bold, is reserved for the things a trail sign would carve: the wordmark, the month, day numerals, and post-plate start times. The jump between those condensed numerals and the small labels beside them carries the hierarchy, so the system needs only five type steps and two weights.\n\nDensity is calm list density, not card density. Sessions are rows separated by hairlines, each led by a tonal post plate; there are no white cards with green pills. States are always words first, with a small drawn mark that only echoes the word.",
+    "keyCharacteristics": [
+      "Green signboard top app bar; mist ground; tonal post plates.",
+      "Full club green only for the chosen thing: selected day, the one primary action, the signboard.",
+      "System UI face for reading; Barlow Condensed Bold only for wordmark, month, day numerals, and plate times.",
+      "Five type steps (label, body, title, headline, numeral), weights 400 and 700 only.",
+      "Text-based states with echoing marks; nothing labeled twice.",
+      "48px touch targets, Material state layers, full-round controls.",
+      "Light and dark follow the phone."
+    ],
+    "rules": [
+      { "name": "The Green Budget Rule", "body": "Full club green appears only on the chosen thing: the selected day, the one primary action, and the signboard. Post plates are tonal sage, never full green.", "section": "colors" },
+      { "name": "The Board Stays Green Rule", "body": "The signboard keeps #164D45 in dark mode; only interactive primary lifts to a light tone.", "section": "colors" },
+      { "name": "The Routed Voice Rule", "body": "Barlow Condensed is used only for the wordmark, month, day numerals, and plate times. Any other text in it is a defect.", "section": "typography" },
+      { "name": "The Two Weights Rule", "body": "Only 400 and 700 exist. Emphasis is weight or size, never a third weight.", "section": "typography" },
+      { "name": "The Uppercase Belongs To The Sign Rule", "body": "Uppercase appears only in the routed voice (wordmark, month). System-face text stays in sentence case.", "section": "typography" },
+      { "name": "The State Cell Reflow Rule", "body": "Availability is a third column from 640px. On phones it reflows as one unit under the facts, because a right cell at 390px forces class titles onto three lines. This is a recorded phone adaptation, not drift.", "section": "layout" },
+      { "name": "The Tonal First Rule", "body": "If a surface sits on the page, it differs by tone. A shadow means it floats.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep full club green (#164D45) to the selected day, the one filled action, and the signboard.",
+      "Do set start times, day numerals, the month, and the wordmark in Barlow Condensed Bold, and everything else in the system UI face.",
+      "Do state every condition as a word; drawn marks only echo it.",
+      "Do give every touch target at least 48px and a state layer for press and hover.",
+      "Do draw focus as a 2px primary outline offset 2px, white on the signboard.",
+      "Do separate rows with hairlines on the mist ground and layer with tonal containers.",
+      "Do keep page gutters out of safe areas and pad the bottom for the navigation bar.",
+      "Do follow the phone's light or dark preference, keeping the signboard green in both."
+    ],
+    "donts": [
+      "Don't fill post plates with full club green; they are tonal sage.",
+      "Don't label anything twice; if the app bar or tab already names it, the page does not repeat it visibly.",
+      "Don't put eyebrow or kicker labels above headings.",
+      "Don't use a third font weight or a third typeface.",
+      "Don't put shadows on rows, plates, or panels; shadows are for menus and sheets.",
+      "Don't add spinners, shimmer, or pulse to loading; use static placeholders and named pending labels.",
+      "Don't show a places count beside \"Full\", or any places for an ended session."
+    ],
+    "openItems": [
+      "Drawn trail line between posts (not built).",
+      "Date-change motion (not built).",
+      "Signboard-language club page (not built).",
+      "Session detail sheet, plan 01-07 (not built; sheet shadow reserved).",
+      "Admin surfaces (not built; inherit this system).",
+      "Real club logo; app icon is a text-based LAFU placeholder until supplied."
+    ]
+  }
+}

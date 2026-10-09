@@ -19,6 +19,7 @@ No phase-specific SPEC.md exists. The approved roadmap and requirements remain t
 ### Customer starting screen and session details
 
 - **D-01:** Open directly on schedules, with a compact Lafu header, date navigation, and upcoming sessions. Club information remains easy to reach; do not require an introductory page before browsing.
+  - **Amended 2026-10-09 (club owner, Courtside redesign):** a first-visit onboarding (three skippable slides) may appear once per device, only when the visit starts on the plain schedule (`/` with no query). Deep links are never interrupted, "Lewati" skips at any time, and `lafu.onboarded` stops it from returning. Browsing still needs no sign-in.
 - **D-02:** Select today by default in the club timezone. If today has no sessions, explain that clearly and offer a shortcut to the next scheduled date. Quick date navigation and a date picker remain required.
 - **D-03:** Use compact schedule summaries: time, class/level, venue, price, remaining places, and availability state. Full session details include date/time, all coaches, level, venue, price per place, minimum participants, maximum capacity, and remaining places.
 - **D-04:** Tapping a session opens a bottom sheet over the schedule. Longer detail content scrolls within the sheet. Preserve the selected schedule date and context when closing it; a dedicated detail page was considered and not selected.

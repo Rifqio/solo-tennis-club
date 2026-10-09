@@ -293,6 +293,12 @@
 @keyframes lafu-menu-out { to { opacity: 0; transform: translateY(-2px) scale(0.98); } }
 @keyframes lafu-check-in { from { opacity: 0; transform: scale(0.8); } }
 
+/* Onboarding photo scrim: ink rising from the bottom so white text on the photo keeps its contrast (Elevation: text
+   over photos always sits on the ink scrim). Slightly darker at the top for the Skip action. */
+.photo-scrim {
+  background: linear-gradient(to bottom, rgba(15, 17, 18, 0.4) 0%, rgba(15, 17, 18, 0) 22%, rgba(15, 17, 18, 0.6) 46%, rgba(15, 17, 18, 0.94) 66%, #0F1112 100%);
+}
+
 /* The dock's notch: a circle cut from the bar around the raised book button (phones only; the rail has none). */
 @media (max-width: 39.99rem) {
   .dock-notch {

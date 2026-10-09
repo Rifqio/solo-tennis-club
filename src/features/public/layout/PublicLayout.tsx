@@ -14,6 +14,10 @@ export function PublicLayout() {
   const [bookOpen, setBookOpen] = useState(false)
   // Decided once, from the address the visit started on.
   const [onboarding, setOnboarding] = useState(() => shouldShowOnboarding(location.pathname, location.search))
+  // Booking, and signing in on the way to something (returnTo), are focused tasks: their own pinned action bar
+  // takes the bottom of the screen, so the dock steps aside until the task is done (P2-11).
+  const focusedTask = location.pathname.startsWith('/book/')
+    || (location.pathname === '/customer/sign-in' && new URLSearchParams(location.search).has('returnTo'))
   const finishOnboarding = useCallback(() => {
     markOnboarded()
     setOnboarding(false)
@@ -28,10 +32,10 @@ export function PublicLayout() {
         {/* Horizontal motion (day slides, swipe) must never widen the page: on phones a wider page makes the browser
             zoom out, which resizes the viewport and moves the fixed dock. clip, unlike hidden, adds no scroll container.
             Bottom padding reserves the dock, the book button's rise above it, and the safe area. */}
-        <main className="overflow-x-clip pb-[calc(7rem+env(safe-area-inset-bottom))] sm:pb-8 sm:pl-20">
+        <main className={focusedTask ? 'overflow-x-clip' : 'overflow-x-clip pb-[calc(7rem+env(safe-area-inset-bottom))] sm:pb-8 sm:pl-20'}>
           <Outlet />
         </main>
-        <Dock onBook={() => setBookOpen(true)} />
+        {!focusedTask && <Dock onBook={() => setBookOpen(true)} />}
       </div>
       <BookSheet open={bookOpen} onClose={() => setBookOpen(false)} />
       {onboarding && (

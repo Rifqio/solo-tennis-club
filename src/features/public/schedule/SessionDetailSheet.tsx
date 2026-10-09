@@ -1,3 +1,4 @@
+import { ChevronDown, ExternalLink, UsersRound } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { ReactNode, RefObject } from 'react'
 import { Link } from 'react-router-dom'
@@ -24,6 +25,13 @@ const toneClasses = {
   cancelled: 'text-on-surface-variant',
 } as const
 
+// A Google Maps search for the venue. When venues gain an admin-pasted share link or pinned location,
+// that link replaces the search so the pin is exact.
+function mapsSearchUrl(venue: string, address?: string | null) {
+  const query = [venue, address].filter(Boolean).join(', ')
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+}
+
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex justify-between gap-4 border-t border-outline-variant py-3 first:border-t-0">
@@ -47,14 +55,53 @@ function Players({ session }: { session: PublicSessionDetail }) {
     )
   }
   const names = players.sessions[session.id] ?? []
+  return <PlayerList names={names} />
+}
+
+const PREVIEW_NAMES = 3
+
+// Who is playing as a tappable card: the first names, a "+N" chip, and "Lihat semua" to open the whole list in place.
+function PlayerList({ names }: { names: string[] }) {
+  const { t } = useI18n()
+  const [expanded, setExpanded] = useState(false)
+  const title = t(messages.players, { count: names.length })
+  const chip = 'max-w-full break-words rounded-full border border-outline-variant bg-surface-container-lowest px-3 py-1 text-label'
+  if (names.length === 0) {
+    return (
+      <section className="flex flex-col gap-1 rounded-sm bg-primary-container p-3 text-on-primary-container">
+        <h3 className="text-label font-semibold">{title}</h3>
+        <p className="text-label">{t(messages.playersEmpty)}</p>
+      </section>
+    )
+  }
+  const expandable = names.length > PREVIEW_NAMES
+  const shown = expanded || !expandable ? names : names.slice(0, PREVIEW_NAMES)
+  const list = (
+    <ul className="flex flex-wrap gap-1.5">
+      {shown.map((name, index) => <li key={index} className={chip}>{name}</li>)}
+      {!expanded && expandable && <li className="rounded-full bg-primary px-3 py-1 text-label font-semibold text-on-primary">+{names.length - PREVIEW_NAMES}</li>}
+    </ul>
+  )
+  if (!expandable) {
+    return (
+      <section className="flex flex-col gap-2 rounded-sm border border-primary/25 bg-primary-container p-3 text-on-primary-container">
+        <h3 className="text-label font-semibold">{title}</h3>
+        {list}
+      </section>
+    )
+  }
   return (
-    <section aria-labelledby="session-players" className="flex flex-col gap-2 rounded-sm bg-surface p-3">
-      <h3 id="session-players" className="text-label font-semibold">{t(messages.players, { count: names.length })}</h3>
-      {names.length === 0
-        ? <p className="text-label text-on-surface-variant">{t(messages.playersEmpty)}</p>
-        : <ul className="flex flex-wrap gap-1.5">
-            {names.map((name, index) => <li key={index} className="max-w-full break-words rounded-full border border-outline-variant bg-surface-container-lowest px-3 py-1 text-label">{name}</li>)}
-          </ul>}
+    <section className="flex flex-col gap-2 rounded-sm border border-primary/25 bg-primary-container p-3 text-on-primary-container">
+      <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)}
+        aria-label={expanded ? undefined : t(messages.seeAllLabel, { count: names.length })}
+        className="state-layer pressable -m-1 flex min-h-11 items-center justify-between gap-2 rounded-xs p-1 text-left">
+        <span className="text-label font-semibold">{title}</span>
+        <span className="flex items-center gap-0.5 text-label font-semibold text-primary">
+          {expanded ? t(messages.showLess) : t(messages.seeAll)}
+          <ChevronDown aria-hidden="true" className={cn('size-4 transition-transform duration-200', expanded && 'rotate-180')} strokeWidth={2.5} />
+        </span>
+      </button>
+      {list}
     </section>
   )
 }
@@ -150,20 +197,31 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
         : !ready ? <StatusPanel tone="error" title={t(messages.incomplete)} action={{ label: t(commonMessages.retry), onAction: () => setAttempt(value => value + 1) }} />
         : <>
           {ready.isSample && <SampleDataNotice />}
-          <p className={cn('flex flex-wrap items-center gap-x-2 text-label', toneClasses[ready.availability])}>
-            <AvailabilityMark availability={ready.availability} />
-            <span className="font-semibold">{t(scheduleMessages.status[ready.availability])}</span>
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className={cn('flex items-center gap-2 text-label', toneClasses[ready.availability])}>
+              <AvailabilityMark availability={ready.availability} />
+              <span className="font-semibold">{t(scheduleMessages.status[ready.availability])}</span>
+            </p>
+            <p className="flex items-center gap-1.5 rounded-full border border-outline-variant bg-surface px-3 py-1 text-label font-semibold">
+              <UsersRound aria-hidden="true" className="size-4 text-on-surface-variant" />
+              <span aria-hidden="true">{t(messages.groupShort, { min: ready.minParticipants, max: ready.maxParticipants })}</span>
+              <span className="sr-only">{t(messages.group)}: {t(messages.groupLimits, { min: ready.minParticipants, max: ready.maxParticipants })}</span>
+            </p>
+          </div>
           {ready.availability === 'cancelled' && <p className="text-on-surface-variant">{t(scheduleMessages.cancelledExplanation)}</p>}
           {ready.availability !== 'cancelled' && <Players session={ready} />}
           <dl className="-mt-2 flex flex-col">
             <Fact label={t(messages.level)}>{ready.levelName}</Fact>
             <Fact label={t(messages.venue)}>
-              {ready.venueName}
-              {ready.venueAddress && <span className="block text-label font-normal text-on-surface-variant">{ready.venueAddress}</span>}
+              <a href={mapsSearchUrl(ready.venueName, ready.venueAddress)} target="_blank" rel="noopener noreferrer"
+                aria-label={t(messages.openMapsLabel, { venue: ready.venueName })}
+                className="state-layer -my-1 inline-flex min-h-11 flex-col items-end justify-center rounded-xs py-1">
+                <span>{ready.venueName}</span>
+                {ready.venueAddress && <span className="text-label font-normal text-on-surface-variant">{ready.venueAddress}</span>}
+                <span className="inline-flex items-center gap-1 text-label text-primary">{t(messages.openMaps)}<ExternalLink aria-hidden="true" className="size-3.5" strokeWidth={2.25} /></span>
+              </a>
             </Fact>
             <Fact label={t(messages.coaches)}>{ready.coaches.length ? ready.coaches.join(', ') : t(commonMessages.unavailable)}</Fact>
-            <Fact label={t(messages.group)}>{t(messages.groupLimits, { min: ready.minParticipants, max: ready.maxParticipants })}</Fact>
             {!bookable && <Fact label={t(messages.price)}>{formatIdr(ready.priceIdr, language)}</Fact>}
           </dl>
         </>}

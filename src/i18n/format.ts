@@ -35,6 +35,16 @@ export function formatClubDateMedium(date: string, language: Language) {
   return mediumDateFormats[language].format(clubDateTimeToInstant(date, '12:00'))
 }
 
+const shortDateFormats = {
+  id: new Intl.DateTimeFormat(LOCALE.id, { weekday: 'short', day: 'numeric', month: 'short', timeZone: CLUB_TIME_ZONE }),
+  en: new Intl.DateTimeFormat(LOCALE.en, { weekday: 'short', day: 'numeric', month: 'short', timeZone: CLUB_TIME_ZONE }),
+}
+
+// "Sab, 10 Okt": compact enough for a 2-column fact tile.
+export function formatClubDateShort(date: string, language: Language) {
+  return shortDateFormats[language].format(clubDateTimeToInstant(date, '12:00'))
+}
+
 const monthYearFormats = {
   id: new Intl.DateTimeFormat(LOCALE.id, { month: 'long', year: 'numeric', timeZone: CLUB_TIME_ZONE }),
   en: new Intl.DateTimeFormat(LOCALE.en, { month: 'long', year: 'numeric', timeZone: CLUB_TIME_ZONE }),

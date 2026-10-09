@@ -246,7 +246,7 @@ export function Component() {
     const deadline = Date.parse(result.booking.originalDeadline)
     const minutesLeft = Math.max(0, Math.floor((deadline - now) / 60_000))
     const hoursLeft = Math.floor(minutesLeft / 60)
-    const cell = 'flex size-16 items-center justify-center rounded-xs bg-band-tile text-headline font-bold tabular-nums text-on-signboard'
+    const cell = 'flex size-16 items-center justify-center rounded-xs bg-ink text-headline font-bold tabular-nums text-accent'
     return (
       <div className="flex min-h-dvh flex-col">
         <header className="rounded-b-lg bg-accent pb-6 pt-[max(1.25rem,env(safe-area-inset-top))] text-on-accent">

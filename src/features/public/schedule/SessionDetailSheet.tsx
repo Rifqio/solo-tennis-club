@@ -3,11 +3,10 @@ import type { ReactNode, RefObject } from 'react'
 import { Link } from 'react-router-dom'
 import { AvailabilityMark } from '@/components/ui/availability-label'
 import { Button } from '@/components/ui/button'
-import { Scoreboard } from '@/components/ui/scoreboard'
 import { Sheet } from '@/components/ui/sheet'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
-import { formatClubDateLong, formatIdr, formatRemainingPlaces } from '@/i18n/format'
+import { formatClubDateShort, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
 import type { PublicSessionDetail } from '@shared/api/public'
@@ -96,13 +95,25 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
     : ready.availability === 'full' ? messages.full
     : messages.closedReason
 
+  // Four facts in a 2 x 2 grid of Deep Court tiles: small label, large value, room to breathe.
+  const open = ready !== null && (ready.availability === 'available' || ready.availability === 'nearly_full')
+  const slotValue = ready === null ? '' : ended ? t(scheduleMessages.ended)
+    : open ? t(messages.slotsLeft, { count: ready.remainingPlaces }) : t(scheduleMessages.status[ready.availability])
+  const tiles = ready ? [
+    { label: t(messages.date), value: formatClubDateShort(ready.date, language) },
+    { label: t(messages.time), value: `${ready.startTime}-${ready.endTime}` },
+    { label: t(messages.duration), value: t(messages.minutes, { count: ready.durationMinutes }) },
+    { label: t(messages.slots), value: slotValue },
+  ] : []
   const band = ready && (
-    <div className="flex flex-wrap items-center gap-2">
-      <Scoreboard time={ready.startTime} tone={ready.availability === 'cancelled' ? 'cancelled' : ended ? 'ended' : 'live'} />
-      <span className="rounded-full bg-band-tile px-3 py-1.5 text-label">{t(scheduleMessages.until)} {ready.endTime} WIB</span>
-      <span className="basis-full" />
-      <span className="rounded-full bg-band-tile px-3 py-1.5 text-label">{formatClubDateLong(ready.date, language)}</span>
-    </div>
+    <dl className="grid grid-cols-2 gap-2">
+      {tiles.map(tile => (
+        <div key={tile.label} className="flex min-w-0 flex-col gap-0.5 rounded-sm bg-band-tile px-3 py-2.5">
+          <dt className="text-label">{tile.label}</dt>
+          <dd className="truncate text-title font-bold tabular-nums">{tile.value}</dd>
+        </div>
+      ))}
+    </dl>
   )
 
   const footer = ready && (
@@ -142,7 +153,6 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
           <p className={cn('flex flex-wrap items-center gap-x-2 text-label', toneClasses[ready.availability])}>
             <AvailabilityMark availability={ready.availability} />
             <span className="font-semibold">{t(scheduleMessages.status[ready.availability])}</span>
-            {(ready.availability === 'available' || ready.availability === 'nearly_full') && <span className="text-on-surface">{formatRemainingPlaces(ready.remainingPlaces, language)}</span>}
           </p>
           {ready.availability === 'cancelled' && <p className="text-on-surface-variant">{t(scheduleMessages.cancelledExplanation)}</p>}
           {ready.availability !== 'cancelled' && <Players session={ready} />}
@@ -154,7 +164,6 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
             </Fact>
             <Fact label={t(messages.coaches)}>{ready.coaches.length ? ready.coaches.join(', ') : t(commonMessages.unavailable)}</Fact>
             <Fact label={t(messages.group)}>{t(messages.groupLimits, { min: ready.minParticipants, max: ready.maxParticipants })}</Fact>
-            <Fact label={t(messages.duration)}>{t(messages.minutes, { count: ready.durationMinutes })}</Fact>
             {!bookable && <Fact label={t(messages.price)}>{formatIdr(ready.priceIdr, language)}</Fact>}
           </dl>
         </>}

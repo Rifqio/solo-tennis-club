@@ -4,16 +4,18 @@ import { Slot } from 'radix-ui'
 import type { ComponentProps, MouseEvent } from 'react'
 import { cn } from '@/lib/utils'
 
-// Material 3 common buttons: full-round, 48px touch height, label wraps instead of truncating.
-// Filled is the one primary action per screen; tonal and outlined are secondary; text is lowest emphasis.
+// Courtside buttons: 8px corners (square-ish, after the padel reference), 48px touch height, label wraps instead of truncating.
+// Filled is the one primary action per region (ink with lime text on light, lime with ink on dark); accent is the lime
+// form for use on the court band or ink surfaces; tonal and outlined are secondary; text is lowest emphasis.
 const buttonVariants = cva(
-  'state-layer pressable inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-full px-6 py-2 text-center text-body font-bold break-words transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed',
+  'state-layer pressable inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-sm px-6 py-2 text-center text-body font-semibold break-words transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed',
   {
     variants: {
       variant: {
-        filled: 'bg-primary text-on-primary',
+        filled: 'bg-cta text-on-cta',
+        accent: 'bg-accent text-on-accent',
         tonal: 'bg-secondary-container text-on-secondary-container',
-        outlined: 'border border-outline bg-transparent text-primary',
+        outlined: 'border border-outline bg-transparent text-on-surface',
         text: 'bg-transparent px-3 text-primary',
         destructive: 'bg-error text-on-error',
       },

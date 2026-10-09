@@ -8,7 +8,7 @@ import { formatClubDateMedium } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { apiErrorMessages } from '@/i18n/api-error-messages'
 import { useAdminAuth } from '../auth/use-admin-auth'
-import { DateStrip } from '@/features/public/schedule/DateStrip'
+import { DateStrip, TodayChip } from '@/features/public/schedule/DateStrip'
 import { computeStripWindow } from '@/features/public/schedule/date-strip-window'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { SessionSummaryRow } from '@/features/public/schedule/SessionSummaryRow'
@@ -49,10 +49,11 @@ export function AdminSessionsPage() {
 
   return <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-4 py-4 lg:max-w-[72rem]">
     <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-headline font-bold">{t(sessionsMessages.heading)}</h1><Button asChild variant="filled"><Link to={`/admin/sessions/new?date=${selected}`}>{t({ id: 'Tambah sesi', en: 'Add session' })}</Link></Button></div>
-    <DateStrip dates={computeStripWindow({ selected, currentStart: stripStart, ...bounds })} selected={selected} {...bounds} onSelect={date => {
+    {/* The date strip is drawn for the court band; until the admin shell gets its band (admin slice) it sits on a blue panel. */}
+    <div className="rounded-lg bg-band px-4 pt-3 text-on-signboard [&_:focus-visible]:outline-white"><div className="flex justify-end"><TodayChip selected={selected} today={bounds.today} onSelect={date => setParams({ date }, { preventScrollReset: true })} /></div><DateStrip dates={computeStripWindow({ selected, currentStart: stripStart, ...bounds })} selected={selected} {...bounds} onSelect={date => {
       setStripStart(computeStripWindow({ selected: date, currentStart: stripStart, ...bounds })[0])
       setParams({ date }, { preventScrollReset: true })
-    }} />
+    }} /></div>
     <h2 className="text-title font-bold">{formatClubDateMedium(selected, language)} <span className="text-label font-normal text-on-surface-variant">WIB</span></h2>
     {data?.sessions.some(row => row.isSample) && <SampleDataNotice />}
     {data?.truncated && <StatusPanel tone="info" title={t(sessionsMessages.truncated)} />}

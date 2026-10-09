@@ -1,6 +1,7 @@
 import { AnimatePresence, m } from 'motion/react'
 import type { PanInfo } from 'motion/react'
 import { useRef, useState } from 'react'
+import { Button } from '@/components/ui/button'
 import { useSearchParams } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
@@ -12,7 +13,7 @@ import { useMediaQuery } from '@/lib/use-media-query'
 import { addClubDays, clubToday, isClubDate } from '@shared/club-time'
 import { publicScheduleWindow } from '@shared/schedule-window'
 import { computeStripWindow } from './date-strip-window'
-import { DateStrip } from './DateStrip'
+import { DateStrip, TodayChip } from './DateStrip'
 import { SampleDataNotice } from './SampleDataNotice'
 import { ScheduleList, ScheduleListPlaceholder } from './ScheduleList'
 import { scheduleMessages } from './schedule.messages'
@@ -20,6 +21,10 @@ import { sessionTimings } from './session-timing'
 import { useNow } from './use-now'
 import { useSchedule } from './use-schedule'
 import { SessionDetailSheet } from './SessionDetailSheet'
+import { CourtBand } from '../layout/CourtBand'
+import { CourtLines } from '@/components/brand/court-lines'
+import { ALL_LEVELS, AvailableOnlySwitch, LevelTabs, TimeChips } from './ScheduleFilters'
+import { isUnavailable } from './session-booking'
 
 export function SchedulePage() {
   const { language, t } = useI18n()
@@ -54,8 +59,13 @@ export function SchedulePage() {
   const resultsRef = useRef<HTMLDivElement>(null)
   const [heldHeight, setHeldHeight] = useState<number | null>(null)
 
+  const [level, setLevel] = useState(ALL_LEVELS)
+  const [availableOnly, setAvailableOnly] = useState(false)
+  const [markedId, setMarkedId] = useState<string | null>(null)
+
   const selectDate = (date: string) => {
     if (date === selected) return
+    setMarkedId(null)
     setHeldHeight(resultsRef.current?.offsetHeight ?? null)
     setDirection(date > selected ? 1 : -1)
     setStripStart(computeStripWindow({ selected: date, currentStart: dates[0], ...bounds })[0])
@@ -76,32 +86,42 @@ export function SchedulePage() {
   const now = useNow()
   const timings = schedule.status === 'ready' && selected === schedule.data.today ? sessionTimings(schedule.data.sessions, now) : null
 
+  // Filters apply to the loaded day. A level that the new day lacks falls back to "All" without a reset effect.
+  const daySessions = schedule.status === 'ready' ? schedule.data.sessions : []
+  const levels = [...new Set(daySessions.map(session => session.levelName).filter(Boolean))]
+  const activeLevel = levels.includes(level) ? level : ALL_LEVELS
+  const levelSessions = activeLevel === ALL_LEVELS ? daySessions : daySessions.filter(session => session.levelName === activeLevel)
+  const visibleSessions = availableOnly ? levelSessions.filter(session => !isUnavailable(session, timings?.get(session.id))) : levelSessions
+  const hiddenCount = levelSessions.length - visibleSessions.length
+
+  const markSession = (id: string) => {
+    setMarkedId(id)
+    selectionHaptic()
+    document.querySelector(`[data-session-card="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+  }
+
   return (
     <>
-      {/* The tab already names this screen; the heading exists for assistive technology only. */}
-      <h1 className="sr-only">{t(scheduleMessages.heading)}</h1>
-
-      <section aria-label={t(scheduleMessages.dateControls)} className="border-b border-outline-variant bg-surface-container-low">
-        <div className="page-gutter mx-auto w-full max-w-[50rem] pb-2 pt-3 lg:max-w-[72rem]">
-          <div>
+      {/* The band holds the date (month, step buttons, tiles); the content below never repeats it as a heading.
+          The visually hidden heading is where focus returns when a sheet closes. */}
+      <CourtBand title={t(scheduleMessages.heading)} action={<TodayChip selected={selected} today={bounds.today} onSelect={selectDate} />}>
+        <section aria-label={t(scheduleMessages.dateControls)}>
           <DateStrip dates={dates} selected={selected} onSelect={selectDate} {...bounds} />
-          </div>
-        </div>
-      </section>
+        </section>
+      </CourtBand>
 
-      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-4 lg:max-w-[72rem]">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h2 data-schedule-heading tabIndex={-1} className="text-title font-bold text-on-surface">
-            {formatClubDateMedium(selected, language)}
-            <span className="ml-2 text-label font-normal text-on-surface-variant">WIB</span>
-          </h2>
-          {schedule.status === 'ready' && sessionCount > 0 && (
-            <p role="status" className="text-label font-bold text-on-surface-variant">
-              <span className="sr-only">{selectedLabel}: </span>
-              {sessionCount === 1 ? t(scheduleMessages.sessionCountOne) : t(scheduleMessages.sessionCount, { count: sessionCount })}
+      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-3 lg:max-w-[72rem]">
+        <h2 data-schedule-heading tabIndex={-1} className="sr-only">{selectedLabel}</h2>
+        {schedule.status === 'ready' && sessionCount > 0 && (
+          <>
+            <LevelTabs levels={levels} selected={activeLevel} onSelect={value => { setLevel(value); setMarkedId(null) }} />
+            <AvailableOnlySwitch checked={availableOnly} onChange={setAvailableOnly} hiddenCount={hiddenCount} />
+            <p role="status" className="sr-only">
+              {selectedLabel}: {sessionCount === 1 ? t(scheduleMessages.sessionCountOne) : t(scheduleMessages.sessionCount, { count: sessionCount })}
             </p>
-          )}
-        </div>
+            <TimeChips sessions={visibleSessions} selectedId={markedId} onSelect={markSession} />
+          </>
+        )}
 
         <div ref={resultsRef} className="relative" style={{ minHeight: schedule.status === 'ready' ? undefined : heldHeight ?? undefined }}>
         <AnimatePresence mode="popLayout" initial={false} custom={direction}>
@@ -135,7 +155,8 @@ export function SchedulePage() {
                 <p>{t(scheduleMessages.errorFor, { date: selectedLabel })}</p>
               </StatusPanel>
             ) : sessionCount === 0 ? (
-              <div role="status" className="flex flex-col items-start gap-4 rounded-md bg-surface-container-lowest p-5">
+              <div role="status" className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-sm bg-surface-container-lowest p-5">
+                <CourtLines className="pointer-events-none absolute -right-16 -top-10 -z-10 h-56 text-on-surface/8" />
                 <div className="flex flex-col gap-1">
                   <p className="text-title font-bold text-on-surface">{t(scheduleMessages.emptyHeading)}</p>
                   {schedule.data.nextDate === null && <p className="text-on-surface-variant">{t(scheduleMessages.emptyNoFuture)}</p>}
@@ -145,15 +166,15 @@ export function SchedulePage() {
                   <button
                     type="button"
                     onClick={() => selectDate(schedule.data.nextDate!)}
-                    className="state-layer pressable flex w-full max-w-md items-center gap-4 rounded-md bg-primary p-2 pr-5 text-left text-on-primary"
+                    className="state-layer pressable flex w-full max-w-md items-center gap-4 rounded-sm bg-cta p-2 pr-5 text-left text-on-ink"
                   >
-                    <span aria-hidden="true" className="flex w-16 shrink-0 flex-col items-center rounded-sm bg-plate px-1 py-2 text-on-plate">
+                    <span aria-hidden="true" className="flex w-14 shrink-0 flex-col items-center rounded-xs bg-accent px-1 py-2 text-on-accent">
                       <span className="text-label font-bold">{formatClubWeekdayShort(schedule.data.nextDate, language)}</span>
-                      <span className="font-display text-numeral font-bold tabular-nums">{clubDayOfMonth(schedule.data.nextDate)}</span>
+                      <span className="text-title font-bold tabular-nums">{clubDayOfMonth(schedule.data.nextDate)}</span>
                     </span>
                     <span className="flex flex-col">
                       <span className="text-label">{t(scheduleMessages.emptyShortcut)}</span>
-                      <span className="font-bold">{formatClubDateMedium(schedule.data.nextDate, language)}</span>
+                      <span className="font-semibold">{formatClubDateMedium(schedule.data.nextDate, language)}</span>
                     </span>
                   </button>
                 )}
@@ -161,7 +182,14 @@ export function SchedulePage() {
             ) : (
               <>
                 {schedule.data.sessions.some(session => session.isSample) && <SampleDataNotice />}
-                <ScheduleList sessions={schedule.data.sessions} timings={timings} now={now} onOpen={(id, trigger) => { detailTrigger.current = trigger; setOpenSessionId(id) }} />
+                {visibleSessions.length === 0 ? (
+                  <div role="status" className="flex flex-col items-start gap-3 rounded-sm bg-surface-container-lowest p-5">
+                    <p className="text-on-surface">{t(scheduleMessages.noMatch)}</p>
+                    <Button variant="outlined" onClick={() => { setLevel(ALL_LEVELS); setAvailableOnly(false) }}>{t(scheduleMessages.showAll)}</Button>
+                  </div>
+                ) : (
+                  <ScheduleList sessions={visibleSessions} timings={timings} now={now} markedId={markedId} onOpen={(id, trigger) => { detailTrigger.current = trigger; setOpenSessionId(id) }} />
+                )}
               </>
             )}
           </m.div>

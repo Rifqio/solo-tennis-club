@@ -15,6 +15,7 @@ interface CalendarPickerProps {
   minDate: string
   maxDate: string
   onSelect: (date: string) => void
+  triggerClassName?: string
 }
 
 // The calendar (react-day-picker and date-fns) loads only when needed; touching or hovering the button starts the download.
@@ -27,14 +28,15 @@ function CalendarPlaceholder() {
   return <div aria-hidden="true" className="appear-late h-[22rem] rounded-md bg-surface-container" />
 }
 
-const triggerClass = 'state-layer pressable inline-flex size-12 shrink-0 items-center justify-center rounded-full text-on-surface-variant'
+const triggerBase = 'state-layer pressable inline-flex size-12 shrink-0 items-center justify-center rounded-full'
 
 // The calendar button. Phones get a bottom sheet (thumb-reachable, drag to dismiss); wider screens a popover anchored to the button.
 // Choosing a day applies it at once and closes, one tap like a native picker.
-export function CalendarPicker({ selected, today, minDate, maxDate, onSelect }: CalendarPickerProps) {
+export function CalendarPicker({ selected, today, minDate, maxDate, onSelect, triggerClassName }: CalendarPickerProps) {
   const { language, t } = useI18n()
   const isPhone = useMediaQuery('(max-width: 39.99rem)')
   const [open, setOpen] = useState(false)
+  const triggerClass = cn(triggerBase, triggerClassName ?? 'text-on-surface-variant')
 
   const choose = (date: string) => { setOpen(false); onSelect(date) }
   const calendar = (

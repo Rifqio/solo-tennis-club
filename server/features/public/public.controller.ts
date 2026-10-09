@@ -4,6 +4,7 @@ import { clubToday, isClubDate } from '../../../shared/club-time.ts'
 import { ApiError } from '../../http/errors.ts'
 import { getPublicSchedule } from './schedule.service.ts'
 import { getPublicSessionDetail } from './session-detail.service.ts'
+import { getUpcomingBookable } from './upcoming.service.ts'
 
 export function createPublicController(database: PrismaClient) {
   const detail: RequestHandler<{ id: string }> = async (request, response) => {
@@ -16,5 +17,8 @@ export function createPublicController(database: PrismaClient) {
     const result = await getPublicSchedule(database, date)
     response.set('Cache-Control', 'no-store').json(result)
   }
-  return { detail, schedule }
+  const upcoming: RequestHandler = async (_request, response) => {
+    response.set('Cache-Control', 'no-store').json(await getUpcomingBookable(database))
+  }
+  return { detail, schedule, upcoming }
 }

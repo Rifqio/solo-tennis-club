@@ -1,3 +1,4 @@
+import { CourtBand } from '@/features/public/layout/CourtBand'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
@@ -128,7 +129,7 @@ export function Component() {
   const title = result ? text.success : step === 1 ? text.title : step === 2 ? text.names : text.review
   const date = session ? (language === 'id' ? formatClubDateLong(session.date, 'id') : formatClubDateLong(session.date, 'en')) : ''
 
-  return <main className="page-gutter mx-auto flex w-full max-w-3xl min-w-0 flex-col gap-6 py-6 sm:py-8">
+  return <><CourtBand /><div className="page-gutter mx-auto flex w-full max-w-3xl min-w-0 flex-col gap-6 py-6 sm:py-8">
     <Button asChild variant="text" className="self-start"><Link to={query.get('date') ? `/?date=${encodeURIComponent(query.get('date')!)}` : '/'} aria-label={text.backToScheduleLabel}><ArrowLeft aria-hidden="true" className="size-5" />{text.backToSchedule}</Link></Button>
     <m.section key={result ? 'success' : step} initial={{ opacity: reduceMotion ? 1 : 0, x: reduceMotion ? 0 : 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: reduceMotion ? 0 : 0.18 }} className="flex min-w-0 flex-col gap-6">
       <div><p className="text-label text-primary">{!result && text.step.replace('{step}', String(step))}</p><h1 ref={heading} tabIndex={-1} className="text-headline font-bold text-on-surface">{title}</h1></div>
@@ -183,5 +184,5 @@ export function Component() {
           </>}
         </>}
     </m.section>
-  </main>
+  </div></>
 }

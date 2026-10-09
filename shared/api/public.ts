@@ -32,3 +32,8 @@ export interface PublicSessionDetail extends PublicSessionSummary {
   maxParticipants: number
   durationMinutes: number
 }
+// The next sessions a customer can still reserve: scheduled, open for booking and with places left.
+export interface PublicUpcomingResponse {
+  today: string
+  sessions: PublicSessionSummary[]
+}

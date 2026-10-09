@@ -7,5 +7,6 @@ export function createPublicRouter({ prisma }: { prisma: PrismaClient }) {
   const controller = createPublicController(prisma)
   router.get('/sessions/:id', controller.detail)
   router.get('/schedule', controller.schedule)
+  router.get('/upcoming', controller.upcoming)
   return router
 }

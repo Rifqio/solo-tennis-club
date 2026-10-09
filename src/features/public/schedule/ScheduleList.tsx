@@ -1,34 +1,50 @@
+import { AnimatePresence, m } from 'motion/react'
 import type { PublicSessionSummary } from '@shared/api/public'
-import { SessionSummaryRow } from './SessionSummaryRow'
+import { contentSpring } from '@/lib/motion'
+import { SessionCard } from './SessionCard'
 import type { SessionTiming } from './session-timing'
 
+interface ScheduleListProps {
+  sessions: PublicSessionSummary[]
+  timings: Map<string, SessionTiming> | null
+  now: number
+  markedId: string | null
+  onOpen: (id: string, trigger: HTMLButtonElement) => void
+}
+
 // Server order is startsAt then id; the list keeps it, one column on phones and two from 1024px.
-export function ScheduleList({ sessions, timings, now, onOpen }: { sessions: PublicSessionSummary[]; timings: Map<string, SessionTiming> | null; now: number; onOpen?: (id: string, trigger: HTMLButtonElement) => void }) {
+// Cards filtered out by level or availability leave with a short fade while the rest close the gap.
+export function ScheduleList({ sessions, timings, now, markedId, onOpen }: ScheduleListProps) {
   return (
-    <ul className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-10">
-      {sessions.map(session => (
-        <li key={session.id} className="border-t border-outline-variant first:border-t-0 lg:[&:nth-child(2)]:border-t-0">
-          <button type="button" onClick={event => onOpen?.(session.id, event.currentTarget)} aria-haspopup="dialog" className="state-layer w-full rounded-md text-left">
-            <SessionSummaryRow as="div" session={session} timing={timings?.get(session.id)} now={now} />
-          </button>
-        </li>
-      ))}
+    <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6">
+      <AnimatePresence initial={false} mode="popLayout">
+        {sessions.map(session => (
+          <m.li
+            key={session.id}
+            layout="position"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }}
+            transition={contentSpring}
+          >
+            <SessionCard session={session} timing={timings?.get(session.id)} now={now} marked={session.id === markedId} onOpen={onOpen} />
+          </m.li>
+        ))}
+      </AnimatePresence>
     </ul>
   )
 }
 
-// Static placeholders shaped like plates and facts while a date loads; no shimmer or pulse.
+// Static placeholders shaped like scoreboard cards while a date loads; no shimmer or pulse.
 export function ScheduleListPlaceholder() {
   return (
-    <ul aria-hidden="true" className="appear-late grid grid-cols-1 lg:grid-cols-2 lg:gap-x-10">
-      {[0, 1, 2, 3].map(index => (
-        <li key={index} className="grid grid-cols-[5rem_minmax(0,1fr)] gap-x-4 border-t border-outline-variant py-4 first:border-t-0 sm:grid-cols-[6rem_minmax(0,1fr)] lg:[&:nth-child(2)]:border-t-0">
-          <div className="h-[4.75rem] rounded-md bg-surface-container-high" />
-          <div className="flex flex-col gap-2 pt-1">
-            <div className="h-6 w-3/4 rounded-xs bg-surface-container-high" />
-            <div className="h-4 w-1/2 rounded-xs bg-surface-container" />
-            <div className="h-4 w-2/5 rounded-xs bg-surface-container" />
-          </div>
+    <ul aria-hidden="true" className="appear-late grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6">
+      {[0, 1, 2].map(index => (
+        <li key={index} className="flex flex-col gap-3 rounded-sm bg-surface-container-lowest p-4">
+          <div className="flex gap-0.5"><div className="size-12 rounded-xs bg-surface-container-high" /><div className="ml-2 size-12 rounded-xs bg-surface-container-high" /></div>
+          <div className="h-6 w-3/4 rounded-xs bg-surface-container-high" />
+          <div className="h-4 w-1/2 rounded-xs bg-surface-container" />
+          <div className="h-4 w-2/5 rounded-xs bg-surface-container" />
         </li>
       ))}
     </ul>

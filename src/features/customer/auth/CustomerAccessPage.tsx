@@ -1,3 +1,4 @@
+import { CourtBand } from '@/features/public/layout/CourtBand'
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { ArrowLeft } from 'lucide-react'
@@ -79,7 +80,7 @@ export function Component() {
     access.editPhone()
   }
 
-  return <section className="page-gutter mx-auto flex w-full max-w-lg min-w-0 flex-col gap-6 py-6 sm:py-8">
+  return <><CourtBand /><section className="page-gutter mx-auto flex w-full max-w-lg min-w-0 flex-col gap-6 py-6 sm:py-8">
     <Button asChild variant="text" className="self-start"><Link to={schedulePath} aria-label={t(messages.backLabel)}><ArrowLeft aria-hidden="true" className="size-5" />{t(messages.back)}</Link></Button>
     <m.div key={state.stage} initial={{ opacity: reduceMotion ? 1 : 0, x: reduceMotion ? 0 : state.stage === 'phone' ? -12 : 12 }}
       animate={{ opacity: 1, x: 0 }} transition={{ duration: reduceMotion ? 0 : 0.2 }} className="flex min-w-0 flex-col gap-6">
@@ -128,5 +129,5 @@ export function Component() {
           <p className="text-label text-on-surface-variant">{t(messages.noHold)}</p>
         </>}
     </m.div>
-  </section>
+  </section></>
 }

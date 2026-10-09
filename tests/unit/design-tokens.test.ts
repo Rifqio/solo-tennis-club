@@ -22,16 +22,16 @@ function offenders(pattern: RegExp, scope = code) {
 }
 
 describe('design token guard', () => {
-  it('uses only the five text roles (label, body, title, headline, numeral)', () => {
-    expect(offenders(/\btext-(?:xs|sm|base|lg|[2-9]?xl|display|heading)\b|\btext-\[\d/g)).toEqual([])
+  it('uses only the six text roles (label, body, title, headline, numeral, display)', () => {
+    expect(offenders(/\btext-(?:xs|sm|base|lg|[2-9]?xl|heading)\b|\btext-\[\d/g)).toEqual([])
   })
 
-  it('uses only weights 400 and 700', () => {
-    expect(offenders(/\bfont-(?:thin|extralight|light|medium|semibold|extrabold|black|\[\d)/g)).toEqual([])
+  it('uses only the four Outfit weights (400, 500, 600, 700)', () => {
+    expect(offenders(/\bfont-(?:thin|extralight|light|extrabold|black|\[\d)/g)).toEqual([])
   })
 
   it('has no gradient, glow, blur, or ad-hoc shadow effects', () => {
-    expect(offenders(/\bbg-(?:linear|radial|conic|gradient)\b|\bbg-gradient-|\bbackdrop-blur|\bblur(?:-\w+)?\b|\bdrop-shadow|\bshadow-(?!sheet\b|menu\b|bar\b)[\w[]/g)).toEqual([])
+    expect(offenders(/\bbg-(?:linear|radial|conic|gradient)\b|\bbg-gradient-|\bbackdrop-blur|\bblur(?:-\w+)?\b|\bdrop-shadow|\bshadow-(?!sheet\b|menu\b|bar\b|fab\b|none\b)[\w[]/g)).toEqual([])
   })
 
   it('keeps hex colors in index.css only', () => {
@@ -42,8 +42,8 @@ describe('design token guard', () => {
     expect(offenders(/dangerouslySetInnerHTML/g)).toEqual([])
   })
 
-  it('defines the locked palette and contrast-tested semantic colors', () => {
-    for (const hex of ['#164D45', '#FFFFFF', '#1D252C', '#EDF4F1', '#4B5D57', '#B42318', '#FEECE8', '#805000', '#FFF4D6', '#F5F9F7', '#C9E7DE', '#0E1916']) {
+  it('defines the Courtside palette and contrast-tested semantic colors', () => {
+    for (const hex of ['#0079ED', '#0062C4', '#4DA3FF', '#C0FC49', '#0F1112', '#232628', '#F2F3F3', '#FFFFFF', '#5B6166', '#767C81', '#B42318', '#FEECE8', '#805000', '#FFF4D6']) {
       expect(css.toUpperCase()).toContain(hex)
     }
   })

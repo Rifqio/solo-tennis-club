@@ -3,10 +3,9 @@ import type { PrismaClient } from '../../../generated/prisma/client.ts'
 import { inTransaction, inWriteTransaction } from '../../../database/transaction.ts'
 import { ApiError } from '../../../http/errors.ts'
 import { normalizeCustomerName } from '../../../../shared/customer-rules.ts'
+import { BOOKING_CUTOFF_MS, RESERVATION_HOLD_MS as HOLD_MS } from '../../../../shared/booking-rules.ts'
 import { createBookingRepository } from './booking.repository.ts'
 
-const HOLD_MS = 5 * 60 * 60 * 1000
-const BOOKING_CUTOFF_MS = HOLD_MS
 
 export type ReservationInput = {
   sessionId: string

@@ -1,41 +1,56 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource-variable/outfit";
 
 /*
-  Lafu, "Jalur Lawu": Material 3 roles built from the locked club palette
-  (club green #164D45, white #FFFFFF, ink #1D252C, pale green #EDF4F1).
-  Light and dark follow the phone. Mist ground; post plates are tonal so full green belongs only to the chosen thing.
+  Lafu, "Courtside" (DESIGN.md): court blue #0079ED, ball lime #C0FC49, ink #0F1112.
+  Role names are kept from the previous system so every screen follows the new palette; components are rebuilt per slice.
+  Lime only ever sits on ink or as a fill with ink text. Small text never sits directly on court blue (4.24:1).
 */
 :root {
   color-scheme: light dark;
 
-  --md-primary: #164D45;
+  /* Interactive blue for text and small fills on light surfaces: Deep Court (white on it 5.93:1, it on the ground 5.33:1). */
+  --md-primary: #0062C4;
   --md-on-primary: #FFFFFF;
-  --md-secondary-container: #C9E7DE;
-  --md-on-secondary-container: #0D2E29;
-  --md-surface: #F5F9F7;
+  --md-secondary-container: #E7E9E9;
+  --md-on-secondary-container: #0F1112;
+  --md-surface: #F2F3F3;
   --md-surface-container-lowest: #FFFFFF;
-  --md-surface-container-low: #EDF4F1;
-  --md-surface-container: #E5EEEA;
-  --md-surface-container-high: #DCE7E2;
-  --md-on-surface: #1D252C;
-  --md-on-surface-variant: #4B5D57;
-  --md-outline: #4B5D57;
-  --md-outline-variant: #C6D3CD;
-  --md-signboard: #164D45;
+  --md-surface-container-low: #ECEEEE;
+  --md-surface-container: #E7E9E9;
+  --md-surface-container-high: #DDE0E1;
+  --md-on-surface: #0F1112;
+  --md-on-surface-variant: #5B6166;
+  --md-outline: #767C81;
+  --md-outline-variant: #D3D7D8;
+  /* The court band (formerly the signboard). Only large white text sits directly on it. */
+  --md-signboard: #0079ED;
   --md-on-signboard: #FFFFFF;
-  --md-on-signboard-variant: #B8DDD3;
-  --md-plate: #C9E7DE;
-  --md-on-plate: #0D2E29;
+  --md-on-signboard-variant: #FFFFFF;
+  --md-band-tile: #0062C4;
+  /* Scoreboard cells (formerly post plates): ink with lime digits, 15.56:1. */
+  --md-plate: #0F1112;
+  --md-on-plate: #C0FC49;
+  --md-accent: #C0FC49;
+  --md-on-accent: #0F1112;
+  --md-ink: #0F1112;
+  --md-ink-raised: #232628;
+  --md-on-ink: #F2F3F3;
+  --md-on-ink-variant: #9AA1A6;
+  /* The primary call to action: ink with lime text on light pages, lime with ink text on dark ones. */
+  --md-cta: #0F1112;
+  /* The dock is ink; in dark mode it lifts to Raised Ink so it stays distinct from the ink ground. */
+  --md-dock: #0F1112;
+  --md-on-cta: #C0FC49;
   --md-error: #B42318;
   --md-on-error: #FFFFFF;
   --md-error-container: #FEECE8;
   --md-on-error-container: #7A1A11;
   --md-warning: #805000;
   --md-warning-container: #FFF4D6;
-  --md-scrim: rgba(29, 37, 44, 0.4);
+  --md-scrim: rgba(15, 17, 18, 0.56);
 
   /* Legacy shadcn names some primitives read. */
   --background: var(--md-surface);
@@ -44,31 +59,33 @@
   --ring: var(--md-primary);
 }
 
-/* Night-forest ground. Primary lifts to a light tone so filled actions keep contrast; plates lift so they never sink into the ground. */
+/* Night court: ink ground, raised cards, sky blue for interactive text. The band stays court blue and the dock stays ink. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --md-primary: #93D2C3;
-    --md-on-primary: #00382F;
-    --md-secondary-container: #2B4A43;
-    --md-on-secondary-container: #C9E7DE;
-    --md-surface: #0E1916;
-    --md-surface-container-lowest: #0A1412;
-    --md-surface-container-low: #121F1B;
-    --md-surface-container: #16241F;
-    --md-surface-container-high: #1F302A;
-    --md-on-surface: #E3ECE8;
-    --md-on-surface-variant: #A9BDB6;
-    --md-outline: #7F968F;
-    --md-outline-variant: #2E403A;
-    --md-plate: #2B4A43;
-    --md-on-plate: #C9E7DE;
+    --md-primary: #4DA3FF;
+    --md-on-primary: #0F1112;
+    --md-secondary-container: #232628;
+    --md-on-secondary-container: #F2F3F3;
+    --md-surface: #0F1112;
+    --md-surface-container-lowest: #1A1D1F;
+    --md-surface-container-low: #151719;
+    --md-surface-container: #232628;
+    --md-surface-container-high: #2C3033;
+    --md-on-surface: #F2F3F3;
+    --md-on-surface-variant: #9AA1A6;
+    --md-outline: #6B7378;
+    --md-outline-variant: #2C3033;
+    --md-plate: #232628;
+    --md-cta: #C0FC49;
+    --md-dock: #232628;
+    --md-on-cta: #0F1112;
     --md-error: #FFB4A8;
     --md-on-error: #690005;
     --md-error-container: #3A0F0A;
     --md-on-error-container: #FFDAD4;
     --md-warning: #F5C46A;
     --md-warning-container: #2E2205;
-    --md-scrim: rgba(0, 0, 0, 0.6);
+    --md-scrim: rgba(0, 0, 0, 0.64);
   }
 }
 
@@ -92,8 +109,19 @@
   --color-signboard: var(--md-signboard);
   --color-on-signboard: var(--md-on-signboard);
   --color-on-signboard-variant: var(--md-on-signboard-variant);
+  --color-band: var(--md-signboard);
+  --color-band-tile: var(--md-band-tile);
   --color-plate: var(--md-plate);
   --color-on-plate: var(--md-on-plate);
+  --color-accent: var(--md-accent);
+  --color-on-accent: var(--md-on-accent);
+  --color-ink: var(--md-ink);
+  --color-ink-raised: var(--md-ink-raised);
+  --color-on-ink: var(--md-on-ink);
+  --color-on-ink-variant: var(--md-on-ink-variant);
+  --color-cta: var(--md-cta);
+  --color-dock: var(--md-dock);
+  --color-on-cta: var(--md-on-cta);
   --color-error: var(--md-error);
   --color-on-error: var(--md-on-error);
   --color-error-container: var(--md-error-container);
@@ -103,12 +131,13 @@
   --color-scrim: var(--md-scrim);
   --color-border: var(--md-outline-variant);
 
-  /* The phone's own UI face (Roboto on Android) for everything people read; Barlow Condensed Bold is the routed trail-sign voice for times, dates, and the wordmark. */
+  /* Outfit throughout, chosen by the club owner from the padel reference. --font-display stays as an alias so existing
+     numeral and wordmark classes resolve to Outfit too. */
   --font-*: initial;
-  --font-sans: system-ui, Roboto, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --font-display: 'Barlow Condensed', system-ui, sans-serif;
+  --font-sans: 'Outfit Variable', system-ui, 'Segoe UI', sans-serif;
+  --font-display: 'Outfit Variable', system-ui, sans-serif;
 
-  /* Five steps: label, body, title, headline, and the post numeral. Rank comes from the jump between numeral and label. */
+  /* Display for onboarding and hero titles; numeral is the scoreboard digit size. */
   --text-*: initial;
   --text-label: 0.875rem;
   --text-label--line-height: 1.43;
@@ -118,27 +147,31 @@
   --text-title--line-height: 1.3;
   --text-headline: 1.75rem;
   --text-headline--line-height: 1.15;
-  --text-numeral: 2rem;
+  --text-numeral: 1.5rem;
   --text-numeral--line-height: 1;
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.05;
   --font-weight-*: initial;
   --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Material shape scale: status 4, field and menu 8, plate and card 12, sheet 16/28 (reserved), buttons and indicators full. */
+  /* Square-ish, after the padel reference: tiles and chips 4, cards and buttons 8, band, dock and sheets 24. */
   --radius-*: initial;
   --radius-xs: 4px;
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 28px;
+  --radius-md: 8px;
+  --radius-lg: 24px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* Tonal elevation first; shadows only for floating menus and the sheet. */
+  /* Depth is color; shadows mark things that float (sheets, menus) or rise out of the dock (book button). */
   --shadow-*: initial;
-  --shadow-menu: 0 2px 6px rgba(29, 37, 44, 0.16), 0 1px 2px rgba(29, 37, 44, 0.12);
-  /* The app bar lifts only while content scrolls beneath it, so the edge between board and page stays readable. */
-  --shadow-bar: 0 2px 8px rgba(0, 0, 0, 0.18);
-  --shadow-sheet: 0 -8px 24px rgba(29, 37, 44, 0.16);
+  --shadow-menu: 0 2px 6px rgba(15, 17, 18, 0.16), 0 1px 2px rgba(15, 17, 18, 0.12);
+  --shadow-bar: 0 2px 8px rgba(15, 17, 18, 0.18);
+  --shadow-sheet: 0 -8px 24px rgba(15, 17, 18, 0.18);
+  --shadow-fab: 0 6px 16px rgba(15, 17, 18, 0.28);
 
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -259,6 +292,14 @@
 @keyframes lafu-menu-in { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
 @keyframes lafu-menu-out { to { opacity: 0; transform: translateY(-2px) scale(0.98); } }
 @keyframes lafu-check-in { from { opacity: 0; transform: scale(0.8); } }
+
+/* The dock's notch: a circle cut from the bar around the raised book button (phones only; the rail has none). */
+@media (max-width: 39.99rem) {
+  .dock-notch {
+    -webkit-mask: radial-gradient(circle at 50% 0.5rem, transparent 2.2rem, #000 2.25rem);
+    mask: radial-gradient(circle at 50% 0.5rem, transparent 2.2rem, #000 2.25rem);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }

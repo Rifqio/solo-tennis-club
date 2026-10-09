@@ -27,6 +27,14 @@ export function createPublicSessionRepository(database: Database) {
         orderBy: [{ startsAt: 'asc' }, { id: 'asc' }],
       })
     },
+    listScheduledInRange(start: Date, end: Date, take: number) {
+      return database.classSession.findMany({
+        where: { status: 'scheduled', startsAt: { gte: start, lt: end } },
+        select: summaryFields,
+        orderBy: [{ startsAt: 'asc' }, { id: 'asc' }],
+        take,
+      })
+    },
     findNextStart(start: Date, end: Date) {
       return database.classSession.findFirst({
         where: { startsAt: { gte: start, lt: end } },

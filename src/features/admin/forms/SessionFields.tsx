@@ -9,7 +9,7 @@ import { adminMessages as messages } from './admin.messages'
 import type { DefaultValues } from './form-values'
 export function SessionFields({ section, values, setField, errors, options, optionsStatus = 'ready' }: { section: 'venue' | 'limits' | 'duration'; values: DefaultValues; setField: (field: keyof DefaultValues, value: string | string[]) => void; errors: Record<string, FieldErrorCode>; options: SessionOptions; optionsStatus?: 'loading' | 'error' | 'ready' }) {
   const { t } = useI18n()
-  const labels = { levelId: messages.level, venueId: messages.venue, durationMinutes: messages.duration, priceIdr: messages.price, minParticipants: messages.min, maxParticipants: messages.max, coachIds: { id: 'Pelatih', en: 'Coaches' } }
+  const labels = { levelId: messages.level, venueId: messages.venue, durationMinutes: messages.duration, priceIdr: messages.price, minParticipants: messages.min, maxParticipants: messages.max, coachIds: { id: 'Coach', en: 'Coaches' } }
   const errorFor = (field: keyof DefaultValues) => errors[field] ? t(fieldErrorMessage(field, errors[field]), { field: t(labels[field]) }) : undefined
   if (section === 'venue') return <>
     <SelectField name="levelId" label={t(messages.level)} value={values.levelId} onChange={value => setField('levelId', value)} options={options.levels} placeholder={t(messages.choose)} error={errorFor('levelId')} />

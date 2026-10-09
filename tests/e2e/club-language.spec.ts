@@ -29,7 +29,7 @@ test('visitor opens the Club tab and switches to English, remembered on reload',
   const englishRow = page.getByRole('listitem').filter({ hasText: 'Sample tennis class' })
   await expect(englishRow).toContainText('Rp 150,000')
   await expect(englishRow).toContainText('18:00')
-  await expect(englishRow).toContainText('8 places remaining')
+  await expect(englishRow).toContainText('8 slots left')
   expect(errors).toEqual([])
 })
 

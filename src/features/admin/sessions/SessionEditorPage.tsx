@@ -26,7 +26,7 @@ import { adminMessages as messages } from '../forms/admin.messages'
 import { newSessionDraft, draftFromSession, applyClassDefaults, hasOverrides, loadDraft, saveDraft, clearDraft } from './session-draft'
 import type { SessionDraft } from './session-draft'
 import { SessionReview } from './SessionReview'
-const stepNames = [{ id: 'Kelas dan waktu', en: 'Class and time' }, { id: 'Level, lokasi, dan pelatih', en: 'Level, venue, and coaches' }, { id: 'Harga dan batas peserta', en: 'Price and participant limits' }, { id: 'Periksa sesi', en: 'Review session' }]
+const stepNames = [{ id: 'Kelas dan waktu', en: 'Class and time' }, { id: 'Level, lokasi, dan coach', en: 'Level, venue, and coaches' }, { id: 'Harga dan batas peserta', en: 'Price and participant limits' }, { id: 'Periksa sesi', en: 'Review session' }]
 const stepFields = [['classId', 'date', 'startTime', 'durationMinutes'], ['levelId', 'venueId', 'coachIds'], ['priceIdr', 'minParticipants', 'maxParticipants']]
 export function SessionEditorPage() {
   const { id } = useParams()

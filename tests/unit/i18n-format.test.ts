@@ -37,10 +37,10 @@ describe('club formatting', () => {
   })
 
   it('pluralizes remaining places in both languages', () => {
-    expect(formatRemainingPlaces(1, 'en')).toBe('1 place remaining')
-    expect(formatRemainingPlaces(2, 'en')).toBe('2 places remaining')
-    expect(formatRemainingPlaces(0, 'en')).toBe('0 places remaining')
-    expect(formatRemainingPlaces(1, 'id')).toBe('Tersisa 1 tempat')
+    expect(formatRemainingPlaces(1, 'en')).toBe('1 slot left')
+    expect(formatRemainingPlaces(2, 'en')).toBe('2 slots left')
+    expect(formatRemainingPlaces(0, 'en')).toBe('0 slots left')
+    expect(formatRemainingPlaces(1, 'id')).toBe('Sisa 1 slot')
   })
 })
 

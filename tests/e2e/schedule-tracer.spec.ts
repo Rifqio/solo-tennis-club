@@ -8,7 +8,7 @@ test('signed-out visitor sees SQLite sample session without sign-in', async ({ p
   await expect(page.getByRole('heading', { level: 2 })).toContainText('WIB')
   const row = page.getByRole('listitem').filter({ hasText: 'Sample tennis class' })
   await expect(row).toContainText('18:00')
-  await expect(row).toContainText('Tersisa 8 tempat')
+  await expect(row).toContainText('Sisa 8 slot')
   await expect(row).toContainText('Tersedia')
   await expect(page.getByText('Data contoh untuk pengujian, bukan jadwal klub.')).toBeVisible()
   await expect(page.locator('input[type="password"]')).toHaveCount(0)

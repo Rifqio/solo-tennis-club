@@ -59,6 +59,6 @@ export function formatIdr(amount: number, language: Language) {
 }
 
 export function formatRemainingPlaces(count: number, language: Language) {
-  if (language === 'id') return `Tersisa ${count} tempat`
-  return englishPlural.select(count) === 'one' ? `${count} place remaining` : `${count} places remaining`
+  if (language === 'id') return `Sisa ${count} slot`
+  return englishPlural.select(count) === 'one' ? `${count} slot left` : `${count} slots left`
 }

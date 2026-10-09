@@ -20,6 +20,6 @@ export function SessionReview({ draft, options }: { draft: SessionDraft; options
       [t(messages.duration), draft.durationMinutes], [t(messages.level), named(options.levels, draft.levelId)], [t(messages.venue), named(options.venues, draft.venueId)],
       [t(messages.price), price], [t(messages.min), draft.minParticipants], [t(messages.max), draft.maxParticipants],
     ].map(([label, value]) => <div key={label}><dt className="text-label text-on-surface-variant">{label}</dt><dd className="font-bold">{value || unavailable}</dd></div>)}
-    <div><dt className="text-label text-on-surface-variant">{t({ id: 'Pelatih', en: 'Coaches' })}</dt><dd><ul className="flex flex-col gap-2">{draft.coachIds.length ? draft.coachIds.map(id => <li key={id}>{named(options.coaches, id)}</li>) : <li>{unavailable}</li>}</ul></dd></div>
+    <div><dt className="text-label text-on-surface-variant">{t({ id: 'Coach', en: 'Coaches' })}</dt><dd><ul className="flex flex-col gap-2">{draft.coachIds.length ? draft.coachIds.map(id => <li key={id}>{named(options.coaches, id)}</li>) : <li>{unavailable}</li>}</ul></dd></div>
   </dl>
 }

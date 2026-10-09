@@ -8,8 +8,8 @@ export const adminMessages = {
   latest: { id: 'Versi terbaru', en: 'Latest saved' }, yours: { id: 'Isian Anda', en: 'Your changes' },
   replace: { id: 'Gunakan versi terbaru', en: 'Use latest version' }, choose: { id: 'Pilih...', en: 'Choose...' },
   defaults: { id: 'Perubahan nilai awal hanya berlaku untuk sesi baru. Sesi yang sudah ada tetap sama.', en: 'Default changes apply only to new sessions. Existing sessions stay unchanged.' },
-  missing: { id: 'Lengkapi kelas, level, lokasi, dan pelatih sebelum membuat sesi.', en: 'Add the required class, level, venue, and coaches before creating a session.' },
+  missing: { id: 'Lengkapi kelas, level, lokasi, dan coach sebelum membuat sesi.', en: 'Add the required class, level, venue, and coaches before creating a session.' },
   manage: { id: 'Kelola', en: 'Manage' }, classes: { id: 'Kelas', en: 'Classes' }, sessions: { id: 'Sesi', en: 'Sessions' },
   level: { id: 'Level', en: 'Level' }, venue: { id: 'Lokasi', en: 'Venue' }, duration: { id: 'Durasi (menit)', en: 'Duration (minutes)' },
-  price: { id: 'Harga per tempat (Rp)', en: 'Price per place (Rp)' }, min: { id: 'Minimum peserta', en: 'Minimum participants' }, max: { id: 'Kapasitas maksimum', en: 'Maximum capacity' },
+  price: { id: 'Harga per slot (Rp)', en: 'Price per slot (Rp)' }, min: { id: 'Minimum peserta', en: 'Minimum participants' }, max: { id: 'Kapasitas maksimum', en: 'Maximum capacity' },
 }

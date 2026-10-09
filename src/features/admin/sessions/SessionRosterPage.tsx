@@ -14,9 +14,9 @@ const copy = {
   error: { id: 'Daftar peserta belum dapat dimuat.', en: 'The roster could not be loaded.' },
   retry: { id: 'Coba lagi', en: 'Try again' },
   back: { id: 'Kembali ke sesi', en: 'Back to sessions' },
-  places: { id: '{used} dari {max} tempat terisi', en: '{used} of {max} places occupied' },
-  left: { id: '{count} tempat tersisa', en: '{count} places remaining' },
-  group: { id: 'Reservasi · {count} tempat', en: 'Booking · {count} places' },
+  places: { id: '{used} dari {max} slot terisi', en: '{used} of {max} slots taken' },
+  left: { id: '{count} slot tersisa', en: '{count} slots left' },
+  group: { id: 'Reservasi · {count} slot', en: 'Booking · {count} slots' },
   booker: { id: 'Pemesan', en: 'Booked by' },
   participants: { id: 'Nama peserta', en: 'Participants' },
   phone: { id: 'Telepon', en: 'Phone' },
@@ -56,8 +56,8 @@ export function Component() {
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-label text-on-surface-variant">
           <span>{data.session.venueName}{data.session.venueAddress ? ` · ${data.session.venueAddress}` : ''}</span>
-          {data.session.coaches.length > 0 && <span>{t({ id: 'Pelatih', en: 'Coaches' })}: {data.session.coaches.join(', ')}</span>}
-          <span>{formatIdr(data.session.priceIdr, language)} {t({ id: 'per tempat', en: 'per place' })}</span>
+          {data.session.coaches.length > 0 && <span>{t({ id: 'Coach', en: 'Coaches' })}: {data.session.coaches.join(', ')}</span>}
+          <span>{formatIdr(data.session.priceIdr, language)} {t({ id: 'per slot', en: 'per slot' })}</span>
           <span>{t({ id: 'Minimum {min} · maksimum {max}', en: 'Minimum {min} · maximum {max}' }, { min: data.session.minParticipants, max: data.session.maxParticipants })}</span>
         </div>
       </header>}

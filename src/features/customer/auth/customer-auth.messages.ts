@@ -35,5 +35,5 @@ export const customerAuthMessages = {
   network: { id: 'Permintaan belum selesai. Periksa koneksi lalu coba lagi.', en: 'The request did not finish. Check your connection and try again.' },
   retry: { id: 'Coba lagi', en: 'Try again' },
   recovery: { id: 'Nomor tetap sama? Masuk dengan kode. Nomor lama hilang? Hubungi klub untuk bantuan akun.', en: 'Same number? Sign in with a code. Lost your old number? Contact the club for account help.' },
-  noHold: { id: 'Masuk belum memesan tempat. Reservasi dimulai setelah konfirmasi terakhir.', en: 'Signing in does not reserve a place. A reservation starts after final confirmation.' },
+  noHold: { id: 'Masuk belum mem-booking slot. Reservasi dimulai setelah konfirmasi terakhir.', en: 'Signing in does not book a slot. A reservation starts after final confirmation.' },
 }

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test } from '@playwright/test'
 import { browserSignIn } from './support/browser-admin.ts'
-for (const [path, add, edit] of [['coaches','Tambah pelatih','Ubah pelatih'],['venues','Tambah lokasi','Ubah lokasi'],['levels','Tambah level','Ubah level']] as const) {
+for (const [path, add, edit] of [['coaches','Tambah coach','Ubah coach'],['venues','Tambah lokasi','Ubah lokasi'],['levels','Tambah level','Ubah level']] as const) {
   test(`reference ${path}: create, reload, edit, preserve values on failure and confirm discard`, async ({ page }) => {
     await browserSignIn(page)
     await page.goto(`/admin/${path}/new`)

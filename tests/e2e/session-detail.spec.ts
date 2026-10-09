@@ -11,9 +11,9 @@ test('E3 complete detail, all coaches, language switch and close restore the ori
   await row.click()
   const dialog = page.getByRole('dialog')
   await expect(dialog).toContainText('Contoh pelatih satu'); await expect(dialog).toContainText('Contoh pelatih dua')
-  for (const label of ['Harga per tempat', 'Minimum peserta', 'Kapasitas maksimum', 'Lokasi']) await expect(dialog.getByText(label, { exact: true })).toBeVisible()
+  for (const label of ['Harga per slot', 'Minimum peserta', 'Kapasitas maksimum', 'Lokasi']) await expect(dialog.getByText(label, { exact: true })).toBeVisible()
   await dialog.getByRole('button', { name: 'English', exact: true }).click()
-  await expect(dialog.getByText('Price per place', { exact: true })).toBeVisible()
+  await expect(dialog.getByText('Price per slot', { exact: true })).toBeVisible()
   await page.keyboard.press('Escape'); await expect(row).toBeFocused(); await expect(page).toHaveURL('/?date=' + fixtureDate)
 })
 test('E3 loading keeps Close usable; error has Retry, vanished and partial facts are truthful', async ({ page }) => {

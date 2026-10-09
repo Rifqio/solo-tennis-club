@@ -16,8 +16,8 @@ describe('localized error catalog', () => {
     expect(apiErrorMessages.SIGN_IN_THROTTLED.en).toContain('{minutes}')
     expect(apiErrorMessages.UNAUTHENTICATED.id).toBe('Sesi admin berakhir. Masuk lagi untuk melanjutkan.')
     expect(fieldErrorMessages.MIN_EXCEEDS_MAX.en).toBe('Minimum participants cannot exceed maximum capacity.')
-    expect(fieldErrorMessages.CAPACITY_BELOW_OCCUPIED.id).toBe('Kapasitas lebih kecil dari tempat yang sudah terpakai. Tambahkan kapasitas lalu simpan lagi.')
-    expect(fieldErrorMessages.COACH_REQUIRED).toEqual({ id: 'Pilih setidaknya satu pelatih.', en: 'Select at least one coach.' })
+    expect(fieldErrorMessages.CAPACITY_BELOW_OCCUPIED.id).toBe('Kapasitas lebih kecil dari slot yang sudah terpakai. Tambahkan kapasitas lalu simpan lagi.')
+    expect(fieldErrorMessages.COACH_REQUIRED).toEqual({ id: 'Pilih setidaknya satu coach.', en: 'Select at least one coach.' })
     expect(fieldErrorMessages.REQUIRED).toEqual({ id: 'Isi {field}.', en: 'Enter {field}.' })
   })
 

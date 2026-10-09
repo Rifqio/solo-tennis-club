@@ -7,6 +7,7 @@ import { createCustomerAuthController } from './customer-auth.controller.ts'
 import { createCustomerAuthService } from './customer-auth.service.ts'
 import { createMockOtpAdapter } from './otp.adapter.ts'
 import { createCustomerBookingRouter } from '../booking/booking.router.ts'
+import { createCustomerPlayersRouter } from '../players/players.router.ts'
 
 export function createCustomerAuthRouter(database: PrismaClient, config: RuntimeConfig) {
   const router = Router()
@@ -29,5 +30,6 @@ export function createCustomerAuthRouter(database: PrismaClient, config: Runtime
   router.get('/auth/session', controller.readSession)
   router.post('/auth/sign-out', controller.signOut)
   router.use(createCustomerBookingRouter(database))
+  router.use(createCustomerPlayersRouter(database))
   return router
 }

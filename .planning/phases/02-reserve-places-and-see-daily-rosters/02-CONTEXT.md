@@ -17,6 +17,8 @@ Reader: the engineer implementing Phase 2 and the club owner reviewing behavior.
 | P2-07 | Admin records name + phone without creating a verified login | Store private contact snapshots and leave customer ownership unset until explicit authorized linking |
 | P2-08 | After customer verifies the same phone, admin explicitly links the booking | Exact normalized verified-phone match and version check; audit the link; no automatic merge or public claim search |
 | P2-09 | Same-number recovery uses OTP; lost-number recovery requires club assistance | No self-service phone replacement or automatic account merge; assistance guidance is delivered, transfer tooling is a separately controlled future task |
+| P2-10 | Signed-in members see who is playing in each session, as they did in the shared spreadsheet (2026-10-09) | Participant names only, via `GET /api/customer/session-players?date=`; never phones, booking states or payment data; visitors who are not signed in see counts only; names come from bookings that currently hold places |
+| P2-11 | Booking and sign-in screens hide the bottom navigation (2026-10-09) | The fixed action bar (total plus primary action) takes the bottom of the screen during the task; navigation returns afterwards |
 
 P2-03 through P2-06 were approved in the user's planning answers. P2-07 through P2-09 were approved together. P2-02 is the subsequent explicit instruction: "at the moment we mock otp or sending via api response".
 

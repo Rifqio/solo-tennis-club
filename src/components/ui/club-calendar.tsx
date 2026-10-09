@@ -32,8 +32,8 @@ const toLocal = (date: string) => {
 }
 const fromLocal = (date: Date) => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-')
 
-// The month grid in the trail-sign voice: routed month caption, 48px day tiles with sign numerals,
-// the selected day as the full club-green tile, today as an inset green ring.
+// The month grid: 48px square day cells, the selected day in ink with lime digits (the scoreboard look),
+// today as an inset Deep Court ring, days outside the public window muted and not selectable.
 export function ClubCalendar({ selected, today, minDate, maxDate, onSelect }: ClubCalendarProps) {
   const { language, t } = useI18n()
   const selectedDay = toLocal(selected)
@@ -60,17 +60,17 @@ export function ClubCalendar({ selected, today, minDate, maxDate, onSelect }: Cl
         months: 'relative flex flex-col',
         month: 'flex flex-col gap-1',
         month_caption: 'flex h-12 items-center pl-1',
-        caption_label: 'font-display text-title font-bold uppercase tracking-wide text-on-surface',
-        nav: 'absolute right-0 top-0 z-10 flex gap-1',
-        button_previous: 'state-layer pressable inline-flex size-12 items-center justify-center rounded-full text-on-surface-variant disabled:cursor-not-allowed disabled:opacity-40',
-        button_next: 'state-layer pressable inline-flex size-12 items-center justify-center rounded-full text-on-surface-variant disabled:cursor-not-allowed disabled:opacity-40',
-        month_grid: 'w-full border-collapse overflow-hidden',
+        caption_label: 'text-title font-semibold text-on-surface',
+        nav: 'absolute right-0 top-0 z-10 flex gap-2',
+        button_previous: 'state-layer pressable inline-flex size-12 items-center justify-center rounded-full border border-outline text-on-surface disabled:cursor-not-allowed disabled:border-outline-variant disabled:opacity-40',
+        button_next: 'state-layer pressable inline-flex size-12 items-center justify-center rounded-full border border-outline text-on-surface disabled:cursor-not-allowed disabled:border-outline-variant disabled:opacity-40',
+        month_grid: 'w-full border-separate border-spacing-1 overflow-hidden',
         weekdays: '',
-        weekday: 'h-10 text-center text-label font-normal text-on-surface-variant',
+        weekday: 'h-8 text-center text-label font-normal text-on-surface-variant',
         weeks: 'relative',
         week: '',
         day: 'group p-0 text-center',
-        day_button: 'state-layer pressable relative mx-auto flex min-h-12 w-full min-w-11 max-w-12 items-center justify-center rounded-md font-display text-title font-bold tabular-nums text-on-surface transition-colors duration-200 group-data-[selected=true]:bg-primary group-data-[selected=true]:text-on-primary group-data-[today=true]:ring-2 group-data-[today=true]:ring-inset group-data-[today=true]:ring-primary group-data-[today=true]:text-primary group-data-[selected=true]:ring-0 group-data-[selected=true]:group-data-[today=true]:text-on-primary disabled:cursor-not-allowed disabled:font-normal disabled:text-on-surface-variant disabled:opacity-45',
+        day_button: 'state-layer pressable relative mx-auto flex min-h-12 w-full min-w-11 items-center justify-center rounded-xs bg-surface-container-lowest text-title font-semibold tabular-nums text-on-surface transition-colors duration-200 group-data-[selected=true]:bg-ink group-data-[selected=true]:font-bold group-data-[selected=true]:text-accent dark:group-data-[selected=true]:bg-ink-raised group-data-[today=true]:ring-2 group-data-[today=true]:ring-inset group-data-[today=true]:ring-primary group-data-[today=true]:text-primary group-data-[selected=true]:ring-0 group-data-[selected=true]:group-data-[today=true]:text-accent disabled:cursor-not-allowed disabled:bg-transparent disabled:font-normal disabled:text-on-surface-variant disabled:opacity-60',
         selected: '',
         today: '',
         disabled: '',

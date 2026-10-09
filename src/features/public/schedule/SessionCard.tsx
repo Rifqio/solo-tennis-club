@@ -1,4 +1,4 @@
-import { CircleCheck } from 'lucide-react'
+import { CircleCheck, UsersRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { AvailabilityLabel } from '@/components/ui/availability-label'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ import type { PublicSessionSummary } from '@shared/api/public'
 import { scheduleMessages } from './schedule.messages'
 import { canBookSession } from './session-booking'
 import { minutesUntil } from './session-timing'
+import { summarizePlayers } from './use-session-players'
 import type { SessionTiming } from './session-timing'
 
 function present(value: string | null | undefined) {
@@ -23,13 +24,15 @@ interface SessionCardProps {
   timing?: SessionTiming
   now: number
   marked?: boolean
+  // Names of who is playing, for signed-in members only (P2-10); undefined hides the line.
+  players?: string[]
   onOpen: (id: string, trigger: HTMLButtonElement) => void
 }
 
 // The scoreboard card: start time in two lime-on-ink cells, then the facts, the state cell and, when the session can
 // still be booked, a Pesan button straight to booking. The whole card opens the detail sheet through a stretched
 // button underneath, so the Pesan link is never nested inside another control.
-export function SessionCard({ session, timing, now, marked = false, onOpen }: SessionCardProps) {
+export function SessionCard({ session, timing, now, marked = false, players, onOpen }: SessionCardProps) {
   const { language, t } = useI18n()
   const unavailable = t(commonMessages.unavailable)
   const cancelled = session.availability === 'cancelled'
@@ -81,6 +84,13 @@ export function SessionCard({ session, timing, now, marked = false, onOpen }: Se
           {price && <span className="text-on-surface-variant"> {t(scheduleMessages.perPlace)}</span>}
         </p>
         {cancelled && <p className="text-label text-on-surface-variant">{t(scheduleMessages.cancelledExplanation)}</p>}
+        {!cancelled && players && players.length > 0 && (
+          <p className="mt-1 flex items-center gap-1.5 text-label text-on-surface">
+            <UsersRound aria-hidden="true" className="size-4 shrink-0 text-on-surface-variant" />
+            <span className="sr-only">{t(scheduleMessages.players)}: </span>
+            <span className="min-w-0 truncate">{summarizePlayers(players)}</span>
+          </p>
+        )}
       </div>
 
       <div className="relative flex flex-wrap items-end justify-between gap-3">

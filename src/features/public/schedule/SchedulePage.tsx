@@ -25,6 +25,7 @@ import { CourtBand } from '../layout/CourtBand'
 import { CourtLines } from '@/components/brand/court-lines'
 import { ALL_LEVELS, AvailableOnlySwitch, LevelTabs, TimeChips } from './ScheduleFilters'
 import { isUnavailable } from './session-booking'
+import { useSessionPlayers } from './use-session-players'
 
 export function SchedulePage() {
   const { language, t } = useI18n()
@@ -83,6 +84,7 @@ export function SchedulePage() {
   }
 
   const sessionCount = schedule.status === 'ready' ? schedule.data.sessions.length : 0
+  const players = useSessionPlayers(selected)
   const now = useNow()
   const timings = schedule.status === 'ready' && selected === schedule.data.today ? sessionTimings(schedule.data.sessions, now) : null
 
@@ -188,7 +190,7 @@ export function SchedulePage() {
                     <Button variant="outlined" onClick={() => { setLevel(ALL_LEVELS); setAvailableOnly(false) }}>{t(scheduleMessages.showAll)}</Button>
                   </div>
                 ) : (
-                  <ScheduleList sessions={visibleSessions} timings={timings} now={now} markedId={markedId} onOpen={(id, trigger) => { detailTrigger.current = trigger; setOpenSessionId(id) }} />
+                  <ScheduleList sessions={visibleSessions} timings={timings} now={now} markedId={markedId} players={players.status === 'ready' ? players.sessions : undefined} onOpen={(id, trigger) => { detailTrigger.current = trigger; setOpenSessionId(id) }} />
                 )}
               </>
             )}

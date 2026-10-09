@@ -17,7 +17,7 @@ export function Scoreboard({ time, tone = 'live', size = 'md', className }: { ti
     <span className={cn('inline-flex shrink-0 items-center gap-0.5', className)}>
       <span className="sr-only">{time}</span>
       <span aria-hidden="true" className={cell}>{hour}</span>
-      <span aria-hidden="true" className={cn('font-bold', size === 'md' ? 'text-title' : 'text-body', tone === 'live' ? 'text-on-surface' : 'text-on-surface-variant')}>:</span>
+      <span aria-hidden="true" className={cn('font-bold', size === 'md' ? 'text-title' : 'text-body', tone !== 'live' && 'text-on-surface-variant')}>:</span>
       <span aria-hidden="true" className={cell}>{minute}</span>
     </span>
   )

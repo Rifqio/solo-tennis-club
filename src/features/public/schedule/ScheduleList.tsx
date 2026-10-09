@@ -9,12 +9,13 @@ interface ScheduleListProps {
   timings: Map<string, SessionTiming> | null
   now: number
   markedId: string | null
+  players?: Record<string, string[]>
   onOpen: (id: string, trigger: HTMLButtonElement) => void
 }
 
 // Server order is startsAt then id; the list keeps it, one column on phones and two from 1024px.
 // Cards filtered out by level or availability leave with a short fade while the rest close the gap.
-export function ScheduleList({ sessions, timings, now, markedId, onOpen }: ScheduleListProps) {
+export function ScheduleList({ sessions, timings, now, markedId, players, onOpen }: ScheduleListProps) {
   return (
     <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6">
       <AnimatePresence initial={false} mode="popLayout">
@@ -27,7 +28,7 @@ export function ScheduleList({ sessions, timings, now, markedId, onOpen }: Sched
             exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }}
             transition={contentSpring}
           >
-            <SessionCard session={session} timing={timings?.get(session.id)} now={now} marked={session.id === markedId} onOpen={onOpen} />
+            <SessionCard session={session} timing={timings?.get(session.id)} now={now} marked={session.id === markedId} players={players?.[session.id]} onOpen={onOpen} />
           </m.li>
         ))}
       </AnimatePresence>

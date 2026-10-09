@@ -40,6 +40,7 @@ export const scheduleMessages = {
   bookingClosed: { id: 'Pemesanan ditutup', en: 'Booking closed' },
   noMatch: { id: 'Tidak ada sesi yang cocok dengan pilihan ini.', en: 'No sessions match these choices.' },
   showAll: { id: 'Tampilkan semua', en: 'Show all' },
+  players: { id: 'Pemain', en: 'Players' },
   status: {
     available: { id: 'Tersedia', en: 'Available' },
     nearly_full: { id: 'Hampir penuh', en: 'Nearly full' },

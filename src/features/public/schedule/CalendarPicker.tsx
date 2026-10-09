@@ -25,7 +25,7 @@ const preload = { onPointerEnter: () => void loadCalendar(), onTouchStart: () =>
 
 // Holds the sheet's height while the calendar arrives, and only shows after 150ms so a fast load never flashes.
 function CalendarPlaceholder() {
-  return <div aria-hidden="true" className="appear-late h-[22rem] rounded-md bg-surface-container" />
+  return <div aria-hidden="true" className="appear-late h-[22rem] rounded-sm bg-surface-container" />
 }
 
 const triggerBase = 'state-layer pressable inline-flex size-12 shrink-0 items-center justify-center rounded-full'
@@ -52,16 +52,18 @@ export function CalendarPicker({ selected, today, minDate, maxDate, onSelect, tr
         <Drawer.Trigger className={triggerClass} aria-label={t(scheduleMessages.chooseDate)} data-icon-only {...preload}>{trigger}</Drawer.Trigger>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 z-40 bg-scrim" />
-          <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[calc(100dvh-1rem)] flex-col rounded-t-xl bg-surface-container-low pl-[max(4px,env(safe-area-inset-left))] pr-[max(4px,env(safe-area-inset-right))] pb-[max(1rem,env(safe-area-inset-bottom))] text-on-surface shadow-sheet outline-none">
-            <div aria-hidden="true" className="mx-auto mb-1 mt-3 h-1 w-8 shrink-0 rounded-full bg-outline" />
-            {/* Header names the task, then shows the current choice in the sign voice so the sheet confirms what is set. */}
-            <div className="flex flex-col gap-1 px-2 pb-3 pt-3">
-              <div className="flex items-center justify-between gap-2"><Drawer.Title className="text-label font-bold text-on-surface-variant">{t(scheduleMessages.chooseDate)}</Drawer.Title><Drawer.Close asChild><IconButton label={t({ id: 'Tutup kalender', en: 'Close calendar' })}><X aria-hidden="true" className="size-5" /></IconButton></Drawer.Close></div>
-              <Drawer.Description className="font-display text-headline font-bold uppercase tracking-wide text-on-surface">
-                {formatClubDateMedium(selected, language)}
-              </Drawer.Description>
+          <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-t-lg bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] text-on-surface shadow-sheet outline-none">
+            {/* Court Blue header: the task on a Deep Court pill (small text never sits on bare blue), then the chosen
+                date as a large white headline so the sheet confirms what is set. */}
+            <div className="flex flex-col gap-1 bg-band px-4 pb-4 pt-2 text-on-signboard [&_:focus-visible]:outline-white">
+              <div aria-hidden="true" className="mx-auto mb-1 h-1 w-8 shrink-0 rounded-full bg-on-signboard/60" />
+              <div className="flex items-center justify-between gap-2">
+                <Drawer.Title className="rounded-full bg-band-tile px-3 py-1 text-label font-medium">{t(scheduleMessages.chooseDate)}</Drawer.Title>
+                <Drawer.Close asChild><IconButton label={t({ id: 'Tutup kalender', en: 'Close calendar' })} className="bg-band-tile text-on-signboard"><X aria-hidden="true" className="size-5" /></IconButton></Drawer.Close>
+              </div>
+              <Drawer.Description className="text-headline font-bold">{formatClubDateMedium(selected, language)}</Drawer.Description>
             </div>
-            <div className="overflow-y-auto overscroll-contain border-t border-outline-variant pt-2">{calendar}</div>
+            <div className="overflow-y-auto overscroll-contain px-3 pt-2">{calendar}</div>
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
@@ -77,7 +79,7 @@ export function CalendarPicker({ selected, today, minDate, maxDate, onSelect, tr
           sideOffset={6}
           aria-label={t(scheduleMessages.chooseDate)}
           className={cn(
-            'z-50 w-[23rem] origin-[var(--radix-popover-content-transform-origin)] rounded-lg bg-surface-container-low p-3 text-on-surface shadow-menu outline-none',
+            'z-50 w-[23rem] origin-[var(--radix-popover-content-transform-origin)] rounded-lg bg-surface-container-lowest p-3 text-on-surface shadow-menu outline-none',
             'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
           )}
         >

@@ -1,24 +1,70 @@
 import { useEffect, useState } from 'react'
-import type { RefObject } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import { Link } from 'react-router-dom'
+import { AvailabilityMark } from '@/components/ui/availability-label'
+import { Button } from '@/components/ui/button'
+import { Scoreboard } from '@/components/ui/scoreboard'
 import { Sheet } from '@/components/ui/sheet'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { Button } from '@/components/ui/button'
-import { LanguageMenu } from '@/components/ui/language-switch'
-import { useI18n } from '@/i18n/use-i18n'
 import { commonMessages } from '@/i18n/common.messages'
-import { formatClubDateLong, formatClubTime, formatIdr, formatRemainingPlaces } from '@/i18n/format'
+import { formatClubDateLong, formatIdr, formatRemainingPlaces } from '@/i18n/format'
+import { useI18n } from '@/i18n/use-i18n'
+import { cn } from '@/lib/utils'
 import type { PublicSessionDetail } from '@shared/api/public'
 import { SampleDataNotice } from './SampleDataNotice'
 import { detailMessages as messages } from './detail.messages'
 import { scheduleMessages } from './schedule.messages'
-import { AvailabilityMark } from '@/components/ui/availability-label'
-import { clubDateOf } from '@shared/club-time'
+import { canBookSession } from './session-booking'
+import { useNow } from './use-now'
+import { useSessionPlayers } from './use-session-players'
+
+const toneClasses = {
+  available: 'text-primary',
+  nearly_full: 'text-warning',
+  full: 'text-on-surface',
+  cancelled: 'text-on-surface-variant',
+} as const
+
+function Fact({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex justify-between gap-4 border-t border-outline-variant py-3 first:border-t-0">
+      <dt className="shrink-0 text-label text-on-surface-variant">{label}</dt>
+      <dd className="min-w-0 break-words text-right font-semibold">{children}</dd>
+    </div>
+  )
+}
+
+// Who is playing: names for signed-in members (P2-10); visitors get the count and a sign-in link back to this sheet.
+function Players({ session }: { session: PublicSessionDetail }) {
+  const { t } = useI18n()
+  const players = useSessionPlayers(session.date)
+  if (players.status === 'loading' || players.status === 'unavailable') return null
+  if (players.status === 'signedOut') {
+    const returnTo = `/?${new URLSearchParams({ date: session.date, session: session.id })}`
+    return (
+      <Link to={`/customer/sign-in?returnTo=${encodeURIComponent(returnTo)}`} className="state-layer pressable flex min-h-12 items-center rounded-sm bg-surface px-3 text-label font-semibold text-primary">
+        {t(messages.signInToSee)}
+      </Link>
+    )
+  }
+  const names = players.sessions[session.id] ?? []
+  return (
+    <section aria-labelledby="session-players" className="flex flex-col gap-2 rounded-sm bg-surface p-3">
+      <h3 id="session-players" className="text-label font-semibold">{t(messages.players, { count: names.length })}</h3>
+      {names.length === 0
+        ? <p className="text-label text-on-surface-variant">{t(messages.playersEmpty)}</p>
+        : <ul className="flex flex-wrap gap-1.5">
+            {names.map((name, index) => <li key={index} className="max-w-full break-words rounded-full border border-outline-variant bg-surface-container-lowest px-3 py-1 text-label">{name}</li>)}
+          </ul>}
+    </section>
+  )
+}
 
 export function SessionDetailSheet({ id, onClose, returnFocus }: {
   id: string | null; onClose: () => void; returnFocus: RefObject<HTMLElement | null>
 }) {
   const { language, t } = useI18n()
+  const now = useNow()
   const [result, setResult] = useState<{ id: string; data?: PublicSessionDetail; missing?: boolean } | null>(null)
   const [attempt, setAttempt] = useState(0)
   useEffect(() => {
@@ -33,40 +79,85 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
       .catch(() => { if (!controller.signal.aborted) setResult({ id }) })
     return () => controller.abort()
   }, [id, attempt])
+
   const data = result?.id === id ? result.data : null
   const valid = data && data.coaches && Number.isSafeInteger(data.priceIdr) && Number.isSafeInteger(data.maxParticipants)
     && Number.isSafeInteger(data.minParticipants) && Number.isSafeInteger(data.durationMinutes)
     && Number.isFinite(Date.parse(data.startsAt)) && Number.isFinite(Date.parse(data.endsAt))
-  const open = data?.availability === 'available' || data?.availability === 'nearly_full'
-  const tone = data?.availability === 'nearly_full' ? 'text-warning' : 'text-primary'
-  return <Sheet open={id !== null} onClose={() => { setResult(null); onClose() }} title={data?.className || t(messages.title)} description={t(messages.description)} closeLabel={t(messages.close)} closeIcon returnFocus={returnFocus}>
-    {!result || result.id !== id ? <p role="status">{t(messages.loading)}</p>
-      : result.missing ? <StatusPanel tone="info" title={t(messages.missing)} />
-      : !data ? <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: () => setAttempt(value => value + 1) }} />
-      : !valid ? <StatusPanel tone="error" title={t(messages.incomplete)} action={{ label: t(commonMessages.retry), onAction: () => setAttempt(value => value + 1) }} />
-      : <>
-        {data.isSample && <SampleDataNotice />}
-        <section className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-outline-variant pb-4">
-          <p className="col-span-2 text-label font-bold uppercase tracking-wide text-primary">{formatClubDateLong(clubDateOf(data.startsAt), language)} · WIB</p>
-          <p className="font-display text-numeral font-bold tabular-nums leading-none text-primary">{formatClubTime(data.startsAt)}<span className="px-2 text-title font-normal text-on-surface-variant">–</span>{formatClubTime(data.endsAt)}</p>
-          <div className={`flex flex-col items-end gap-1 text-label font-bold ${tone}`}><span className="inline-flex items-center gap-1.5"><AvailabilityMark availability={data.availability} />{t(scheduleMessages.status[data.availability])}</span>
-            {(data.availability === 'available' || data.availability === 'nearly_full') && <span className="text-on-surface-variant">{formatRemainingPlaces(data.remainingPlaces, language)}</span>}
-          </div>
-          <p className="col-span-2 text-title font-bold">{data.levelName}</p>
-        </section>
-        <dl className="grid grid-cols-1 divide-y divide-outline-variant sm:grid-cols-2 sm:gap-x-8 sm:divide-y-0">
-          <div className="py-3 sm:border-b sm:border-outline-variant"><dt className="text-label text-on-surface-variant">{t(messages.venue)}</dt><dd className="mt-1 font-bold">{data.venueName}</dd>{data.venueAddress && <dd className="text-label text-on-surface-variant">{data.venueAddress}</dd>}</div>
-          <div className="py-3 sm:border-b sm:border-outline-variant"><dt className="text-label text-on-surface-variant">{t(messages.coaches)}</dt><dd className="mt-1 font-bold">{data.coaches.length ? data.coaches.join(', ') : t(commonMessages.unavailable)}</dd></div>
-          <div className="py-3 sm:border-b sm:border-outline-variant"><dt className="text-label text-on-surface-variant">{t(messages.price)}</dt><dd className="mt-1 font-bold tabular-nums">{formatIdr(data.priceIdr, language)}</dd></div>
-          <div className="py-3 sm:border-b sm:border-outline-variant"><dt className="text-label text-on-surface-variant">{t(messages.capacity)}</dt><dd className="mt-1 font-bold">{t(messages.groupRange, { min: data.minParticipants, max: data.maxParticipants })}</dd></div>
-          <div className="py-3 sm:col-span-2"><dt className="text-label text-on-surface-variant">{t(messages.duration)}</dt><dd className="mt-1">{t(messages.minutes, { count: data.durationMinutes })}</dd></div>
-        </dl>
-        {data.availability === 'cancelled' && <StatusPanel tone="info" title={t(messages.cancelled)}><p>{t(scheduleMessages.cancelledExplanation)}</p></StatusPanel>}
-        <footer className="sticky bottom-0 -mx-4 -mb-[max(1.5rem,env(safe-area-inset-bottom))] mt-auto flex flex-col gap-2 border-t border-outline-variant bg-surface-container-low px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
-          {open ? <Button asChild variant="filled" className="w-full"><Link to={`/book/${encodeURIComponent(data.id)}?date=${encodeURIComponent(data.date)}`} onClick={onClose}>{t(messages.choosePlaces)}</Link></Button>
-            : <Button variant="filled" className="w-full" disabled>{t(data.availability === 'cancelled' ? messages.cancelled : messages.full)}</Button>}
-          <div className="flex justify-center"><LanguageMenu className="text-primary" /></div>
-        </footer>
-      </>}
-  </Sheet>
+  const ready = valid ? data : null
+  const ended = ready !== null && Date.parse(ready.endsAt) <= now
+  const bookable = ready !== null && !ended && canBookSession(ready, now)
+  const close = () => { setResult(null); onClose() }
+
+  // Why there is no Pesan button, in the order a member would want to know it.
+  const blocked = ready === null || bookable ? null
+    : ready.availability === 'cancelled' ? messages.cancelled
+    : ended ? messages.ended
+    : ready.availability === 'full' ? messages.full
+    : messages.closedReason
+
+  const band = ready && (
+    <div className="flex flex-wrap items-center gap-2">
+      <Scoreboard time={ready.startTime} tone={ready.availability === 'cancelled' ? 'cancelled' : ended ? 'ended' : 'live'} />
+      <span className="rounded-full bg-band-tile px-3 py-1.5 text-label">{t(scheduleMessages.until)} {ready.endTime} WIB</span>
+      <span className="basis-full" />
+      <span className="rounded-full bg-band-tile px-3 py-1.5 text-label">{formatClubDateLong(ready.date, language)}</span>
+    </div>
+  )
+
+  const footer = ready && (
+    bookable ? (
+      <div className="flex items-center justify-between gap-3">
+        <p className="flex flex-col leading-tight">
+          <span className="text-title font-bold tabular-nums">{formatIdr(ready.priceIdr, language)}</span>
+          <span className="text-label text-on-surface-variant">{t(scheduleMessages.perPlace)}</span>
+        </p>
+        <Button asChild variant="filled" className="px-7">
+          <Link to={`/book/${encodeURIComponent(ready.id)}?date=${encodeURIComponent(ready.date)}`} onClick={onClose}>{t(messages.choosePlaces)}</Link>
+        </Button>
+      </div>
+    ) : (
+      <p role="note" className="flex min-h-12 items-center justify-center rounded-sm bg-surface-container px-4 text-center font-semibold text-on-surface-variant">{blocked && t(blocked)}</p>
+    )
+  )
+
+  return (
+    <Sheet
+      open={id !== null}
+      onClose={close}
+      title={ready?.className || t(messages.title)}
+      description={t(messages.description)}
+      closeLabel={t(messages.close)}
+      returnFocus={returnFocus}
+      tone="court"
+      band={band}
+      footer={footer}
+    >
+      {!result || result.id !== id ? <p role="status">{t(messages.loading)}</p>
+        : result.missing ? <StatusPanel tone="info" title={t(messages.missing)} />
+        : !data ? <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: () => setAttempt(value => value + 1) }} />
+        : !ready ? <StatusPanel tone="error" title={t(messages.incomplete)} action={{ label: t(commonMessages.retry), onAction: () => setAttempt(value => value + 1) }} />
+        : <>
+          {ready.isSample && <SampleDataNotice />}
+          <p className={cn('flex flex-wrap items-center gap-x-2 text-label', toneClasses[ready.availability])}>
+            <AvailabilityMark availability={ready.availability} />
+            <span className="font-semibold">{t(scheduleMessages.status[ready.availability])}</span>
+            {(ready.availability === 'available' || ready.availability === 'nearly_full') && <span className="text-on-surface">{formatRemainingPlaces(ready.remainingPlaces, language)}</span>}
+          </p>
+          {ready.availability === 'cancelled' && <p className="text-on-surface-variant">{t(scheduleMessages.cancelledExplanation)}</p>}
+          {ready.availability !== 'cancelled' && <Players session={ready} />}
+          <dl className="-mt-2 flex flex-col">
+            <Fact label={t(messages.level)}>{ready.levelName}</Fact>
+            <Fact label={t(messages.venue)}>
+              {ready.venueName}
+              {ready.venueAddress && <span className="block text-label font-normal text-on-surface-variant">{ready.venueAddress}</span>}
+            </Fact>
+            <Fact label={t(messages.coaches)}>{ready.coaches.length ? ready.coaches.join(', ') : t(commonMessages.unavailable)}</Fact>
+            <Fact label={t(messages.group)}>{t(messages.groupLimits, { min: ready.minParticipants, max: ready.maxParticipants })}</Fact>
+            <Fact label={t(messages.duration)}>{t(messages.minutes, { count: ready.durationMinutes })}</Fact>
+            {!bookable && <Fact label={t(messages.price)}>{formatIdr(ready.priceIdr, language)}</Fact>}
+          </dl>
+        </>}
+    </Sheet>
+  )
 }

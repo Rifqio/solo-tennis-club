@@ -1,76 +1,81 @@
 ---
+version: alpha
 name: Lafu (Lawu Fun Tennis Club)
-description: Jalur Lawu. A Material 3 phone app where every tennis session reads like a Mount Lawu trail post.
+description: Courtside. A bright, photographic tennis-club phone app on court blue and ink, where the chosen thing turns ball lime and session times read like a scoreboard.
 colors:
-  primary: "#164D45"
+  primary: "#0079ED"
+  primary-deep: "#0062C4"
+  primary-light: "#4DA3FF"
   on-primary: "#FFFFFF"
-  secondary-container: "#C9E7DE"
-  on-secondary-container: "#0D2E29"
-  surface: "#F5F9F7"
-  surface-container-lowest: "#FFFFFF"
-  surface-container-low: "#EDF4F1"
-  surface-container: "#E5EEEA"
-  surface-container-high: "#DCE7E2"
-  on-surface: "#1D252C"
-  on-surface-variant: "#4B5D57"
-  outline: "#4B5D57"
-  outline-variant: "#C6D3CD"
-  signboard: "#164D45"
-  on-signboard: "#FFFFFF"
-  on-signboard-variant: "#B8DDD3"
-  plate: "#C9E7DE"
-  on-plate: "#0D2E29"
-  error: "#B42318"
-  error-container: "#FEECE8"
-  on-error-container: "#7A1A11"
+  accent: "#C0FC49"
+  on-accent: "#0F1112"
+  ink: "#0F1112"
+  ink-raised: "#232628"
+  on-ink: "#F2F3F3"
+  on-ink-variant: "#9AA1A6"
+  surface: "#F2F3F3"
+  surface-card: "#FFFFFF"
+  surface-container: "#E7E9E9"
+  on-surface: "#0F1112"
+  on-surface-variant: "#5B6166"
+  outline: "#767C81"
+  outline-variant: "#D3D7D8"
+  surface-dark: "#0F1112"
+  surface-card-dark: "#1A1D1F"
+  surface-container-dark: "#232628"
+  on-surface-dark: "#F2F3F3"
+  on-surface-variant-dark: "#9AA1A6"
+  outline-dark: "#6B7378"
   warning: "#805000"
   warning-container: "#FFF4D6"
-  scrim: "rgba(29, 37, 44, 0.4)"
+  warning-dark: "#F5C46A"
+  error: "#B42318"
+  error-container: "#FEECE8"
+  error-dark: "#FFB4A8"
+  scrim: "rgba(15, 17, 18, 0.56)"
 typography:
-  numeral:
-    fontFamily: "'Barlow Condensed', system-ui, sans-serif"
-    fontSize: "2rem"
+  display:
+    fontFamily: "'Outfit Variable', Outfit, system-ui, sans-serif"
+    fontSize: "2.5rem"
     fontWeight: 700
-    lineHeight: 1
-    fontFeature: "tnum"
+    lineHeight: 1.05
+    letterSpacing: "-0.01em"
   headline:
-    fontFamily: "system-ui, Roboto, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+    fontFamily: "'Outfit Variable', Outfit, system-ui, sans-serif"
     fontSize: "1.75rem"
     fontWeight: 700
     lineHeight: 1.15
-  headline-display:
-    fontFamily: "'Barlow Condensed', system-ui, sans-serif"
-    fontSize: "1.75rem"
-    fontWeight: 700
-    lineHeight: 1
-    letterSpacing: "0.025em"
   title:
-    fontFamily: "system-ui, Roboto, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+    fontFamily: "'Outfit Variable', Outfit, system-ui, sans-serif"
     fontSize: "1.25rem"
-    fontWeight: 700
+    fontWeight: 600
     lineHeight: 1.3
-  title-display:
-    fontFamily: "'Barlow Condensed', system-ui, sans-serif"
-    fontSize: "1.25rem"
-    fontWeight: 700
-    lineHeight: 1.3
-    letterSpacing: "0.025em"
   body:
-    fontFamily: "system-ui, Roboto, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+    fontFamily: "'Outfit Variable', Outfit, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: "system-ui, Roboto, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+    fontFamily: "'Outfit Variable', Outfit, system-ui, sans-serif"
     fontSize: "0.875rem"
-    fontWeight: 400
+    fontWeight: 500
     lineHeight: 1.43
+  scoreboard:
+    fontFamily: "'Outfit Variable', Outfit, system-ui, sans-serif"
+    fontSize: "1.5rem"
+    fontWeight: 700
+    lineHeight: 1
+    fontFeature: "'tnum' 1"
+  wordmark:
+    fontFamily: "'Outfit Variable', Outfit, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 700
+    lineHeight: 1
+    letterSpacing: "0.16em"
 rounded:
   xs: "4px"
   sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "28px"
+  lg: "24px"
   full: "9999px"
 spacing:
   xs: "4px"
@@ -79,311 +84,342 @@ spacing:
   lg: "24px"
   xl: "32px"
 components:
-  top-app-bar:
-    backgroundColor: "{colors.signboard}"
-    textColor: "{colors.on-signboard}"
-    height: "64px"
-  navigation-bar:
-    backgroundColor: "{colors.surface-container}"
-    textColor: "{colors.on-surface-variant}"
-    height: "64px"
-  navigation-indicator-active:
-    backgroundColor: "{colors.secondary-container}"
-    textColor: "{colors.on-secondary-container}"
-    rounded: "{rounded.full}"
-    width: "64px"
-    height: "32px"
-  button-filled:
+  court-band:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
-    typography: "{typography.body}"
-    rounded: "{rounded.full}"
-    padding: "8px 24px"
+    rounded: "{rounded.lg}"
+  date-tile:
+    backgroundColor: "{colors.primary-deep}"
+    textColor: "{colors.on-primary}"
+    typography: "{typography.title}"
+    rounded: "{rounded.xs}"
+    width: "56px"
+    height: "72px"
+  date-tile-selected:
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.on-accent}"
+    typography: "{typography.title}"
+    rounded: "{rounded.xs}"
+    width: "56px"
+    height: "72px"
+  slot-chip:
+    backgroundColor: "{colors.surface-card}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.label}"
+    rounded: "{rounded.xs}"
+    padding: "0 16px"
     height: "48px"
-  button-tonal:
-    backgroundColor: "{colors.secondary-container}"
-    textColor: "{colors.on-secondary-container}"
-    typography: "{typography.body}"
-    rounded: "{rounded.full}"
-    padding: "8px 24px"
+  slot-chip-selected:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.accent}"
+    typography: "{typography.label}"
+    rounded: "{rounded.xs}"
+    padding: "0 16px"
     height: "48px"
-  button-outlined:
+  scoreboard-cell:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.accent}"
+    typography: "{typography.scoreboard}"
+    rounded: "{rounded.xs}"
+    width: "48px"
+    height: "48px"
+  session-card:
+    backgroundColor: "{colors.surface-card}"
+    textColor: "{colors.on-surface}"
+    rounded: "{rounded.sm}"
+    padding: "16px"
+  button-primary:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.accent}"
+    typography: "{typography.body}"
+    rounded: "{rounded.sm}"
+    padding: "0 24px"
+    height: "48px"
+  button-primary-on-dark:
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.on-accent}"
+    typography: "{typography.body}"
+    rounded: "{rounded.sm}"
+    padding: "0 24px"
+    height: "48px"
+  button-secondary:
     backgroundColor: "transparent"
-    textColor: "{colors.primary}"
+    textColor: "{colors.on-surface}"
     typography: "{typography.body}"
-    rounded: "{rounded.full}"
-    padding: "8px 24px"
+    rounded: "{rounded.sm}"
+    padding: "0 24px"
     height: "48px"
   button-text:
     backgroundColor: "transparent"
-    textColor: "{colors.primary}"
+    textColor: "{colors.primary-deep}"
     typography: "{typography.body}"
-    rounded: "{rounded.full}"
-    padding: "8px 12px"
+    rounded: "{rounded.sm}"
+    padding: "0 12px"
     height: "48px"
-  icon-button:
-    backgroundColor: "transparent"
-    textColor: "{colors.on-surface-variant}"
-    rounded: "{rounded.full}"
-    size: "48px"
-  post-plate:
-    backgroundColor: "{colors.plate}"
-    textColor: "{colors.on-plate}"
-    typography: "{typography.numeral}"
-    rounded: "{rounded.md}"
-    padding: "12px 4px"
-    width: "80px"
-  post-plate-ended:
-    backgroundColor: "{colors.surface-container-high}"
-    textColor: "{colors.on-surface-variant}"
-    typography: "{typography.numeral}"
-    rounded: "{rounded.md}"
-    padding: "12px 4px"
-  day-marker:
-    backgroundColor: "transparent"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.headline-display}"
-    rounded: "{rounded.md}"
-    height: "76px"
-  day-marker-selected:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.headline-display}"
-    rounded: "{rounded.md}"
-    height: "76px"
-  day-marker-today:
-    backgroundColor: "transparent"
-    textColor: "{colors.primary}"
-    typography: "{typography.headline-display}"
-    rounded: "{rounded.md}"
-    height: "76px"
-  status-panel-info:
-    backgroundColor: "{colors.surface-container}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.body}"
-    rounded: "{rounded.md}"
-    padding: "16px"
-  status-panel-error:
-    backgroundColor: "{colors.error-container}"
-    textColor: "{colors.on-error-container}"
-    typography: "{typography.body}"
-    rounded: "{rounded.md}"
-    padding: "16px"
-  status-panel-success:
-    backgroundColor: "{colors.secondary-container}"
-    textColor: "{colors.on-secondary-container}"
-    typography: "{typography.body}"
-    rounded: "{rounded.md}"
-    padding: "16px"
-  sample-data-notice:
-    backgroundColor: "{colors.warning-container}"
-    textColor: "{colors.warning}"
+  dock:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.on-ink-variant}"
     typography: "{typography.label}"
-    rounded: "{rounded.sm}"
-    padding: "12px 16px"
-  menu:
-    backgroundColor: "{colors.surface-container}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.sm}"
-    padding: "8px 0"
-    width: "208px"
-  list-container:
-    backgroundColor: "{colors.surface-container-lowest}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.md}"
-    padding: "12px 16px"
-  calendar-day:
+    rounded: "{rounded.lg}"
+    height: "72px"
+  dock-active:
+    backgroundColor: "transparent"
+    textColor: "{colors.on-ink}"
+    typography: "{typography.label}"
+  book-fab:
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.on-accent}"
+    rounded: "{rounded.full}"
+    size: "64px"
+  filter-tab:
+    backgroundColor: "transparent"
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.label}"
+    height: "48px"
+  filter-tab-active:
     backgroundColor: "transparent"
     textColor: "{colors.on-surface}"
-    typography: "{typography.title-display}"
-    rounded: "{rounded.md}"
-    size: "48px"
-  calendar-day-selected:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.title-display}"
-    rounded: "{rounded.md}"
-    size: "48px"
-  calendar-surface:
-    backgroundColor: "{colors.surface-container-low}"
+    typography: "{typography.label}"
+    height: "48px"
+  bottom-sheet:
+    backgroundColor: "{colors.surface-card}"
     textColor: "{colors.on-surface}"
     rounded: "{rounded.lg}"
-  bottom-sheet:
-    backgroundColor: "{colors.surface-container-low}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.xl}"
+  onboarding-start-bar:
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.on-accent}"
+    typography: "{typography.title}"
+    rounded: "{rounded.xs}"
+    height: "64px"
+  pager:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.on-ink}"
+    rounded: "{rounded.full}"
+    height: "64px"
 ---
 
 # Design System: Lafu (Lawu Fun Tennis Club)
 
+> **Status: target system, approved direction 2026-10-09; implementation pending.** This file replaces the "Jalur Lawu" world (club green, Barlow Condensed, Material shapes). The running app still shows Jalur Lawu until the rebuild lands; where code and this file disagree, this file is the target. The motion and feedback system, state rules, calendar behavior, and accessibility rules carry over unchanged.
+
 ## Overview
 
-**Creative North Star: "Jalur Lawu"**
+**Creative North Star: "Courtside"**
 
-Every session reads like a post on a Mount Lawu trail: where you are, what is next, how long until you get there. The club green is the trail board. It runs across the top of the app as a signboard bar carrying the routed white LAFU wordmark, and it marks the one thing a member has chosen. Everything else stands on a pale mist ground in light mode and a night-forest ground in dark mode, with tonal Material 3 surfaces doing the layering.
+Standing at the edge of a blue hard court on a bright morning: big flat fields of court blue, white lines, one lime ball that your eye goes to first, and a black scoreboard with the numbers that matter. Lafu should feel like that. Large color fields and real court photography do the work that thin hairlines and pale tints did before; type is bigger and rounder; the one lime thing on each screen is always what you have chosen or the action you came to take.
 
-The idiom is Material 3, chosen for an Android-first membership of mixed tech comfort, often reading outdoors at the courts. Reading text uses the phone's own UI face (Roboto on Android), so nothing feels foreign. A single routed sign voice, Barlow Condensed Bold, is reserved for the things a trail sign would carve: the wordmark, the month, day numerals, and post-plate start times. The jump between those condensed numerals and the small labels beside them carries the hierarchy, so the system needs only five type steps and two weights.
+The layout grammar comes from a padel court booking app the club owner selected (Dribbble, "Padel Court Booking & Sports App UI" by Sheikh Raihan UI): a labeled bottom menu with a raised center action in a notch, a scrolling strip of date tiles with a selection bar, schedule tabs with an underline, an "available only" switch and a row of time chips, and a full-bleed photographic onboarding with a long start bar. The palette comes from the same studio's "Live Sports & Tennis Streaming App UI": court blue #0079ED, ball lime #C0FC49, and ink #0F1112, plus its scoreboard digit cells. Both are adapted, not copied: no logos, people, copy, or features from the references are reused, and anything Lafu does not have (community feeds, chat, alerts, ratings, favorites, avatar stacks) is left out.
 
-Density is calm list density, not card density. Sessions are rows separated by hairlines, each led by a tonal post plate; there are no white cards with green pills. States are always words first, with a small drawn mark that only echoes the word.
+Lafu's signature is the **scoreboard**: every session time is set in ink cells with lime digits, the way a club scoreboard shows a set. It replaces the trail-post plate and carries the same job: the time is the first thing you read.
 
 **Key Characteristics:**
-- Green signboard top app bar; mist ground; tonal post plates.
-- Full club green only for the chosen thing: selected day, the one primary action, the signboard.
-- System UI face for reading; Barlow Condensed Bold only for wordmark, month, day numerals, and plate times.
-- Five type steps (label, body, title, headline, numeral), weights 400 and 700 only.
-- Text-based states with echoing marks; nothing labeled twice.
-- 48px touch targets, Material state layers, full-round controls.
-- Light and dark follow the phone.
+- Court-blue band at the top of each main screen, with white court-line art; ink dock at the bottom with a lime "Pesan" button in a notch.
+- Lime means chosen or primary, and it only ever sits on ink or blue, never on the light page.
+- Outfit throughout, in four weights; big two-line headlines on onboarding and screen titles.
+- Session times as scoreboard cells; availability as words with an echoing mark.
+- Real tennis photography (licensed, never presented as the club or its members) on onboarding and the club page.
+- Square-ish shapes (4px tiles and chips, 8px cards and buttons), full round only for the book button and pager.
+- Light and dark follow the phone; the micro-interactions from Jalur Lawu stay.
+
+**Dials:** ENERGY 3 / RHYTHM 2 / MOTION 2. Energy comes from color fields, photography and type scale; rhythm stays consistent between screens because members use the schedule daily; motion stays functional (shared selection, shared axis, press), with no decorative loops.
 
 ## Colors
 
-A locked four-color club palette (club green, white, ink, pale green) expanded into Material 3 roles, with the green held back so that it means "chosen".
+Three committed colors: court blue for fields, ink for anchors and the dock, ball lime for the one chosen thing. Everything else is neutral.
 
 ### Primary
-- **Lawu Club Green** (primary, #164D45 light; lifts to #93D2C3 in dark so filled actions keep contrast): the selected day marker, the single filled action on a screen, focus outlines, open-availability words, and the "next / in progress" timing lines. Green on mist measures 9.06:1; dark primary on dark surface 10.47:1.
-- **Signboard Green** (signboard, #164D45 in both schemes): the top app bar only. It does not lift in dark mode; the board is the board. White on signboard 9.63:1. The supporting club name uses Signboard Mist (#B8DDD3).
+- **Court Blue** (#0079ED): the top band on main screens, the calendar sheet header, onboarding fields and large display text on blue. White on Court Blue measures 4.24:1, so only large text (at least 18.66px bold or 24px regular) may sit directly on it. Display, headline and title in white pass as large text.
+- **Deep Court** (#0062C4): anything small that must sit on or near blue, and blue text on light surfaces. Unselected date tiles on the band, small labels on the band, text links and the "available" word on the light page. White on Deep Court 5.93:1; Deep Court on the light ground 5.33:1, on white 5.93:1.
+- **Sky Court** (#4DA3FF): blue text and marks in dark mode. 7.21:1 on ink, 6.45:1 on dark cards.
 
-### Secondary
-- **Plate Sage** (plate and secondary-container, #C9E7DE light, #2B4A43 dark): post plates, the active navigation indicator, tonal buttons, success panels, list leading-icon discs, text selection. On-plate ink (#0D2E29 light, #C9E7DE dark) measures 11.09:1 light and 7.38:1 dark.
+### Accent
+- **Ball Lime** (#C0FC49): the selected date tile, the selected time chip's text, scoreboard digits, the book button, the onboarding start bar, the active dock icon, and the primary action on dark or blue grounds. Ink on lime and lime on ink both measure 15.56:1; lime on dark cards 13.93:1. Lime on the light page has no visible edge (1.09:1) and lime text on blue fails (3.48:1), so lime never sits on the light page and never carries text on blue.
 
-### Neutral
-- **Mist Ground** (surface, #F5F9F7; dark #0E1916 night forest): the page.
-- **Pale Club Green** (surface-container-low, #EDF4F1): the date-control band beneath the app bar.
-- **Container steps** (surface-container #E5EEEA, surface-container-high #DCE7E2, lowest #FFFFFF): navigation bar and menu, ended plates and loading placeholders, and the club fact list respectively.
-- **Lawu Ink** (on-surface, #1D252C; dark #E3ECE8): titles and body. Ink on mist 14.61:1; dark 14.91:1.
-- **Moss Grey** (on-surface-variant and outline, #4B5D57): supporting facts, inactive navigation, outlines. 6.59:1 on mist, 5.52:1 on surface-container-high.
-- **Hairline** (outline-variant, #C6D3CD): row dividers and the band's bottom border.
+### Ink
+- **Court Ink** (#0F1112): the dock, scoreboard cells, the primary button on light pages (with lime text), body text in light mode, the ground in dark mode. Ink on the light ground 17.03:1.
+- **Raised Ink** (#232628): raised surfaces on ink (dock pressed states, dark containers, pager buttons). Text on it 13.69:1.
+- **On-ink** (#F2F3F3) and **On-ink Variant** (#9AA1A6, 7.23:1 on ink): labels and inactive dock destinations.
+
+### Neutral (light)
+- **Court Grey Ground** (#F2F3F3): the page.
+- **Card White** (#FFFFFF): session cards, sheets, the club fact list.
+- **Container Grey** (#E7E9E9): ended scoreboard cells, placeholders, input fills, unselected filter backgrounds.
+- **Muted** (#5B6166): supporting facts, inactive tabs. 5.64:1 on ground, 6.28:1 on white, 5.15:1 on container.
+- **Outline** (#767C81): chip and button borders. 3.80:1 on ground, 4.23:1 on white, enough for control boundaries.
+- **Hairline** (#D3D7D8): dividers inside cards only; never a control's only edge.
+
+### Neutral (dark)
+- Ground ink #0F1112, cards #1A1D1F, containers #232628, text #F2F3F3 (15.24:1 on cards), muted #9AA1A6 (6.47:1 on cards), outline #6B7378 (3.51:1 on cards). The Court Blue band stays #0079ED in dark mode; small text on it still uses Deep Court tiles.
 
 ### Status
-- **Trail Amber** (warning #805000 on warning-container #FFF4D6): "nearly full" words and the sample-data notice. 6.25:1.
-- **Brick** (error #B42318, containers #FEECE8 / #7A1A11): load failures and invalid dates. 5.75:1.
+- **Amber** (#805000 on #FFF4D6, 6.25:1; on white 6.85:1; dark #F5C46A, 10.48:1 on cards): "nearly full" and the sample-data notice.
+- **Brick** (#B42318 on #FEECE8, 5.75:1; on white 6.57:1; dark #FFB4A8, 9.96:1 on cards): load failures and invalid input.
+- **Available** uses Deep Court (light) or Sky Court (dark), never lime, so "open" stays readable on white cards.
 
 ### Named Rules
-**The Green Budget Rule.** Full club green appears only on the chosen thing: the selected day, the one primary action, and the signboard. Post plates are tonal sage, never full green.
+**The Lime Lives On Dark Rule.** Ball lime appears only on ink or as a fill holding ink text. On the light page, the primary button is ink with lime text, and a selected chip is ink with lime text.
 
-**The Board Stays Green Rule.** The signboard keeps #164D45 in dark mode; only interactive primary lifts to a light tone.
+**The One Lime Rule.** One lime focal point per screen region: the selected day in the band, the selected chip in the slot row, the book button in the dock. A second lime element in the same region is a defect.
+
+**The Small Text Avoids Blue Rule.** Text under 18.66px bold never sits directly on Court Blue; it sits on a Deep Court tile or moves off the band.
 
 ## Typography
 
-**Display Font:** Barlow Condensed Bold (700, self-hosted via Fontsource, with system-ui fallback)
-**Body Font:** system-ui, which resolves to Roboto on Android (with Segoe UI, Helvetica Neue, Arial)
+**Font:** Outfit (variable, self-hosted via `@fontsource-variable/outfit`, with system-ui fallback). Chosen by the club owner to match the padel reference; its round geometric shapes and clear numerals suit a friendly sports club and read well at phone sizes in Indonesian and English.
 
-**Character:** The phone's own voice for everything people read, and one routed trail-sign voice for numbers and the club's name. The condensed numerals are what a member sees first.
+**Character:** One family, four weights. Display and headline are bold and tight; body is regular; labels are medium so small text stays solid on color.
 
 ### Hierarchy
-- **Numeral** (Barlow Condensed 700, 2rem, line-height 1, tabular): post-plate start times and the next-day shortcut numeral.
-- **Headline** (system 700, 1.75rem, 1.15): page headings such as the club page. In Barlow Condensed at the same size it sets the LAFU wordmark (uppercase, 0.025em) and the day-marker numerals.
-- **Title** (system 700, 1.25rem, 1.3): session class names, the selected date heading, empty-state heading. In Barlow Condensed uppercase it sets the month and year above the day markers.
-- **Body** (system 400, 1rem, 1.5): facts, prices, button labels (700), list values capped at 65ch.
-- **Label** (system 400 or 700, 0.875rem, 1.43): weekday names, plate end times, availability words and counts, navigation labels, notices.
+- **Display** (700, 2.5rem/40px, 1.05, -0.01em): onboarding headlines (two lines), club page hero title. White on blue or on photo scrim.
+- **Headline** (700, 1.75rem, 1.15): screen titles in the court band ("Jadwal", "Klub"), the calendar sheet's chosen date.
+- **Title** (600, 1.25rem, 1.3): session class names, section titles ("Hanya yang tersedia" row, "Jam mulai"), date tile numerals, the onboarding start bar label.
+- **Body** (400, 1rem, 1.5): facts, prices, descriptions, button labels at 600.
+- **Label** (500, 0.875rem, 1.43): weekday names, chip times, tab and dock labels, availability words, notices.
+- **Scoreboard** (700, 1.5rem, tabular figures): digits inside scoreboard cells only.
+- **Wordmark** (700, 1rem, uppercase, 0.16em tracking): "LAFU" in the band and on onboarding, next to the ball mark. The only tracked uppercase in the system; it is the club's mark, not a label style.
 
 ### Named Rules
-**The Routed Voice Rule.** Barlow Condensed is used only for the wordmark, month, day numerals, and plate times. Any other text in it is a defect.
+**The Four Weights Rule.** 400 body, 500 label, 600 title and button, 700 display, headline, scoreboard, wordmark. No other weights.
 
-**The Two Weights Rule.** Only 400 and 700 exist. Emphasis is weight or size, never a third weight.
+**The Big Type On Color Rule.** Text on Court Blue or on photographs is display, headline or title, in white. Smaller text on those grounds moves onto a Deep Court tile or an ink scrim.
 
-**The Uppercase Belongs To The Sign Rule.** Uppercase appears only in the routed voice (wordmark, month). System-face text stays in sentence case.
+**The Sentence Case Rule.** Everything except the wordmark is sentence case.
 
 ## Layout
 
-Mobile first, single column at phone widths. Page gutters are 16px on phones, 24px from 640px, 32px from 1024px, and never intrude into a device safe area. Content is capped at 50rem, widening to 72rem from 1024px, where the session list becomes two columns with a 40px gap.
+Mobile first. Main screens stack three zones: the **court band** (blue, from the top safe area, bottom corners 24px), the **content** on the grey ground, and the **dock** (ink, fixed, from the bottom safe area). Page gutters are 16px on phones, 24px from 640px, 32px from 1024px.
 
-The shell: a sticky 64px signboard app bar under the top safe area; on phones a fixed bottom navigation bar (destinations at least 64px tall, padded for the bottom safe area, with page content padded to clear it). From 640px the bottom bar becomes an 80px navigation rail docked under the full-width app bar.
+**Schedule screen order (phone):** band (wordmark and language action, headline "Jadwal", month with previous/next and calendar buttons, date tile strip) → filter tabs by level → "Hanya yang tersedia" switch → time chip row → session cards → space for the dock.
 
-Session rows are a grid: an 80px plate column (96px from 640px), a fluid facts column, and from 640px a fixed 9rem state column. Rows carry 16px vertical padding and a 16px column gap, with hairline dividers between them.
+**Widths:** content caps at 50rem, widening to 72rem from 1024px, where session cards become two columns with a 24px gap. From 640px the dock becomes a left ink rail (80px) with the book button at its top; the band spans the content column.
 
-The day-marker strip shows only whole cells: it fits as many 48px-minimum markers as the width allows and sizes each to fill the row exactly, so no marker rests cut in half; it scrolls inside its own row with snap.
+**Strips that scroll sideways** (date tiles, time chips, filter tabs) scroll inside their own row with snap, and the tiles at the edges may peek to show there is more. Nothing ever widens the page: main clips horizontal overflow, and slides happen inside clipped rows.
+
+**Fixed regions** reserve their real height: page bottom padding is the dock height plus the notch overhang plus the bottom safe area plus 16px.
 
 ### Named Rules
-**The State Cell Reflow Rule.** Availability is a third column from 640px. On phones it reflows as one unit under the facts, because a right cell at 390px forces class titles onto three lines. This is a recorded phone adaptation, not drift.
+**The Band Holds The Date Rule.** The date you are looking at always lives in the blue band at the top of the schedule; the content below never repeats it as a heading.
+
+**The State Cell Reflow Rule.** Availability is a right column inside a session card from 640px; on phones it reflows as one unit under the facts. Recorded phone adaptation.
 
 ## Elevation & Depth
 
-Flat and tonal. Depth comes from stepping surface containers (mist ground, pale band, container, high, lowest), not from shadows. Rows, plates, panels, and the list container carry no shadow. Shadows exist only for things that float over the page.
+Depth is mostly color, not shadow: the blue band over the grey ground, white cards on grey, the ink dock under everything. Cards carry no shadow.
 
 ### Shadow Vocabulary
-- **Menu** (`box-shadow: 0 2px 6px rgba(29, 37, 44, 0.16), 0 1px 2px rgba(29, 37, 44, 0.12)`): the language menu.
-- **Sheet** (`box-shadow: 0 -8px 24px rgba(29, 37, 44, 0.16)`): bottom sheets (the phone language sheet now; the session detail sheet later).
-- **Bar** (`box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18)`): the signboard app bar, only while content scrolls beneath it; at rest the bar is flat.
+- **Book button** (`box-shadow: 0 6px 16px rgba(15, 17, 18, 0.28)`): the lime button lifting out of the dock notch.
+- **Sheet** (`box-shadow: 0 -8px 24px rgba(15, 17, 18, 0.18)`): bottom sheets.
+- **Menu** (`box-shadow: 0 2px 6px rgba(15, 17, 18, 0.16), 0 1px 2px rgba(15, 17, 18, 0.12)`): popovers and menus from 640px.
 
 ### Named Rules
-**The Tonal First Rule.** If a surface sits on the page, it differs by tone. A shadow means it floats.
+**The Color Is Depth Rule.** If a surface sits on the page, it differs by color. A shadow means it floats (sheet, menu) or rises out of the dock (book button).
 
 ## Shapes
 
-Material shape scale: 4px for placeholder bars, 8px for fields, menus, the "today" chip, and notices, 12px for post plates, day markers, calendar day tiles, panels, and the list container, 16px for the calendar popover, 28px for the top corners of bottom sheets, and full-round for every button, icon button, and navigation indicator. Cancelled plates switch to a dashed outline with no fill, so the shape survives while the session reads as void. Borders are 1px hairlines; the only 2px strokes are the today ring and focus outlines.
+Square-ish, after the padel reference: 4px for date tiles, time chips, scoreboard cells, the onboarding start bar, and placeholders; 8px for session cards, buttons, fields, notices and the club fact list; 24px for the court band's bottom corners, the dock's top corners, and bottom sheets' top corners; full round only for the book button, pager, and dots. Borders are 1px; the 2px strokes are the today ring, the focus outline, and the active tab underline (3px).
+
+**Notched photo card** (club page and onboarding only): a photo with its top-right corner cut at 45 degrees (24px leg), echoing the padel reference's folded-corner image cards. A five-point polygon, never applied to text cards.
 
 ## Components
 
-### Buttons
-- **Shape:** full-round (9999px), minimum 48px tall, 24px horizontal padding (12px for text buttons), bold body label that wraps rather than truncates.
-- **Filled:** club green with white; the one primary action on a screen.
-- **Tonal:** sage container; the default and the secondary action.
-- **Outlined:** 1px Moss Grey outline, green label; used for retry inside error panels.
-- **Text:** green label, lowest emphasis.
-- **Pending:** the button renames itself to the running operation and ignores presses; no spinner.
-- **Hover / Focus / Press:** a state layer in the content color (8% hover on hover-capable devices, 10% focus, 12% pressed, 150ms); focus also draws a 2px primary outline offset 2px.
-- **Icon button:** 48px circle, Moss Grey glyph at 24px, required accessible name; disabled at 40% opacity.
+### Court Band
+Full-bleed Court Blue under the status bar with 24px bottom corners. Row 1: ball mark + "LAFU" wordmark, language action (translate glyph + code) on the right. Row 2: screen headline in white. On the schedule, rows 3 and 4 hold the month (title, white) with previous/next/calendar icon buttons on Deep Court circles, then the date tile strip. Decorative white court lines (a top-down service box and center line at 14% white) sit behind the right side, aria-hidden. Focus outlines are white inside the band.
 
-### Post Plate (signature)
-The trail post. A 12px-rounded sage plate leading each session row, with the start time in the 2rem routed numeral and "s.d. / until" end time in label beneath. Ended sessions drop to surface-container-high with Moss Grey ink; cancelled sessions become a dashed outline. The empty state reuses a small plate inside the green next-day shortcut.
-
-### Day Markers
-A band on pale club green holds the month (routed, uppercase), an outlined "Today" chip when away from today, previous/next/calendar icon buttons, and seven whole-cell markers. Each marker stacks the weekday label over a routed numeral. Selected: filled club green. Today (unselected): 2px inset green ring and green text. The calendar button opens the Club Calendar.
+### Date Tiles
+A horizontal strip of 56 by 72px tiles, 4px radius, 8px gap, after the padel date strip. Each tile stacks the weekday (label, white) over the day number (title, white) on Deep Court. Selected: Ball Lime fill, ink text, and a 16 by 3px ink bar centered at the tile's top edge (the padel selection bar). Today when unselected: 2px inset white ring. The selected fill is one shared element that springs to the new day. The calendar button opens the Club Calendar sheet.
 
 ### Club Calendar
-A month grid (react-day-picker, loaded on demand when the calendar button is touched or hovered) in the same sign voice as the strip. On phones it sits in a bottom sheet (drag handle, scrim, drag to dismiss) whose header names the task in a bold label and repeats the current choice as a routed uppercase headline; from 640px it is a 368px popover on surface-container-low with the menu shadow, scaling in from its button.
-- **Caption:** routed uppercase month and year at title size, with 48px previous/next month buttons; months slide on the same shared axis as day changes (28px plus fade, 240ms in, 120ms out).
-- **Weekdays:** label size, Moss Grey, Monday first in both languages.
-- **Day tiles:** 48px, 12px radius, routed numerals at title size. Selected: filled club green. Today: 2px inset green ring and green numeral. Outside the public window (before today, beyond a year): regular weight, Moss Grey at reduced opacity, not selectable.
-- **Behavior:** one tap applies the day and closes, with the selection haptic and focus returned to the calendar button; arrow keys move by day and week, Enter chooses, Escape closes. Club dates are plain calendar days, so the grid works on floating local dates and is never shifted by the device's time zone.
+Same behavior as before (react-day-picker, loaded on demand; phone bottom sheet, popover from 640px; one tap applies; arrows, Enter, Escape; floating local dates so a device time zone never shifts a club day). New look: sheet header is a Court Blue strip holding the chosen date as a white headline; day cells are 48px with 4px radius, Outfit title numerals; selected is ink with lime digits, today an inset 2px Deep Court ring, outside the public window muted and not selectable.
+
+### Filter Tabs
+After the padel club tabs: a row of text tabs ("Semua", then each level present that day), label size, 48px tall, inactive Muted, active ink at 600 with a 3px ink underline (Sky Court in dark mode) that slides between tabs on the selection spring. Tabs only list levels that exist on the selected day; if only one level exists the row is hidden.
+
+### Available-Only Switch
+A row with the title "Hanya yang tersedia" / "Show available only" and a switch (52 by 32px track; on: ink track with lime thumb; off: Container Grey track with white thumb and Outline border). On hides full, cancelled and ended sessions and states how many were hidden ("3 sesi disembunyikan").
+
+### Time Chips
+After the padel slot row: a scrolling row of 48px chips, one per session start time on the selected day, label size in 24-hour WIB. Default: white fill, 1px Outline border, ink text. Selected: ink fill, lime text. Tapping a chip scrolls its session card into view and marks it; chips for full or cancelled sessions keep their time but show the state word under it in Muted.
+
+### Session Card (scoreboard signature)
+White card, 8px radius, 16px padding, no shadow. Top row: the **scoreboard**, two 48px ink cells holding the start hour and minute in lime scoreboard digits with a colon between them, and the end time ("s.d. 19:30") in label beside it. Below: class name (title), level and venue (body, Muted), price per place (body 600), then the state cell (word plus mark, with remaining places for open sessions; next / in progress timing on today). Bottom right: "Pesan" primary button (ink, lime text) when the session can be booked. Ended: scoreboard cells turn Container Grey with Muted digits and the state reads "Selesai". Cancelled: cells become 1px dashed Outline with Muted digits and the explanation line shows. The whole card opens the session detail sheet; the Pesan button goes straight to booking.
+
+### Dock (bottom menu)
+After the padel bottom menu, in ink: a 72px bar plus the bottom safe area, 24px top corners, with a smooth notch at the center cradling the **book button**, a 64px Ball Lime circle with an ink "+" glyph and the visible label "Pesan" beneath, raised 24px into the notch with the book-button shadow. Destinations: Jadwal, Klub on the left; Booking saya and Akun on the right. Booking saya appears only when that screen exists (plan 02-03); until then the right side holds Akun alone. Each destination is a 24px icon over a label; active is a lime icon and on-ink label at 600, inactive is On-ink Variant. The active marker is a 4px lime dot under the label that springs between destinations. Tapping the active destination scrolls to top. From 640px the dock becomes a left ink rail with the book button at the top.
+
+### Book Sheet
+The book button opens a bottom sheet titled "Pesan sesi" listing the next bookable sessions (up to 10, across the coming days) as compact rows: date tile, scoreboard time, class, places left. Tapping a row opens the booking flow for that session. Empty: "Belum ada sesi yang bisa dipesan" with a link to the schedule. It only lists sessions that admission rules allow (scheduled, places left, before the five-hour cutoff).
+
+### Onboarding (first visit only)
+Shown once per device on the first visit to the public app, never before a deep link (session, booking, admin), and always skippable. Three slides, each a full-bleed licensed court photograph with an ink scrim rising from the bottom (scrim exists for text contrast, not decoration). Content sits in the lower half: ball mark + wordmark, a two-line display headline in white, a body line in white on the scrim, then controls.
+- **Slides 1 and 2:** an ink pager capsule (after the tennis reference) with a Raised Ink previous circle, dots in the middle (current dot white, others On-ink Variant), and a lime next circle.
+- **Slide 3:** the padel start bar: a 64px bar, the left two-thirds Ball Lime with "Mulai" and three chevrons (the chevrons show the bar can be dragged forward), the right third ink track. Tap or drag to the end to finish.
+- **"Lewati" / "Skip"** sits top right on every slide (white text button on a Deep Court circle background for contrast).
+- Finishing or skipping lands on the schedule for today and stores `lafu.onboarded`.
+
+Slides and copy (Indonesian first):
+1. Court with net photo. "Jadwal tenis, sekali lihat" / "Your tennis schedule at a glance". "Lihat kelas, pelatih, dan tempat yang tersisa tanpa perlu masuk." / "See classes, coaches and places left without signing in."
+2. Three balls photo. "Pesan untuk kamu dan teman" / "Book for you and your friends". "Satu pesanan untuk beberapa tempat; nama tiap pemain bisa diubah." / "One booking for several places; each player's name can be changed."
+3. Ball on baseline photo. "Tempatmu kami simpan 5 jam" / "We hold your places for 5 hours". "Selesaikan pembayaran sebelum batas waktu yang tertera." / "Complete payment before the deadline shown."
+
+Slides describe only what exists; when payment proof ships (Phase 3), slide 3 may mention QRIS and proof upload.
+
+### Session Detail Sheet
+Bottom sheet, white, 24px top corners. Header strip in Court Blue with the class name (headline, white) and the scoreboard time. Facts in order (date and WIB time, level, venue, all coaches, price per place, places left, minimum and maximum) as label-value rows. Primary action at the bottom: "Pesan" (ink, lime text) when bookable, otherwise the reason ("Penuh", "Dibatalkan", "Pemesanan ditutup 5 jam sebelum mulai").
+
+### Buttons
+- **Primary on light:** ink fill, lime label at 600, 8px radius, 48px tall. One per screen region.
+- **Primary on dark or blue:** lime fill, ink label.
+- **Secondary:** transparent with 1px Outline border, ink label.
+- **Text:** Deep Court label (Sky Court in dark mode).
+- **Icon button:** 48px; on the band a Deep Court circle with a white glyph.
+- **Pending:** renames itself to the running operation; no spinner.
+- State layers (8% hover, 10% focus, 12% pressed) and the press scale carry over.
+
+### Fields
+48px, 8px radius, white fill (dark: #1A1D1F) with 1px Outline border; label above in label 500; focus 2px Deep Court ring (Sky Court in dark mode); errors in Brick below the field.
 
 ### State Cell
-Availability words with a 16px drawn mark that only echoes the word: filled circle open (green), half-filled nearly full (amber), hollow full (ink), struck cancelled (Moss Grey). Only open and nearly full carry a remaining-places count; "Full" stands alone. On today's list it adds timing: "Next, starts in ..." or "In progress" in bold green, and ended sessions show "Selesai / Ended" with a check mark and claim no places.
+Unchanged behavior: words first, mark echoes (filled open in Deep Court, half nearly full in Amber, hollow full in ink, struck cancelled in Muted); remaining places only for open and nearly full; "Penuh" alone; ended shows "Selesai" and claims no places; today adds "Berikutnya, mulai ... lagi" or "Sedang berlangsung" in Deep Court at 600.
 
 ### Status Panels and Notices
-12px-rounded tonal panels (info on surface-container, error on error-container, success on sage) with a bold title first and an optional action. The sample-data notice is a bold amber label on the warning container, shown once above the list. Loading uses static plate-and-line placeholders with no shimmer or pulse.
+8px-radius panels: info on Container Grey, error on Brick container, success on ink with lime title. The sample-data notice is an Amber label on its container, once above the list. Loading uses static placeholders shaped like scoreboard cards, shown only after 150ms.
 
-### Navigation
-- **Top app bar:** signboard green, routed LAFU wordmark plus the club name in Signboard Mist; focus outlines turn white here.
-- **Language menu:** translate glyph plus the current code (ID / EN) as a 48px full-round action. On phones (below 640px) it opens a bottom sheet (28px top corners, drag handle, scrim, drag down to dismiss) with 56px rows, each language in its own name and a green check on the current one. From 640px it opens an 8px-rounded menu on surface-container with the menu shadow, scaling in from its anchor.
-- **Navigation bar / rail:** surface-container. Each destination is a 24px icon inside a 64 by 32px full-round indicator with the label beneath; active is sage indicator, bolder stroke, bold ink label; inactive is Moss Grey.
-- **Destination change:** Material fade-through (90ms out, 210ms in with a 0.98 scale, emphasized easing); app bar and navigation stay live and do not crossfade. Tapping the active destination scrolls back to the top. Reduced motion removes the fade.
-- **Active indicator:** one shared pill that springs from the previous destination to the new one.
+### Club Page
+Court band with headline "Klub". Below it a notched photo card (court net photo) with the club name in display white on an ink scrim, then the club fact list (white, 8px radius, 40px Deep Court discs with white icons). Missing facts read "Belum tersedia". The admin sign-in link stays as a quiet text link at the end.
+
+### Graphics
+- **Court lines:** top-down tennis court geometry (service boxes, center service line, singles sidelines) drawn as SVG strokes in white at 14% on blue, or ink at 8% on grey. Used in the band and the empty states. It is a tennis court, so it belongs to the subject.
+- **Ball mark:** a lime circle with two curved seam strokes in ink, used beside the wordmark, as the app icon motif, and in empty states. Never animated in a loop.
+- **Photography:** licensed tennis photography (court, net, balls, no identifiable people and no visible brand marks) on onboarding, the club page and the book sheet header. Current files and provenance: `public/photos/court-net.webp` (Unsplash, @asabasai), `three-balls.webp` (@olli_mn), `ball-baseline.webp` (@mariogogh), each under the Unsplash License, verified 2026-10-09, with provenance sidecars. They are generic tennis imagery, not the club; replace them with club photography when supplied. Text over photos always sits on the ink scrim.
 
 ### Motion and Feedback
-Motion explains what changed and where it went; nothing moves on its own or loops. One spring vocabulary (`motion` library, loaded after first paint): selection spring (stiffness 520, damping 40) for the day tile and nav pill, content spring (380 / 36) for list entry, pop spring (600 / 32) for chips. Springs are interruptible, so a second tap never waits.
-- **Day change:** the selected day tile is one shared element that slides to the new day; the session list leaves toward the opposite side in 90ms and enters 28px from the side you are travelling to (shared axis X). The strip glides the selected day into view.
-- **Swipe:** on touch screens the list pages a day left or right (72px or a quick flick), with rubber-band resistance at rest; the strip, arrows, and picker remain the primary path.
-- **Press:** every tappable surface scales to 0.96 on touch (0.98 with a mouse) within 60ms and springs back, on top of the Material state layer.
-- **Haptics:** an 8ms selection tick on day, tab, and language changes on Android touch devices; silent on iOS, desktop, and under reduced motion.
-- **Appearances:** the Today chip pops in and out; loading placeholders wait 150ms before showing so fast answers never flash.
-- **Reduced motion:** springs, slides, and fades are removed; state still changes instantly.
+Carried over from Jalur Lawu unchanged, which the club owner asked to keep: one interruptible spring vocabulary (selection 520/40, content 380/36, pop 600/32); shared selection elements (date tile fill, dock dot, filter underline) that slide to the new choice; shared-axis X for day changes and onboarding slides (28px plus fade, inside clipped rows); swipe between days on touch with rubber-band resistance; press scale 0.96 touch, 0.98 mouse; 8ms selection haptic on Android; placeholders after 150ms; reduced motion removes springs, slides and fades.
+- **New:** the book button scales to 0.94 on press and springs back with the pop spring; the onboarding start bar's lime section follows the finger while dragging and snaps back if released early; the book sheet rises with the content spring.
 
-### Club Fact List
-A Material list on the lowest container (12px radius, hairline dividers): 40px sage disc with leading icon, bold label, supporting value. Missing content reads as an explicit "unavailable" word, never invented.
-
-### Not Yet Built
-The drawn trail line between posts, a signboard-language club page, the session detail sheet (plan 01-07), and admin surfaces are open. Admin surfaces inherit this system. The app icon is a text-based LAFU placeholder until the club supplies a logo.
+### Admin Surfaces
+Admin screens inherit this system: court band with the screen title, ink dock with Sesi, Kelas, Kelola and a lime book button that becomes "Tambah sesi" (create session). Forms use the field and button rules above; the time picker dialog and calendar text-entry alternative carry over from the admin form polish.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep full club green (#164D45) to the selected day, the one filled action, and the signboard.
-- **Do** set start times, day numerals, the month, and the wordmark in Barlow Condensed Bold, and everything else in the system UI face.
-- **Do** state every condition as a word; drawn marks only echo it.
-- **Do** give every touch target at least 48px and a state layer for press and hover.
-- **Do** draw focus as a 2px primary outline offset 2px, white on the signboard.
-- **Do** separate rows with hairlines on the mist ground and layer with tonal containers.
-- **Do** keep page gutters out of safe areas and pad the bottom for the navigation bar.
-- **Do** follow the phone's light or dark preference, keeping the signboard green in both.
+- **Do** keep Ball Lime on ink or as a fill with ink text; on the light page use ink with lime text.
+- **Do** put only large white text directly on Court Blue; small text goes on Deep Court tiles.
+- **Do** show session times as scoreboard cells, and state every condition as a word with an echoing mark.
+- **Do** use licensed court photography without identifiable people or brand marks, with its source recorded, and swap in club photos when supplied.
+- **Do** keep 48px touch targets, 8px between adjacent targets, white focus outlines inside the band and Deep Court rings elsewhere.
+- **Do** keep sideways strips inside their own clipped rows so the page never widens.
+- **Do** follow the phone's light or dark preference; the band stays Court Blue and the dock stays ink in both.
 
 ### Don't:
-- **Don't** fill post plates with full club green; they are tonal sage.
-- **Don't** label anything twice; if the app bar or tab already names it, the page does not repeat it visibly.
-- **Don't** put eyebrow or kicker labels above headings.
-- **Don't** use a third font weight or a third typeface.
-- **Don't** put shadows on rows, plates, or panels; shadows are for menus, sheets, and the scrolled app bar.
-- **Don't** animate anything that did not change, loop motion, or block input while a spring settles.
-- **Don't** add spinners, shimmer, or pulse to loading; use static placeholders and named pending labels.
-- **Don't** show a places count beside "Full", or any places for an ended session.
+- **Don't** add features the references show and Lafu lacks: community, chat, notifications, alerts, ratings, favorites, avatar stacks, or player counts.
+- **Don't** put a second lime element in the same region, lime on the light page, or lime text on blue.
+- **Don't** present stock photography as the club, its courts or its members.
+- **Don't** use more than the four Outfit weights, or tracked uppercase outside the wordmark.
+- **Don't** add shadows to cards; shadows are for the book button, sheets and menus.
+- **Don't** show onboarding again after it was finished or skipped, or before a deep link.
+- **Don't** loop motion, animate anything that did not change, or block input while a spring settles.
+- **Don't** show a places count beside "Penuh", or any places for an ended session.
+
+## History
+
+Replaces the "Jalur Lawu" system (2026-10-08 to 2026-10-09: club green #164D45 signboard, Barlow Condensed numerals, tonal post plates, Material 3 shapes). Phase 1 was manually accepted by the user on 2026-10-09 under that system; that acceptance covers behavior, not this new visual system. The redesign must be re-verified (build, contrast in both themes, phone and intermediate widths, keyboard, reduced motion, and the user's manual review) before any Delivery Gate PASS is claimed.

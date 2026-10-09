@@ -1,18 +1,17 @@
-import { execFileSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import { mkdirSync, rmSync } from 'node:fs'
+import { copyFileSync, mkdirSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { isAbsolute, relative, resolve, sep } from 'node:path'
+import { inject } from 'vitest'
 import { createPrismaClient, initializeDatabase } from '../../server/db.ts'
-import { projectRoot } from '../../server/config/database-file.ts'
 
+// Every test file gets its own copy of the run's migrated template (see global-setup.ts), so files stay isolated
+// without each one starting a Prisma schema engine.
 export async function createTestDatabase() {
   const root = resolve(tmpdir(), 'lafu-tests')
   mkdirSync(root, { recursive: true })
   const databaseFile = resolve(root, randomUUID() + '.db')
-  execFileSync(process.execPath, [resolve(projectRoot, 'node_modules/prisma/build/index.js'), 'migrate', 'deploy'], {
-    cwd: projectRoot, env: { ...process.env, LAFU_DATABASE_FILE: databaseFile }, stdio: 'pipe', timeout: 30000,
-  })
+  copyFileSync(inject('templateDatabaseFile'), databaseFile)
   const prisma = createPrismaClient(databaseFile)
   await initializeDatabase(prisma)
   return {

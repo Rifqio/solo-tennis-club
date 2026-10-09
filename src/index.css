@@ -272,6 +272,11 @@
 @keyframes lafu-appear { from { opacity: 0; } }
 
 /* Calendar month change: the same shared axis as day changes, 28px travel plus fade, emphasized easing. */
+/* Bottom sheets drop back to the screen edge on close (they rise with a transition, see sheet.tsx). Transform only,
+   so the compositor runs it without layout. Reduced motion removes it with every other animation. */
+@utility sheet-exit { animation: sheet-out 220ms cubic-bezier(0.4, 0, 1, 1) both; }
+@keyframes sheet-out { to { transform: translate3d(0, 100%, 0); } }
+
 @utility cal-enter-from-right { animation: cal-in-right 240ms var(--ease-emphasized) both; }
 @utility cal-enter-from-left { animation: cal-in-left 240ms var(--ease-emphasized) both; }
 @utility cal-exit-to-left { animation: cal-out-left 120ms var(--ease-standard) both; }

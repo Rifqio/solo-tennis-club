@@ -20,7 +20,8 @@ import { scheduleMessages } from './schedule.messages'
 import { sessionTimings } from './session-timing'
 import { useNow } from './use-now'
 import { useSchedule } from './use-schedule'
-import { SessionDetailSheet } from './SessionDetailSheet'
+import { DetailSheetHost } from './DetailSheetHost'
+import type { DetailSheetHandle } from './DetailSheetHost'
 import { CourtBand } from '../layout/CourtBand'
 import { CourtLines } from '@/components/brand/court-lines'
 import { ALL_LEVELS, AvailableOnlySwitch, LevelTabs, TimeChips } from './ScheduleFilters'
@@ -34,11 +35,11 @@ export function SchedulePage() {
   const requestedDate = isClubDate(param) ? param : null
   const schedule = useSchedule(requestedDate)
   const [stripStart, setStripStart] = useState<string | null>(null)
-  const [openSessionId, setOpenSessionId] = useState<string | null>(() => {
+  const [linkedSessionId] = useState<string | null>(() => {
     const session = searchParams.get('session')
     return session && /^[a-z0-9]{1,64}$/.test(session) ? session : null
   })
-  const detailTrigger = useRef<HTMLElement | null>(null)
+  const detailSheet = useRef<DetailSheetHandle>(null)
 
   // The server decides today in WIB; until it answers, the device's WIB date keeps the controls usable.
   const fallbackToday = clubToday()
@@ -190,7 +191,7 @@ export function SchedulePage() {
                     <Button variant="outlined" onClick={() => { setLevel(ALL_LEVELS); setAvailableOnly(false) }}>{t(scheduleMessages.showAll)}</Button>
                   </div>
                 ) : (
-                  <ScheduleList sessions={visibleSessions} timings={timings} now={now} markedId={markedId} players={players.status === 'ready' ? players.sessions : undefined} onOpen={(id, trigger) => { detailTrigger.current = trigger; setOpenSessionId(id) }} />
+                  <ScheduleList sessions={visibleSessions} timings={timings} now={now} markedId={markedId} players={players.status === 'ready' ? players.sessions : undefined} onOpen={(id, trigger) => detailSheet.current?.open(id, trigger, visibleSessions.find(session => session.id === id))} />
                 )}
               </>
             )}
@@ -198,7 +199,7 @@ export function SchedulePage() {
         </AnimatePresence>
         </div>
       </div>
-      <SessionDetailSheet id={openSessionId} onClose={() => setOpenSessionId(null)} returnFocus={detailTrigger} />
+      <DetailSheetHost ref={detailSheet} initialId={linkedSessionId} knownPlayers={{ date: selected, state: players }} />
     </>
   )
 }

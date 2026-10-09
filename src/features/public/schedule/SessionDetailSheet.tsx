@@ -10,13 +10,14 @@ import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
-import type { PublicSessionDetail } from '@shared/api/public'
+import type { PublicSessionDetail, PublicSessionSummary } from '@shared/api/public'
 import { SampleDataNotice } from './SampleDataNotice'
 import { detailMessages as messages } from './detail.messages'
 import { scheduleMessages } from './schedule.messages'
 import { canBookSession } from './session-booking'
 import { useNow } from './use-now'
 import { useSessionPlayers } from './use-session-players'
+import type { SessionPlayers } from './use-session-players'
 
 const toneClasses = {
   available: 'text-primary',
@@ -42,10 +43,14 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
 }
 
 // Who is playing: names for signed-in members (P2-10); visitors get the count and a sign-in link back to this sheet.
-function Players({ session }: { session: PublicSessionDetail }) {
+function Players({ session, known }: { session: PublicSessionSummary; known?: SessionPlayers }) {
   const { t } = useI18n()
-  const players = useSessionPlayers(session.date)
-  if (players.status === 'loading' || players.status === 'unavailable') return null
+  const reuse = known !== undefined && known.status !== 'loading'
+  const fetched = useSessionPlayers(reuse ? null : session.date)
+  const players = reuse ? known : fetched
+  if (players.status === 'unavailable') return null
+  // Holds the card's height while names load, so the facts below never jump.
+  if (players.status === 'loading') return <div aria-hidden="true" className="h-12 rounded-sm bg-surface-container" />
   if (players.status === 'signedOut') {
     const returnTo = `/?${new URLSearchParams({ date: session.date, session: session.id })}`
     return (
@@ -106,9 +111,27 @@ function PlayerList({ names }: { names: string[] }) {
   )
 }
 
-export function SessionDetailSheet({ id, onClose, returnFocus }: {
-  id: string | null; onClose: () => void; returnFocus: RefObject<HTMLElement | null>
-}) {
+interface SessionDetailSheetProps {
+  id: string | null
+  // The card's own summary. With it the sheet opens already filled at full height, and only the detail-only facts
+  // (group limits, address, coaches) arrive afterwards, so nothing jumps while the sheet is rising.
+  seed?: PublicSessionSummary | null
+  // Player names the schedule already loaded for this day; skips a second request.
+  knownPlayers?: { date: string; state: SessionPlayers }
+  onClose: () => void
+  returnFocus: RefObject<HTMLElement | null>
+}
+
+function durationOf(session: PublicSessionSummary) {
+  return Math.round((Date.parse(session.endsAt) - Date.parse(session.startsAt)) / 60_000)
+}
+
+// A grey bar holding the space of text that is still loading, so rows keep their height.
+function Pending({ className }: { className?: string }) {
+  return <span aria-hidden="true" className={cn('inline-block h-4 rounded-xs bg-surface-container-high align-middle', className)} />
+}
+
+export function SessionDetailSheet({ id, seed = null, knownPlayers, onClose, returnFocus }: SessionDetailSheetProps) {
   const { language, t } = useI18n()
   const now = useNow()
   const [result, setResult] = useState<{ id: string; data?: PublicSessionDetail; missing?: boolean } | null>(null)
@@ -126,33 +149,37 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
     return () => controller.abort()
   }, [id, attempt])
 
-  const data = result?.id === id ? result.data : null
+  const settled = result?.id === id ? result : null
+  const data = settled?.data ?? null
   const valid = data && data.coaches && Number.isSafeInteger(data.priceIdr) && Number.isSafeInteger(data.maxParticipants)
     && Number.isSafeInteger(data.minParticipants) && Number.isSafeInteger(data.durationMinutes)
     && Number.isFinite(Date.parse(data.startsAt)) && Number.isFinite(Date.parse(data.endsAt))
-  const ready = valid ? data : null
-  const ended = ready !== null && Date.parse(ready.endsAt) <= now
-  const bookable = ready !== null && !ended && canBookSession(ready, now)
+  const detail = valid ? data : null
+  // What the sheet shows right away: the full detail once it has arrived, otherwise the card's summary.
+  const view: PublicSessionSummary | null = detail ?? (seed && seed.id === id ? seed : null)
+  const failed = settled !== null && !detail
+  const ended = view !== null && Date.parse(view.endsAt) <= now
+  const bookable = view !== null && !ended && canBookSession(view, now)
   const close = () => { setResult(null); onClose() }
 
   // Why there is no Pesan button, in the order a member would want to know it.
-  const blocked = ready === null || bookable ? null
-    : ready.availability === 'cancelled' ? messages.cancelled
+  const blocked = view === null || bookable ? null
+    : view.availability === 'cancelled' ? messages.cancelled
     : ended ? messages.ended
-    : ready.availability === 'full' ? messages.full
+    : view.availability === 'full' ? messages.full
     : messages.closedReason
 
   // Four facts in a 2 x 2 grid of Deep Court tiles: small label, large value, room to breathe.
-  const open = ready !== null && (ready.availability === 'available' || ready.availability === 'nearly_full')
-  const slotValue = ready === null ? '' : ended ? t(scheduleMessages.ended)
-    : open ? t(messages.slotsLeft, { count: ready.remainingPlaces }) : t(scheduleMessages.status[ready.availability])
-  const tiles = ready ? [
-    { label: t(messages.date), value: formatClubDateShort(ready.date, language) },
-    { label: t(messages.time), value: `${ready.startTime}-${ready.endTime}` },
-    { label: t(messages.duration), value: t(messages.minutes, { count: ready.durationMinutes }) },
+  const open = view !== null && (view.availability === 'available' || view.availability === 'nearly_full')
+  const slotValue = view === null ? '' : ended ? t(scheduleMessages.ended)
+    : open ? t(messages.slotsLeft, { count: view.remainingPlaces }) : t(scheduleMessages.status[view.availability])
+  const tiles = view ? [
+    { label: t(messages.date), value: formatClubDateShort(view.date, language) },
+    { label: t(messages.time), value: `${view.startTime}-${view.endTime}` },
+    { label: t(messages.duration), value: t(messages.minutes, { count: detail?.durationMinutes ?? durationOf(view) }) },
     { label: t(messages.slots), value: slotValue },
   ] : []
-  const band = ready && (
+  const band = view && (
     <dl className="grid grid-cols-2 gap-2">
       {tiles.map(tile => (
         <div key={tile.label} className="flex min-w-0 flex-col gap-0.5 rounded-sm bg-band-tile px-3 py-2.5">
@@ -163,15 +190,15 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
     </dl>
   )
 
-  const footer = ready && (
+  const footer = view && (
     bookable ? (
       <div className="flex items-center justify-between gap-3">
         <p className="flex flex-col leading-tight">
-          <span className="text-title font-bold tabular-nums">{formatIdr(ready.priceIdr, language)}</span>
+          <span className="text-title font-bold tabular-nums">{formatIdr(view.priceIdr, language)}</span>
           <span className="text-label text-on-surface-variant">{t(scheduleMessages.perPlace)}</span>
         </p>
         <Button asChild variant="filled" className="px-7">
-          <Link to={`/book/${encodeURIComponent(ready.id)}?date=${encodeURIComponent(ready.date)}`} onClick={onClose}>{t(messages.choosePlaces)}</Link>
+          <Link to={`/book/${encodeURIComponent(view.id)}?date=${encodeURIComponent(view.date)}`} onClick={onClose}>{t(messages.choosePlaces)}</Link>
         </Button>
       </div>
     ) : (
@@ -179,11 +206,63 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
     )
   )
 
+  const retry = () => setAttempt(value => value + 1)
+  let body: ReactNode
+  if (settled?.missing) body = <StatusPanel tone="info" title={t(messages.missing)} />
+  else if (!view && failed) body = <StatusPanel tone="error" title={t(data ? messages.incomplete : messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />
+  else if (!view) {
+    // Opened from a link, with no card to borrow from: placeholders shaped like the sheet hold its height.
+    body = <>
+      <p role="status" className="sr-only">{t(messages.loading)}</p>
+      <div aria-hidden="true" className="appear-late flex flex-col gap-4">
+        <div className="h-6 w-1/3 rounded-xs bg-surface-container-high" />
+        <div className="h-20 rounded-sm bg-surface-container" />
+        {[0, 1, 2].map(index => <div key={index} className="h-6 rounded-xs bg-surface-container" />)}
+      </div>
+    </>
+  } else {
+    body = <>
+      {view.isSample && <SampleDataNotice />}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className={cn('flex items-center gap-2 text-label', toneClasses[view.availability])}>
+          <AvailabilityMark availability={view.availability} />
+          <span className="font-semibold">{t(scheduleMessages.status[view.availability])}</span>
+        </p>
+        <p className="flex min-h-8 items-center gap-1.5 rounded-full border border-outline-variant bg-surface px-3 py-1 text-label font-semibold">
+          <UsersRound aria-hidden="true" className="size-4 text-on-surface-variant" />
+          {detail ? <>
+            <span aria-hidden="true">{t(messages.groupShort, { min: detail.minParticipants, max: detail.maxParticipants })}</span>
+            <span className="sr-only">{t(messages.group)}: {t(messages.groupLimits, { min: detail.minParticipants, max: detail.maxParticipants })}</span>
+          </> : <Pending className="w-20" />}
+        </p>
+      </div>
+      {view.availability === 'cancelled' && <p className="text-on-surface-variant">{t(scheduleMessages.cancelledExplanation)}</p>}
+      {view.availability !== 'cancelled' && <Players session={view} known={knownPlayers?.date === view.date ? knownPlayers.state : undefined} />}
+      <dl className="-mt-2 flex flex-col">
+        <Fact label={t(messages.level)}>{view.levelName}</Fact>
+        <Fact label={t(messages.venue)}>
+          <a href={mapsSearchUrl(view.venueName, detail?.venueAddress)} target="_blank" rel="noopener noreferrer"
+            aria-label={t(messages.openMapsLabel, { venue: view.venueName })}
+            className="state-layer -my-1 inline-flex min-h-11 flex-col items-end justify-center rounded-xs py-1">
+            <span>{view.venueName}</span>
+            {detail?.venueAddress && <span className="text-label font-normal text-on-surface-variant">{detail.venueAddress}</span>}
+            <span className="inline-flex items-center gap-1 text-label text-primary">{t(messages.openMaps)}<ExternalLink aria-hidden="true" className="size-3.5" strokeWidth={2.25} /></span>
+          </a>
+        </Fact>
+        <Fact label={t(messages.coaches)}>
+          {detail ? (detail.coaches.length ? detail.coaches.join(', ') : t(commonMessages.unavailable)) : <Pending className="w-32" />}
+        </Fact>
+        {!bookable && <Fact label={t(messages.price)}>{formatIdr(view.priceIdr, language)}</Fact>}
+      </dl>
+      {failed && <StatusPanel tone="error" title={t(data ? messages.incomplete : messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
+    </>
+  }
+
   return (
     <Sheet
       open={id !== null}
       onClose={close}
-      title={ready?.className || t(messages.title)}
+      title={view?.className || t(messages.title)}
       description={t(messages.description)}
       closeLabel={t(messages.close)}
       returnFocus={returnFocus}
@@ -191,40 +270,7 @@ export function SessionDetailSheet({ id, onClose, returnFocus }: {
       band={band}
       footer={footer}
     >
-      {!result || result.id !== id ? <p role="status">{t(messages.loading)}</p>
-        : result.missing ? <StatusPanel tone="info" title={t(messages.missing)} />
-        : !data ? <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: () => setAttempt(value => value + 1) }} />
-        : !ready ? <StatusPanel tone="error" title={t(messages.incomplete)} action={{ label: t(commonMessages.retry), onAction: () => setAttempt(value => value + 1) }} />
-        : <>
-          {ready.isSample && <SampleDataNotice />}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className={cn('flex items-center gap-2 text-label', toneClasses[ready.availability])}>
-              <AvailabilityMark availability={ready.availability} />
-              <span className="font-semibold">{t(scheduleMessages.status[ready.availability])}</span>
-            </p>
-            <p className="flex items-center gap-1.5 rounded-full border border-outline-variant bg-surface px-3 py-1 text-label font-semibold">
-              <UsersRound aria-hidden="true" className="size-4 text-on-surface-variant" />
-              <span aria-hidden="true">{t(messages.groupShort, { min: ready.minParticipants, max: ready.maxParticipants })}</span>
-              <span className="sr-only">{t(messages.group)}: {t(messages.groupLimits, { min: ready.minParticipants, max: ready.maxParticipants })}</span>
-            </p>
-          </div>
-          {ready.availability === 'cancelled' && <p className="text-on-surface-variant">{t(scheduleMessages.cancelledExplanation)}</p>}
-          {ready.availability !== 'cancelled' && <Players session={ready} />}
-          <dl className="-mt-2 flex flex-col">
-            <Fact label={t(messages.level)}>{ready.levelName}</Fact>
-            <Fact label={t(messages.venue)}>
-              <a href={mapsSearchUrl(ready.venueName, ready.venueAddress)} target="_blank" rel="noopener noreferrer"
-                aria-label={t(messages.openMapsLabel, { venue: ready.venueName })}
-                className="state-layer -my-1 inline-flex min-h-11 flex-col items-end justify-center rounded-xs py-1">
-                <span>{ready.venueName}</span>
-                {ready.venueAddress && <span className="text-label font-normal text-on-surface-variant">{ready.venueAddress}</span>}
-                <span className="inline-flex items-center gap-1 text-label text-primary">{t(messages.openMaps)}<ExternalLink aria-hidden="true" className="size-3.5" strokeWidth={2.25} /></span>
-              </a>
-            </Fact>
-            <Fact label={t(messages.coaches)}>{ready.coaches.length ? ready.coaches.join(', ') : t(commonMessages.unavailable)}</Fact>
-            {!bookable && <Fact label={t(messages.price)}>{formatIdr(ready.priceIdr, language)}</Fact>}
-          </dl>
-        </>}
+      {body}
     </Sheet>
   )
 }

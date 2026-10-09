@@ -108,10 +108,10 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
                 isToday && !isSelected && 'ring-2 ring-inset ring-white',
               )}
             >
-              {/* One shared lime tile, carrying its ink selection bar, springs from the previous day to this one. */}
+              {/* One shared lime tile, carrying its Deep Court selection bar, springs from the previous day to this one. */}
               {isSelected && (
                 <m.span layoutId="day-selection" transition={selectionSpring} className="absolute inset-0 rounded-xs bg-accent">
-                  <span className="absolute left-1/2 top-0 h-[3px] w-4 -translate-x-1/2 rounded-b-xs bg-ink" />
+                  <span className="absolute left-1/2 top-0 h-[3px] w-4 -translate-x-1/2 rounded-b-xs bg-band-tile" />
                 </m.span>
               )}
               <span className="state-layer absolute inset-0 rounded-xs" />

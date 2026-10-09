@@ -16,6 +16,7 @@ import { normalizeCustomerName } from '@shared/customer-rules'
 import { CustomerApiError, customerRequest } from '@/lib/customer-api'
 import { useNow } from '@/features/public/schedule/use-now'
 import { useCustomerAccess } from '../auth/use-customer-access'
+import { BookedArt } from './BookedArt'
 
 type Options = { sessionVersion: number; unitPriceIdr: number; remainingPlaces: number; bookingClosesAt: string; serverNow: string; canReserve: boolean }
 type CreatedBooking = { booking: { id: string; quantity: number; totalPriceIdr: number; originalDeadline: string; participants: { id: string; position: number; name: string }[] }; replayed: boolean; serverNow: string }
@@ -246,33 +247,35 @@ export function Component() {
     const deadline = Date.parse(result.booking.originalDeadline)
     const minutesLeft = Math.max(0, Math.floor((deadline - now) / 60_000))
     const hoursLeft = Math.floor(minutesLeft / 60)
-    const cell = 'flex size-16 items-center justify-center rounded-xs bg-ink text-headline font-bold tabular-nums text-accent'
+    const cell = 'flex size-16 items-center justify-center rounded-xs bg-band-tile text-headline font-bold tabular-nums'
+    const rise = (delay: number) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.42, ease: 'easeOut' as const } })
+    // Court Blue with white text and the lime action, per the club owner's review; the art plays the moment once.
     return (
-      <div className="flex min-h-dvh flex-col">
-        <header className="rounded-b-lg bg-accent pb-6 pt-[max(1.25rem,env(safe-area-inset-top))] text-on-accent">
-          <div className="page-gutter mx-auto flex w-full max-w-3xl flex-col items-center gap-2.5 text-center">
-            <span className="flex size-14 items-center justify-center rounded-full bg-ink text-accent"><Check aria-hidden="true" className="size-7" strokeWidth={2.5} /></span>
-            <h1 ref={heading} tabIndex={-1} className="text-headline font-bold focus:outline-none">{text.success}</h1>
-            <p>{fill(text.safe, { count: result.booking.quantity })}</p>
-            <div role="timer" aria-label={fill(text.timeLeft, { h: hoursLeft, m: minutesLeft % 60 })} className="mt-1 flex items-start gap-1.5">
-              <span className="flex flex-col items-center gap-1"><span aria-hidden="true" className={cell}>{String(hoursLeft).padStart(2, '0')}</span><span aria-hidden="true" className="text-label">{text.hours}</span></span>
-              <span aria-hidden="true" className="text-headline font-bold leading-[4rem]">:</span>
-              <span className="flex flex-col items-center gap-1"><span aria-hidden="true" className={cell}>{String(minutesLeft % 60).padStart(2, '0')}</span><span aria-hidden="true" className="text-label">{text.minutes}</span></span>
+      <div className="flex min-h-dvh flex-col bg-band text-on-signboard [&_:focus-visible]:outline-white">
+        <div className="page-gutter mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)]">
+          <BookedArt />
+          <m.div {...rise(0.7)} className="flex flex-col gap-2 text-center">
+            <h1 ref={heading} tabIndex={-1} className="text-display font-bold focus:outline-none">{text.success}</h1>
+            <p className="text-title font-normal">{fill(text.safe, { count: result.booking.quantity })}</p>
+          </m.div>
+          <m.div {...rise(0.82)} className="flex flex-col items-center gap-2.5">
+            <div role="timer" aria-label={fill(text.timeLeft, { h: hoursLeft, m: minutesLeft % 60 })} className="flex items-center gap-2">
+              <span aria-hidden="true" className={cell}>{String(hoursLeft).padStart(2, '0')}</span>
+              <span aria-hidden="true" className="text-headline font-bold">:</span>
+              <span aria-hidden="true" className={cell}>{String(minutesLeft % 60).padStart(2, '0')}</span>
             </div>
-            <p className="text-label">{text.payBy} <span className="font-semibold">{new Date(deadline).toLocaleString(language === 'id' ? 'id-ID' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })} WIB</span></p>
-          </div>
-        </header>
-        <div className="page-gutter mx-auto flex w-full max-w-3xl flex-1 flex-col gap-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-4">
-          <section aria-label={session.className} className="flex flex-col gap-2 rounded-sm bg-surface-container-lowest p-4">
+            <p className="rounded-full bg-band-tile px-3.5 py-1.5 text-label">{text.payBy} <span className="font-semibold">{new Date(deadline).toLocaleString(language === 'id' ? 'id-ID' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })} WIB</span></p>
+          </m.div>
+          <m.section {...rise(0.94)} aria-label={session.className} className="flex flex-col gap-1.5 rounded-sm bg-surface-container-lowest p-4 text-on-surface">
             <div className="flex flex-wrap justify-between gap-x-3"><span className="font-semibold">{session.className}</span><span className="tabular-nums">{formatClubDateMedium(session.date, language)}, {formatClubTime(session.startsAt)}</span></div>
             <p className="text-label text-on-surface-variant">{result.booking.participants.map(participant => participant.name).join(', ')}</p>
             <div className="flex justify-between gap-3 border-t border-outline-variant pt-2"><span className="text-on-surface-variant">{text.total}</span><span className="font-bold tabular-nums">{formatIdr(result.booking.totalPriceIdr, language)}</span></div>
-          </section>
-          <section aria-label={text.payTitle} className="rounded-sm border border-dashed border-outline p-4 text-label">
-            <p className="font-semibold text-on-surface">{text.payTitle}</p>
-            <p className="mt-0.5 text-on-surface-variant">{text.payBody}</p>
-          </section>
-          <Button asChild variant="outlined" className="mt-auto min-h-14"><Link to={schedulePath}>{text.backToSchedule}</Link></Button>
+          </m.section>
+          <m.section {...rise(0.94)} aria-label={text.payTitle} className="rounded-sm bg-band-tile p-4 text-label">
+            <p className="font-semibold">{text.payTitle}</p>
+            <p className="mt-0.5">{text.payBody}</p>
+          </m.section>
+          <Button asChild variant="filled" className="mt-auto min-h-14"><Link to={schedulePath}>{text.backToSchedule}</Link></Button>
         </div>
       </div>
     )
@@ -313,7 +316,7 @@ export function Component() {
               </button>
               <output aria-live="polite" className="min-w-16 text-center text-display font-bold tabular-nums">{quantity}</output>
               <button type="button" aria-label={text.more} disabled={quantity >= maximum} onClick={() => changeQuantity(quantity + 1)}
-                className="state-layer pressable flex size-14 items-center justify-center rounded-sm bg-cta text-on-cta disabled:opacity-40">
+                className="state-layer pressable flex size-14 items-center justify-center rounded-sm bg-primary text-on-primary disabled:opacity-40">
                 <Plus aria-hidden="true" className="size-6" strokeWidth={2.5} />
               </button>
             </div>
@@ -356,9 +359,9 @@ export function Component() {
             </dl>
             <Button variant="text" className="-ml-3" onClick={() => setStep(2)}>{text.editPlayers}</Button>
           </section>
-          <section aria-label={text.holdTitle} className="flex gap-3 rounded-sm bg-ink p-3.5 text-on-ink">
-            <Clock aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-accent" />
-            <p className="text-label"><span className="block text-body font-semibold text-accent">{text.holdTitle}</span>{text.holdBody}</p>
+          <section aria-label={text.holdTitle} className="flex gap-3 rounded-sm bg-primary-container p-3.5 text-on-primary-container">
+            <Clock aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-primary" />
+            <p className="text-label"><span className="block text-body font-semibold text-primary">{text.holdTitle}</span>{text.holdBody}</p>
           </section>
           {errorMessage && <StatusPanel tone="error" title={errorMessage} />}
         </>}

@@ -168,9 +168,9 @@ export function SchedulePage() {
                   <button
                     type="button"
                     onClick={() => selectDate(schedule.data.nextDate!)}
-                    className="state-layer pressable flex w-full max-w-md items-center gap-4 rounded-sm bg-cta p-2 pr-5 text-left text-on-ink"
+                    className="state-layer pressable flex w-full max-w-md items-center gap-4 rounded-sm bg-cta p-2 pr-5 text-left text-on-cta"
                   >
-                    <span aria-hidden="true" className="flex w-14 shrink-0 flex-col items-center rounded-xs bg-accent px-1 py-2 text-on-accent">
+                    <span aria-hidden="true" className="flex w-14 shrink-0 flex-col items-center rounded-xs bg-primary px-1 py-2 text-on-primary">
                       <span className="text-label font-bold">{formatClubWeekdayShort(schedule.data.nextDate, language)}</span>
                       <span className="text-title font-bold tabular-nums">{clubDayOfMonth(schedule.data.nextDate)}</span>
                     </span>

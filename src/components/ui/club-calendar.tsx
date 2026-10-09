@@ -32,7 +32,7 @@ const toLocal = (date: string) => {
 }
 const fromLocal = (date: Date) => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-')
 
-// The month grid: 48px square day cells, the selected day in ink with lime digits (the scoreboard look),
+// The month grid: 48px square day cells, the selected day in Deep Court with white digits (the scoreboard look),
 // today as an inset Deep Court ring, days outside the public window muted and not selectable.
 export function ClubCalendar({ selected, today, minDate, maxDate, onSelect }: ClubCalendarProps) {
   const { language, t } = useI18n()
@@ -70,7 +70,7 @@ export function ClubCalendar({ selected, today, minDate, maxDate, onSelect }: Cl
         weeks: 'relative',
         week: '',
         day: 'group p-0 text-center',
-        day_button: 'state-layer pressable relative mx-auto flex min-h-12 w-full min-w-11 items-center justify-center rounded-xs bg-surface-container-lowest text-title font-semibold tabular-nums text-on-surface transition-colors duration-200 group-data-[selected=true]:bg-ink group-data-[selected=true]:font-bold group-data-[selected=true]:text-accent dark:group-data-[selected=true]:bg-ink-raised group-data-[today=true]:ring-2 group-data-[today=true]:ring-inset group-data-[today=true]:ring-primary group-data-[today=true]:text-primary group-data-[selected=true]:ring-0 group-data-[selected=true]:group-data-[today=true]:text-accent disabled:cursor-not-allowed disabled:bg-transparent disabled:font-normal disabled:text-on-surface-variant disabled:opacity-60',
+        day_button: 'state-layer pressable relative mx-auto flex min-h-12 w-full min-w-11 items-center justify-center rounded-xs bg-surface-container-lowest text-title font-semibold tabular-nums text-on-surface transition-colors duration-200 group-data-[selected=true]:bg-primary group-data-[selected=true]:font-bold group-data-[selected=true]:text-on-primary group-data-[today=true]:ring-2 group-data-[today=true]:ring-inset group-data-[today=true]:ring-primary group-data-[today=true]:text-primary group-data-[selected=true]:ring-0 group-data-[selected=true]:group-data-[today=true]:text-on-primary disabled:cursor-not-allowed disabled:bg-transparent disabled:font-normal disabled:text-on-surface-variant disabled:opacity-60',
         selected: '',
         today: '',
         disabled: '',

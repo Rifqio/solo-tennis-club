@@ -33,7 +33,7 @@ export function LevelTabs({ levels, selected, onSelect }: { levels: string[]; se
           >
             <span className="state-layer absolute inset-x-0 inset-y-1 rounded-xs" />
             <span className="relative whitespace-nowrap">{option.label}</span>
-            {active && <m.span layoutId="level-underline" transition={selectionSpring} className="absolute inset-x-3 -bottom-px h-[3px] rounded-t-xs bg-ink dark:bg-primary" />}
+            {active && <m.span layoutId="level-underline" transition={selectionSpring} className="absolute inset-x-3 -bottom-px h-[3px] rounded-t-xs bg-primary" />}
           </button>
         )
       })}
@@ -58,8 +58,8 @@ export function AvailableOnlySwitch({ checked, onChange, hiddenCount }: { checke
         onCheckedChange={value => { selectionHaptic(); onChange(value) }}
         className="group relative inline-flex h-12 w-[3.25rem] shrink-0 items-center"
       >
-        <span className="absolute inset-x-0 inset-y-2 rounded-full border border-outline bg-surface-container transition-colors duration-200 group-data-[state=checked]:border-ink group-data-[state=checked]:bg-ink dark:group-data-[state=checked]:border-ink-raised dark:group-data-[state=checked]:bg-ink-raised" />
-        <Switch.Thumb className="relative ml-1 size-6 rounded-full bg-white shadow-menu transition-transform duration-200 data-[state=checked]:translate-x-5 data-[state=checked]:bg-accent motion-reduce:transition-none" />
+        <span className="absolute inset-x-0 inset-y-2 rounded-full border border-outline bg-surface-container transition-colors duration-200 group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary" />
+        <Switch.Thumb className="relative ml-1 size-6 rounded-full bg-white shadow-menu transition-transform duration-200 data-[state=checked]:translate-x-5 motion-reduce:transition-none" />
       </Switch.Root>
     </div>
   )
@@ -83,7 +83,7 @@ export function TimeChips({ sessions, selectedId, onSelect }: { sessions: Public
             onClick={() => onSelect(session.id)}
             className={cn(
               'state-layer pressable flex min-h-12 min-w-[4.5rem] shrink-0 flex-col items-center justify-center rounded-xs border px-3 py-1 text-label tabular-nums transition-colors duration-200',
-              active ? 'border-ink bg-ink font-semibold text-accent dark:border-ink-raised dark:bg-ink-raised' : 'border-outline bg-surface-container-lowest text-on-surface',
+              active ? 'border-primary bg-primary font-semibold text-on-primary' : 'border-outline bg-surface-container-lowest text-on-surface',
             )}
           >
             <span>{session.startTime}</span>

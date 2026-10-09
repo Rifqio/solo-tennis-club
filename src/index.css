@@ -40,10 +40,13 @@
   --md-on-ink: #F2F3F3;
   --md-on-ink-variant: #9AA1A6;
   /* The primary call to action: ink with lime text on light pages, lime with ink text on dark ones. */
-  --md-cta: #0F1112;
+  --md-cta: #C0FC49;
   /* The dock is ink; in dark mode it lifts to Raised Ink so it stays distinct from the ink ground. */
   --md-dock: #0F1112;
-  --md-on-cta: #C0FC49;
+  --md-on-cta: #0F1112;
+  /* Quiet blue notices (the 5-hour hold): ink text on a pale court-blue tint. */
+  --md-primary-container: #E6F0FA;
+  --md-on-primary-container: #0F1112;
   --md-error: #B42318;
   --md-on-error: #FFFFFF;
   --md-error-container: #FEECE8;
@@ -78,6 +81,8 @@
     --md-plate: #232628;
     --md-cta: #C0FC49;
     --md-dock: #232628;
+    --md-primary-container: #13304D;
+    --md-on-primary-container: #F2F3F3;
     --md-on-cta: #0F1112;
     --md-error: #FFB4A8;
     --md-on-error: #690005;
@@ -121,6 +126,8 @@
   --color-on-ink-variant: var(--md-on-ink-variant);
   --color-cta: var(--md-cta);
   --color-dock: var(--md-dock);
+  --color-primary-container: var(--md-primary-container);
+  --color-on-primary-container: var(--md-on-primary-container);
   --color-on-cta: var(--md-on-cta);
   --color-error: var(--md-error);
   --color-on-error: var(--md-on-error);

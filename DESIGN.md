@@ -110,15 +110,15 @@ components:
     padding: "0 16px"
     height: "48px"
   slot-chip-selected:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.accent}"
+    backgroundColor: "{colors.primary-deep}"
+    textColor: "{colors.on-primary}"
     typography: "{typography.label}"
     rounded: "{rounded.xs}"
     padding: "0 16px"
     height: "48px"
   scoreboard-cell:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.accent}"
+    backgroundColor: "{colors.primary-deep}"
+    textColor: "{colors.on-primary}"
     typography: "{typography.scoreboard}"
     rounded: "{rounded.xs}"
     width: "48px"
@@ -129,8 +129,8 @@ components:
     rounded: "{rounded.sm}"
     padding: "16px"
   button-primary:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.accent}"
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.on-accent}"
     typography: "{typography.body}"
     rounded: "{rounded.sm}"
     padding: "0 24px"
@@ -210,7 +210,7 @@ Standing at the edge of a blue hard court on a bright morning: big flat fields o
 
 The layout grammar comes from a padel court booking app the club owner selected (Dribbble, "Padel Court Booking & Sports App UI" by Sheikh Raihan UI): a labeled bottom menu with a raised center action in a notch, a scrolling strip of date tiles with a selection bar, schedule tabs with an underline, an "available only" switch and a row of time chips, and a full-bleed photographic onboarding with a long start bar. The palette comes from the same studio's "Live Sports & Tennis Streaming App UI": court blue #0079ED, ball lime #C0FC49, and ink #0F1112, plus its scoreboard digit cells. Both are adapted, not copied: no logos, people, copy, or features from the references are reused, and anything Lafu does not have (community feeds, chat, alerts, ratings, favorites, avatar stacks) is left out.
 
-Lafu's signature is the **scoreboard**: every session time is set in ink cells with lime digits, the way a club scoreboard shows a set. It replaces the trail-post plate and carries the same job: the time is the first thing you read.
+Lafu's signature is the **scoreboard**: every session time is set in Deep Court cells with white digits, the way a club scoreboard shows a set. It replaces the trail-post plate and carries the same job: the time is the first thing you read.
 
 **Key Characteristics:**
 - Court-blue band at the top of each main screen, with white court-line art; ink dock at the bottom with a lime "Pesan" button in a notch.
@@ -257,7 +257,7 @@ Three committed colors: court blue for fields, ink for anchors and the dock, bal
 - **Available** uses Deep Court (light) or Sky Court (dark), never lime, so "open" stays readable on white cards.
 
 ### Named Rules
-**The Lime Lives On Dark Rule.** Ball lime appears only on ink or as a fill holding ink text. On the light page, the primary button is ink with lime text, and a selected chip is ink with lime text.
+**The Black Is For The Dock Rule.** Court Ink fills only the bottom navigation (dock and rail). Primary buttons are Ball Lime with ink text everywhere; time cells, selected chips, the selected calendar day, the checked switch and the active tab underline are Deep Court with white. Lime never carries text itself: it is a fill holding ink text, or a mark on Deep Court, ink or blue (club owner review, 2026-10-09).
 
 **The One Lime Rule.** One lime focal point per screen region: the selected day in the band, the selected chip in the slot row, the book button in the dock. A second lime element in the same region is a defect.
 
@@ -329,19 +329,19 @@ Full-bleed Court Blue under the status bar with 24px bottom corners. Row 1: ball
 A horizontal strip of 56 by 72px tiles, 4px radius, 8px gap, after the padel date strip. Each tile stacks the weekday (label, white) over the day number (title, white) on Deep Court. Selected: Ball Lime fill, ink text, and a 16 by 3px ink bar centered at the tile's top edge (the padel selection bar). Today when unselected: 2px inset white ring. The selected fill is one shared element that springs to the new day. The calendar button opens the Club Calendar sheet.
 
 ### Club Calendar
-Same behavior as before (react-day-picker, loaded on demand; phone bottom sheet, popover from 640px; one tap applies; arrows, Enter, Escape; floating local dates so a device time zone never shifts a club day). New look: sheet header is a Court Blue strip holding the chosen date as a white headline; day cells are 48px with 4px radius, Outfit title numerals; selected is ink with lime digits, today an inset 2px Deep Court ring, outside the public window muted and not selectable.
+Same behavior as before (react-day-picker, loaded on demand; phone bottom sheet, popover from 640px; one tap applies; arrows, Enter, Escape; floating local dates so a device time zone never shifts a club day). New look: sheet header is a Court Blue strip holding the chosen date as a white headline; day cells are 48px with 4px radius, Outfit title numerals; selected is Deep Court with white digits, today an inset 2px Deep Court ring, outside the public window muted and not selectable.
 
 ### Filter Tabs
-After the padel club tabs: a row of text tabs ("Semua", then each level present that day), label size, 48px tall, inactive Muted, active ink at 600 with a 3px ink underline (Sky Court in dark mode) that slides between tabs on the selection spring. Tabs only list levels that exist on the selected day; if only one level exists the row is hidden.
+After the padel club tabs: a row of text tabs ("Semua", then each level present that day), label size, 48px tall, inactive Muted, active ink at 600 with a 3px Deep Court underline (Sky Court in dark mode) that slides between tabs on the selection spring. Tabs only list levels that exist on the selected day; if only one level exists the row is hidden.
 
 ### Available-Only Switch
-A row with the title "Hanya yang tersedia" / "Show available only" and a switch (52 by 32px track; on: ink track with lime thumb; off: Container Grey track with white thumb and Outline border). On hides full, cancelled and ended sessions and states how many were hidden ("3 sesi disembunyikan").
+A row with the title "Hanya yang tersedia" / "Show available only" and a switch (52 by 32px track; on: Deep Court track with white thumb; off: Container Grey track with white thumb and Outline border). On hides full, cancelled and ended sessions and states how many were hidden ("3 sesi disembunyikan").
 
 ### Time Chips
-After the padel slot row: a scrolling row of 48px chips, one per session start time on the selected day, label size in 24-hour WIB. Default: white fill, 1px Outline border, ink text. Selected: ink fill, lime text. Tapping a chip scrolls its session card into view and marks it; chips for full or cancelled sessions keep their time but show the state word under it in Muted.
+After the padel slot row: a scrolling row of 48px chips, one per session start time on the selected day, label size in 24-hour WIB. Default: white fill, 1px Outline border, ink text. Selected: Deep Court fill, white text. Tapping a chip scrolls its session card into view and marks it; chips for full or cancelled sessions keep their time but show the state word under it in Muted.
 
 ### Session Card (scoreboard signature)
-White card, 8px radius, 16px padding, no shadow. Top row: the **scoreboard**, two 48px ink cells holding the start hour and minute in lime scoreboard digits with a colon between them, and the end time ("s.d. 19:30") in label beside it. Below: class name (title), level and venue (body, Muted), price per place (body 600), then the state cell (word plus mark, with remaining places for open sessions; next / in progress timing on today). Bottom right: "Pesan" primary button (ink, lime text) when the session can be booked. Ended: scoreboard cells turn Container Grey with Muted digits and the state reads "Selesai". Cancelled: cells become 1px dashed Outline with Muted digits and the explanation line shows. The whole card opens the session detail sheet; the Pesan button goes straight to booking.
+White card, 8px radius, 16px padding, no shadow. Top row: the **scoreboard**, two 48px Deep Court cells holding the start hour and minute in white scoreboard digits with a colon between them, and the end time ("s.d. 19:30") in label beside it. Below: class name (title), level and venue (body, Muted), price per place (body 600), then the state cell (word plus mark, with remaining places for open sessions; next / in progress timing on today). Bottom right: "Pesan" primary button (lime, ink text) when the session can be booked. Ended: scoreboard cells turn Container Grey with Muted digits and the state reads "Selesai". Cancelled: cells become 1px dashed Outline with Muted digits and the explanation line shows. The whole card opens the session detail sheet; the Pesan button goes straight to booking.
 
 ### Dock (bottom menu)
 After the padel bottom menu, in ink: a 72px bar plus the bottom safe area, 24px top corners, with a smooth notch at the center cradling the **book button**, a 64px Ball Lime circle with an ink "+" glyph and the visible label "Pesan" beneath, raised 24px into the notch with the book-button shadow. Destinations: Jadwal, Klub on the left; Booking saya and Akun on the right. Booking saya appears only when that screen exists (plan 02-03); until then the right side holds Akun alone. Each destination is a 24px icon over a label; active is a lime icon and on-ink label at 600, inactive is On-ink Variant. The active marker is a 4px lime dot under the label that springs between destinations. Tapping the active destination scrolls to top. From 640px the dock becomes a left ink rail with the book button at the top.
@@ -364,11 +364,20 @@ Slides and copy (Indonesian first):
 Slides describe only what exists; when payment proof ships (Phase 3), slide 3 may mention QRIS and proof upload.
 
 ### Session Detail Sheet
-Bottom sheet, white, 24px top corners. Header strip in Court Blue with the class name (headline, white) and the scoreboard time. Facts in order (date and WIB time, level, venue, all coaches, price per place, places left, minimum and maximum) as label-value rows. Primary action at the bottom: "Pesan" (ink, lime text) when bookable, otherwise the reason ("Penuh", "Dibatalkan", "Pemesanan ditutup 5 jam sebelum mulai").
+Bottom sheet, white, 24px top corners. Court Blue header with the class name (headline, white) and a 2 x 2 grid of Deep Court tiles: Tanggal, Jam (WIB), Durasi, Slot, each a small label over a large white value. Below: the state word and mark, who is playing (names as tags for signed-in members; a sign-in link for visitors), then label-value rows for level, venue, coaches and group size. Pinned at the bottom: price per slot and the lime "Pesan slot" button when bookable, otherwise the reason ("Penuh", "Dibatalkan", "Sesi sudah selesai", "Pemesanan ditutup 5 jam sebelum mulai").
+
+### Players
+Signed-in members see who is playing, as they did in the shared spreadsheet: tags in the detail sheet and a short line on each session card ("Andy, Dmitri, +2"). Names only, never phones or payment state. Visitors who are not signed in see counts only.
+
+### Sign-in and Booking
+Sign-in follows the club owner's reference login: a court photo across the top under an ink fade, a centred title and one line, a phone field with a leading icon, one full-width lime button, the session being booked as a small card, six code boxes over one real input, and a random tip while the code arrives. Booking uses a task band (back, the step's question, a three-part step bar with the current step in lime), a big quantity stepper, player name fields, a check step with the quiet 5-hour notice, and a pinned bar with the total and the lime action. The dock hides during these tasks.
+
+### Booked
+Full Court Blue with white text: a white court-line drawing, a white check badge that pops and draws its tick, a short lime and white burst, and a lime ball that drops in and bounces to rest; then the headline, a Deep Court countdown to the payment deadline, the booking card, the payment note and the lime "Kembali ke jadwal" button. Plays once; reduced motion shows the finished picture.
 
 ### Buttons
-- **Primary on light:** ink fill, lime label at 600, 8px radius, 48px tall. One per screen region.
-- **Primary on dark or blue:** lime fill, ink label.
+- **Primary:** Ball Lime fill, ink label at 600, 8px radius, 48px tall, on light pages and on blue alike. One per screen region.
+- **Quiet notice:** pale court-blue tint (#E6F0FA; dark #13304D) with a Deep Court title, for timing rules such as the 5-hour hold.
 - **Secondary:** transparent with 1px Outline border, ink label.
 - **Text:** Deep Court label (Sky Court in dark mode).
 - **Icon button:** 48px; on the band a Deep Court circle with a white glyph.

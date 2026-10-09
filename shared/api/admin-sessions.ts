@@ -18,3 +18,9 @@ export interface AdminSessionDetail {
   remainingPlaces: number; status: string; isSample: boolean
 }
 export interface CreateSessionResponse { session: AdminSessionDetail; replayed: boolean }
+export interface UpdateSessionInput extends Omit<SessionInput, 'createRequestId'> { version: number }
+
+export interface AdminSessionListResponse {
+  today: string; date: string | null; minDate: string; maxDate: string; nextDate: string | null
+  sessions: AdminSessionDetail[]; truncated: boolean
+}

@@ -233,3 +233,10 @@ No new features were introduced. Later-phase features retain their approved road
 - User: "Hold up, for database we don't want to use supabase. Can we start simple using sqlite?" Selected SQLite for initial persistence and excluded Supabase (D-21).
 - User: "And we can use prisma for the orm". Selected Prisma for data access and migrations (D-22).
 - These explicit instructions supersede the earlier advisory database recommendation. No application code or dependency installation was requested by these clarifications.
+
+## UI-Phase Clarifications (2026-10-08)
+
+- User selected option 1 to initialize shadcn/ui, while requiring substantial component customization to avoid a generic shadcn appearance (D-23).
+- User asked to match the previously agreed palette. Carry forward the selected Community matchday colors `#164D45`, `#FFFFFF`, `#1D252C`, and `#EDF4F1` (D-24).
+- Initialization is authorized. The researcher setup contract still requests the user's preset string before running the init command; no setup has run yet.
+- User then selected "Choose one for me". The agent chose official preset `b2YOAa` (Radix/Nova, Inter, neutral base, green baseline). Initialization completed with shadcn 4.21.4 and Tailwind 4.3.3; `components.json`, aliases, font/theme imports and `cn` utility are present. No shadcn UI components or tennis screens have been added. Brand tokens use the agreed palette. Setup build and lint checks passed; this is not implemented Lafu UI acceptance.

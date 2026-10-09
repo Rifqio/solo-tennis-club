@@ -18,7 +18,7 @@ Customers can book tennis classes from their phones with clear, reliable availab
 
 ### Validated
 
-(None yet — ship to validate. The existing React starter contains no implemented tennis club capabilities.)
+(No full-release requirement has final integrated acceptance yet. Completed Phase 1 plan summaries record implemented public browsing, admin API/auth, persistence, and operations utilities; manual browser/phone acceptance and remaining workflows are pending.)
 
 ### Active
 
@@ -86,7 +86,7 @@ Details such as cutoff configuration scope, recurring-series edit behavior, book
 
 ### Existing workspace
 
-The workspace is `E:\Code\TApp`. It contains a React, TypeScript, and Vite starter with a package name of `mybooking`; the current screen is the framework starter and has no tennis booking functionality. A Git repository has been initialized here. The user chose to skip codebase mapping and define the product first. This project's planning files belong in `E:\Code\TApp\.planning`, independently of planning files in the parent directory.
+The workspace is `E:\Code\TApp`, with package name `lafu`. The React/TypeScript/Vite starter has become a public schedule and club application backed by Express and Prisma/SQLite. Completed Phase 1 summaries record public browsing, protected admin publication, bilingual UI foundations, and operations utilities; customer booking remains Phase 2 work. Planning files belong in this workspace's `.planning`, independently of the parent directory. Current architecture is in Phase 1's 01-SKELETON.md; DESIGN.md owns Jalur Lawu, and 01-DESIGN-BLUEPRINT.md proposes the remaining Phase 1 screens and acceptance scenarios.
 
 The confirmed club name is Lawu Fun Tennis Club, abbreviated Lafu. The application supports Indonesian and English. Logo assets and a final visual identity have not yet been supplied or selected. Impeccable supplied UI brainstorming before implementation, and the user selected building directly from an agreed design brief instead of generating a mockup first. The user confirmed Antislop for UI validation during planning and building on 2026-10-08; apply its core, UI, and mobile-layout checks alongside functional, browser, and accessibility verification.
 
@@ -105,7 +105,7 @@ The user selected Community matchday on the Impeccable direction page: a familia
 - **Product identity**: The application should feel like a focused tennis club product, with clear booking states and simple daily operations.
 - **Language**: Both the customer experience and the admin portal support Indonesian and English; interface labels and booking/payment messages must retain their meaning in both languages.
 - **Persistence**: Start with SQLite and use Prisma as the ORM, as selected during Phase 1 planning on 2026-10-08. Supabase is excluded. Database access stays server-side; hosting needs durable local storage and backups.
-- **Architecture decisions**: Framework selection, API design, infrastructure, and remaining implementation details will be defined separately. The existing starter is context, not a finalized architecture decision.
+- **Architecture decisions**: Phase 1 uses React/Vite, Express 5, Prisma 7 SQLite, provisioned admins and cookie sessions, with a persistent single-host baseline. Later-phase architecture and operating policies must be resolved before dependent implementation. Hosted deployment is not requested.
 
 ## Key Decisions
 
@@ -126,7 +126,7 @@ The user selected Community matchday on the Impeccable direction page: a familia
 | Count confirmed and active pending-payment places toward session minimums | Match the current spreadsheet's confirmed and red-name participants | Pending |
 | Track refunds while moving money manually | Handle paid cancellations within the initial manual-payment scope | Pending |
 | Defer technical architecture decisions | Product rules should be established before selecting implementation details | Pending |
-| Start with SQLite and Prisma; exclude Supabase | User selected a simple initial database and ORM during Phase 1 planning | Selected 2026-10-08; implementation pending |
+| Start with SQLite and Prisma; exclude Supabase | User selected a simple initial database and ORM during Phase 1 planning | Selected 2026-10-08; migrated persistence and backup/restore implemented in 01-01 and 01-06; integrated acceptance pending |
 | Use Lawu Fun Tennis Club / Lafu as the product's club identity | The user confirmed the actual club name | Pending |
 | Support Indonesian and English in customer and admin workflows | The user confirmed both application languages | Pending |
 | Select Community matchday as the UI presentation direction | It matches the user's AYO app reference while keeping Lafu booking and payment states understandable | Pending |

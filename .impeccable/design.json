@@ -488,7 +488,7 @@
       "Do keep full club green (#164D45) to the selected day, the one filled action, and the signboard.",
       "Do set start times, day numerals, the month, and the wordmark in Barlow Condensed Bold, and everything else in the system UI face.",
       "Do state every condition as a word; drawn marks only echo it.",
-      "Do give every touch target at least 48px and a state layer for press and hover.",
+      "Do prefer 48px touch targets; calendar days may be 44px wide at narrow widths while retaining 48px height. Include press and hover state layers.",
       "Do draw focus as a 2px primary outline offset 2px, white on the signboard.",
       "Do separate rows with hairlines on the mist ground and layer with tonal containers.",
       "Do keep page gutters out of safe areas and pad the bottom for the navigation bar.",
@@ -505,10 +505,10 @@
     ],
     "openItems": [
       "Drawn trail line between posts (not built).",
-      "Date-change motion (not built).",
+      "Date-change motion exists in SchedulePage.tsx and DateStrip.tsx; user confirmed manual workflow acceptance on 2026-10-09.",
       "Signboard-language club page (not built).",
-      "Session detail sheet, plan 01-07 (not built; sheet shadow reserved).",
-      "Admin surfaces (not built; inherit this system).",
+      "Session detail sheet, plan 01-07, implemented and manually accepted by the user on 2026-10-09.",
+      "Admin access, Sessions, Manage, classes and guided create/edit manually accepted by the user on 2026-10-09; automated browser tests remain unrun.",
       "Real club logo; app icon is a text-based LAFU placeholder until supplied."
     ]
   }

@@ -252,6 +252,14 @@
 @keyframes lafu-fade-out { to { opacity: 0; } }
 @keyframes lafu-fade-in { from { opacity: 0; transform: scale(0.98); } }
 
+/* Menus open from their trigger; selected marks confirm a change once, without looping. */
+.menu-motion[data-state="open"] { animation: lafu-menu-in 180ms var(--ease-emphasized) both; }
+.menu-motion[data-state="closed"] { animation: lafu-menu-out 120ms var(--ease-standard) both; }
+.check-enter { animation: lafu-check-in 160ms var(--ease-emphasized) both; }
+@keyframes lafu-menu-in { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
+@keyframes lafu-menu-out { to { opacity: 0; transform: translateY(-2px) scale(0.98); } }
+@keyframes lafu-check-in { from { opacity: 0; transform: scale(0.8); } }
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
   *, ::before, ::after {

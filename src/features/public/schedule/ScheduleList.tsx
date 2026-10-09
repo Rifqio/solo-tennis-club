@@ -3,11 +3,15 @@ import { SessionSummaryRow } from './SessionSummaryRow'
 import type { SessionTiming } from './session-timing'
 
 // Server order is startsAt then id; the list keeps it, one column on phones and two from 1024px.
-export function ScheduleList({ sessions, timings, now }: { sessions: PublicSessionSummary[]; timings: Map<string, SessionTiming> | null; now: number }) {
+export function ScheduleList({ sessions, timings, now, onOpen }: { sessions: PublicSessionSummary[]; timings: Map<string, SessionTiming> | null; now: number; onOpen?: (id: string, trigger: HTMLButtonElement) => void }) {
   return (
     <ul className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-10">
       {sessions.map(session => (
-        <SessionSummaryRow key={session.id} session={session} timing={timings?.get(session.id)} now={now} className="border-t border-outline-variant first:border-t-0 lg:[&:nth-child(2)]:border-t-0" />
+        <li key={session.id} className="border-t border-outline-variant first:border-t-0 lg:[&:nth-child(2)]:border-t-0">
+          <button type="button" onClick={event => onOpen?.(session.id, event.currentTarget)} aria-haspopup="dialog" className="state-layer w-full rounded-md text-left">
+            <SessionSummaryRow as="div" session={session} timing={timings?.get(session.id)} now={now} />
+          </button>
+        </li>
       ))}
     </ul>
   )

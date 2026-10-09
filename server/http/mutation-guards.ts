@@ -6,7 +6,9 @@ const isMutation = (method: string) => ['POST', 'PUT', 'PATCH', 'DELETE'].includ
 export function requireSameOrigin(config: RuntimeConfig): RequestHandler {
   return (req, _res, next) => {
     const expected = config.publicOrigin ?? `${req.protocol}://${req.get('host')}`
-    next(isMutation(req.method) && req.get('origin') !== expected ? new ApiError(403, 'ORIGIN_REJECTED') : undefined)
+    const origin = req.get('origin')
+    const approvedDevelopmentOrigin = config.developmentMode && !config.publicOrigin && origin !== undefined && config.developmentOrigins?.includes(origin)
+    next(isMutation(req.method) && origin !== expected && !approvedDevelopmentOrigin ? new ApiError(403, 'ORIGIN_REJECTED') : undefined)
   }
 }
 export const requireJson: RequestHandler = (req, _res, next) => {

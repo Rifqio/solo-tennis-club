@@ -4,9 +4,9 @@
 **Date:** 2026-10-08
 **Contract check:** Seven dimensions passed after contextual bilingual action-label changes. No implemented Lafu UI acceptance is claimed.
 
-The compiled `ui-consideration-probe.cjs` ran over 12 surfaces described in `01-UI-SPEC.md`. It returned 70 applicable unresolved checks and zero unclassified surfaces. Its keyword matching can both miss types and mistake prose verbs for form elements; the proposed classifications below correct those cases before resolution.
+The initial probe returned 70 unresolved checks before corrected classifications and explicit resolutions. The final JSON report records 78 applicable checks, all explicitly resolved, zero unresolved and zero unclassified. This is design-state coverage, not runtime evidence.
 
-## Surface Classification Proposal
+## Confirmed Surface Classifications
 
 | ID / Surface | Engine-detected kinds | Proposed actual kinds |
 |--------------|-----------------------|-----------------------|
@@ -23,11 +23,11 @@ The compiled `ui-consideration-probe.cjs` ran over 12 surfaces described in `01-
 | E11 Discard confirmation | Form, text | Control and text: a confirmation has actions and an explanation, not a data-entry form. |
 | E12 Validation/status panel | Form, text | Control and text: messages/retry and availability labels describe the owning form, not another form. |
 
-“List” means the probe's `list-collection`; “control” means `interactive-control`; “text” means `static-content`. Exact input descriptions are copied from the contract into the probe's JSON input. These proposed kinds are not confirmed yet.
+“List” means the probe's `list-collection`; “control” means `interactive-control`; “text” means `static-content`. The corrected kinds and explicit rules are reflected in the confirmed final JSON report.
 
 ## Recommended State Rules
 
-These are proposed explicit acceptance rules for each applicable surface/category. They preserve the existing contract and add no Phase 2-5 workflow.
+These confirmed design-state rules preserve the existing contract and add no Phase 2-5 workflow. Implementation and acceptance evidence remain required.
 
 | State category | Recommended rule |
 |----------------|------------------|
@@ -42,11 +42,11 @@ These are proposed explicit acceptance rules for each applicable surface/categor
 
 Apply each rule only where the confirmed element kind makes it relevant. Use the Copywriting Contract for the exact bilingual empty/error wording. Confirmation/status panels with fixed local content do not invent server-loading operations; pending/loading and errors belong to their owning operation and remain visible in context.
 
-No consideration is currently dismissed, marked resolved, or claimed tested. After user confirmation, run the engine again with the corrected kinds and concrete per-surface resolutions, replace the UI-SPEC's UI Considerations placeholder, and record the final coverage counts. Any requested change remains open until answered.
+All 78 final considerations are marked resolved by explicit design rules; none of those labels claims runtime testing. The proposed continuation in 01-DESIGN-BLUEPRINT.md remains open for review; existing confirmed rules remain in force.
 
 ## Evidence and Boundaries
 
-- Actual probe result: applicable 70, resolved 0, unresolved 70, unclassified 0.
+- Final JSON report: applicable 78, resolved 78 (explicit), unresolved 0, unclassified 0. Initial pre-resolution result: applicable 70, resolved 0, unresolved 70, unclassified 0.
 - Original preset `b2YOAa` initialized; current CLI may reconstruct a different code from customized tokens. The original code is provenance, not a command to restore default styling.
 - shadcn 4.21.4 reports zero installed assembled UI components; Radix 1.7.0 exports 35 namespaces including two unstable namespaces excluded from use. The earlier parent progress statement of 36 was corrected by direct enumeration and the independent checker.
-- Build/lint passed after the last setup source changes. Business UI, admin auth, Prisma/database, and runtime interaction validation remain unimplemented.
+- Completed-plan summaries now record migrated Prisma/SQLite, public UI, protected admin auth/publication, operations utilities, and passing non-browser checks. Remaining admin/detail/edit UI and runtime acceptance are incomplete. Package/setup counts above are historical provenance.

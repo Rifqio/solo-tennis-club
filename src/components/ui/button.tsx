@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 // Material 3 common buttons: full-round, 48px touch height, label wraps instead of truncating.
 // Filled is the one primary action per screen; tonal and outlined are secondary; text is lowest emphasis.
 const buttonVariants = cva(
-  'state-layer pressable inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-full px-6 py-2 text-center text-body font-bold break-words transition-colors duration-150 aria-disabled:cursor-not-allowed',
+  'state-layer pressable inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-full px-6 py-2 text-center text-body font-bold break-words transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed',
   {
     variants: {
       variant: {

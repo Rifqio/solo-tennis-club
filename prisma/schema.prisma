@@ -124,6 +124,7 @@ model ClassSession {
   isSample Boolean @default(false)
   createRequestId String? @unique
   version Int @default(1)
+  capacityRevision Int @default(1)
   createdById String?
   createdBy AdminAccount? @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   updatedById String?
@@ -131,6 +132,7 @@ model ClassSession {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   coaches SessionCoach[]
+  bookings Booking[]
   @@index([startsAt])
 }
 model SessionCoach {
@@ -141,4 +143,94 @@ model SessionCoach {
   coach Coach @relation(fields: [coachId], references: [id], onDelete: Restrict)
   @@id([sessionId, coachId])
   @@unique([sessionId, position])
+}
+
+model Customer {
+  id String @id @default(cuid())
+  phone String @unique
+  displayName String
+  verifiedAt DateTime
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions CustomerSession[]
+  bookings Booking[]
+}
+
+model Booking {
+  id String @id @default(cuid())
+  sessionId String
+  session ClassSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  customerId String?
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  actorKind String @default("customer")
+  actorId String
+  createRequestId String
+  fingerprint String
+  bookerName String
+  bookerPhone String
+  quantity Int
+  unitPriceIdr Int
+  totalPriceIdr Int
+  originalDeadline DateTime
+  status String @default("awaiting_payment")
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  participants BookingParticipant[]
+  @@unique([actorKind, actorId, createRequestId])
+  @@index([sessionId, status, originalDeadline])
+  @@index([customerId, createdAt])
+}
+
+model BookingParticipant {
+  id String @id @default(cuid())
+  bookingId String
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  position Int
+  name String
+  @@unique([bookingId, position])
+}
+
+model CustomerSession {
+  id String @id @default(cuid())
+  customerId String
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+  csrfToken String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([customerId])
+  @@index([expiresAt])
+}
+
+model OtpChallenge {
+  id String @id
+  phone String
+  flowHash String
+  codeDigest String
+  expiresAt DateTime
+  resendAt DateTime
+  attempts Int @default(0)
+  consumedAt DateTime?
+  supersededAt DateTime?
+  verifiedAt DateTime?
+  proofTokenHash String? @unique
+  proofCsrfToken String?
+  profileExpiresAt DateTime?
+  profileCompletedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([phone, createdAt])
+  @@index([flowHash, createdAt])
+  @@index([expiresAt])
+}
+
+model OtpAttempt {
+  id String @id @default(cuid())
+  phoneKey String
+  ipKey String
+  kind String
+  createdAt DateTime @default(now())
+  @@index([phoneKey, kind, createdAt])
+  @@index([ipKey, kind, createdAt])
 }

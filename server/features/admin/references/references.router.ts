@@ -1,0 +1,21 @@
+import { Router } from 'express'
+import type { PrismaClient } from '../../../generated/prisma/client.ts'
+import { createReferenceController } from './reference.controller.ts'
+
+export function createReferencesRouter(database: PrismaClient) {
+  const router = Router()
+  const routes = [
+    ['coaches', 'coach'],
+    ['venues', 'venue'],
+    ['levels', 'level'],
+  ] as const
+
+  for (const [path, kind] of routes) {
+    const controller = createReferenceController(database, kind)
+    router.get(`/${path}`, controller.list)
+    router.get(`/${path}/:id`, controller.detail)
+    router.post(`/${path}`, controller.create)
+    router.put(`/${path}/:id`, controller.update)
+  }
+  return router
+}

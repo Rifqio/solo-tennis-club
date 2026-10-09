@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 1
-current_phase_name: Publish and Browse Sessions
+current_phase: 2
+current_phase_name: Reserve Places and See Daily Rosters
 status: executing
-stopped_at: 01-06 backup/restore/sample seed/README done; Club Calendar picker shipped; next 01-04; browser verification manual pending
-last_updated: "2026-10-08T14:45:00.000Z"
-last_activity: 2026-10-08
-last_activity_desc: Plan 01-03 bilingual public shell and tokens executed by hand
+stopped_at: 02-02 reservation source implemented; manual acceptance and concurrency proof pending
+last_updated: "2026-10-09"
+last_activity: 2026-10-09
+last_activity_desc: 02-02 capacity-safe customer reservations implemented; build/lint pass; manual acceptance pending
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 10
-  completed_plans: 4
-  percent: 40
+  completed_phases: 1
+  total_plans: 16
+  completed_plans: 13
+  percent: 20
 ---
 
 # Project State
@@ -22,22 +22,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-08)
 
 **Core value:** Customers can book tennis classes from their phones with clear, reliable availability, while club admins can manage those bookings and payments without spreadsheets.
-**Current focus:** Phase 1 — Publish and Browse Sessions
+**Current focus:** Phase 2 - Reserve Places and See Daily Rosters: 02-01 and 02-02 source implemented; both manual acceptance items pending; next 02-03
 
 ## Current Position
 
-Phase: 1 (Publish and Browse Sessions) — EXECUTING
-Plan: 4 of 10
-Status: Ready to execute (01-04 next; 01-05 needs only its e2e specs and SUMMARY)
-Last activity: 2026-10-08, plan 01-03 completed
+Phase: 2 (Reserve Places and See Daily Rosters) - EXECUTING; 02-01 customer access and 02-02 reservation source implemented
+Phase 1: 10 of 10 plans summarized, manually accepted by user on 2026-10-09. Phase 2: six plans defined; 02-00 through 02-02 source complete; 02-01 and 02-02 manual acceptance pending; 02-03 through 02-05 remain.
+Status: Customer access uses mock OTP returned through the development API. Capacity-safe reservations and occupancy are implemented; local migrations applied after backups and dev server restarted. Manual UI acceptance, concurrency proof and real OTP delivery remain separate gates.
+Last design activity: 2026-10-09, confirmed blueprint implemented with Impeccable and Antislop during mode; no GSD skills invoked. See `phases/01-publish-and-browse-sessions/01-PHASE1-REVIEW.md` for fresh evidence and manual checklist.
 
-Progress: [████░░░░░░] 40%
+Progress: 1 of 5 phases accepted (20%); 13 of 16 defined source plans implemented, including the structural prerequisite; no Phase 2 product requirements accepted.
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans with implementation summaries: 13
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -49,8 +49,8 @@ Progress: [████░░░░░░] 40%
 
 **Recent Trend:**
 
-- Last 5 plans: None
-- Trend: No execution data
+- Implementation summaries: 01-01 through 01-10, 02-00 through 02-02
+- Trend: Phase 1 accepted; Phase 2 customer access source verified and reservations next
 
 ## Accumulated Context
 
@@ -63,29 +63,48 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - Community matchday and the detailed UI brief were confirmed on 2026-10-07; the build path is code-led.
 - The five-phase roadmap was approved on 2026-10-08. Impeccable supplied UI brainstorming; Antislop core, UI, and mobile-layout checks apply during planning/building, with evidence-based validation before UI delivery.
 - Mobile-first, Indonesian/English, accessible text-based states, and privacy apply from each workflow's first delivery; later UX ownership is integrated acceptance.
-- Framework/database/API/infrastructure remain unselected. Discuss architecture and open policies before dependent implementation. Workflow is interactive with auto-advance disabled.
+- Phase 1 framework/database/API/admin access and the persistent single-host baseline are confirmed in 01-SKELETON.md. Hosted deployment and later-phase technical/policy choices remain open. Workflow is interactive with auto-advance disabled.
 - [Phase 1]: Customer, publishing, regional/availability, and admin decisions are confirmed in .planning/phases/01-publish-and-browse-sessions/01-CONTEXT.md; Impeccable direction and Antislop validation remain in force.
-- [Phase 1]: User selected SQLite with Prisma for initial persistence and excluded Supabase; remaining framework/API/hosting choices are open. — Start with a simple local database behind the application server; preserve transactional booking and admin authorization rules.
+- [Phase 1]: User selected SQLite with Prisma for initial persistence and excluded Supabase; React/Vite and Express are selected in 01-SKELETON.md; hosted deployment remains open. — Start with a simple local database behind the application server; preserve transactional booking and admin authorization rules.
 - [Phase 1]: Use shadcn/ui with Tailwind; customize each used component for Lafu and retain Community matchday colors #164D45, #FFFFFF, #1D252C, #EDF4F1. Initialization approved; preset string pending.
 - [Phase 1]: User selected express-spa verbatim: React/Vite, Express 5, Prisma 7 SQLite, fixed provisioned admins with cookie sessions, persistent disk; persisted IDs, timestamps, IDR and session defaults approved.
-- [Phase 1]: User explicitly disabled Chromium/browser verification as too heavy and will assess manually. Continue build, lint, unit, API, database and security checks; browser/UI acceptance remains manual pending, never report it passed.
+- [Phase 1]: User explicitly disabled Chromium/browser automation as too heavy and reviewed manually. On 2026-10-09 they confirmed all listed workflows tested; record user manual acceptance separately from unrun automated browser checks.
 - [Phase 1]: From 2026-10-08 the user has plans executed by hand without GSD skills, with Antislop DURING alongside Impeccable.
 - [Phase 1]: User requested a full native-app redesign (2026-10-08): Material 3 idiom, club palette kept as tonal roles, light and dark follow the phone, installable manifest. Impeccable direction "Jalur Lawu" (seed b5fc1590) chosen. Root DESIGN.md (Google Labs DESIGN.md spec) is now the visual source of truth and supersedes 01-UI-SPEC visual sections; later UI plans (01-04, 01-07 to 01-10, admin) inherit it.
 - [Phase 1]: User chose react-day-picker for the date picker (2026-10-08): Club Calendar in a bottom sheet on phones and a popover from 640px, replacing UI-SPEC's native input; recorded in DESIGN.md.
 - [Phase 1]: 01-06 sample seed is richer than planned at the user's request (two weeks, empty days, cancelled, long names) and gained --refresh; still isSample, "Contoh"-named, development only.
-- [Phase 1]: The redesign delivered most of plan 01-05 (schedule window API with nextDate/minDate/maxDate, date strip, picker, summary rows, states); 01-05's e2e specs and SUMMARY remain.
+- [Phase 1]: Schedule close-out, public details, reference/class management and guided create/edit are implemented and summarized. Build/lint and all 137 non-browser tests passed before acceptance. User subsequently confirmed manual workflow testing; shortcut cleanup has its own fresh verification record.
 - [Phase 1]: Schema gate push-event heuristic skipped per documented GSD_SKIP_SCHEMA_CHECK after real committed migrate deploy/status and clean-file tests passed; do not substitute db push for migration history.
 
 ### Pending Todos
 
-None yet.
+- [x] Implement admin sign-in, shell, and dated Sessions list (01-04); non-browser checks passed.
+- [x] Add the requested temporary development test-admin shortcut and fix the configured HTTPS tunnel origin check.
+- [x] User confirmed the temporary shortcut opens admin successfully (2026-10-09); this verifies that entry path only.
+- [x] Close out schedule/date navigation (01-05): source, E2E specifications and summary; manual acceptance subsequently confirmed by user.
+- [x] Implement public session details and exact availability states (01-07). Source/non-browser checks complete; manual acceptance confirmed by user.
+- [x] Implement Manage hub and coach, venue, and level management (01-08). Source/non-browser checks complete; manual acceptance confirmed by user.
+- [x] Implement classes and defaults management (01-09). Source/non-browser checks complete; manual acceptance confirmed by user.
+- [x] Implement guided session create/edit and safe capacity edits (01-10); author integrated acceptance specs.
+- [x] User confirmed all listed manual workflows tested on 2026-10-09; see 01-PHASE1-REVIEW.md.
+- [x] Remove the temporary development sign-in shortcut after manual testing; legacy mock sessions are rejected in both modes.
+- [x] User confirmed the listed access, management, publication, bilingual and interaction checks manually; no exact device/viewport evidence supplied.
+- [x] Confirm Phase 2 development OTP, recovery, required fields, group limits, hold timing/cutoff and outside-booking identity/deadline policies; see 02-CONTEXT.md.
+- [x] Complete 02-00 readable backend layers with regression evidence.
+- [x] Implement 02-01 development customer access; build/lint and 161 tests pass, local schema up to date.
+- [ ] Complete user manual UI checks for 02-01.
+- [x] Implement 02-02 capacity-safe customer reservations and real occupancy; build/lint pass, local migrations applied.
+- [ ] Complete user manual acceptance and independent-connection concurrency/rollback proof for 02-02.
+- [ ] Implement 02-03 through 02-05 using the recorded plans.
+- [ ] Select/integrate real OTP delivery and verify AUTH-02 before Phase 2 release completion.
+- [ ] Before production launch, review real club content/logo/catalog, exclude samples and verify deployment/provisioning operations.
 
 ### Blockers/Concerns
 
-- Phase 2 needs primary auth/OTP/recovery, hold start/near-start rules, required fields/group limits, and outside-booking identity/deadlines.
+- Phase 2 development policies are settled. Real WhatsApp/SMS provider/channel delivery remains a release prerequisite; mock API codes establish development flow only.
 - Phases 3-4 need evidence/payment exception rules, paid/partial-group changes, refund records, and rejection/change/cancellation communication.
 - Phase 5 needs booked-occurrence edit semantics, cutoff/delayed-check behavior, and post-cutoff pending-expiry policy. Preserve all approved reservation/minimum rules.
-- Phase 1 planning must select technical architecture and admin provisioning/recovery mechanics, and obtain real club content. WIB, IDR, the 25% nearly-full threshold, Indonesian default, and admin email/password with fixed setup accounts are settled in 01-CONTEXT.md.
+- Phase 1 architecture and trusted admin provisioning/rotation are selected and implemented at the API/CLI level. Phase 1 workflow manual acceptance is confirmed by the user. Real club content and hidden terminal-password/deployment checks remain production-launch prerequisites. WIB, IDR, the 25% nearly-full threshold, Indonesian default, and admin email/password with fixed setup accounts are settled.
 
 ## Deferred Items
 
@@ -95,6 +114,14 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-08T13:49:44.845Z
-Stopped at: Plan 01-01 summarized; ready for wave 2; browser verification manual pending
-Resume file: .planning/phases/01-publish-and-browse-sessions/01-04-PLAN.md
+Last session: 2026-10-09
+Stopped at: 02-02 reservation source implemented; manual acceptance and concurrency proof pending
+Resume file: .planning/phases/02-reserve-places-and-see-daily-rosters/02-02-PLAN.md
+
+## Manual acceptance update
+
+User confirmed "All tested manually" on 2026-10-09 after the seven-item workflow checklist. This is user-reported manual acceptance; no agent browser run, screenshots, device inventory or exact viewport measurements were supplied. Real club content/production launch checks remain separate.
+
+## Phase 2 decisions and backend standard
+
+User confirmed development-only mock OTP with code available in the API response, required name + verified phone, groups up to remaining capacity, hold start at final confirmation, and admission closing five hours before session start. Admin outside bookings store contact without verified ownership; same-phone verification precedes explicit admin linking. Same-number recovery uses OTP; lost-number recovery needs club assistance, without automatic merging. Controller/service/repository code is now the backend standard. See `BACKEND-CONVENTIONS.md` and `phases/02-reserve-places-and-see-daily-rosters/02-00-SUMMARY.md`. No GSD skills or browser automation were run.

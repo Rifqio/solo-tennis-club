@@ -1,7 +1,7 @@
 # Phase 1: Publish and Browse Sessions - Context
 
 **Gathered:** 2026-10-08
-**Status:** Ready for research, UI specification, and planning
+**Status:** Discussion record retained; Phase 1 now executing. Confirmed architecture is in 01-SKELETON.md; DESIGN.md owns the later Jalur Lawu visual system. Proposed continuation: 01-DESIGN-BLUEPRINT.md (2026-10-09). Earlier open-architecture statements below describe the discussion-time position.
 
 <domain>
 ## Phase Boundary
@@ -55,6 +55,8 @@ No phase-specific SPEC.md exists. The approved roadmap and requirements remain t
 
 - **D-21 (planning clarification, 2026-10-08):** Start with SQLite as the database. The user excludes Supabase; earlier service recommendations are superseded. Keep the SQLite file server-side behind the application API.
 - **D-22 (planning clarification, 2026-10-08):** Use Prisma as the ORM. Choose a compatible release and SQLite adapter during setup, apply actual migrations, and verify real persistence. ORM use does not replace transactional capacity checks or server authorization.
+- **D-23 (UI-phase clarification, 2026-10-08):** Initialize shadcn/ui with Tailwind CSS as the component foundation. Heavily customize each used component for Lafu rather than shipping default shadcn styling or a generic dashboard. Preserve accessible behavior while tailoring composition, type, spacing, shapes, states, and phone interactions to the confirmed brief. The user authorized initialization and then delegated the preset choice. The agent selected official preset `b2YOAa` with Radix, Nova, neutral base, green baseline theme, Inter, Lucide, and default radius. Setup defaults do not replace Lafu's final design contract.
+- **D-24 (UI-phase clarification, 2026-10-08):** Match the Community matchday palette the user referred back to: club green `#164D45`, white `#FFFFFF`, ink `#1D252C`, and pale green `#EDF4F1`, from `.impeccable/decisions/lafu-direction.json` option `model-pick`. Use these as brand colors; contrast-tested semantic/status colors and roles are detailed in UI-SPEC. Do not allow a setup preset to replace the agreed palette.
 
 Select the remaining technical implementation through research/planning rather than treating the starter or advisory research as an approved stack. Open implementation choices include admin authentication/provisioning and recovery mechanics, API ownership, deployment, exact navigation labels/routes, bottom-sheet accessibility and larger-screen adaptation, field validation, and final design tokens/components. SQLite and Prisma are selected; no hosted database provider or final framework has been selected.
 

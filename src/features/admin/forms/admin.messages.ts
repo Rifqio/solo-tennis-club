@@ -1,0 +1,15 @@
+export const adminMessages = {
+  save: { id: 'Simpan', en: 'Save' }, saving: { id: 'Menyimpan...', en: 'Saving...' }, saved: { id: 'Perubahan tersimpan.', en: 'Changes saved.' },
+  add: { id: 'Tambah', en: 'Add' }, edit: { id: 'Ubah', en: 'Edit' }, cancel: { id: 'Kembali', en: 'Back' }, name: { id: 'Nama', en: 'Name' },
+  address: { id: 'Alamat (opsional)', en: 'Address (optional)' }, loading: { id: 'Memuat data...', en: 'Loading records...' },
+  loadError: { id: 'Data belum dapat dimuat. Coba lagi.', en: 'Records could not be loaded. Try again.' },
+  saveError: { id: 'Penyimpanan belum dapat dipastikan. Isian tetap tersedia. Coba simpan lagi.', en: 'The save could not be confirmed. Your entries are preserved. Try saving again.' },
+  conflict: { id: 'Data ini telah diubah oleh admin lain. Periksa versi terbaru sebelum menyimpan.', en: 'Another admin changed this record. Review the latest version before saving.' },
+  latest: { id: 'Versi terbaru', en: 'Latest saved' }, yours: { id: 'Isian Anda', en: 'Your changes' },
+  replace: { id: 'Gunakan versi terbaru', en: 'Use latest version' }, choose: { id: 'Pilih...', en: 'Choose...' },
+  defaults: { id: 'Perubahan nilai awal hanya berlaku untuk sesi baru. Sesi yang sudah ada tetap sama.', en: 'Default changes apply only to new sessions. Existing sessions stay unchanged.' },
+  missing: { id: 'Lengkapi kelas, level, lokasi, dan pelatih sebelum membuat sesi.', en: 'Add the required class, level, venue, and coaches before creating a session.' },
+  manage: { id: 'Kelola', en: 'Manage' }, classes: { id: 'Kelas', en: 'Classes' }, sessions: { id: 'Sesi', en: 'Sessions' },
+  level: { id: 'Level', en: 'Level' }, venue: { id: 'Lokasi', en: 'Venue' }, duration: { id: 'Durasi (menit)', en: 'Duration (minutes)' },
+  price: { id: 'Harga per tempat (Rp)', en: 'Price per place (Rp)' }, min: { id: 'Minimum peserta', en: 'Minimum participants' }, max: { id: 'Kapasitas maksimum', en: 'Maximum capacity' },
+}

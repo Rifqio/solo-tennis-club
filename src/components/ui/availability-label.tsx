@@ -6,7 +6,7 @@ import { scheduleMessages } from '@/features/public/schedule/schedule.messages'
 import type { AvailabilityStatus } from '@shared/availability'
 
 // The fixed state cell: filled = open, half = nearly full, hollow = full, struck = cancelled. The mark only echoes the word beside it.
-function AvailabilityMark({ availability }: { availability: AvailabilityStatus }) {
+export function AvailabilityMark({ availability }: { availability: AvailabilityStatus }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4 shrink-0">
       {availability === 'available' && <circle cx="8" cy="8" r="7" fill="currentColor" />}

@@ -19,6 +19,7 @@ import { scheduleMessages } from './schedule.messages'
 import { sessionTimings } from './session-timing'
 import { useNow } from './use-now'
 import { useSchedule } from './use-schedule'
+import { SessionDetailSheet } from './SessionDetailSheet'
 
 export function SchedulePage() {
   const { language, t } = useI18n()
@@ -27,6 +28,11 @@ export function SchedulePage() {
   const requestedDate = isClubDate(param) ? param : null
   const schedule = useSchedule(requestedDate)
   const [stripStart, setStripStart] = useState<string | null>(null)
+  const [openSessionId, setOpenSessionId] = useState<string | null>(() => {
+    const session = searchParams.get('session')
+    return session && /^[a-z0-9]{1,64}$/.test(session) ? session : null
+  })
+  const detailTrigger = useRef<HTMLElement | null>(null)
 
   // The server decides today in WIB; until it answers, the device's WIB date keeps the controls usable.
   const fallbackToday = clubToday()
@@ -85,7 +91,7 @@ export function SchedulePage() {
 
       <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-4 lg:max-w-[72rem]">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h2 className="text-title font-bold text-on-surface">
+          <h2 data-schedule-heading tabIndex={-1} className="text-title font-bold text-on-surface">
             {formatClubDateMedium(selected, language)}
             <span className="ml-2 text-label font-normal text-on-surface-variant">WIB</span>
           </h2>
@@ -155,13 +161,14 @@ export function SchedulePage() {
             ) : (
               <>
                 {schedule.data.sessions.some(session => session.isSample) && <SampleDataNotice />}
-                <ScheduleList sessions={schedule.data.sessions} timings={timings} now={now} />
+                <ScheduleList sessions={schedule.data.sessions} timings={timings} now={now} onOpen={(id, trigger) => { detailTrigger.current = trigger; setOpenSessionId(id) }} />
               </>
             )}
           </m.div>
         </AnimatePresence>
         </div>
       </div>
+      <SessionDetailSheet id={openSessionId} onClose={() => setOpenSessionId(null)} returnFocus={detailTrigger} />
     </>
   )
 }

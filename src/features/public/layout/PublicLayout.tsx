@@ -1,4 +1,4 @@
-import { CalendarDays, Info } from 'lucide-react'
+import { CalendarDays, Info, UserRound } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { m, useMotionValueEvent, useScroll } from 'motion/react'
 import { useState } from 'react'
@@ -15,6 +15,7 @@ import { publicMessages } from './public.messages'
 const destinations: { to: string; end: boolean; label: Message; Icon: LucideIcon }[] = [
   { to: '/', end: true, label: publicMessages.schedule, Icon: CalendarDays },
   { to: '/club', end: false, label: publicMessages.club, Icon: Info },
+  { to: '/customer/sign-in', end: false, label: { id: 'Akun', en: 'Account' }, Icon: UserRound },
 ]
 
 // One destination: icon inside the Material active-indicator pill, label beneath. Bar on phones, rail from 640px.

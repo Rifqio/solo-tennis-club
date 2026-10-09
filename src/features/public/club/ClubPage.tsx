@@ -1,6 +1,7 @@
 import { Info, MapPin, Phone } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
 import type { Message } from '@/i18n/types'
@@ -40,6 +41,7 @@ export function ClubPage() {
           </div>
         ))}
       </dl>
+      <Link to="/admin/sign-in" className="inline-flex min-h-12 items-center self-start rounded-sm px-3 text-label text-on-surface-variant underline underline-offset-4">{t({ id: 'Masuk admin', en: 'Admin sign in' })}</Link>
     </div>
   )
 }

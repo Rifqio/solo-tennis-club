@@ -16,7 +16,11 @@ export async function startServer(options: {
       const { createServer: createViteServer } = await import('vite')
       vite = await createViteServer({ root: projectRoot, server: { middlewareMode: true }, appType: 'spa' })
     }
-    const app = createApp({ prisma, mode: options.mode, distDir: resolve(projectRoot, 'dist'), viteMiddleware: vite?.middlewares })
+    const allowedHosts = vite?.config.server.allowedHosts
+    const developmentOrigins = Array.isArray(allowedHosts) ? allowedHosts
+      .filter(host => !host.startsWith('.') && /^[a-zA-Z0-9.-]+$/.test(host))
+      .map(host => `https://${host}`) : []
+    const app = createApp({ prisma, mode: options.mode, distDir: resolve(projectRoot, 'dist'), viteMiddleware: vite?.middlewares, developmentOrigins })
     const server = createServer(app)
     const port = options.port ?? Number(process.env.LAFU_PORT ?? 3000)
     const host = options.host ?? process.env.LAFU_HOST ?? '127.0.0.1'

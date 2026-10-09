@@ -1,7 +1,7 @@
 # Requirements: Lafu — Lawu Fun Tennis Club
 
 **Defined:** 2026-10-07
-**Status:** All 67 first-release requirements and their five-phase roadmap approved by the user on 2026-10-08; implementation pending.
+**Status:** All 67 first-release requirements and their five-phase roadmap approved by the user on 2026-10-08; Phase 1 accepted by the user after manual workflow testing on 2026-10-09; Phase 2 policy decisions and six plans recorded; backend foundation verified, customer/booking implementation pending. Requirement checkboxes track acceptance.
 **Core Value:** Customers can book tennis classes from their phones with clear, reliable availability, while club admins can manage those bookings and payments without spreadsheets.
 
 ## v1 Requirements
@@ -10,11 +10,11 @@ All requirements below belong to the initial release. Delivery in separate phase
 
 ### Public discovery and schedules
 
-- [ ] **DISC-01**: Visitor can explore Lafu's club information without signing in.
-- [ ] **DISC-02**: Visitor can browse upcoming tennis sessions without signing in.
-- [ ] **DISC-03**: Visitor can switch dates using quick date navigation and a date picker.
-- [ ] **DISC-04**: Visitor can see each session's date, time, all coaches, level, venue, price per place, minimum participants, maximum capacity, and remaining places.
-- [ ] **DISC-05**: Visitor can distinguish available, nearly full, fully booked, and cancelled sessions before starting a booking.
+- [x] **DISC-01**: Visitor can explore Lafu's club information without signing in.
+- [x] **DISC-02**: Visitor can browse upcoming tennis sessions without signing in.
+- [x] **DISC-03**: Visitor can switch dates using quick date navigation and a date picker.
+- [x] **DISC-04**: Visitor can see each session's date, time, all coaches, level, venue, price per place, minimum participants, maximum capacity, and remaining places.
+- [x] **DISC-05**: Visitor can distinguish available, nearly full, fully booked, and cancelled sessions before starting a booking.
 
 ### Identity and access
 
@@ -23,7 +23,7 @@ All requirements below belong to the initial release. Delivery in separate phase
 - [ ] **AUTH-03**: New customer can enter their name after phone verification to complete automatic account creation.
 - [ ] **AUTH-04**: Returning customer can sign in to access their bookings and can sign out.
 - [ ] **AUTH-05**: Customer can access only their own private booking information and payment evidence; neither is exposed through public schedule browsing.
-- [ ] **AUTH-06**: Administrator can access operational and management actions through authenticated, authorized admin access.
+- [x] **AUTH-06**: Administrator can access operational and management actions through authenticated, authorized admin access.
 
 ### Booking and availability
 
@@ -65,15 +65,15 @@ All requirements below belong to the initial release. Delivery in separate phase
 
 ### Classes and scheduling management
 
-- [ ] **SCHED-01**: Administrator can create and manage tennis classes.
-- [ ] **SCHED-02**: Administrator can create and manage dated sessions and their date/time.
+- [x] **SCHED-01**: Administrator can create and manage tennis classes.
+- [x] **SCHED-02**: Administrator can create and manage dated sessions and their date/time.
 - [ ] **SCHED-03**: Administrator can create and manage recurring schedules that produce dated sessions.
-- [ ] **SCHED-04**: Administrator can manage coaches.
-- [ ] **SCHED-05**: Administrator can manage venues.
-- [ ] **SCHED-06**: Administrator can manage class levels.
-- [ ] **SCHED-07**: Administrator can manage session prices per participant place.
-- [ ] **SCHED-08**: Administrator can set each session's minimum participant count and maximum capacity without creating an overbooked session.
-- [ ] **SCHED-09**: Administrator can assign a venue and one or more coaches to every session.
+- [x] **SCHED-04**: Administrator can manage coaches.
+- [x] **SCHED-05**: Administrator can manage venues.
+- [x] **SCHED-06**: Administrator can manage class levels.
+- [x] **SCHED-07**: Administrator can manage session prices per participant place.
+- [x] **SCHED-08**: Administrator can set each session's minimum participant count and maximum capacity without creating an overbooked session.
+- [x] **SCHED-09**: Administrator can assign a venue and one or more coaches to every session.
 
 ### Session minimums, cancellations, and refunds
 
@@ -115,7 +115,7 @@ No additional features have been approved for a later release. Waitlists, attend
 
 ## Constraints and decisions for phase planning
 
-The confirmed [UI brief](UI-BRIEF.md), Community matchday direction, and code-led build preference inform subsequent UI planning. Detailed navigation, design tokens, fonts, and components are not finalized here. Frameworks, database, API, infrastructure, and implementation architecture will be selected separately. Payment design must accommodate future providers without requiring a gateway in v1.
+The confirmed [UI brief](UI-BRIEF.md), Community matchday direction and code-led build preference informed UI planning. Root DESIGN.md now owns the confirmed Jalur Lawu visual system; Phase 1 architecture is selected in phases/01-publish-and-browse-sessions/01-SKELETON.md. Hosted deployment and later-phase decisions remain open. Payment design must accommodate future providers without requiring a gateway in v1.
 
 Impeccable supplied UI brainstorming; the user confirmed Antislop for UI validation during planning and building. Its core Delivery Gate and UI/mobile-layout checklists supplement functional, browser, accessibility, and user-task verification. No implemented UI has been validated yet.
 
@@ -136,26 +136,26 @@ Requirements and roadmap were confirmed on 2026-10-08. Each maps to one acceptan
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DISC-01 | Phase 1 | Pending |
-| DISC-02 | Phase 1 | Pending |
-| DISC-03 | Phase 1 | Pending |
-| DISC-04 | Phase 1 | Pending |
-| DISC-05 | Phase 1 | Pending |
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
-| AUTH-04 | Phase 2 | Pending |
+| DISC-01 | Phase 1 | Accepted by user 2026-10-09 |
+| DISC-02 | Phase 1 | Accepted by user 2026-10-09 |
+| DISC-03 | Phase 1 | Accepted by user 2026-10-09 |
+| DISC-04 | Phase 1 | Accepted by user 2026-10-09 |
+| DISC-05 | Phase 1 | Accepted by user 2026-10-09 |
+| AUTH-01 | Phase 2 | Source implemented; manual acceptance pending |
+| AUTH-02 | Phase 2 | Mock flow implemented; real delivery release gate open |
+| AUTH-03 | Phase 2 | Source implemented; manual acceptance pending |
+| AUTH-04 | Phase 2 | Source implemented; manual acceptance pending |
 | AUTH-05 | Phase 3 | Pending |
-| AUTH-06 | Phase 1 | Pending |
-| BOOK-01 | Phase 2 | Pending |
-| BOOK-02 | Phase 2 | Pending |
-| BOOK-03 | Phase 2 | Pending |
-| BOOK-04 | Phase 2 | Pending |
-| BOOK-05 | Phase 2 | Pending |
-| BOOK-06 | Phase 2 | Pending |
-| BOOK-07 | Phase 2 | Pending |
-| BOOK-08 | Phase 2 | Pending |
-| BOOK-09 | Phase 2 | Pending |
+| AUTH-06 | Phase 1 | Accepted by user 2026-10-09 |
+| BOOK-01 | Phase 2 | Planned |
+| BOOK-02 | Phase 2 | Planned |
+| BOOK-03 | Phase 2 | Planned |
+| BOOK-04 | Phase 2 | Planned |
+| BOOK-05 | Phase 2 | Planned |
+| BOOK-06 | Phase 2 | Planned |
+| BOOK-07 | Phase 2 | Planned |
+| BOOK-08 | Phase 2 | Planned |
+| BOOK-09 | Phase 2 | Planned |
 | BOOK-10 | Phase 4 | Pending |
 | PAY-01 | Phase 3 | Pending |
 | PAY-02 | Phase 3 | Pending |
@@ -165,26 +165,26 @@ Requirements and roadmap were confirmed on 2026-10-08. Each maps to one acceptan
 | PAY-06 | Phase 3 | Pending |
 | PAY-07 | Phase 3 | Pending |
 | PAY-08 | Phase 3 | Pending |
-| OPER-01 | Phase 2 | Pending |
-| OPER-02 | Phase 2 | Pending |
-| OPER-03 | Phase 2 | Pending |
-| OPER-04 | Phase 2 | Pending |
+| OPER-01 | Phase 2 | Planned |
+| OPER-02 | Phase 2 | Planned |
+| OPER-03 | Phase 2 | Planned |
+| OPER-04 | Phase 2 | Planned |
 | OPER-05 | Phase 3 | Pending |
-| OPER-06 | Phase 2 | Pending |
-| OPER-07 | Phase 2 | Pending |
+| OPER-06 | Phase 2 | Planned |
+| OPER-07 | Phase 2 | Planned |
 | OPER-08 | Phase 3 | Pending |
 | OPER-09 | Phase 4 | Pending |
 | OPER-10 | Phase 4 | Pending |
 | OPER-11 | Phase 4 | Pending |
-| SCHED-01 | Phase 1 | Pending |
-| SCHED-02 | Phase 1 | Pending |
+| SCHED-01 | Phase 1 | Accepted by user 2026-10-09 |
+| SCHED-02 | Phase 1 | Accepted by user 2026-10-09 |
 | SCHED-03 | Phase 5 | Pending |
-| SCHED-04 | Phase 1 | Pending |
-| SCHED-05 | Phase 1 | Pending |
-| SCHED-06 | Phase 1 | Pending |
-| SCHED-07 | Phase 1 | Pending |
-| SCHED-08 | Phase 1 | Pending |
-| SCHED-09 | Phase 1 | Pending |
+| SCHED-04 | Phase 1 | Accepted by user 2026-10-09 |
+| SCHED-05 | Phase 1 | Accepted by user 2026-10-09 |
+| SCHED-06 | Phase 1 | Accepted by user 2026-10-09 |
+| SCHED-07 | Phase 1 | Accepted by user 2026-10-09 |
+| SCHED-08 | Phase 1 | Accepted by user 2026-10-09 |
+| SCHED-09 | Phase 1 | Accepted by user 2026-10-09 |
 | CANC-01 | Phase 4 | Pending |
 | CANC-02 | Phase 5 | Pending |
 | CANC-03 | Phase 5 | Pending |
@@ -213,3 +213,5 @@ Requirements and roadmap were confirmed on 2026-10-08. Each maps to one acceptan
 ---
 *Requirements defined: 2026-10-07*
 *Last updated: 2026-10-08 after roadmap approval and Antislop validation preference confirmation*
+
+Phase 2 development uses the approved mock OTP API response. AUTH-02's real WhatsApp/SMS delivery remains a release prerequisite; its acceptance checkbox stays open. The completed 02-00 structural refactor establishes no product requirement acceptance.

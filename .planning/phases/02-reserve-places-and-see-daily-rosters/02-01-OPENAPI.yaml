@@ -1,0 +1,190 @@
+openapi: 3.1.0
+info:
+  title: Lafu development customer access
+  version: 0.1.0
+  description: Development-only mock OTP. Production disables these routes until real delivery is implemented. Every response has Cache-Control no-store. POST requests require same-origin Origin and application/json. Challenge/proof cookies are HttpOnly and never appear in JSON.
+servers:
+  - url: /api/customer
+paths:
+  /auth/otp-challenges:
+    post:
+      summary: Request a new code or resend a flow-owned challenge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  additionalProperties: false
+                  required: [phone]
+                  properties:
+                    phone: { type: string, minLength: 1, maxLength: 50 }
+                - type: object
+                  additionalProperties: false
+                  required: [challengeId]
+                  properties:
+                    challengeId: { type: string, format: uuid }
+      responses:
+        '201':
+          description: Mock code generated; sets lafu_otp_flow cookie and clears pending profile cookie
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Challenge' }
+        default: { $ref: '#/components/responses/Error' }
+  /auth/otp-challenges/current:
+    get:
+      summary: Recover an active challenge after reload without browser storage
+      security: [{ FlowCookie: [] }]
+      responses:
+        '200':
+          description: Current flow-owned development challenge
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Challenge' }
+        default: { $ref: '#/components/responses/Error' }
+  /auth/otp-verifications:
+    post:
+      summary: Atomically verify and consume a flow-owned code
+      security: [{ FlowCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [challengeId, code]
+              properties:
+                challengeId: { type: string, format: uuid }
+                code: { type: string, pattern: '^\d{6}$' }
+      responses:
+        '200':
+          description: Known customer receives session cookie; new phone receives one-use profile cookie
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    additionalProperties: false
+                    required: [next, session]
+                    properties:
+                      next: { const: complete }
+                      session: { $ref: '#/components/schemas/Session' }
+                  - { $ref: '#/components/schemas/PendingProfile' }
+        default: { $ref: '#/components/responses/Error' }
+  /auth/profile:
+    get:
+      summary: Recover a verified pending name step after reload
+      security: [{ FlowCookie: [], ProfileCookie: [] }]
+      responses:
+        '200':
+          description: Unexpired, unused, flow-bound name-completion proof
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PendingProfile' }
+        default: { $ref: '#/components/responses/Error' }
+    post:
+      summary: Complete the name once and create a unique phone identity and customer session
+      security: [{ FlowCookie: [], ProfileCookie: [], Csrf: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 120 }
+      responses:
+        '201':
+          description: Sets customer session cookie; clears flow/profile cookies
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Session' }
+        default: { $ref: '#/components/responses/Error' }
+  /auth/session:
+    get:
+      summary: Read the authenticated customer's own session
+      security: [{ CustomerCookie: [] }]
+      responses:
+        '200':
+          description: Current own customer session
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Session' }
+        default: { $ref: '#/components/responses/Error' }
+  /auth/sign-out:
+    post:
+      summary: Revoke the customer session and clear customer/flow/profile cookies
+      security: [{ CustomerCookie: [], Csrf: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: false }
+      responses:
+        '204': { description: Revoked; no response body }
+        default: { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    CustomerCookie: { type: apiKey, in: cookie, name: lafu_customer }
+    FlowCookie: { type: apiKey, in: cookie, name: lafu_otp_flow }
+    ProfileCookie: { type: apiKey, in: cookie, name: lafu_customer_profile }
+    Csrf: { type: apiKey, in: header, name: X-CSRF-Token }
+  schemas:
+    Challenge:
+      type: object
+      additionalProperties: false
+      required: [challengeId, maskedPhone, expiresAt, resendAt, serverNow, development, debugCode]
+      properties:
+        challengeId: { type: string, format: uuid }
+        maskedPhone: { type: string }
+        expiresAt: { type: string, format: date-time }
+        resendAt: { type: string, format: date-time }
+        serverNow: { type: string, format: date-time }
+        development: { const: true }
+        debugCode: { type: string, pattern: '^\d{6}$', description: Development-only API test code; never auto-verified }
+    PendingProfile:
+      type: object
+      additionalProperties: false
+      required: [next, csrfToken, expiresAt]
+      properties:
+        next: { const: name }
+        csrfToken: { type: string }
+        expiresAt: { type: string, format: date-time }
+    Session:
+      type: object
+      additionalProperties: false
+      required: [customer, csrfToken, expiresAt]
+      properties:
+        customer:
+          type: object
+          additionalProperties: false
+          required: [id, displayName, phone]
+          properties:
+            id: { type: string }
+            displayName: { type: string }
+            phone: { type: string, pattern: '^\+[1-9]\d+$' }
+        csrfToken: { type: string }
+        expiresAt: { type: string, format: date-time }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code]
+          properties:
+            code: { type: string }
+            fields: { type: object, additionalProperties: { type: string } }
+            retryAfterSeconds: { type: integer, minimum: 0 }
+  responses:
+    Error:
+      description: 400 validation/invalid/expired code; 401 customer/proof unauthenticated; 403 origin/CSRF; 404 no pending code; 409 consumed/superseded code; 413 body too large; 415 media type; 429 OTP throttle; 503 disabled/unavailable. Rate limits include Retry-After. Errors never expose account existence before verification.
+      headers:
+        Retry-After: { schema: { type: integer, minimum: 0 }, description: Present on throttled responses }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }

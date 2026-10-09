@@ -1,0 +1,1 @@
+No external API integration: Phase 1 uses only an application-owned internal HTTP API, a local server-owned SQLite file, and local build/test tooling; it connects to no third-party service, SDK, webhook, or hosted data API.

@@ -5,6 +5,8 @@ import { createAuthenticatedAuthRouter, createSignInRouter } from '../../auth/au
 import { requireAdmin } from '../../auth/require-admin.ts'
 import { requireCsrf, requireJson, requireSameOrigin } from '../../http/mutation-guards.ts'
 import { createSessionsRouter } from './sessions/sessions.router.ts'
+import { createReferencesRouter } from './references/references.router.ts'
+import { createClassesRouter } from './classes/classes.router.ts'
 export function createAdminRouter({ prisma, config }: { prisma: PrismaClient; config: RuntimeConfig }) {
   const router = Router()
   router.use((_req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next() })
@@ -14,5 +16,7 @@ export function createAdminRouter({ prisma, config }: { prisma: PrismaClient; co
   router.use(json({ limit: '32kb' }))
   router.use(createAuthenticatedAuthRouter(prisma, config))
   router.use(createSessionsRouter(prisma))
+  router.use(createReferencesRouter(prisma))
+  router.use(createClassesRouter(prisma))
   return router
 }

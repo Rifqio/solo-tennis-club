@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: Lafu customer reservation API
+  version: 1.0.0
+servers:
+  - url: /
+paths:
+  /api/customer/booking-options/{sessionId}:
+    get:
+      summary: Read an authenticated customer's current reservation quote
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: { type: string, pattern: '^[a-z0-9]{1,64}$' }
+      responses:
+        '200':
+          description: Safe quote. The server rechecks all values at reservation time.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BookingOptions' }
+        '401': { description: Customer session required }
+        '404': { description: Session not found }
+  /api/customer/bookings:
+    post:
+      summary: Atomically reserve a complete customer group
+      description: Same-origin JSON. Requires the HttpOnly customer cookie and matching X-CSRF-Token. Reuse createRequestId after a lost response; use a fresh ID when the request content changes.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateBooking' }
+      responses:
+        '201': { description: New reservation created, including its immutable snapshot }
+        '200': { description: An identical request replayed the original reservation and deadline }
+        '400': { description: Invalid input or unsafe total }
+        '401': { description: Customer session required }
+        '403': { description: Origin or CSRF check failed }
+        '409': { description: Capacity, cutoff, session-version or idempotency conflict }
+        '503': { description: Database write could not be acquired after retry }
+components:
+  schemas:
+    BookingOptions:
+      type: object
+      required: [sessionId, sessionVersion, unitPriceIdr, remainingPlaces, bookingClosesAt, serverNow, canReserve]
+      properties:
+        sessionId: { type: string }
+        sessionVersion: { type: integer, minimum: 1 }
+        unitPriceIdr: { type: integer, minimum: 0 }
+        remainingPlaces: { type: integer, minimum: 0 }
+        bookingClosesAt: { type: string, format: date-time }
+        serverNow: { type: string, format: date-time }
+        canReserve: { type: boolean }
+    CreateBooking:
+      type: object
+      additionalProperties: false
+      required: [sessionId, quantity, participantNames, expectedSessionVersion, createRequestId]
+      properties:
+        sessionId: { type: string, pattern: '^[a-z0-9]{1,64}$' }
+        quantity: { type: integer, minimum: 1, maximum: 500 }
+        participantNames:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items: { type: string, minLength: 1, maxLength: 120 }
+        expectedSessionVersion: { type: integer, minimum: 1 }
+        createRequestId: { type: string, format: uuid }

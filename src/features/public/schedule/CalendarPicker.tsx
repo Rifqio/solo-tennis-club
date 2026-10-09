@@ -1,4 +1,4 @@
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, X } from 'lucide-react'
 import { Popover } from 'radix-ui'
 import { lazy, Suspense, useState } from 'react'
 import { Drawer } from 'vaul'
@@ -7,6 +7,7 @@ import { useI18n } from '@/i18n/use-i18n'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { cn } from '@/lib/utils'
 import { scheduleMessages } from './schedule.messages'
+import { IconButton } from '@/components/ui/button'
 
 interface CalendarPickerProps {
   selected: string
@@ -49,11 +50,11 @@ export function CalendarPicker({ selected, today, minDate, maxDate, onSelect }: 
         <Drawer.Trigger className={triggerClass} aria-label={t(scheduleMessages.chooseDate)} data-icon-only {...preload}>{trigger}</Drawer.Trigger>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 z-40 bg-scrim" />
-          <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[calc(100dvh-1rem)] flex-col rounded-t-xl bg-surface-container-low px-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-on-surface shadow-sheet outline-none">
+          <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[calc(100dvh-1rem)] flex-col rounded-t-xl bg-surface-container-low pl-[max(4px,env(safe-area-inset-left))] pr-[max(4px,env(safe-area-inset-right))] pb-[max(1rem,env(safe-area-inset-bottom))] text-on-surface shadow-sheet outline-none">
             <div aria-hidden="true" className="mx-auto mb-1 mt-3 h-1 w-8 shrink-0 rounded-full bg-outline" />
             {/* Header names the task, then shows the current choice in the sign voice so the sheet confirms what is set. */}
             <div className="flex flex-col gap-1 px-2 pb-3 pt-3">
-              <Drawer.Title className="text-label font-bold text-on-surface-variant">{t(scheduleMessages.chooseDate)}</Drawer.Title>
+              <div className="flex items-center justify-between gap-2"><Drawer.Title className="text-label font-bold text-on-surface-variant">{t(scheduleMessages.chooseDate)}</Drawer.Title><Drawer.Close asChild><IconButton label={t({ id: 'Tutup kalender', en: 'Close calendar' })}><X aria-hidden="true" className="size-5" /></IconButton></Drawer.Close></div>
               <Drawer.Description className="font-display text-headline font-bold uppercase tracking-wide text-on-surface">
                 {formatClubDateMedium(selected, language)}
               </Drawer.Description>

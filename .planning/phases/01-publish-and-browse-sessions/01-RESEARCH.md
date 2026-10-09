@@ -18,6 +18,7 @@ SQLite handles one write transaction at a time. Keep writes short, make related 
 - Existing scripts are `dev`, `build`, `lint`, and `preview`; no test or migration scripts exist.
 - Manifest ranges include React `^19.2.8`, Vite `^8.3.0`, TypeScript `~6.0.2`. Researcher inventory reported installed React/DOM 19.3.0, Vite 8.3.3, TypeScript 6.0.3, and Node 24.14.1; recheck during setup rather than assuming manifest ranges are installed versions.
 - No database schema or Prisma installation exists. SQLite does not require the unavailable local Docker daemon. No hosted credentials are needed for local database tests.
+- UI-phase update, 2026-10-08: the user selected heavily customized shadcn/ui with Tailwind and delegated the setup preset. Official preset `b2YOAa` was initialized (Radix/Nova, Inter, green baseline). Installed shadcn 4.21.4, Tailwind 4.3.3, radix-ui 1.7.0, lucide-react 1.52.0, Inter 5.3.0 and cn 0.4.0; CLI info reports zero installed shadcn UI components. Build/lint passed after setup. This changes the earlier absence of a component foundation, not the absence of business routes/auth/database. The final component treatment is governed by UI-SPEC, not preset defaults.
 - The foreground researcher was interrupted before producing a file after the database change; the orchestrator completed this bounded synthesis from primary sources and recorded local findings. No independent research-completion verdict is claimed.
 
 ## Prisma Setup and Version Boundary

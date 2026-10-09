@@ -44,8 +44,8 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-1">
-        <p className="mr-auto font-display text-title font-bold uppercase tracking-wide text-on-surface">{formatClubMonthYear(selected, language)}</p>
+      <div className="flex flex-wrap items-center gap-1">
+        <p className="mr-auto min-w-0 flex-1 break-words font-display text-title font-bold uppercase tracking-wide text-on-surface">{formatClubMonthYear(selected, language)}</p>
         {/* The Today chip only exists away from today; it pops in and out so its appearance reads as a response, not a jump. */}
         <AnimatePresence initial={false}>
           {selected !== today && (

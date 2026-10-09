@@ -14,6 +14,7 @@ function present(value: string | null | undefined) {
 }
 
 interface SessionSummaryRowProps {
+  as?: 'li' | 'div'
   session: PublicSessionSummary
   // Only set when the list shows today; other dates have no "now" on the trail.
   timing?: SessionTiming
@@ -23,13 +24,14 @@ interface SessionSummaryRowProps {
 
 // The signature: each session hangs from a tonal trail-post plate carrying its start time. Facts read beside it;
 // availability sits in its own cell (a third column from 640px, one unit under the facts on phones).
-export function SessionSummaryRow({ session, timing, now, className }: SessionSummaryRowProps) {
+export function SessionSummaryRow({ as: Element = 'li', session, timing, now, className }: SessionSummaryRowProps) {
   const { language, t } = useI18n()
   const unavailable = t(commonMessages.unavailable)
   const cancelled = session.availability === 'cancelled'
   const ended = timing === 'ended' && !cancelled
   const remaining = Number.isSafeInteger(session.remainingPlaces) ? session.remainingPlaces : null
   const price = Number.isSafeInteger(session.priceIdr) ? formatIdr(session.priceIdr, language) : null
+  const time = (value: string) => Number.isFinite(Date.parse(value)) ? formatClubTime(value) : unavailable
 
   const timeToGo = () => {
     const minutes = minutesUntil(session.startsAt, now)
@@ -39,15 +41,15 @@ export function SessionSummaryRow({ session, timing, now, className }: SessionSu
   }
 
   return (
-    <li className={cn('grid grid-cols-[5rem_minmax(0,1fr)] gap-x-4 gap-y-2 py-4 sm:grid-cols-[6rem_minmax(0,1fr)_9rem]', className)}>
+    <Element className={cn('grid grid-cols-[5rem_minmax(0,1fr)] gap-x-4 gap-y-2 py-4 sm:grid-cols-[6rem_minmax(0,1fr)_9rem]', className)}>
       <div className={cn(
         'row-span-2 flex flex-col items-center justify-center self-start rounded-md px-1 py-3 sm:row-span-1',
         cancelled ? 'border border-dashed border-outline text-on-surface-variant'
           : ended ? 'bg-surface-container-high text-on-surface-variant'
           : 'bg-plate text-on-plate',
       )}>
-        <p className="font-display text-numeral font-bold tabular-nums">{formatClubTime(session.startsAt)}</p>
-        <p className="mt-1 text-label tabular-nums">{t(scheduleMessages.until)} {formatClubTime(session.endsAt)}</p>
+        <p className="font-display text-numeral font-bold tabular-nums">{time(session.startsAt)}</p>
+        <p className="mt-1 text-label tabular-nums">{t(scheduleMessages.until)} {time(session.endsAt)}</p>
       </div>
 
       <div className="flex min-w-0 flex-col gap-1 break-words">
@@ -80,6 +82,6 @@ export function SessionSummaryRow({ session, timing, now, className }: SessionSu
         )}
         {timing === 'in_progress' && !cancelled && <p className="text-label font-bold text-primary">{t(scheduleMessages.inProgress)}</p>}
       </div>
-    </li>
+    </Element>
   )
 }

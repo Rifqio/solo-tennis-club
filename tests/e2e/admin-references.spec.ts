@@ -1,0 +1,43 @@
+import { randomUUID } from 'node:crypto'
+import { expect, test } from '@playwright/test'
+import { browserSignIn } from './support/browser-admin.ts'
+for (const [path, add, edit] of [['coaches','Tambah pelatih','Ubah pelatih'],['venues','Tambah lokasi','Ubah lokasi'],['levels','Tambah level','Ubah level']] as const) {
+  test(`reference ${path}: create, reload, edit, preserve values on failure and confirm discard`, async ({ page }) => {
+    await browserSignIn(page)
+    await page.goto(`/admin/${path}/new`)
+    const name = 'Contoh uji ' + randomUUID()
+    await expect(page.getByRole('heading', { name: add })).toBeVisible()
+    await page.getByRole('button', { name: 'Simpan', exact: true }).click()
+    await expect(page.getByLabel('Nama', { exact: true })).toBeFocused()
+    await page.getByLabel('Nama', { exact: true }).fill(name)
+    if (path === 'venues') await page.getByLabel('Alamat (opsional)').fill('Alamat contoh pengujian')
+    await page.route(`**/api/admin/${path}`, route => route.request().method() === 'POST' ? route.abort() : route.continue())
+    await page.getByRole('button', { name: 'Simpan', exact: true }).click()
+    await expect(page.getByRole('alert')).toContainText('Isian tetap tersedia')
+    await expect(page.getByLabel('Nama', { exact: true })).toHaveValue(name)
+    await page.unroute(`**/api/admin/${path}`)
+    await page.getByRole('button', { name: 'Simpan', exact: true }).click()
+    await expect(page.getByText('Perubahan tersimpan.', { exact: true })).toBeVisible()
+    await page.reload(); await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
+    await page.locator('li').filter({ has: page.getByRole('heading', { name, exact: true }) }).getByRole('link', { name: new RegExp(edit) }).click()
+    await page.getByLabel('Nama', { exact: true }).fill(name + ' edited')
+    await page.getByRole('link', { name: 'Kelola', exact: true }).click()
+    await expect(page.getByRole('alertdialog')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Tetap mengedit' })).toBeFocused()
+    await page.getByRole('button', { name: 'Tetap mengedit' }).click()
+    await expect(page.getByLabel('Nama', { exact: true })).toHaveValue(name + ' edited')
+    await page.getByRole('button', { name: 'Simpan', exact: true }).click()
+    await expect(page.getByRole('heading', { name: name + ' edited', exact: true })).toBeVisible()
+  })
+}
+test('E11 sign-out asks before losing unsaved entries and clears create drafts only on confirmed sign-out', async ({ page }) => {
+  await browserSignIn(page); await page.goto('/admin/coaches/new')
+  await page.getByLabel('Nama', { exact: true }).fill('Contoh unsaved coach')
+  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await expect(page.getByRole('alertdialog')).toBeVisible()
+  await page.getByRole('button', { name: 'Tetap mengedit' }).click()
+  await expect(page.getByLabel('Nama', { exact: true })).toHaveValue('Contoh unsaved coach')
+  await page.getByRole('button', { name: 'Keluar', exact: true }).click(); await page.getByRole('button', { name: 'Buang perubahan', exact: true }).click()
+  await expect(page).toHaveURL(/\/admin\/sign-in$/)
+  expect(await page.evaluate(() => sessionStorage.getItem('lafu.sessionDraft'))).toBeNull()
+})

@@ -1,6 +1,15 @@
 import type { PrismaClient, Prisma } from '../../generated/prisma/client.ts'
 
-// Phase 1 has no bookings. Phase 2 counts places here using the caller's transaction client.
-export async function getOccupiedPlaceCounts(_db: PrismaClient | Prisma.TransactionClient, sessionIds: string[]): Promise<Map<string, number>> {
-  return new Map(sessionIds.map(id => [id, 0]))
+export async function getOccupiedPlaceCounts(db: PrismaClient | Prisma.TransactionClient, sessionIds: string[], now = new Date()): Promise<Map<string, number>> {
+  const counts = new Map(sessionIds.map(id => [id, 0]))
+  if (!sessionIds.length) return counts
+  const participants = await db.bookingParticipant.findMany({
+    where: { booking: { sessionId: { in: sessionIds }, status: 'awaiting_payment', originalDeadline: { gt: now } } },
+    select: { booking: { select: { sessionId: true } } },
+  })
+  for (const participant of participants) {
+    const sessionId = participant.booking.sessionId
+    counts.set(sessionId, (counts.get(sessionId) ?? 0) + 1)
+  }
+  return counts
 }

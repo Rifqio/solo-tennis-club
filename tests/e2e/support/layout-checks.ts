@@ -11,7 +11,8 @@ export async function expectNoHorizontalScroll(page: Page) {
 
 export async function expectTouchTargets(page: Page, selector = 'a, button, input, select, [role=button]') {
   const undersized = await page.locator(selector).evaluateAll(elements => elements.flatMap(element => {
-    const box = element.getBoundingClientRect()
+    const target = element.matches('input[type=checkbox], input[type=radio]') ? element.closest('label') ?? element : element
+    const box = target.getBoundingClientRect()
     // Skip hidden and visually-hidden (sr-only, 1x1) controls; they are not touch targets.
     if (box.width <= 1 || box.height <= 1) return []
     const tooShort = box.height < 48

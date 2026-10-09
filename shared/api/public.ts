@@ -24,3 +24,11 @@ export interface PublicScheduleResponse {
   maxDate: string
   sessions: PublicSessionSummary[]
 }
+export interface PublicSessionDetail extends PublicSessionSummary {
+  version: number
+  venueAddress?: string | null
+  coaches: string[]
+  minParticipants: number
+  maxParticipants: number
+  durationMinutes: number
+}

@@ -19,7 +19,7 @@ npm run db:seed:sample             # optional: labeled sample sessions for devel
 npm run dev                        # http://127.0.0.1:3000 with hot reload
 ```
 
-`npm run dev` serves through Vite. To reach it from a phone through a tunnel (for example ngrok), add the tunnel host to `server.allowedHosts` in `vite.config.ts`.
+`npm run dev` serves through Vite. To reach it from a phone through a tunnel (for example ngrok), add the exact tunnel host to `server.allowedHosts` in `vite.config.ts`. Development admin requests also accept that host's HTTPS origin, including when the tunnel forwards HTTP to the local server. Wildcard hosts do not grant admin access. A configured `LAFU_PUBLIC_ORIGIN` takes precedence; production uses its normal origin checks.
 
 ## Build and start
 
@@ -31,6 +31,8 @@ npm run start    # serves dist/ and the API on LAFU_HOST:LAFU_PORT
 ## Administrators
 
 There is no public sign-up for administrators; accounts are set up by whoever runs the server.
+
+The temporary blank-sign-in shortcut was removed after the user completed manual testing on 2026-10-09. Both development and production require provisioned admin credentials; legacy mock-admin sessions are rejected.
 
 | Task | Command |
 |---|---|
@@ -91,12 +93,26 @@ Every sample record is flagged as sample data and named "Contoh ..." (Indonesian
 
 ## Testing
 
+Backend contributions follow the [controller/service/repository conventions](.planning/BACKEND-CONVENTIONS.md). Routes wire controllers, services own business rules and transaction boundaries, and feature repositories own Prisma queries. The [Phase 2 plan](.planning/phases/02-reserve-places-and-see-daily-rosters/02-PLAN.md) records the completed refactor and the upcoming customer/booking work.
+
 ```sh
 npm test            # unit and integration tests against real SQLite files
 npm run lint
 npm run test:e2e    # Playwright browser tests (needs a Playwright browser installed)
 ```
 
+## Customer access (development)
+
+Open **Akun / Account** or `/customer/sign-in`. Enter your phone, request a code, type/paste the development code, and complete your name for a new account. The code is shown for testing and returned as `debugCode` by the API; no WhatsApp/SMS is sent. Returning numbers sign in directly. Account supports sign-out. Session details can return you to the selected date/session after access. No reservation is created by signing in.
+
+Development defaults to `LAFU_OTP_DRIVER=mock`; `disabled` turns customer access off. Production defaults to disabled and rejects an explicit mock driver. Real delivery remains a release prerequisite. The new migration is additive; apply migrations before running a new version. [Manual checks](.planning/phases/02-reserve-places-and-see-daily-rosters/02-01-MANUAL-CHECKS.md) remain pending.
+
 ## Before launch
 
 Real club content is a launch prerequisite and must come from the club: the bilingual club description, contact, and address; the logo (the app currently shows a text "LAFU" placeholder); and the real coaches, venues, levels, classes, prices, and sessions entered by an administrator. Sample data must not be present in a production database.
+
+## Phase 1 manual review
+
+Admins can manage coaches, venues and levels under **Manage**, define class defaults under **Classes**, and publish or edit dated sessions under **Sessions**. Class default edits affect future sessions. The guided editor reviews every fact before publication; visitors inspect the published details without signing in.
+
+Source implementation and non-browser checks pass (137 tests, build and lint). The user confirmed all listed manual workflows on 2026-10-09; browser automation remains disabled. See the [manual acceptance checklist](.planning/phases/01-publish-and-browse-sessions/01-PHASE1-REVIEW.md). The temporary development sign-in shortcut has been removed. Bookings, rosters and payments belong to later phases.

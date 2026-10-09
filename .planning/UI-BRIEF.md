@@ -1,5 +1,7 @@
 # Lafu UI brief: Community matchday
 
+> Historical product/flow brief. Jalur Lawu was selected on 2026-10-08; root DESIGN.md now owns visual decisions. The proposed remaining Phase 1 screen and interaction blueprint is `phases/01-publish-and-browse-sessions/01-DESIGN-BLUEPRINT.md` (2026-10-09). The booking/payment flows below retain their later-phase scope; this brief does not establish implementation or runtime acceptance.
+
 **Date:** 2026-10-07
 **Status:** Community matchday direction and detailed brief confirmed by the user on 2026-10-07.
 **Method:** Impeccable shape. Planning only; no implementation or direction contract.
@@ -18,7 +20,7 @@ Product truth comes from `.planning/PROJECT.md` and `PRODUCT.md`. AYO's publishe
 
 The user chose **Community matchday**, keeping the direct-from-brief build preference. The concept combines a familiar sports app with explicit booking and payment guidance. Clear date choices and session summaries lead into a short booking sequence; after reservation, the customer's original payment deadline and next action remain easy to find.
 
-The concept uses readable bold sans headings, neutral task surfaces, and a committed club-green identity with separate semantic statuses. The direction-page palette is an exploration reference, not a finalized token set. Exact fonts, contrast-tested tokens, component specifications, and motion belong to the later UI design contract. No mockup was generated or approved.
+The concept uses readable bold sans headings, neutral task surfaces, and a committed club-green identity with separate semantic statuses. During UI-phase on 2026-10-08, the user asked to preserve the selected Community matchday palette: `#164D45`, `#FFFFFF`, `#1D252C`, and `#EDF4F1`. These are the brand colors; exact semantic roles, additional status colors, fonts, contrast-tested tokens, component specifications, and motion belong to the UI design contract. No mockup was generated or approved.
 
 ## Scope and boundaries
 
@@ -72,6 +74,8 @@ Handle multiple coaches, long participant/venue names, groups spanning several p
 The user confirmed this brief on 2026-10-07. It can inform the detailed UI specification during planning. Final design tokens, component specifications, and implementation remain subject to the later planning workflow.
 
 ## UI validation
+
+On 2026-10-08, the user selected shadcn/ui with Tailwind CSS as a foundation and required substantial customization of every used component to match Lafu's direction. Preserve accessible interaction behavior while customizing the visual design, layout, density, states, and phone workflows. The chosen setup preset must not override the confirmed brand palette or become the final appearance.
 
 On 2026-10-08, the user confirmed Antislop for UI validation during planning and building. Impeccable supplied the brainstorming and direction above. Apply Antislop core plus its UI and mobile-layout skills to the later design specification and implemented screens: product-specific hierarchy and identity, purposeful styling, mobile reflow, touch targets, safe areas, readable states, and complete interactions. Declare the design read and dials during detailed UI planning, using the confirmed direction.
 

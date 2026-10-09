@@ -3,6 +3,12 @@ import type { Message } from './types'
 
 // Records keyed by the shared unions: adding a code on the server fails the build until it has copy here.
 export const apiErrorMessages: Record<ApiErrorCode, Message> = {
+  CUSTOMER_UNAUTHENTICATED: { id: 'Sesi Anda berakhir. Masuk lagi untuk melanjutkan.', en: 'Your session has ended. Sign in again to continue.' },
+  OTP_INVALID: { id: 'Kode tidak cocok. Periksa enam digit lalu coba lagi.', en: 'The code does not match. Check all six digits and try again.' },
+  OTP_EXPIRED: { id: 'Kode sudah kedaluwarsa. Minta kode baru.', en: 'The code has expired. Request a new code.' },
+  OTP_CONSUMED: { id: 'Kode sudah digunakan atau diganti. Minta kode baru.', en: 'This code was used or replaced. Request a new code.' },
+  OTP_THROTTLED: { id: 'Terlalu banyak percobaan. Tunggu {seconds} detik lalu coba lagi.', en: 'Too many attempts. Wait {seconds} seconds and try again.' },
+  TEMPORARILY_UNAVAILABLE: { id: 'Layanan belum tersedia. Coba lagi nanti atau hubungi klub.', en: 'This service is unavailable. Try again later or contact the club.' },
   NOT_FOUND: { id: 'Data tidak ditemukan. Muat ulang halaman.', en: 'This item could not be found. Reload the page.' },
   INTERNAL: { id: 'Terjadi kendala di server. Coba lagi.', en: 'Something went wrong on the server. Try again.' },
   INVALID_DATE: { id: 'Tanggal tidak valid. Pilih tanggal lain.', en: 'That date is not valid. Choose another date.' },
@@ -17,6 +23,10 @@ export const apiErrorMessages: Record<ApiErrorCode, Message> = {
   VALIDATION_FAILED: { id: 'Periksa isian yang ditandai, lalu coba lagi.', en: 'Check the highlighted entries and try again.' },
   STALE_VERSION: { id: 'Sesi ini telah diubah oleh admin lain. Muat versi terbaru lalu periksa perubahan Anda.', en: 'Another admin changed this session. Load the latest version and review your changes.' },
   DUPLICATE_NAME: { id: 'Nama ini sudah digunakan. Gunakan nama lain.', en: 'This name is already in use. Use a different name.' },
+  CAPACITY_UNAVAILABLE: { id: 'Tempat yang tersisa berubah. Kurangi jumlah peserta lalu coba lagi.', en: 'Availability changed. Reduce the group size and try again.' },
+  BOOKING_CLOSED: { id: 'Pemesanan untuk sesi ini sudah ditutup.', en: 'Reservations for this session are closed.' },
+  SESSION_CHANGED: { id: 'Detail sesi berubah. Muat ulang sebelum mengonfirmasi.', en: 'Session details changed. Reload before confirming.' },
+  IDEMPOTENCY_CONFLICT: { id: 'Permintaan ini sudah dipakai untuk data berbeda. Muat ulang dan coba lagi.', en: 'This request was already used for different details. Reload and try again.' },
 }
 
 export const fieldErrorMessages: Record<FieldErrorCode, Message> = {

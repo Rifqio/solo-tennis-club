@@ -19,8 +19,10 @@ OWN-WORLD: Club green signboard bars, white routed condensed numerals (Barlow Co
 
 STORY: A member opens the app, sees today's posts at a glance, steps across day markers, and knows each session's time, level, venue, price and open places without reading twice.
 
-FIRST VIEWPORT: Green top app bar with LAFU and a language action. Day-marker strip below. Session rows each led by a green post plate with the start time large, facts beside, availability mark in a fixed right cell. Material navigation bar: Jadwal, Klub.
+FIRST VIEWPORT: Green top app bar with LAFU and a language action. Day-marker strip below. Session rows each led by a tonal sage post plate with the start time large and facts beside. Availability reflows under the facts on phones and occupies a third column from 640px. Material navigation bar: Jadwal, Klub.
 
 FORM: Jalur Lawu, grounded list position 7, seed key b5fc1590. Signature move: the post plate.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+
+CONTINUATION (2026-10-09): `.planning/phases/01-publish-and-browse-sessions/01-DESIGN-BLUEPRINT.md` proposes remaining Phase 1 details, admin surfaces, state/recovery behavior, responsive layout, and acceptance scenarios. It inherits DESIGN.md and existing plan boundaries; it is not confirmation of implemented admin routes or runtime acceptance. Existing review screenshots include mocked availability states; live Phase 1 occupancy remains zero.

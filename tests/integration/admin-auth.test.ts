@@ -4,6 +4,8 @@ import { createApp } from '../../server/app.ts'
 import { readRuntimeConfig } from '../../server/config/runtime-config.ts'
 import { deactivateAdmin, provisionAdmin } from '../../server/auth/provisioning.ts'
 import { parseCookies } from '../../server/auth/cookie.ts'
+import { createAdminSession } from '../../server/auth/session-store.ts'
+import { DEVELOPMENT_ADMIN_ID } from '../../server/auth/development-admin.ts'
 import { createTestDatabase } from '../support/test-db.ts'
 import { startTestServer } from '../support/test-server.ts'
 import { provisionTestAdmin, signInAs, adminFetch } from '../support/admin-fixtures.ts'
@@ -109,4 +111,69 @@ test('runtime config restricts the insecure-cookie override to loopback hosts', 
     if (oldHost === undefined) delete process.env.LAFU_HOST; else process.env.LAFU_HOST = oldHost
     if (oldSecure === undefined) delete process.env.LAFU_COOKIE_SECURE; else process.env.LAFU_COOKIE_SECURE = oldSecure
   }
+})
+
+const developmentSignIn = (origin = server.baseUrl) => fetch(server.baseUrl + '/api/admin/auth/dev-sign-in', {
+  method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: '{}',
+})
+test('removed development shortcut cannot create accounts or sessions', async () => {
+  await expectCode(await developmentSignIn(), 401, 'UNAUTHENTICATED')
+  expect(await db.prisma.adminAccount.count({ where: { id: DEVELOPMENT_ADMIN_ID } })).toBe(0)
+  expect(await db.prisma.adminSession.count()).toBe(0)
+})
+test('blank or partially empty credentials cannot authenticate in development', async () => {
+  for (const [email, password] of [['', ''], [credentials.email, ''], ['', credentials.password]]) {
+    await expectCode(await signIn(email, password), 401, 'SIGN_IN_FAILED')
+  }
+  expect(await db.prisma.adminSession.count()).toBe(0)
+})
+test('both modes reject legacy mock-account cookies and the mock password', async () => {
+  await db.prisma.adminAccount.create({ data: { id: DEVELOPMENT_ADMIN_ID, email: 'manual-test@lafu.test', displayName: 'Legacy test admin', passwordHash: 'development-only-no-password', passwordUpdatedAt: new Date() } })
+  const session = await createAdminSession(db.prisma, DEVELOPMENT_ADMIN_ID)
+  const cookie = 'lafu_admin=' + session.token
+  const production = await startTestServer(createApp({ prisma: db.prisma }))
+  try {
+    await expectCode(await fetch(production.baseUrl + '/api/admin/auth/dev-sign-in', {
+      method: 'POST', headers: { Origin: production.baseUrl, 'Content-Type': 'application/json' }, body: '{}',
+    }), 401, 'UNAUTHENTICATED')
+    await expectCode(await signIn('manual-test@lafu.test', 'development-only-no-password'), 401, 'SIGN_IN_FAILED')
+    for (const instance of [server, production]) {
+      for (const path of ['/auth/session', '/sessions']) {
+        await expectCode(await fetch(instance.baseUrl + '/api/admin' + path, { headers: { Cookie: cookie } }), 401, 'UNAUTHENTICATED')
+      }
+    }
+  } finally { await production.close() }
+})
+
+test('configured development tunnel origin supports sign-in and CSRF-protected sign-out; other origins remain denied', async () => {
+  const origin = 'https://phone-test.ngrok-free.app'
+  const tunnel = await startTestServer(createApp({ prisma: db.prisma, mode: 'development', developmentOrigins: [origin] }))
+  const headers = { Origin: origin, Host: 'phone-test.ngrok-free.app', 'X-Forwarded-Proto': 'https', 'Content-Type': 'application/json' }
+  try {
+    const response = await fetch(tunnel.baseUrl + '/api/admin/auth/sign-in', { method: 'POST', headers, body: JSON.stringify({ email: credentials.email, password: credentials.password }) })
+    expect(response.status).toBe(200)
+    const info = await response.json()
+    const cookie = response.headers.get('set-cookie')!.split(';')[0]
+    await expectCode(await fetch(tunnel.baseUrl + '/api/admin/auth/sign-out', {
+      method: 'POST', headers: { ...headers, Cookie: cookie }, body: '{}',
+    }), 403, 'CSRF_FAILED')
+    expect((await fetch(tunnel.baseUrl + '/api/admin/auth/sign-out', {
+      method: 'POST', headers: { ...headers, Cookie: cookie, 'X-CSRF-Token': info.csrfToken }, body: '{}',
+    })).status).toBe(204)
+    for (const unapproved of ['https://evil.example', 'https://other.ngrok-free.app', 'null', '']) {
+      await expectCode(await fetch(tunnel.baseUrl + '/api/admin/auth/sign-in', {
+        method: 'POST', headers: { ...headers, Origin: unapproved }, body: JSON.stringify({ email: credentials.email, password: credentials.password }),
+      }), 403, 'ORIGIN_REJECTED')
+    }
+  } finally { await tunnel.close() }
+})
+
+test('production ignores supplied development tunnel origins', async () => {
+  const origin = 'https://phone-test.ngrok-free.app'
+  const production = await startTestServer(createApp({ prisma: db.prisma, developmentOrigins: [origin] }))
+  try {
+    await expectCode(await fetch(production.baseUrl + '/api/admin/auth/sign-in', {
+      method: 'POST', headers: { Origin: origin, Host: 'phone-test.ngrok-free.app', 'Content-Type': 'application/json' }, body: JSON.stringify(credentials),
+    }), 403, 'ORIGIN_REJECTED')
+  } finally { await production.close() }
 })

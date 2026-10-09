@@ -4,7 +4,7 @@
 
 Lafu's first release replaces schedule spreadsheets and WhatsApp booking records with public session browsing, capacity-safe reservations, manual payment verification, and phone-complete club operations. Five vertical MVP slices deliver usable workflows from session publication through recurring schedules and optional minimum-participant cancellation. All 67 approved requirements remain first-release scope.
 
-**Status:** Approved by the user on 2026-10-08. No implementation has started.
+**Status:** Phase 1 accepted by the user on 2026-10-09 after all listed manual workflow checks. Phase 2 has six plans: 02-00 backend layers and 02-01 development customer access source are verified. Customer access manual UI acceptance is pending; 02-02 reservations is next. See [customer access evidence](phases/02-reserve-places-and-see-daily-rosters/02-01-SUMMARY.md).
 **Granularity:** standard
 **Project mode:** mvp
 
@@ -14,7 +14,7 @@ Lafu's first release replaces schedule spreadsheets and WhatsApp booking records
 - Every screen is mobile-first, supports Indonesian and English, uses readable text-based statuses and accessible controls, and expands appropriately on tablets and desktops from its first delivery. Privacy applies from the first public or private workflow. Later ownership of cross-cutting UX requirements means final integrated acceptance, not postponed implementation.
 - Follow the confirmed [Community matchday UI brief](UI-BRIEF.md) through the selected code-led build path. Final routes, tokens, fonts, and component specifications belong to phase UI planning; illustrative club data must be labeled.
 - Impeccable supplied UI brainstorming and the confirmed direction. Apply the installed Antislop core, UI, and mobile-layout skills during planning and building for UI validation. Run their Delivery Gate and applicable checklists with recorded evidence before delivering implemented UI. Browser/build checks, accessibility checks, and complete customer/admin task verification remain part of acceptance; a visual review alone does not establish functional correctness.
-- Framework, database, API, infrastructure, and implementation architecture remain unselected. Discuss and record the choices needed by a phase before its dependent implementation; the React/TypeScript/Vite starter is a comparison baseline. Technical evaluation belongs inside usable slices, rather than a separate technology-only MVP phase.
+- Phase 1 architecture is selected in `phases/01-publish-and-browse-sessions/01-SKELETON.md`: React/Vite, Express 5, Prisma 7 with SQLite, provisioned admins with cookie sessions, and a persistent single-host baseline. Hosted deployment remains unrequested. Resolve later phases' technical and policy choices before their dependent implementation.
 - Resolve each phase's policy prerequisites during discussion/planning and include the resulting acceptance scenarios. Preserve the original five-hour unpaid window, submitted-proof review hold, all-or-none group capacity protection, and pending-inclusive minimum counting.
 - Communications require an explicit decision before the relevant rejection, change, or cancellation flow. No notification channel, payment gateway, automated refund transfer, or customer booking-change feature is assumed.
 
@@ -22,7 +22,7 @@ Lafu's first release replaces schedule spreadsheets and WhatsApp booking records
 
 Integer phases are planned first-release work. Decimal phases are reserved for later urgent insertions.
 
-- [ ] **Phase 1: Publish and Browse Sessions** - Admins publish real dated sessions that visitors can explore without signing in.
+- [x] **Phase 1: Publish and Browse Sessions** - Admins publish real dated sessions that visitors can explore without signing in.
 - [ ] **Phase 2: Reserve Places and See Daily Rosters** - Customers and admins reserve individual or group places with reliable deadlines and operational visibility.
 - [ ] **Phase 3: Pay and Verify Bookings** - Customers submit payment proof and admins complete the manual review and correction cycle from a phone.
 - [ ] **Phase 4: Adjust Bookings and Settle Cancellations** - Admins handle booking changes, cancellations, and manual refund obligations without losing capacity or payment state.
@@ -43,30 +43,30 @@ Integer phases are planned first-release work. Decimal phases are reserved for l
 3. An authorized administrator can manage classes, dated sessions, coaches, venues, levels, prices, participant limits, and each session's venue and one or more coaches; capacity changes cannot create an overbooked session.
 4. Administrators can authenticate to manage the schedule, while visitors and customers cannot access those management actions; published changes are visible in public session details.
 
-**Plans:** 4/10 plans executed
+**Plans:** 10/10 source implementation plans summarized; user manual acceptance confirmed 2026-10-09
 
 Plans:
 **Wave 1**
 - [x] 01-01-PLAN.md — Walking skeleton read path: architecture checkpoint, Prisma/SQLite migrations, public schedule API and page, persistence tests (wave 1)
 
-**Wave 2** *(blocked on Wave 1 completion)*
+**Wave 2**
 - [x] 01-02-PLAN.md — Admin provisioning, cookie-session auth, protected publish API, validated idempotent session create (wave 2)
 - [x] 01-03-PLAN.md — Bilingual public shell, design tokens and wrappers, About Lafu page (wave 2)
 
-**Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 01-04-PLAN.md — Admin sign-in, admin shell with working-only navigation, Sessions list (wave 3)
-- [ ] 01-05-PLAN.md — Schedule date strip, picker, next-date shortcut, summary rows and states (wave 3)
+**Wave 3**
+- [x] 01-04-PLAN.md — Admin sign-in, admin shell with working-only navigation, dated Sessions list (wave 3); source verified; user manual acceptance confirmed
+- [x] 01-05-PLAN.md — Schedule date strip, picker, next-date shortcut, summary rows and states (wave 3); source/non-browser verified; user manual acceptance confirmed
 - [x] 01-06-PLAN.md — Backup/restore, labeled sample seed, operations README (wave 3)
 
-**Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 01-07-PLAN.md — Session detail bottom sheet and exact availability states (wave 4)
-- [ ] 01-08-PLAN.md — Coaches, venues, levels management, Manage hub, discard confirmation (wave 4)
+**Wave 4**
+- [x] 01-07-PLAN.md — Session detail bottom sheet and exact availability states (wave 4); source/non-browser verified; user manual acceptance confirmed
+- [x] 01-08-PLAN.md — Coaches, venues, levels management, Manage hub, discard confirmation (wave 4); source/non-browser verified; user manual acceptance confirmed
 
-**Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 01-09-PLAN.md — Class management with future-only defaults and coach checklist (wave 5)
+**Wave 5**
+- [x] 01-09-PLAN.md — Class management with future-only defaults and coach checklist (wave 5); source/non-browser verified; user manual acceptance confirmed
 
-**Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 01-10-PLAN.md — Guided session create/edit, safe capacity edits, Phase 1 acceptance (wave 6)
+**Wave 6**
+- [x] 01-10-PLAN.md — Guided session create/edit, safe capacity edits, Phase 1 acceptance (wave 6); source/non-browser verified; user manual acceptance confirmed
 
 **Cross-cutting constraints:**
 - E7 loading: save disables submit with a named pending label and prevents duplicate records
@@ -91,10 +91,21 @@ Plans:
 4. A customer can open upcoming booking details with the original five-hour deadline; an unpaid reservation without submitted proof expires at that deadline and its places become available again.
 5. On a phone, an administrator can open today's/upcoming sessions, group-aware rosters and pending/confirmed states, participant-place availability, incoming booking details, and customer information, and create a booking for a WhatsApp or in-person customer.
 
-**Plans:** TBD
+**Plans:** 3/6 source implementations verified; 02-01 and 02-02 manual acceptance pending. No Phase 2 product requirements are accepted yet. See [execution plan](phases/02-reserve-places-and-see-daily-rosters/02-PLAN.md).
+
+- [x] 02-00 — Readable controller/service/repository backend; build/lint and 137 tests pass.
+- [x] 02-01 — Customer access and development API OTP source; build/lint and 161 tests pass.
+- [ ] 02-01 — User manual UI acceptance.
+- [x] 02-02 — Guided, atomic individual/group reservation; build/lint pass, manual and concurrency acceptance pending.
+- [ ] 02-02 — User manual UI and capacity-conflict acceptance.
+- [ ] 02-03 — Private bookings and durable five-hour expiry.
+- [ ] 02-04 — Daily admin rosters and booking visibility.
+- [ ] 02-05 — Admin reservations, explicit verified-account linking and integrated development acceptance.
+- [ ] Release gate — Real WhatsApp/SMS OTP delivery and AUTH-02 acceptance.
+
 **UI hint:** yes
 
-**Planning prerequisites:** Decide primary sign-in, OTP channel/provider, account recovery, and how admin-created customer bookings are linked to verified accounts. Resolve required customer fields, group limits, hold start relative to OTP/account entry, eligibility near session start, treatment of unpaid/awaiting-review bookings at session start, and outside-booking deadline rules without changing the approved five-hour policy. Define concurrency, retry, and expiry acceptance scenarios before implementing admission. Customer booking privacy, recoverable OTP entry, preserved form data, bilingual guidance, and text-based states apply now; proof-specific and integrated acceptance follow in Phase 3.
+**Confirmed policies:** Development mock OTP returns a code through the API; real delivery remains a release prerequisite. Require name and verified phone, allow groups up to available capacity, start the unchanged five-hour hold at final confirmation, and close customer/admin admission five hours before session start. Admin outside bookings remain unowned contact records until explicit linking after same-phone verification; same-number recovery uses OTP, lost-number recovery requires club assistance. See [context](phases/02-reserve-places-and-see-daily-rosters/02-CONTEXT.md), [architecture](phases/02-reserve-places-and-see-daily-rosters/02-ARCHITECTURE.md), [UI brief](phases/02-reserve-places-and-see-daily-rosters/02-UI-BRIEF.md) and [validation](phases/02-reserve-places-and-see-daily-rosters/02-VALIDATION.md). Awaiting-review protection remains intact; later cutoff processing and payment exceptions require their dependent phase decisions.
 
 ### Phase 3: Pay and Verify Bookings
 
@@ -159,8 +170,8 @@ Phases execute in order: 1 → 2 → 3 → 4 → 5. Discussion, policy decisions
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Publish and Browse Sessions | 4/10 | In Progress | - |
-| 2. Reserve Places and See Daily Rosters | 0/TBD | Not started | - |
+| 1. Publish and Browse Sessions | 10/10 | Accepted by user | 2026-10-09 |
+| 2. Reserve Places and See Daily Rosters | 2/6 source | Customer access verified; manual UI pending, 02-02 next | - |
 | 3. Pay and Verify Bookings | 0/TBD | Not started | - |
 | 4. Adjust Bookings and Settle Cancellations | 0/TBD | Not started | - |
 | 5. Run Recurring Sessions and Minimum Cutoffs | 0/TBD | Not started | - |

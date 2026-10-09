@@ -3,7 +3,7 @@
 - `.planning/PROJECT.md`: product context and constraints.
 - `.planning/REQUIREMENTS.md`: all 67 approved first-release requirements and phase traceability.
 - `.planning/ROADMAP.md`: approved five-phase vertical MVP roadmap.
-- `.planning/STATE.md`: current workflow position; no implementation has started.
+- `.planning/STATE.md`: current workflow position; Phase 1 accepted, Phase 2 customer-access source verified and manual UI acceptance pending.
 - `.planning/UI-BRIEF.md` and `PRODUCT.md`: confirmed Community matchday direction, novice-friendly phone workflows, and code-led build preference.
 
 Mobile-first, Indonesian/English, text-based states, and private booking/payment access apply from each relevant workflow's first delivery. Later acceptance phases verify the integrated experience. Resolve listed operating policies before their dependent implementation; do not silently change the five-hour hold, proof-review protection, or pending-inclusive minimum counts.
@@ -36,7 +36,7 @@ A mobile-first web application for Lawu Fun Tennis Club (Lafu), replacing a shar
 
 ## Technology Stack
 
-The user selected SQLite and Prisma on 2026-10-08 and excluded Supabase. Remaining framework/API/hosting choices are open. The workspace contains a React, TypeScript, and Vite starter; it has no tennis booking capabilities. Phase 1 context and research supersede earlier database recommendations in `.planning/research/STACK.md`. Other research candidates remain advisory.
+The selected stack is React/TypeScript/Vite, Express 5 and Prisma 7.10 with SQLite; Supabase is excluded. Phase 1 public/admin workflows and Phase 2 development customer access are implemented. Customer bookings remain 02-02 work; real OTP delivery and hosted deployment are release prerequisites. Phase 1's 01-SKELETON.md supersedes earlier advisory stack research.
 
 <!-- GSD:stack-end -->
 
@@ -44,14 +44,14 @@ The user selected SQLite and Prisma on 2026-10-08 and excluded Supabase. Remaini
 
 ## Conventions
 
-Conventions not yet established. Will populate as patterns emerge during development.
+Backend code follows router → controller → service → repository within each feature. Use readable named functions, explicit inputs and small focused modules. Controllers handle HTTP; services own business decisions; repositories own Prisma queries. All repositories inside a service operation use the same transaction handle. Follow `.planning/BACKEND-CONVENTIONS.md`; ESLint enforces the main boundaries. The user requested best-practices and nodejs-backend-patterns on 2026-10-09.
 <!-- GSD:conventions-end -->
 
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->
 
 ## Architecture
 
-Tennis booking architecture is not yet defined. Select and record it during phase discussion/planning, preserving the approved reservation, capacity, payment-review, and minimum-participant rules.
+Backend architecture follows feature-local controller/service/repository layers in `.planning/BACKEND-CONVENTIONS.md`. Phase 2 identity/booking contracts are in `.planning/phases/02-reserve-places-and-see-daily-rosters/02-ARCHITECTURE.md`; customer mock OTP is implemented, capacity-safe admission is next. Preserve the approved reservation, capacity, payment-review and minimum-participant rules.
 <!-- GSD:architecture-end -->
 
 <!-- GSD:skills-start source:skills/ -->

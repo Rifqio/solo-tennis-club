@@ -45,18 +45,18 @@ A focused tennis club application that preserves the club's group-booking and ma
 - Customer and admin interfaces support Indonesian and English.
 - Mobile-first information architecture and interaction are required; tablet and desktop expand that experience.
 - Automated payment gateways and refund transfers are outside the initial release. Future payment-provider support remains an architectural consideration.
-- Frameworks, database, API, infrastructure, and implementation details will be decided separately. The existing React/TypeScript/Vite starter is project context, not a finalized architecture decision.
-- Open details: primary sign-in mechanism; WhatsApp versus SMS delivery; session timezone and currency; cutoff scope and near-start booking behavior; recurring-series edit behavior; cancellation communications.
+- Phase 1 architecture is confirmed in `.planning/phases/01-publish-and-browse-sessions/01-SKELETON.md`: React/Vite SPA, Express 5 internal HTTP API, Prisma 7 with SQLite, provisioned admin email/password accounts with cookie sessions, persistent single-host storage. No hosted deployment is requested.
+- Phase 2 decisions: phone OTP with mock code returned through the development API; require name + verified phone; group size is limited by available capacity; the five-hour hold begins at final confirmation, and new customer/admin reservations close five hours before start. Outside bookings require explicit admin linking after the same phone is verified. Real WhatsApp/SMS delivery remains a release prerequisite. Later open details: minimum-cutoff processing, recurring-series edits and cancellation communications. Club dates/times use WIB (UTC+7) and prices use integer IDR.
 
 ## Brand Commitments
 
-The confirmed name is Lawu Fun Tennis Club, abbreviated Lafu. The application should feel like a tennis club product. The user likes AYO's Android app and requested analysis of its Google Play screenshots, rather than its website: https://play.google.com/store/apps/details?id=coid.ayo.ayo_mobile_app&hl=en. This is a presentation reference, not permission to copy AYO's identity or introduce its unrelated features. The user selected the Community matchday presentation: a familiar contemporary sports app with clear session facts and guided booking. Its detailed UI brief was confirmed on 2026-10-07; no design system, exact typography, or club logo has been finalized.
+The confirmed name is Lawu Fun Tennis Club, abbreviated Lafu. The user likes AYO's Android app and its publisher screenshots as mobile presentation references, without copying its identity or unrelated features. Community matchday was confirmed on 2026-10-07. On 2026-10-08 the user selected the Jalur Lawu Material 3 redesign, preserving the club palette while using tonal trail-post time plates, a green signboard, system reading typography and Barlow Condensed sign numerals. DESIGN.md is the current visual authority. Light and dark follow the phone. Real club logo and photography remain unsupplied; the LAFU text identity is the fallback.
 
 ## Evidence on Hand
 
 - `.planning/PROJECT.md` contains the user-approved project brief and booking rules.
 - The user described the spreadsheet/WhatsApp operation and numbered participant convention; no spreadsheet export or production session data has been provided.
-- `src/App.tsx` and its assets are framework starter content, not the club's visual identity.
+- `src/App.tsx` routes the public schedule/club/detail and complete Phase 1 admin management workflows. All ten implementation summaries exist; build, lint and 137 tests pass. Manual workflow acceptance confirmed by the user on 2026-10-09; see `.planning/phases/01-publish-and-browse-sessions/01-PHASE1-REVIEW.md`.
 - No real club photography, logo files, testimonials, customer counts, exact session prices, or sample coach/venue records have been supplied. Future examples must be labeled as illustrative, and commercial claims must not be fabricated.
 
 ## Product Principles

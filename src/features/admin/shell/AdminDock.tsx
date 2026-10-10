@@ -16,7 +16,9 @@ interface Destination { to: string; label: Message; Icon: LucideIcon; also: stri
 function Tab({ to, label, Icon, also }: Destination) {
   const { t } = useI18n()
   const { pathname } = useLocation()
-  const active = pathname === to || pathname.startsWith(to + '/') || also.some(path => pathname === path || pathname.startsWith(path + '/'))
+  // `/admin` itself opens Sesi, but only exactly: as a prefix it would match every admin screen.
+  const active = pathname === to || pathname.startsWith(to + '/')
+    || also.some(path => pathname === path || (path !== '/admin' && pathname.startsWith(path + '/')))
   return (
     <Link to={to} viewTransition aria-current={active ? 'page' : undefined} onClick={() => { if (!active) selectionHaptic() }}
       className="pressable flex min-h-16 flex-col items-center justify-center gap-0.5 sm:w-full">

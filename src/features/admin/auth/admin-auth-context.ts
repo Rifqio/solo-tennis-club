@@ -12,6 +12,6 @@ export interface AdminAuthValue {
   signIn: (email: string, password: string) => Promise<AdminResult<AdminSessionInfo>>
   signOut: () => Promise<AdminResult<void>>
   get: <T>(path: string, signal?: AbortSignal) => Promise<AdminResult<T>>
-  send: <T>(method: 'POST' | 'PUT', path: string, body: unknown) => Promise<AdminResult<T>>
+  send: <T>(method: 'POST' | 'PUT' | 'DELETE', path: string, body: unknown) => Promise<AdminResult<T>>
 }
 export const AdminAuthContext = createContext<AdminAuthValue | null>(null)

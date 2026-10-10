@@ -6,7 +6,8 @@ export interface SessionDefaults {
   levelId: string; venueId: string; durationMinutes: number; priceIdr: number
   minParticipants: number; maxParticipants: number; coachIds: string[]
 }
-export interface NamedOption { id: string; name: string }
+// `archived`: still shown where it is already chosen, hidden from new picks.
+export interface NamedOption { id: string; name: string; archived?: boolean }
 // A coach for the photo-card picker: portrait (null shows initials) and how many classes use them by default.
 export interface CoachOption extends NamedOption { photoUrl: string | null; classCount: number }
 export interface SessionOptions {

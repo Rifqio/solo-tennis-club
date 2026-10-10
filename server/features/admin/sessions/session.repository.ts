@@ -58,9 +58,9 @@ export function createSessionRepository(database: Database) {
       const orderBy = [{ name: 'asc' as const }, { id: 'asc' as const }]
       const [classes, levels, venues, coaches] = await Promise.all([
         database.tennisClass.findMany({ orderBy, include: { defaultCoaches: { orderBy: { position: 'asc' } } } }),
-        database.level.findMany({ orderBy, select: { id: true, name: true } }),
-        database.venue.findMany({ orderBy, select: { id: true, name: true } }),
-        database.coach.findMany({ orderBy, select: { id: true, name: true, photoUrl: true, _count: { select: { defaultClasses: true } } } }),
+        database.level.findMany({ orderBy, select: { id: true, name: true, archivedAt: true } }),
+        database.venue.findMany({ orderBy, select: { id: true, name: true, archivedAt: true } }),
+        database.coach.findMany({ orderBy, select: { id: true, name: true, photoUrl: true, archivedAt: true, _count: { select: { defaultClasses: true } } } }),
       ])
       return { classes, levels, venues, coaches }
     },

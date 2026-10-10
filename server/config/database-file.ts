@@ -8,6 +8,10 @@ export function resolveDatabaseFile(input = process.env.LAFU_DATABASE_FILE): str
   mkdirSync(dirname(file), { recursive: true })
   return file
 }
+// Uploaded files (coach portraits) live beside the database, so a backup can carry both.
+export function resolveUploadsDir(databaseFile = resolveDatabaseFile()): string {
+  return resolve(dirname(databaseFile), 'uploads')
+}
 export function databaseUrl(file = resolveDatabaseFile()): string {
   return 'file:' + resolve(file).replaceAll('\\', '/')
 }

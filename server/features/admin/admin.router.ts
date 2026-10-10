@@ -6,13 +6,16 @@ import { requireAdmin } from '../../auth/require-admin.ts'
 import { requireCsrf, requireJson, requireSameOrigin } from '../../http/mutation-guards.ts'
 import { createSessionsRouter } from './sessions/sessions.router.ts'
 import { createReferencesRouter } from './references/references.router.ts'
+import { createCoachPhotoRouter } from './references/coach-photo.router.ts'
 import { createClassesRouter } from './classes/classes.router.ts'
 import { createAdminBookingsRouter } from './bookings/bookings.router.ts'
-export function createAdminRouter({ prisma, config }: { prisma: PrismaClient; config: RuntimeConfig }) {
+export function createAdminRouter({ prisma, config, uploadsDir }: { prisma: PrismaClient; config: RuntimeConfig; uploadsDir: string }) {
   const router = Router()
   router.use((_req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next() })
   router.use(createSignInRouter(prisma, config))
   router.use(requireAdmin(prisma, config))
+  // Image bodies, so before the JSON-only guard; the photo router applies the same-origin and CSRF checks itself.
+  router.use(createCoachPhotoRouter(prisma, config, uploadsDir))
   router.use(requireSameOrigin(config), requireJson, requireCsrf)
   router.use(json({ limit: '32kb' }))
   router.use(createAuthenticatedAuthRouter(prisma, config))

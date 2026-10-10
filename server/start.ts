@@ -2,14 +2,15 @@ import { createServer } from 'node:http'
 import type { ViteDevServer } from 'vite'
 import { createApp } from './app.ts'
 import { createPrismaClient, initializeDatabase } from './db.ts'
-import { projectRoot, resolveDatabaseFile } from './config/database-file.ts'
+import { projectRoot, resolveDatabaseFile, resolveUploadsDir } from './config/database-file.ts'
 import { resolve } from 'node:path'
 import { startExpiryWorker } from './features/booking-expiry/expiry.service.ts'
 
 export async function startServer(options: {
   mode: 'development' | 'production'; port?: number; host?: string; databaseFile?: string
 }) {
-  const prisma = createPrismaClient(resolveDatabaseFile(options.databaseFile))
+  const databaseFile = resolveDatabaseFile(options.databaseFile)
+  const prisma = createPrismaClient(databaseFile)
   let vite: ViteDevServer | undefined
   let expiry: ReturnType<typeof startExpiryWorker> | undefined
   try {
@@ -23,7 +24,7 @@ export async function startServer(options: {
       .filter(host => !host.startsWith('.') && /^[a-zA-Z0-9.-]+$/.test(host))
       .map(host => `https://${host}`) : []
     expiry = startExpiryWorker(prisma)
-    const app = createApp({ prisma, mode: options.mode, distDir: resolve(projectRoot, 'dist'), viteMiddleware: vite?.middlewares, developmentOrigins })
+    const app = createApp({ prisma, mode: options.mode, distDir: resolve(projectRoot, 'dist'), viteMiddleware: vite?.middlewares, developmentOrigins, uploadsDir: resolveUploadsDir(databaseFile) })
     const server = createServer(app)
     const port = options.port ?? Number(process.env.LAFU_PORT ?? 3000)
     const host = options.host ?? process.env.LAFU_HOST ?? '127.0.0.1'

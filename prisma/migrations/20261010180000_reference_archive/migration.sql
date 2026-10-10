@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Coach" ADD COLUMN "archivedAt" DATETIME;
+ALTER TABLE "Venue" ADD COLUMN "archivedAt" DATETIME;
+ALTER TABLE "Level" ADD COLUMN "archivedAt" DATETIME;

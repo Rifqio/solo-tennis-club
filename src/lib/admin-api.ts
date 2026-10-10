@@ -18,11 +18,14 @@ async function request<T>(method: string, path: string, body: unknown, options: 
   if (!path.startsWith('/api/admin/') || path.includes('\\') || parsedPath.origin !== 'https://lafu.invalid' || !parsedPath.pathname.startsWith('/api/admin/')) throw new Error('Admin API path required')
   try {
     const headers: Record<string, string> = { Accept: 'application/json' }
-    if (body !== undefined) headers['Content-Type'] = 'application/json'
+    // A file (a coach portrait) goes up as itself with its own type; everything else is JSON.
+    const file = body instanceof Blob ? body : null
+    if (file) headers['Content-Type'] = file.type
+    else if (body !== undefined) headers['Content-Type'] = 'application/json'
     if (options.csrfToken) headers['X-CSRF-Token'] = options.csrfToken
     const response = await fetch(path, {
       method, credentials: 'same-origin', cache: 'no-store', headers,
-      signal: options.signal, ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      signal: options.signal, ...(body === undefined ? {} : { body: file ?? JSON.stringify(body) }),
     })
     if (!response.ok) {
       let error: ApiErrorBody['error'] = { code: 'INTERNAL' }
@@ -40,6 +43,6 @@ async function request<T>(method: string, path: string, body: unknown, options: 
 export function adminGet<T>(path: string, options: AdminRequestOptions = {}) {
   return request<T>('GET', path, undefined, options)
 }
-export function adminSend<T>(method: 'POST' | 'PUT', path: string, body: unknown, options: AdminRequestOptions = {}) {
+export function adminSend<T>(method: 'POST' | 'PUT' | 'DELETE', path: string, body: unknown, options: AdminRequestOptions = {}) {
   return request<T>(method, path, body, options)
 }

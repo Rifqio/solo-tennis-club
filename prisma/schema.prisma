@@ -49,6 +49,8 @@ model Coach {
   photoUrl String?
   createRequestId String? @unique
   version Int @default(1)
+  // Archived records leave lists and pickers but stay on the classes and sessions that already use them.
+  archivedAt DateTime?
   isSample Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -65,6 +67,8 @@ model Venue {
   longitude Float?
   createRequestId String? @unique
   version Int @default(1)
+  // Archived records leave lists and pickers but stay on the classes and sessions that already use them.
+  archivedAt DateTime?
   isSample Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -77,6 +81,8 @@ model Level {
   nameKey String @unique
   createRequestId String? @unique
   version Int @default(1)
+  // Archived records leave lists and pickers but stay on the classes and sessions that already use them.
+  archivedAt DateTime?
   isSample Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

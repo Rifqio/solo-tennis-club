@@ -4,7 +4,7 @@ import type { PrismaClient } from '../../../generated/prisma/client.ts'
 import type { ReferenceKind, ReferenceInput } from '../../../../shared/api/admin-references.ts'
 import { ApiError } from '../../../http/errors.ts'
 import { MAP_URL_MAX } from '../../../../shared/maps.ts'
-import { listReferencePage, getReference, saveReference } from './reference.service.ts'
+import { listReferencePage, getReference, getReferenceUsage, saveReference, setReferenceArchived } from './reference.service.ts'
 import { parseNamePageQuery } from '../listing/name-page.ts'
 import { resolveMapLocation } from './map-location.service.ts'
 
@@ -31,7 +31,16 @@ export function createReferenceController(database: PrismaClient, kind: Referenc
   }
 
   const list: RequestHandler = async (request, response) => {
-    response.json(await listReferencePage(database, kind, parseNamePageQuery(request.query)))
+    response.json(await listReferencePage(database, kind, parseNamePageQuery(request.query), request.query.archived === '1'))
+  }
+  const usage: RequestHandler<{ id: string }> = async (request, response) => {
+    response.json(await getReferenceUsage(database, kind, request.params.id))
+  }
+  const archiveInput = z.strictObject({ version: z.number().int().positive() })
+  const setArchived = (archived: boolean): RequestHandler<{ id: string }> => async (request, response) => {
+    const parsed = archiveInput.safeParse(request.body)
+    if (!parsed.success) throw new ApiError(400, 'VALIDATION_FAILED', { version: 'INVALID_FORMAT' })
+    response.json(await setReferenceArchived(database, kind, request.params.id, parsed.data.version, archived))
   }
   const detail: RequestHandler<{ id: string }> = async (request, response) => {
     response.json(await getReference(database, kind, request.params.id))
@@ -50,5 +59,5 @@ export function createReferenceController(database: PrismaClient, kind: Referenc
     if (!result.success) throw new ApiError(400, 'VALIDATION_FAILED', { url: 'INVALID_FORMAT' })
     response.json(await resolveMapLocation(result.data.url))
   }
-  return { list, detail, create, update, mapLocation }
+  return { list, detail, usage, archive: setArchived(true), restore: setArchived(false), create, update, mapLocation }
 }

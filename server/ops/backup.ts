@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync } from 'node:fs'
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync } from 'node:fs'
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import { projectRoot } from '../config/database-file.ts'
@@ -37,6 +37,14 @@ export async function backupDatabase(prisma: PrismaClient, backupDir = resolveBa
   let target = resolve(dir, backupFileName(now))
   for (let attempt = 1; existsSync(target); attempt++) target = resolve(dir, backupFileName(now).replace('.db', `-${attempt}.db`))
   await prisma.$executeRaw`VACUUM INTO ${target}`
+  return target
+}
+
+// Uploaded files (coach portraits) are copied beside the database snapshot as <backup name>-uploads/.
+export function backupUploads(uploadsDir: string, backupFile: string) {
+  if (!existsSync(uploadsDir)) return null
+  const target = assertWritableLocation(backupFile.replace(/\.db$/, '') + '-uploads')
+  cpSync(uploadsDir, target, { recursive: true })
   return target
 }
 

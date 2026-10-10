@@ -75,7 +75,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         if (currentGeneration === generation.current) expire()
       } })
     },
-    send: <T,>(method: 'POST' | 'PUT', path: string, body: unknown) => {
+    send: <T,>(method: 'POST' | 'PUT' | 'DELETE', path: string, body: unknown) => {
       const current = stateRef.current
       const currentGeneration = generation.current
       return adminSend<T>(method, path, body, { csrfToken: current.status === 'signedIn' ? current.info.csrfToken : undefined,

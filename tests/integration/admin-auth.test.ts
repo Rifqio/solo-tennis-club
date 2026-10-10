@@ -116,10 +116,17 @@ test('runtime config restricts the insecure-cookie override to loopback hosts', 
 const developmentSignIn = (origin = server.baseUrl) => fetch(server.baseUrl + '/api/admin/auth/dev-sign-in', {
   method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: '{}',
 })
-test('removed development shortcut cannot create accounts or sessions', async () => {
-  await expectCode(await developmentSignIn(), 401, 'UNAUTHENTICATED')
+// TEMPORARY (user request 2026-10-10, commit 66aa860): the development sign-in shortcut is back for manual testing.
+// When it is removed before release, restore this test to expect 401 UNAUTHENTICATED and no sessions created.
+test('temporary development shortcut signs in only as an existing real admin and never creates accounts', async () => {
+  const accounts = await db.prisma.adminAccount.count()
+  await expectCode(await developmentSignIn('http://evil.example'), 403, 'ORIGIN_REJECTED')
+  const response = await developmentSignIn()
+  expect(response.status).toBe(200)
+  expect((await response.json()).admin.email).toBe(credentials.email)
+  expect(await db.prisma.adminAccount.count()).toBe(accounts)
   expect(await db.prisma.adminAccount.count({ where: { id: DEVELOPMENT_ADMIN_ID } })).toBe(0)
-  expect(await db.prisma.adminSession.count()).toBe(0)
+  await db.prisma.adminSession.deleteMany()
 })
 test('blank or partially empty credentials cannot authenticate in development', async () => {
   for (const [email, password] of [['', ''], [credentials.email, ''], ['', credentials.password]]) {

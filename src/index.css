@@ -197,6 +197,9 @@
     text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     background: var(--md-surface);
+    /* Keep room for the scrollbar even when a page is short (a search with no matches), so the layout never shifts
+       sideways as content grows or shrinks. Phones use overlay scrollbars, so this costs nothing there. */
+    scrollbar-gutter: stable;
   }
   /* Wide desktops: the desktop boards are drawn at 1440px and should fill a bigger window the way they do on the
      canvas, not sit condensed in the middle. Above 1440px the root size grows with the window, so type, spacing and

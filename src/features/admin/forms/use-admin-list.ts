@@ -8,6 +8,7 @@ import { useAdminAuth } from '../auth/use-admin-auth'
 const firstPages = new Map<string, PagedList<unknown>>()
 
 type ListState<T> = { key: string; page: PagedList<T> } | { key: string; failure: AdminResult<PagedList<T>> }
+type Shown<T> = { key: string; page: PagedList<T> }
 
 // A name-sorted admin list loaded 20 at a time (PagedList): the first page for the search, then more on request.
 // `refresh`: any value that changes when the list should be fetched again (for example the navigation key).
@@ -15,6 +16,8 @@ export function useAdminList<T>(path: string | null, search: string, refresh?: u
   const { get, state: auth } = useAdminAuth()
   const key = path ? `${path}?q=${encodeURIComponent(search.trim())}` : ''
   const [state, setState] = useState<ListState<T> | null>(null)
+  // The rows on screen, kept while a new search loads so the list never blanks between keystrokes.
+  const [shown, setShown] = useState<Shown<T> | null>(null)
   const [attempt, setAttempt] = useState(0)
   const [loadingMore, setLoadingMore] = useState(false)
   useEffect(() => {
@@ -30,11 +33,15 @@ export function useAdminList<T>(path: string | null, search: string, refresh?: u
 
   const current = state?.key === key ? state : null
   const cached = key && firstPages.has(key) ? firstPages.get(key) as PagedList<T> : null
-  const page = current && 'page' in current ? current.page : current ? null : cached
+  const fresh = current && 'page' in current ? current.page : current ? null : cached
   const failure = current && 'failure' in current ? current.failure : null
+  // Adjusting state during render (React's documented pattern) keeps the last results until the next ones arrive.
+  if (fresh && (shown?.key !== key || shown.page !== fresh)) setShown({ key, page: fresh })
+  const page = fresh ?? (failure ? null : shown?.page ?? null)
+  const searching = !fresh && !failure && Boolean(shown)
 
   const loadMore = async () => {
-    if (!page?.nextCursor || loadingMore) return
+    if (!page?.nextCursor || loadingMore || searching) return
     setLoadingMore(true)
     try {
       const response = await get<PagedList<T>>(`${key}&cursor=${encodeURIComponent(page.nextCursor)}`)
@@ -44,7 +51,9 @@ export function useAdminList<T>(path: string | null, search: string, refresh?: u
 
   return {
     status: page ? 'ready' as const : failure ? 'error' as const : 'loading' as const,
-    items: page?.items ?? [], total: page?.total ?? 0, hasMore: Boolean(page?.nextCursor),
+    // True while the rows on screen belong to the previous search and the new results are on their way.
+    searching,
+    items: page?.items ?? [], total: page?.total ?? 0, hasMore: Boolean(page?.nextCursor) && !searching,
     failure, loadMore, loadingMore,
     retry: () => { setState(null); setAttempt(value => value + 1) },
   }

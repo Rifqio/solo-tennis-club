@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { AnimatePresence, m } from 'motion/react'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ClassRecord } from '@shared/api/admin-classes'
 import { useI18n } from '@/i18n/use-i18n'
 import { useMediaQuery } from '@/lib/use-media-query'
+import { listRowMotion } from '@/lib/motion'
 import { formatIdr } from '@/i18n/format'
 import { commonMessages } from '@/i18n/common.messages'
 import { StatusPanel } from '@/components/ui/status-panel'
@@ -41,7 +43,7 @@ export function ClassListPage() {
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4 lg:max-w-[72rem]">
-      <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} />
+      <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} busy={list.searching} />
       {list.items.some(row => row.isSample) && <SampleDataNotice />}
       {list.status === 'loading' ? (
         <div className="flex flex-col gap-2.5"><p role="status" className="sr-only">{t(messages.loading)}</p>
@@ -51,9 +53,10 @@ export function ClassListPage() {
       ) : list.total === 0 ? (
         search ? <ListNoMatch query={search} noun={copy.noun} /> : <StatusPanel tone="info" title={t(copy.empty)} />
       ) : (
-        <ul className="grid gap-2.5 lg:grid-cols-2">
+        <ul className="grid gap-2.5 lg:grid-cols-2" aria-busy={list.searching}>
+          <AnimatePresence initial={false} mode="popLayout">
           {list.items.map(row => (
-            <li key={row.id} className="flex flex-col gap-2">
+            <m.li key={row.id} {...listRowMotion} className="flex flex-col gap-2">
               {savedId === row.id && <StatusPanel tone="success" title={t(messages.saved)} />}
               <Link to={`/admin/classes/${row.id}/edit`} viewTransition className="state-layer flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest px-4 py-3.5">
                 <span className="flex items-start justify-between gap-3">
@@ -70,8 +73,9 @@ export function ClassListPage() {
                 </span>
                 {row.coaches.length > 0 && <span title={row.coaches.map(coach => coach.name).join(', ')} className="truncate text-label text-on-surface-variant">{t(copy.coaches, { names: row.coaches.map(coach => coach.name).join(', ') })}</span>}
               </Link>
-            </li>
+            </m.li>
           ))}
+          </AnimatePresence>
         </ul>
       )}
       <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={copy.noun} />

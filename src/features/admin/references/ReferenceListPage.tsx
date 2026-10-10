@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { AnimatePresence, m } from 'motion/react'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ReferenceKind, ReferenceRecord } from '@shared/api/admin-references'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
+import { listRowMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
@@ -43,7 +45,7 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
       <ReferenceTabs current={kind} />
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4">
-      <ListSearch value={query} onChange={setQuery} label={t(config.search)} placeholder={t(config.search)} />
+      <ListSearch value={query} onChange={setQuery} label={t(config.search)} placeholder={t(config.search)} busy={list.searching} />
       {list.items.some(record => record.isSample) && <SampleDataNotice />}
       {list.status === 'loading' ? (
         <div className="flex flex-col gap-2.5"><p role="status" className="sr-only">{t(messages.loading)}</p>
@@ -53,9 +55,10 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
       ) : list.total === 0 ? (
         search ? <ListNoMatch query={search} noun={config.noun} /> : <StatusPanel tone="info" title={t(config.empty)} />
       ) : (
-        <ul className="flex flex-col gap-2.5">
+        <ul className="flex flex-col gap-2.5" aria-busy={list.searching}>
+          <AnimatePresence initial={false} mode="popLayout">
           {list.items.map(row => (
-            <li key={row.id} className="flex flex-col gap-2">
+            <m.li key={row.id} {...listRowMotion} className="flex flex-col gap-2">
               {savedId === row.id && <StatusPanel tone="success" title={t(messages.saved)} />}
               <Link to={`/admin/${config.path}/${row.id}/edit`} viewTransition
                 className="state-layer flex items-center justify-between gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
@@ -69,8 +72,9 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
                 </span>
                 <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-on-surface-variant" />
               </Link>
-            </li>
+            </m.li>
           ))}
+          </AnimatePresence>
         </ul>
       )}
       <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={config.noun} />

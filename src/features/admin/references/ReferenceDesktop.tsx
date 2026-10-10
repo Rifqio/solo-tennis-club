@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { m } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ReferenceKind, ReferenceRecord } from '@shared/api/admin-references'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
-import { selectionSpring } from '@/lib/motion'
+import { listRowMotion, selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
@@ -54,13 +54,13 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
       <div className="lg:max-w-[30rem]"><ReferenceTabs current={kind} /></div>
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[72rem] items-start gap-6 py-6">
-      <section aria-label={t(config.label)} className="flex w-[24rem] shrink-0 flex-col gap-3 rounded-lg bg-surface-container-lowest p-4 xl:w-[28rem]">
+      <section aria-label={t(config.label)} className="flex min-h-[34rem] w-[24rem] shrink-0 flex-col gap-3 rounded-lg bg-surface-container-lowest p-4 xl:w-[28rem]">
         <Link to={`/admin/${config.path}/new`} aria-current={currentId === 'new' ? 'page' : undefined}
           className={cn('state-layer pressable flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-sm font-semibold',
             currentId === 'new' ? 'bg-primary text-on-primary' : 'border border-primary text-primary')}>
           <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(config.add)}
         </Link>
-        <ListSearch value={query} onChange={setQuery} label={t(config.search)} placeholder={t(config.search)} />
+        <ListSearch value={query} onChange={setQuery} label={t(config.search)} placeholder={t(config.search)} busy={list.searching} />
         {list.items.some(row => row.isSample) && <SampleDataNotice />}
         {list.status === 'loading' ? (
           <div className="flex flex-col gap-2"><p role="status" className="sr-only">{t(messages.loading)}</p>
@@ -70,11 +70,12 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
         ) : list.total === 0 ? (
           search ? <ListNoMatch query={search} noun={config.noun} /> : <p className="px-1 text-on-surface-variant">{t(config.empty)}</p>
         ) : (
-          <ul className="flex flex-col gap-1">
+          <ul className="flex flex-col gap-1" aria-busy={list.searching}>
+            <AnimatePresence initial={false} mode="popLayout">
             {list.items.map(row => {
               const active = row.id === currentId
               return (
-                <li key={row.id}>
+                <m.li key={row.id} {...listRowMotion}>
                   <Link to={`/admin/${config.path}/${row.id}/edit`} aria-current={active ? 'page' : undefined}
                     className={cn('state-layer relative isolate flex min-h-14 items-center justify-between gap-3 rounded-sm px-3.5 py-2.5 transition-colors duration-200',
                       active ? 'text-on-primary' : 'text-on-surface')}>
@@ -89,9 +90,10 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
                     </span>
                     <ChevronRight aria-hidden="true" className="size-5 shrink-0" />
                   </Link>
-                </li>
+                </m.li>
               )
             })}
+            </AnimatePresence>
           </ul>
         )}
         <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={config.noun} />

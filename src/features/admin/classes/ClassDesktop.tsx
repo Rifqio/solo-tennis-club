@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { m } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { Plus } from 'lucide-react'
 import type { ClassRecord } from '@shared/api/admin-classes'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
-import { selectionSpring } from '@/lib/motion'
+import { listRowMotion, selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
@@ -52,13 +52,13 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter mx-auto flex w-full max-w-[72rem] items-start gap-6 py-6">
-      <section aria-label={t(copy.heading)} className="flex w-[24rem] shrink-0 flex-col gap-3 xl:w-[28rem]">
+      <section aria-label={t(copy.heading)} className="flex min-h-[34rem] w-[24rem] shrink-0 flex-col gap-3 xl:w-[28rem]">
         <Link to="/admin/classes/new" aria-current={currentId === 'new' ? 'page' : undefined}
           className={cn('state-layer pressable flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-sm font-semibold',
             currentId === 'new' ? 'bg-primary text-on-primary' : 'border border-primary text-primary')}>
           <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(copy.add)}
         </Link>
-        <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} />
+        <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} busy={list.searching} />
         {list.items.some(row => row.isSample) && <SampleDataNotice />}
         {list.status === 'loading' ? (
           <div className="flex flex-col gap-3"><p role="status" className="sr-only">{t(messages.loading)}</p>
@@ -68,11 +68,12 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
         ) : list.total === 0 ? (
           search ? <ListNoMatch query={search} noun={copy.noun} /> : <StatusPanel tone="info" title={t(copy.empty)} />
         ) : (
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-3" aria-busy={list.searching}>
+            <AnimatePresence initial={false} mode="popLayout">
             {list.items.map(row => {
               const active = row.id === currentId
               return (
-                <li key={row.id}>
+                <m.li key={row.id} {...listRowMotion}>
                   <Link to={`/admin/classes/${row.id}/edit`} aria-current={active ? 'page' : undefined}
                     className={cn('state-layer relative isolate flex flex-col gap-3 rounded-lg bg-surface-container-lowest p-4 transition-colors duration-200',
                       active ? 'text-on-primary' : 'text-on-surface')}>
@@ -92,9 +93,10 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
                       </span>
                     )}
                   </Link>
-                </li>
+                </m.li>
               )
             })}
+            </AnimatePresence>
           </ul>
         )}
         <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={copy.noun} />

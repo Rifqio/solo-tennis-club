@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { m, useReducedMotion } from 'motion/react'
-import { ArrowLeft } from 'lucide-react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { SessionOptions, AdminSessionDetail, CreateSessionResponse } from '@shared/api/admin-sessions'
 import type { FieldErrorCode } from '@shared/api/errors'
@@ -21,6 +20,8 @@ import { useAdminAuth } from '../auth/use-admin-auth'
 import { useAdminResource } from '../forms/use-admin-resource'
 import { useUnsavedChangesGuard } from '../forms/use-unsaved-changes-guard'
 import { SessionFields } from '../forms/SessionFields'
+import { AdminBand } from '../shell/AdminBand'
+import { cn } from '@/lib/utils'
 import { FormFeedback } from '../forms/FormFeedback'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { newSessionDraft, draftFromSession, applyClassDefaults, hasOverrides, loadDraft, saveDraft, clearDraft } from './session-draft'
@@ -112,10 +113,13 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
   } : availableOptions
   const validTime = isClubDate(draft.date) && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(draft.startTime)
   const end = validTime && /^\d+$/.test(draft.durationMinutes) && Number(draft.durationMinutes) <= 720 ? new Date(clubDateTimeToInstant(draft.date, draft.startTime).getTime() + Number(draft.durationMinutes) * 60000) : null
-  return <div ref={editor} className="page-gutter mx-auto flex max-w-[50rem] flex-col gap-6 overflow-x-clip py-6" aria-busy={pending}>
-    <Link to="/admin/sessions" aria-label={t({ id: 'Kembali ke sesi', en: 'Back to sessions' })} className="state-layer -ml-3 inline-flex min-h-12 w-fit max-w-full items-center gap-2 rounded-full px-3 text-label font-bold text-primary"><ArrowLeft aria-hidden="true" className="size-5 shrink-0" />{t({ id: 'Sesi', en: 'Sessions' })}</Link>
-    <h1 className="text-headline font-bold">{t(initial ? { id: 'Ubah sesi', en: 'Edit session' } : { id: 'Tambah sesi', en: 'Add session' })}</h1>
-    <div><p className="text-label text-on-surface-variant">{t({ id: 'Langkah {n} dari 4', en: 'Step {n} of 4' }, { n: draft.step })}</p><h2 ref={stepHeading} tabIndex={-1} className="scroll-mt-24 text-title font-bold">{t(stepNames[draft.step - 1])}</h2></div>
+  const steps = 4
+  return <>
+  <AdminBand title={t(initial ? { id: 'Ubah sesi', en: 'Edit session' } : { id: 'Tambah sesi', en: 'Add session' })} back={{ to: `/admin/sessions${draft.date ? `?date=${draft.date}` : ''}`, label: t({ id: 'Sesi', en: 'Sessions' }) }}>
+    <div className="flex gap-1.5" aria-hidden="true">{Array.from({ length: steps }, (_, index) => <span key={index} className={cn('h-1.5 flex-1 rounded-full', index < draft.step ? 'bg-accent' : 'bg-band-tile')} />)}</div>
+  </AdminBand>
+  <div ref={editor} className="page-gutter mx-auto flex max-w-[50rem] flex-col gap-6 overflow-x-clip py-5" aria-busy={pending}>
+    <div><p className="text-label text-on-surface-variant">{t({ id: 'Langkah {n} dari 4', en: 'Step {n} of 4' }, { n: draft.step })}</p><h2 ref={stepHeading} tabIndex={-1} className="scroll-mt-24 text-title font-bold focus:outline-none">{t(stepNames[draft.step - 1])}</h2></div>
     {!options.data && <StatusPanel tone={options.response ? 'error' : 'info'} title={t(options.response ? messages.loadError : messages.loading)} action={options.response ? { label: t(commonMessages.retry), onAction: options.retry } : undefined} />}
     {options.data && !complete && <StatusPanel tone="info" title={t(messages.missing)}><Button asChild><Link to="/admin/manage" onClick={() => { if (draft.mode === 'create') { try { saveDraft(sessionStorage, draft) } catch { /* Storage is optional. */ } guard.allowNavigation() } }}>{t(messages.manage)}</Link></Button><Button asChild><Link to="/admin/classes/new" onClick={() => { if (draft.mode === 'create') { try { saveDraft(sessionStorage, draft) } catch { /* Storage is optional. */ } guard.allowNavigation() } }}>{t({ id: 'Tambah kelas', en: 'Add class' })}</Link></Button></StatusPanel>}
     <m.div key={draft.step} initial={reduceMotion ? false : { opacity: 0, x: direction * 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: reduceMotion ? 0 : 0.2, ease: [0.2, 0, 0, 1] }} className="flex min-w-0 flex-col gap-6">
@@ -137,11 +141,14 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
       {draft.step === 4 && <><SessionReview draft={draft} options={availableOptions} /><div className="flex flex-wrap gap-2">{stepNames.slice(0, 3).map((name, index) => <Button key={name.en} variant="text" disabled={pending} onClick={() => goToStep(index + 1)}>{t(messages.edit)}: {t(name)}</Button>)}</div><StatusPanel tone="info" title={t(initial ? { id: 'Perubahan akan langsung terlihat pada jadwal publik.', en: 'Changes will appear immediately on the public schedule.' } : { id: 'Sesi akan langsung tampil di jadwal setelah disimpan.', en: 'The session appears on the schedule as soon as you save.' })} /></>}
     </m.div>
     <FormFeedback failure={failure} latest={latest && <SessionReview draft={draftFromSession(owner, latest)} options={conflictOptions} />} yours={<SessionReview draft={draft} options={availableOptions} />} onReplace={() => { if (latest) { setBaseline(latest); setDraft(draftFromSession(owner, latest)); setLatest(null); setFailure(null); setErrors({}) } }} />
-    <div data-session-actions className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-stretch gap-2 border-t border-outline-variant pt-4 sm:flex sm:justify-end">
+  </div>
+  <div className="sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
+    <div data-session-actions className="page-gutter mx-auto grid max-w-[50rem] grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-stretch gap-2 sm:flex sm:justify-end">
       {draft.step > 1 && <Button className="min-w-0 px-3" variant="text" disabled={pending} onClick={() => goToStep(draft.step - 1)}>{t(messages.cancel)}</Button>}
       {draft.step < 4 ? <Button className="col-start-2 min-w-0 px-3 sm:min-w-40" variant="filled" disabled={!complete || pending} onClick={() => { if (validate(draft.step)) goToStep(draft.step + 1) }}>{t({ id: 'Lanjut', en: 'Continue' })}</Button> : <Button className="min-w-0 px-3 sm:min-w-56" variant="filled" disabled={!complete || pending || Boolean(latest)} pendingLabel={pending ? t({ id: 'Menyimpan sesi...', en: 'Saving session...' }) : undefined} onClick={() => void save()}>{t(initial ? { id: 'Simpan perubahan sesi', en: 'Save session changes' } : { id: 'Simpan dan tampilkan sesi', en: 'Save and publish session' })}</Button>}
     </div>
-    {guard.dialog}<DiscardChangesDialog open={newClassId !== null} classChange onKeep={() => setNewClassId(null)} onDiscard={() => { if (newClassId) selectClass(newClassId) }} />
   </div>
+  {guard.dialog}<DiscardChangesDialog open={newClassId !== null} classChange onKeep={() => setNewClassId(null)} onDiscard={() => { if (newClassId) selectClass(newClassId) }} />
+  </>
 }
 export const Component = SessionEditorPage

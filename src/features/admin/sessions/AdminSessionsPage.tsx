@@ -1,24 +1,86 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
-import { AdminRecordList } from '@/components/admin/AdminRecordList'
 import { Button } from '@/components/ui/button'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateMedium } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { apiErrorMessages } from '@/i18n/api-error-messages'
-import { useAdminAuth } from '../auth/use-admin-auth'
+import { cn } from '@/lib/utils'
 import { DateStrip, TodayChip } from '@/features/public/schedule/DateStrip'
 import { computeStripWindow } from '@/features/public/schedule/date-strip-window'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
-import { SessionSummaryRow } from '@/features/public/schedule/SessionSummaryRow'
-import { useNow } from '@/features/public/schedule/use-now'
 import { publicScheduleWindow } from '@shared/schedule-window'
 import { clubToday, isClubDate } from '@shared/club-time'
-import { deriveAvailability } from '@shared/availability'
 import type { AdminSessionDetail, AdminSessionListResponse } from '@shared/api/admin-sessions'
 import type { AdminResult } from '@/lib/admin-api'
-import { sessionsMessages } from './sessions.messages'
+import { useAdminAuth } from '../auth/use-admin-auth'
+import { AdminBand } from '../shell/AdminBand'
+import { sessionsMessages as messages } from './sessions.messages'
+
+const UNPAID_FILL = 'repeating-linear-gradient(135deg, var(--color-band-tile) 0 3px, color-mix(in srgb, var(--color-band-tile) 32%, transparent) 3px 6px)'
+
+// One continuous bar however many slots a session has: booked (striped, nobody can pay in the app yet), empty
+// (grey), and a dark tick at the minimum so the admin sees at a glance whether the session will run.
+function FillBar({ used, max, min, label }: { used: number; max: number; min: number; label: string }) {
+  const share = (value: number) => `${Math.min(100, (value / Math.max(1, max)) * 100)}%`
+  return (
+    <div role="img" aria-label={label} className="relative h-2.5 rounded-full bg-surface-container-high">
+      <span className="absolute inset-y-0 left-0 rounded-full" style={{ width: share(used), background: UNPAID_FILL }} />
+      <span className="absolute -inset-y-1 w-0.5 -translate-x-1/2 rounded-full bg-on-surface" style={{ left: share(min) }} />
+    </div>
+  )
+}
+
+function Legend() {
+  const { t } = useI18n()
+  const swatch = 'size-2.5 rounded-[3px]'
+  return (
+    <ul aria-label={t(messages.legend)} className="flex flex-wrap gap-x-3.5 gap-y-1 text-label text-on-surface-variant">
+      <li className="flex items-center gap-1.5"><span aria-hidden="true" className={swatch} style={{ background: UNPAID_FILL }} />{t(messages.legendUnpaid)}</li>
+      <li className="flex items-center gap-1.5"><span aria-hidden="true" className={cn(swatch, 'bg-surface-container-high')} />{t(messages.legendEmpty)}</li>
+      <li className="flex items-center gap-1.5"><span aria-hidden="true" className="h-3.5 w-0.5 rounded-full bg-on-surface" />{t(messages.legendMin)}</li>
+    </ul>
+  )
+}
+
+function SessionCard({ row, saved }: { row: AdminSessionDetail; saved: boolean }) {
+  const { t } = useI18n()
+  const cancelled = row.status !== 'scheduled'
+  const used = Math.max(0, row.maxParticipants - row.remainingPlaces)
+  const short = row.minParticipants - used
+  const facts = [row.levelName, row.venueName, `${row.durationMinutes} mnt`].join(' · ')
+  return (
+    <article className="flex flex-col gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
+      {saved && <StatusPanel tone="success" title={t(messages.saved)} />}
+      <div className="flex items-center gap-3">
+        <span className={cn('shrink-0 rounded-xs px-2 py-1.5 text-title font-bold tabular-nums',
+          cancelled ? 'bg-surface-container-high text-on-surface-variant line-through' : 'bg-band-tile text-on-signboard')}>{row.startTime}</span>
+        <span className="flex min-w-0 flex-col leading-snug">
+          <span className="break-words font-bold">{row.className}</span>
+          <span className="break-words text-label text-on-surface-variant">{cancelled ? t(messages.cancelled) : facts}</span>
+        </span>
+      </div>
+      {!cancelled && <>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-label">
+            <span className="font-semibold">{t(messages.filled, { used, max: row.maxParticipants })}</span>
+            <span className={cn('font-semibold', short > 0 ? 'text-warning' : 'text-primary')}>
+              {short > 0 ? t(messages.minShort, { count: short, min: row.minParticipants }) : t(messages.minReached, { min: row.minParticipants })}
+            </span>
+          </div>
+          <FillBar used={used} max={row.maxParticipants} min={row.minParticipants}
+            label={t(messages.barLabel, { used, max: row.maxParticipants, min: row.minParticipants })} />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Button asChild variant="tonal"><Link to={`/admin/sessions/${row.id}/roster`} viewTransition>{t(messages.participants, { count: used })}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
+          <Button asChild variant="outlined"><Link to={`/admin/sessions/${row.id}/edit`} viewTransition>{t(messages.edit)}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
+        </div>
+      </>}
+      {cancelled && <Button asChild variant="text" className="-ml-3 self-start"><Link to={`/admin/sessions/${row.id}/edit`}>{t(messages.edit)}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>}
+    </article>
+  )
+}
 
 export function AdminSessionsPage() {
   const { get, state: auth } = useAdminAuth()
@@ -30,13 +92,16 @@ export function AdminSessionsPage() {
   const [result, setResult] = useState<{ date: string; response: AdminResult<AdminSessionListResponse> } | null>(null)
   const [attempt, setAttempt] = useState(0)
   const [stripStart, setStripStart] = useState<string | null>(null)
-  const now = useNow()
   const today = result?.response.kind === 'ok' ? result.response.data.today : clubToday()
   const selected = isClubDate(param) ? param : today
   const data = result?.date === selected && result.response.kind === 'ok' ? result.response.data : null
   const response = result?.date === selected ? result.response : null
   const bounds = data ?? { today, ...publicScheduleWindow(today) }
   const retry = () => { setResult(null); setAttempt(value => value + 1) }
+  const select = (date: string) => {
+    setStripStart(computeStripWindow({ selected: date, currentStart: stripStart, ...bounds })[0])
+    setParams({ date }, { preventScrollReset: true })
+  }
   useEffect(() => {
     if (auth.status !== 'signedIn') return
     const controller = new AbortController()
@@ -45,33 +110,37 @@ export function AdminSessionsPage() {
     })
     return () => controller.abort()
   }, [get, selected, attempt, auth.status])
-  const listState = !response ? 'loading' : response.kind === 'ok' ? 'ready' : response.kind === 'http' && response.status === 403 ? 'forbidden' : 'error'
 
-  return <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-4 py-4 lg:max-w-[72rem]">
-    <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-headline font-bold">{t(sessionsMessages.heading)}</h1><Button asChild variant="filled"><Link to={`/admin/sessions/new?date=${selected}`}>{t({ id: 'Tambah sesi', en: 'Add session' })}</Link></Button></div>
-    {/* The date strip is drawn for the court band; until the admin shell gets its band (admin slice) it sits on a blue panel. */}
-    <div className="rounded-lg bg-band px-4 pt-3 text-on-signboard [&_:focus-visible]:outline-white"><div className="flex justify-end"><TodayChip selected={selected} today={bounds.today} onSelect={date => setParams({ date }, { preventScrollReset: true })} /></div><DateStrip dates={computeStripWindow({ selected, currentStart: stripStart, ...bounds })} selected={selected} {...bounds} onSelect={date => {
-      setStripStart(computeStripWindow({ selected: date, currentStart: stripStart, ...bounds })[0])
-      setParams({ date }, { preventScrollReset: true })
-    }} /></div>
-    <h2 className="text-title font-bold">{formatClubDateMedium(selected, language)} <span className="text-label font-normal text-on-surface-variant">WIB</span></h2>
-    {data?.sessions.some(row => row.isSample) && <SampleDataNotice />}
-    {data?.truncated && <StatusPanel tone="info" title={t(sessionsMessages.truncated)} />}
-    <AdminRecordList state={listState} items={data?.sessions ?? []} keyFor={row => row.id}
-      loadingMessage={t(sessionsMessages.loading)} errorMessage={response?.kind === 'http' ? t(apiErrorMessages[response.code] ?? apiErrorMessages.INTERNAL) : t(sessionsMessages.error)} emptyMessage={t(sessionsMessages.empty)} onRetry={retry}
-      addAction={<><p>{t(sessionsMessages.emptyHint)}</p>{data?.nextDate && <Button onClick={() => setParams({ date: data.nextDate! })}>{t(sessionsMessages.next)}</Button>}</>}
-      renderItem={(row: AdminSessionDetail) => <div>
-        {savedId === row.id && <StatusPanel tone="success" title={t({ id: 'Sesi tersimpan dan tampil di jadwal.', en: 'Session saved and visible in the schedule.' })} />}
-        <SessionSummaryRow as="div" now={now} session={{
-          ...row, endsAt: new Date(new Date(row.startsAt).getTime() + row.durationMinutes * 60_000).toISOString(),
-          availability: deriveAvailability({ sessionStatus: row.status, maxParticipants: row.maxParticipants, remainingPlaces: row.remainingPlaces }),
-        }} />
-        <div className="ml-24 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 pb-4 sm:ml-28">
-          <p className="break-words text-label text-on-surface-variant">{t(sessionsMessages.coaches)}: {row.coaches.length ? row.coaches.map(coach => coach.name || t(commonMessages.unavailable)).join(', ') : t(commonMessages.unavailable)}</p>
-          <p className="text-label text-on-surface-variant">{t(sessionsMessages.limits, { min: row.minParticipants, max: row.maxParticipants })}</p>
-          <Button asChild variant="text" className="self-start"><Link to={`/admin/sessions/${row.id}/edit`}>{t({ id: 'Ubah sesi', en: 'Edit session' })}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
-          <Button asChild variant="text" className="self-start"><Link to={`/admin/sessions/${row.id}/roster`}>{t({ id: 'Lihat peserta', en: 'View participants' })}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
+  const sessions = data?.sessions ?? []
+  return <>
+    <AdminBand title={t(messages.heading)} action={<TodayChip selected={selected} today={bounds.today} onSelect={select} />}>
+      <DateStrip dates={computeStripWindow({ selected, currentStart: stripStart, ...bounds })} selected={selected} {...bounds} onSelect={select} />
+    </AdminBand>
+    <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:max-w-[72rem]">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-title font-bold">{formatClubDateMedium(selected, language)} <span className="text-label font-normal text-on-surface-variant">WIB</span></h2>
+        {sessions.some(row => row.status === 'scheduled') && <Legend />}
+      </div>
+      {sessions.some(row => row.isSample) && <SampleDataNotice />}
+      {data?.truncated && <StatusPanel tone="info" title={t(messages.truncated)} />}
+      {!response ? (
+        <div className="flex flex-col gap-3">
+          <p role="status" className="sr-only">{t(messages.loading)}</p>
+          {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-44 rounded-sm bg-surface-container" />)}
         </div>
-      </div>} />
-  </div>
+      ) : response.kind !== 'ok' ? (
+        <StatusPanel tone="error" title={response.kind === 'http' ? t(apiErrorMessages[response.code] ?? apiErrorMessages.INTERNAL) : t(messages.error)}
+          action={{ label: t(commonMessages.retry), onAction: retry }} />
+      ) : sessions.length === 0 ? (
+        <StatusPanel tone="info" title={t(messages.empty)}>
+          <p>{t(messages.emptyHint)}</p>
+          {data?.nextDate && <Button onClick={() => select(data.nextDate!)}>{t(messages.next)}</Button>}
+        </StatusPanel>
+      ) : (
+        <ul className="grid gap-3 lg:grid-cols-2">
+          {sessions.map(row => <li key={row.id}><SessionCard row={row} saved={savedId === row.id} /></li>)}
+        </ul>
+      )}
+    </div>
+  </>
 }

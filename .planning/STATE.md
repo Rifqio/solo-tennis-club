@@ -3,15 +3,15 @@ gsd_state_version: "1.0"
 current_phase: 2
 current_phase_name: Reserve Places and See Daily Rosters
 status: executing
-stopped_at: 02-03 and 02-04 implemented with the Courtside admin/member screens; manual acceptance pending, 02-05 next
+stopped_at: 02-05 admin-created bookings and customer linking implemented on branch gsd/02-05-admin-bookings; manual acceptance pending
 last_updated: "2026-10-10"
 last_activity: 2026-10-10
-last_activity_desc: 02-03 customer bookings + expiry worker and 02-04 incoming bookings implemented; 188 tests pass
+last_activity_desc: 02-05 shared admission, admin bookings, explicit linking with audit; 198 tests pass
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 16
-  completed_plans: 15
+  completed_plans: 16
   percent: 20
 ---
 
@@ -99,7 +99,8 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - [x] Implement 02-04 roster and incoming bookings (2026-10-10); see 02-04-SUMMARY.md.
 - [x] Build the approved Courtside canvas boards: club page, venue Maps links, wrong-code state, admin shell/sessions/roster/manage/classes (2026-10-10).
 - [ ] Complete user manual acceptance for 02-03 and 02-04 on a phone.
-- [ ] Implement 02-05 admin-created bookings and integrated development acceptance.
+- [x] Implement 02-05 admin-created bookings, explicit customer linking and audit (2026-10-10); see 02-05-SUMMARY.md. Browser spec authored, not run.
+- [ ] Complete user manual acceptance for 02-05 (02-05-MANUAL-CHECKS.md); migrate the live local DB after backup when merging.
 - [ ] Select/integrate real OTP delivery and verify AUTH-02 before Phase 2 release completion.
 - [ ] Before production launch, review real club content/logo/catalog, exclude samples and verify deployment/provisioning operations.
 
@@ -119,8 +120,8 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 ## Session Continuity
 
 Last session: 2026-10-10
-Stopped at: 02-04 implemented; 02-05 next
-Resume file: .planning/phases/02-reserve-places-and-see-daily-rosters/02-05-PLAN.md
+Stopped at: 02-05 implemented (branch gsd/02-05-admin-bookings); all Phase 2 source plans done, manual acceptance and real OTP delivery remain
+Resume file: .planning/phases/02-reserve-places-and-see-daily-rosters/02-05-MANUAL-CHECKS.md
 
 ## Manual acceptance update
 

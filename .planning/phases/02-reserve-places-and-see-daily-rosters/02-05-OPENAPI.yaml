@@ -1,0 +1,153 @@
+openapi: 3.1.0
+info:
+  title: Lafu admin-created bookings and customer linking API
+  version: 1.0.0
+  description: >
+    Admin only (lafu_admin cookie). Mutations need same origin, JSON and X-CSRF-Token. Responses are no-store.
+    Admission shares the customer reservation rules: capacity lock first, five-hour cutoff, session version,
+    whole group fits, original deadline five hours after admission.
+servers:
+  - url: /
+components:
+  schemas:
+    Id: { type: string, pattern: '^[a-z0-9]{1,64}$' }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code]
+          properties:
+            code: { type: string }
+            fields: { type: object, additionalProperties: { type: string } }
+            latest: {}
+    AdmittedBookingResponse:
+      type: object
+      required: [booking, replayed, serverNow]
+      properties:
+        replayed: { type: boolean }
+        serverNow: { type: string, format: date-time }
+        booking:
+          type: object
+          required: [id, sessionId, status, quantity, unitPriceIdr, totalPriceIdr, createdAt, originalDeadline, participants]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            sessionId: { $ref: '#/components/schemas/Id' }
+            status: { type: string }
+            quantity: { type: integer, minimum: 1 }
+            unitPriceIdr: { type: integer }
+            totalPriceIdr: { type: integer }
+            createdAt: { type: string, format: date-time }
+            originalDeadline: { type: string, format: date-time }
+            participants:
+              type: array
+              items: { type: object, properties: { id: { type: string }, position: { type: integer }, name: { type: string } } }
+    AdminBookingDetailResponse:
+      type: object
+      description: Same shape as GET /api/admin/bookings/{id}, which now includes version and linked.
+      properties:
+        serverNow: { type: string, format: date-time }
+        booking:
+          type: object
+          properties:
+            version: { type: integer }
+            customer: { type: ['object', 'null'], properties: { displayName: { type: string }, phone: { type: string }, verifiedAt: { type: string } } }
+            linked: { type: ['object', 'null'], properties: { at: { type: string, format: date-time }, by: { type: ['string', 'null'] } } }
+paths:
+  /api/admin/booking-options/{sessionId}:
+    get:
+      summary: Quote and session facts for the admin booking form
+      parameters:
+        - { in: path, name: sessionId, required: true, schema: { $ref: '#/components/schemas/Id' } }
+      responses:
+        '200':
+          description: The server rechecks everything at save time.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [sessionId, sessionVersion, unitPriceIdr, remainingPlaces, bookingClosesAt, serverNow, canReserve, session]
+                properties:
+                  sessionVersion: { type: integer }
+                  unitPriceIdr: { type: integer }
+                  remainingPlaces: { type: integer }
+                  bookingClosesAt: { type: string, format: date-time }
+                  canReserve: { type: boolean }
+                  session:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      className: { type: string }
+                      levelName: { type: string }
+                      venueName: { type: string }
+                      date: { type: string, description: WIB club date }
+                      startTime: { type: string }
+                      endTime: { type: string }
+                      startsAt: { type: string, format: date-time }
+                      cancelled: { type: boolean }
+        '401': { description: Not signed in, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '404': { description: Unknown session, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /api/admin/bookings:
+    post:
+      summary: Record a WhatsApp or desk booking (unowned, contact snapshot)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [sessionId, quantity, participantNames, expectedSessionVersion, createRequestId, bookerName, bookerPhone]
+              properties:
+                sessionId: { $ref: '#/components/schemas/Id' }
+                quantity: { type: integer, minimum: 1 }
+                participantNames: { type: array, minItems: 1, maxItems: 500, items: { type: string, minLength: 1, maxLength: 120 } }
+                expectedSessionVersion: { type: integer, minimum: 1 }
+                createRequestId: { type: string, format: uuid, description: Scoped to this admin; reuse it only to retry the same payload }
+                bookerName: { type: string, maxLength: 120 }
+                bookerPhone: { type: string, maxLength: 50, description: Normalized to E.164 (default country ID) before storage }
+      responses:
+        '201': { description: Booking admitted, content: { application/json: { schema: { $ref: '#/components/schemas/AdmittedBookingResponse' } } } }
+        '200': { description: Identical retry, replayed true, content: { application/json: { schema: { $ref: '#/components/schemas/AdmittedBookingResponse' } } } }
+        '400': { description: VALIDATION_FAILED with fields bookerName, bookerPhone (REQUIRED, INVALID_FORMAT) or participantNames, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: ORIGIN_REJECTED or CSRF_FAILED }
+        '404': { description: NOT_FOUND session }
+        '409': { description: IDEMPOTENCY_CONFLICT, CAPACITY_UNAVAILABLE, SESSION_CHANGED or BOOKING_CLOSED, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '503': { description: TEMPORARILY_UNAVAILABLE after bounded lock retries; nothing was reserved }
+  /api/admin/verified-customers:
+    get:
+      summary: Exact verified-phone match for explicit linking
+      parameters:
+        - { in: query, name: phone, required: true, schema: { type: string, maxLength: 50 } }
+      responses:
+        '200':
+          description: The active verified customer with exactly this normalized phone, or null.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer: { type: ['object', 'null'], properties: { id: { type: string }, displayName: { type: string }, phone: { type: string }, verifiedAt: { type: string, format: date-time } } }
+        '400': { description: VALIDATION_FAILED phone INVALID_FORMAT }
+  /api/admin/bookings/{id}/customer-link:
+    put:
+      summary: Give an unowned booking to the verified customer with the same phone
+      parameters:
+        - { in: path, name: id, required: true, schema: { $ref: '#/components/schemas/Id' } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [customerId, version]
+              properties:
+                customerId: { $ref: '#/components/schemas/Id' }
+                version: { type: integer, minimum: 1 }
+      responses:
+        '200': { description: Linked (or already linked to this customer). Only owner and version changed; an ownership event was recorded., content: { application/json: { schema: { $ref: '#/components/schemas/AdminBookingDetailResponse' } } } }
+        '403': { description: ORIGIN_REJECTED or CSRF_FAILED }
+        '404': { description: NOT_FOUND booking or customer }
+        '409': { description: STALE_VERSION or BOOKING_ALREADY_LINKED (latest detail in error.latest), or CUSTOMER_MISMATCH, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }

@@ -89,7 +89,7 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
       <div
         ref={stripRef}
         style={{ gridAutoColumns: `calc((100% - ${(visibleCells - 1) * GAP}px) / ${visibleCells})` }}
-        className="grid snap-x snap-mandatory grid-flow-col gap-2 overflow-x-auto pb-4 [scrollbar-width:none] lg:max-w-[44rem]"
+        className="grid snap-x snap-mandatory grid-flow-col gap-2 overflow-x-auto pb-4 [scrollbar-width:none] lg:pb-6"
       >
         {dates.map(date => {
           const isSelected = date === selected
@@ -103,7 +103,7 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
               aria-label={`${weekday} ${clubDayOfMonth(date)}, ${isToday ? t(scheduleMessages.today) + ', ' : ''}${formatClubDateLong(date, language)}`}
               onClick={() => onSelect(date)}
               className={cn(
-                'pressable relative flex h-18 snap-start flex-col items-center justify-center gap-1 rounded-xs bg-band-tile transition-colors duration-200',
+                'pressable relative flex h-18 snap-start flex-col lg:h-23 items-center justify-center gap-1 rounded-xs bg-band-tile transition-colors duration-200',
                 isSelected ? 'text-on-accent' : 'text-on-signboard',
                 isToday && !isSelected && 'ring-2 ring-inset ring-white',
               )}
@@ -116,7 +116,7 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
               )}
               <span className="state-layer absolute inset-0 rounded-xs" />
               <span className={cn('relative text-label leading-none', isSelected && 'font-semibold')}>{weekday}</span>
-              <span className="relative text-title font-bold leading-none tabular-nums">{clubDayOfMonth(date)}</span>
+              <span className="relative text-title font-bold leading-none tabular-nums lg:text-headline">{clubDayOfMonth(date)}</span>
             </button>
           )
         })}

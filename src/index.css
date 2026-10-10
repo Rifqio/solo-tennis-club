@@ -158,6 +158,11 @@
   --text-numeral--line-height: 1;
   --text-display: 2.5rem;
   --text-display--line-height: 1.05;
+  /* Desktop club page only (board D1): the poster headline and the uppercase section statements. */
+  --text-poster: clamp(3.5rem, 9.4vw, 9.25rem);
+  --text-poster--line-height: 0.9;
+  --text-statement: clamp(2.25rem, 4.4vw, 3.75rem);
+  --text-statement--line-height: 1.02;
   --font-weight-*: initial;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -192,6 +197,13 @@
     text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     background: var(--md-surface);
+  }
+  /* Wide desktops: the desktop boards are drawn at 1440px and should fill a bigger window the way they do on the
+     canvas, not sit condensed in the middle. Above 1440px the root size grows with the window, so type, spacing and
+     the rem-based containers scale together (21px at 1920px), capped at 150%. It never drops below the reader's own
+     browser text size. */
+  @media (min-width: 90rem) {
+    html { font-size: clamp(100%, 100vw / 90, 150%); }
   }
   body {
     margin: 0;
@@ -320,6 +332,25 @@
 .corner-notch {
   -webkit-mask: radial-gradient(circle at 100% 100%, transparent 2.75rem, #000 2.8rem);
   mask: radial-gradient(circle at 100% 100%, transparent 2.75rem, #000 2.8rem);
+}
+
+/* Desktop club hero: the photo tinted toward Deep Court so white type keeps its contrast across the whole frame. */
+.photo-tint-court {
+  background: rgba(0, 46, 110, 0.58);
+}
+
+/* Desktop club page motion (board D1). The headline rises line by line from behind a mask, the rest settles in once,
+   and later sections arrive as they scroll into view where the browser supports scroll timelines. */
+@keyframes club-rise { from { transform: translateY(108%); } }
+@keyframes club-in { from { opacity: 0; transform: translateY(16px); } }
+@keyframes club-settle { from { transform: scale(1.08); } }
+.club-mask { display: block; overflow: hidden; padding-bottom: 0.04em; }
+.club-mask > span { display: block; animation: club-rise 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.club-in { animation: club-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.club-wordmark { font-size: clamp(9rem, 27vw, 23.75rem); line-height: 0.8; letter-spacing: -0.02em; }
+.club-photo { animation: club-settle 1600ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@supports (animation-timeline: view()) {
+  .club-reveal { animation: club-in linear both; animation-timeline: view(); animation-range: entry 0% entry 45%; }
 }
 
 /* Club photo: ink rising from the bottom under the club name. */

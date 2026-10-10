@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 })
 test('E3 complete detail, all coaches, language switch and close restore the originating row', async ({ page }) => {
   await page.route('**/api/public/sessions/*', route => route.fulfill({ json: publicFixture() }))
-  await page.goto('/?date=' + fixtureDate)
+  await page.goto('/schedule?date=' + fixtureDate)
   const row = page.getByRole('button', { name: /Contoh kelas samplefixture/ })
   await row.click()
   const dialog = page.getByRole('dialog')
@@ -14,11 +14,11 @@ test('E3 complete detail, all coaches, language switch and close restore the ori
   for (const label of ['Harga per slot', 'Minimum peserta', 'Kapasitas maksimum', 'Lokasi']) await expect(dialog.getByText(label, { exact: true })).toBeVisible()
   await dialog.getByRole('button', { name: 'English', exact: true }).click()
   await expect(dialog.getByText('Price per slot', { exact: true })).toBeVisible()
-  await page.keyboard.press('Escape'); await expect(row).toBeFocused(); await expect(page).toHaveURL('/?date=' + fixtureDate)
+  await page.keyboard.press('Escape'); await expect(row).toBeFocused(); await expect(page).toHaveURL('/schedule?date=' + fixtureDate)
 })
 test('E3 loading keeps Close usable; error has Retry, vanished and partial facts are truthful', async ({ page }) => {
   await page.route('**/api/public/sessions/*', route => route.abort())
-  await page.goto('/?date=' + fixtureDate)
+  await page.goto('/schedule?date=' + fixtureDate)
   const row = page.getByRole('button', { name: /Contoh kelas samplefixture/ })
   await row.click(); await expect(page.getByRole('dialog').getByRole('alert')).toContainText('Detail sesi belum dapat dimuat')
   await page.unroute('**/api/public/sessions/*')
@@ -35,7 +35,7 @@ test('E3 loading keeps Close usable; error has Retry, vanished and partial facts
 for (const width of LAYOUT_WIDTHS) test(`E3 zero/one/many, long content, focus and overflow at ${width}`, async ({ page }) => {
   await page.setViewportSize({ width, height: 600 })
   await page.route('**/api/public/sessions/*', route => route.fulfill({ json: publicFixture('samplefixture', { coaches: Array.from({ length: 12 }, (_, index) => `Contoh ${index} ` + 'nama panjang '.repeat(8)) }) }))
-  await page.goto('/?date=' + fixtureDate); await page.getByRole('button', { name: /Contoh kelas samplefixture/ }).click()
+  await page.goto('/schedule?date=' + fixtureDate); await page.getByRole('button', { name: /Contoh kelas samplefixture/ }).click()
   const dialog = page.getByRole('dialog'); await expect(dialog.getByRole('listitem')).toHaveCount(12)
   await dialog.getByText('Kapasitas maksimum', { exact: true }).scrollIntoViewIfNeeded()
   await expect(dialog.getByRole('button', { name: 'Tutup detail sesi' })).toBeVisible()

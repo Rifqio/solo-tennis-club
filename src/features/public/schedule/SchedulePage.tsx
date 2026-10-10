@@ -27,6 +27,8 @@ import { CourtLines } from '@/components/brand/court-lines'
 import { ALL_LEVELS, AvailableOnlySwitch, LevelTabs, TimeChips } from './ScheduleFilters'
 import { isUnavailable } from './session-booking'
 import { useSessionPlayers } from './use-session-players'
+import { SessionDetailPanel } from './SessionDetailPanel'
+import { SessionRows } from './SessionRows'
 
 export function SchedulePage() {
   const { language, t } = useI18n()
@@ -53,6 +55,9 @@ export function SchedulePage() {
   // +1 when travelling to a later day, -1 to an earlier one: the list slides in from that side (shared axis).
   const [direction, setDirection] = useState(1)
   const isTouch = useMediaQuery('(pointer: coarse)')
+  // Desktop shows the day as rows with the chosen session in a side panel; phones and tablets keep cards and a sheet.
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  const [pickedId, setPickedId] = useState<string | null>(linkedSessionId)
 
   // Day changes must never collapse the page: on phones a sudden drop in page height makes the browser toolbar
   // show or hide, which resizes the viewport and makes the fixed navigation bar jump. The results area keeps its
@@ -96,6 +101,10 @@ export function SchedulePage() {
   const levelSessions = activeLevel === ALL_LEVELS ? daySessions : daySessions.filter(session => session.levelName === activeLevel)
   const visibleSessions = availableOnly ? levelSessions.filter(session => !isUnavailable(session, timings?.get(session.id))) : levelSessions
   const hiddenCount = levelSessions.length - visibleSessions.length
+  const openCount = daySessions.filter(session => !isUnavailable(session, timings?.get(session.id))).length
+  // The panel follows the member's choice; until they choose, it shows the first session still open, else the first.
+  const panelSession = visibleSessions.find(session => session.id === pickedId)
+    ?? visibleSessions.find(session => !isUnavailable(session, timings?.get(session.id))) ?? visibleSessions[0] ?? null
 
   const markSession = (id: string) => {
     setMarkedId(id)
@@ -113,8 +122,16 @@ export function SchedulePage() {
         </section>
       </CourtBand>
 
-      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-3 lg:max-w-[72rem]">
-        <h2 data-schedule-heading tabIndex={-1} className="sr-only">{selectedLabel}</h2>
+      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-3 lg:max-w-[72rem] lg:flex-row lg:items-start lg:gap-6 lg:pt-6">
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <div className="lg:flex lg:flex-col lg:gap-0.5">
+          <h2 data-schedule-heading tabIndex={-1} className="sr-only focus:outline-none lg:not-sr-only lg:text-headline lg:font-bold">{selectedLabel} <span className="text-label font-medium text-on-surface-variant">WIB</span></h2>
+          {isDesktop && schedule.status === 'ready' && sessionCount > 0 && (
+            <p className="text-label text-on-surface-variant">
+              {sessionCount === 1 ? t(scheduleMessages.sessionCountOne) : t(scheduleMessages.sessionCount, { count: sessionCount })} · {t(scheduleMessages.openCount, { count: openCount })}
+            </p>
+          )}
+        </div>
         {schedule.status === 'ready' && sessionCount > 0 && (
           <>
             <LevelTabs levels={levels} selected={activeLevel} onSelect={value => { setLevel(value); setMarkedId(null) }} />
@@ -122,7 +139,7 @@ export function SchedulePage() {
             <p role="status" className="sr-only">
               {selectedLabel}: {sessionCount === 1 ? t(scheduleMessages.sessionCountOne) : t(scheduleMessages.sessionCount, { count: sessionCount })}
             </p>
-            <TimeChips sessions={visibleSessions} selectedId={markedId} onSelect={markSession} />
+            {!isDesktop && <TimeChips sessions={visibleSessions} selectedId={markedId} onSelect={markSession} />}
           </>
         )}
 
@@ -190,6 +207,8 @@ export function SchedulePage() {
                     <p className="text-on-surface">{t(scheduleMessages.noMatch)}</p>
                     <Button variant="outlined" onClick={() => { setLevel(ALL_LEVELS); setAvailableOnly(false) }}>{t(scheduleMessages.showAll)}</Button>
                   </div>
+                ) : isDesktop ? (
+                  <SessionRows sessions={visibleSessions} timings={timings} selectedId={panelSession?.id ?? null} onSelect={id => { setPickedId(id); selectionHaptic() }} />
                 ) : (
                   <ScheduleList sessions={visibleSessions} timings={timings} now={now} markedId={markedId} players={players.status === 'ready' ? players.sessions : undefined} onOpen={(id, trigger) => detailSheet.current?.open(id, trigger, visibleSessions.find(session => session.id === id))} />
                 )}
@@ -199,7 +218,13 @@ export function SchedulePage() {
         </AnimatePresence>
         </div>
       </div>
-      <DetailSheetHost ref={detailSheet} initialId={linkedSessionId} knownPlayers={{ date: selected, state: players }} />
+      {isDesktop && panelSession && (
+        <div className="w-[24rem] shrink-0 xl:w-[28rem]">
+          <SessionDetailPanel id={panelSession.id} seed={panelSession} knownPlayers={{ date: selected, state: players }} />
+        </div>
+      )}
+      </div>
+      {!isDesktop && <DetailSheetHost ref={detailSheet} initialId={linkedSessionId} knownPlayers={{ date: selected, state: players }} />}
     </>
   )
 }

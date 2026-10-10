@@ -39,4 +39,5 @@ export const myBookingsMessages = {
   booked: { id: 'Dipesan', en: 'Booked' },
   changeNote: { id: 'Mau batal atau ganti jadwal? Chat admin dulu, fiturnya belum ada di aplikasi.', en: 'Want to cancel or reschedule? Chat the admin; the app cannot do that yet.' },
   missing: { id: 'Booking ini nggak ketemu.', en: 'This booking could not be found.' },
+  openDetail: { id: 'Buka halaman booking', en: 'Open the booking page' },
 }

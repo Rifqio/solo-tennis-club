@@ -24,7 +24,7 @@ export function Component() {
   const [params] = useSearchParams()
   const returnPath = safeCustomerReturnPath(params.get('returnTo'))
   const returnDate = new URL(returnPath, window.location.origin).searchParams.get('date')
-  const schedulePath = returnDate ? `/?date=${encodeURIComponent(returnDate)}` : '/'
+  const schedulePath = returnDate ? `/schedule?date=${encodeURIComponent(returnDate)}` : '/schedule'
   const access = useCustomerAccess()
   const { state, pending } = access
   const [phone, setPhone] = useState('')

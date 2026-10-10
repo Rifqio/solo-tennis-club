@@ -56,7 +56,7 @@ export function BookSheet({ open, onClose }: { open: boolean; onClose: () => voi
         <div role="status" className="flex flex-col items-start gap-3">
           <p className="text-title font-semibold text-on-surface">{t(publicMessages.bookSheetEmpty)}</p>
           <p className="text-on-surface-variant">{t(publicMessages.bookSheetEmptyBody)}</p>
-          <Button asChild variant="outlined"><Link to="/" onClick={onClose}>{t(publicMessages.seeSchedule)}</Link></Button>
+          <Button asChild variant="outlined"><Link to="/schedule" onClick={onClose}>{t(publicMessages.seeSchedule)}</Link></Button>
         </div>
       ) : (
         <>

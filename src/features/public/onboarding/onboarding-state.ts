@@ -4,10 +4,18 @@ export const ONBOARDED_KEY = 'lafu.onboarded'
 // skipped, so the team can review it. Set back to false before release (DESIGN.md: first visit only).
 export const ONBOARDING_ALWAYS = true
 
+// The swipe intro is a phone and tablet flow. Desktop opens straight on the schedule (the desktop layouts start here).
+export const DESKTOP_QUERY = '(min-width: 64rem)'
+
+function isDesktop() {
+  try { return window.matchMedia?.(DESKTOP_QUERY).matches === true } catch { return false }
+}
+
 // Shown when the visit starts on the plain schedule. A deep link (a date, a session, booking, sign-in, the club page)
 // means the visitor already knows where they are going, so it is never interrupted.
 export function shouldShowOnboarding(pathname: string, search: string, always = ONBOARDING_ALWAYS) {
   if (pathname !== '/' || search !== '') return false
+  if (isDesktop()) return false
   if (always) return true
   try { return window.localStorage.getItem(ONBOARDED_KEY) === null } catch { return false }
 }

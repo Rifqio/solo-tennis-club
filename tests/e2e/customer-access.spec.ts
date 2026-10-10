@@ -58,11 +58,11 @@ test('reload resumes a challenge, verification stays explicit and return intent 
     checks++
     await route.fulfill({ json: { next: 'complete', session: customerSession } })
   })
-  await page.goto('/customer/sign-in?returnTo=' + encodeURIComponent('/club'))
+  await page.goto('/customer/sign-in?returnTo=' + encodeURIComponent('/'))
   await expect(page.getByRole('textbox', { name: 'Kode enam digit' })).toHaveValue('')
   expect(checks).toBe(0)
   await page.getByRole('textbox', { name: 'Kode enam digit' }).fill('012345')
   await page.getByRole('button', { name: 'Verifikasi', exact: true }).click()
-  await expect(page).toHaveURL(/\/club$/)
+  await expect(page).toHaveURL(/:\d+\/$/)
   expect(checks).toBe(1)
 })

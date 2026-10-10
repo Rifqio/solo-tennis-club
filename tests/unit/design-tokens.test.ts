@@ -22,7 +22,7 @@ function offenders(pattern: RegExp, scope = code) {
 }
 
 describe('design token guard', () => {
-  it('uses only the six text roles (label, body, title, headline, numeral, display)', () => {
+  it('uses only the design text roles (label, body, title, headline, numeral, display; poster and statement on desktop Klub)', () => {
     expect(offenders(/\btext-(?:xs|sm|base|lg|[2-9]?xl|heading)\b|\btext-\[\d/g)).toEqual([])
   })
 

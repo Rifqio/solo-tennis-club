@@ -9,12 +9,12 @@ for (const language of languages) {
     test(`public pages reflow at ${width}px in ${language}`, async ({ page }) => {
       await page.addInitScript(value => window.localStorage.setItem('lafu.language', value), language)
       await page.setViewportSize({ width, height: 800 })
-      for (const path of ['/', '/club']) {
+      for (const path of ['/schedule', '/']) {
         await page.goto(path)
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
         await expectNoHorizontalScroll(page)
         await expectTouchTargets(page)
-        await page.screenshot({ path: `test-results/antislop-01-03/${language}-${width}${path === '/' ? '-schedule' : '-club'}.png`, fullPage: true })
+        await page.screenshot({ path: `test-results/antislop-01-03/${language}-${width}${path === '/' ? '-home' : '-schedule'}.png`, fullPage: true })
       }
     })
   }
@@ -22,16 +22,16 @@ for (const language of languages) {
 
 test('club page survives 200% text zoom at 320px', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 })
-  await page.goto('/club')
+  await page.goto('/')
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%' })
   await expectNoHorizontalScroll(page)
-  await page.goto('/')
+  await page.goto('/schedule')
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%' })
   await expectNoHorizontalScroll(page)
 })
 
 test('keyboard focus is visible on every header control', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/schedule')
   for (let step = 0; step < 4; step++) {
     await page.keyboard.press('Tab')
     const outline = await page.evaluate(() => {
@@ -52,7 +52,7 @@ test('schedule load failure names the problem and retries', async ({ page }) => 
     if (requests === 1) await route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: { code: 'INTERNAL' } }) })
     else await route.continue()
   })
-  await page.goto('/')
+  await page.goto('/schedule')
   const alert = page.getByRole('alert')
   await expect(alert).toContainText('Jadwal belum dapat dimuat. Coba lagi.')
   await alert.getByRole('button', { name: 'Coba lagi' }).click()
@@ -64,7 +64,7 @@ test('schedule load failure names the problem and retries', async ({ page }) => 
 // zoomed out and the fixed navigation bar jumped down and back up.
 test('changing day never widens the page or moves the navigation bar', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/')
+  await page.goto('/schedule')
   const sample = () => page.evaluate(() => new Promise<{ widest: number; navTops: number[] }>(done => {
     const nav = document.querySelector('nav[aria-label]')!
     let widest = 0

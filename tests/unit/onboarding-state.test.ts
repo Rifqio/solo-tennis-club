@@ -33,3 +33,9 @@ test('testing mode shows it on every plain schedule load, even after finishing',
   stubStorage({ [ONBOARDED_KEY]: '1' })
   expect(shouldShowOnboarding('/', '', true)).toBe(true)
 })
+
+test('never shows on desktop widths, even in testing mode', () => {
+  vi.stubGlobal('window', { localStorage: { getItem: () => null }, matchMedia: (query: string) => ({ matches: query === '(min-width: 64rem)' }) })
+  expect(shouldShowOnboarding('/', '', true)).toBe(false)
+  expect(shouldShowOnboarding('/', '', false)).toBe(false)
+})

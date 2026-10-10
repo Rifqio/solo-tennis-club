@@ -33,7 +33,7 @@ test('guided session publish: editable defaults, back/continue, review all coach
   const listResponse = await request.get('/api/admin/sessions?date=' + date)
   const list = await listResponse.json(); expect(list.sessions.filter((row: { id: string }) => row.id === (saved as unknown as AdminSessionDetail).id)).toHaveLength(1)
   const visitor = await browser.newContext(); const publicPage = await visitor.newPage()
-  await publicPage.goto('/?date=' + date); await publicPage.getByRole('button', { name: new RegExp('06:30.*' + options.classes[0].name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')) }).click()
+  await publicPage.goto('/schedule?date=' + date); await publicPage.getByRole('button', { name: new RegExp('06:30.*' + options.classes[0].name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')) }).click()
   await expect(publicPage.getByRole('dialog')).toContainText('175.000'); for (const coach of options.coaches.slice(0,2)) await expect(publicPage.getByRole('dialog')).toContainText(coach.name)
   await visitor.close(); void auth
 })

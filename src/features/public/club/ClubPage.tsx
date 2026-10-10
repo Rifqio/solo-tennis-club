@@ -7,10 +7,12 @@ import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
 import { getJson } from '@/lib/api'
+import { useMediaQuery } from '@/lib/use-media-query'
 import type { ApiResult } from '@/lib/api'
 import { venueMapsHref } from '@shared/maps'
 import type { PublicVenuesResponse } from '@shared/api/public'
 import { SampleDataNotice } from '../schedule/SampleDataNotice'
+import { ClubHomeDesktop } from './ClubHomeDesktop'
 import { clubContent } from './club-content'
 import { clubMessages as messages } from './club.messages'
 
@@ -32,12 +34,14 @@ function useVenues() {
 export function ClubPage() {
   const { t } = useI18n()
   const { result, retry } = useVenues()
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  if (isDesktop) return <ClubHomeDesktop venues={{ result, retry }} />
   const venues = result?.kind === 'ok' ? result.data.venues : []
   const whatsappHref = clubContent.whatsapp ? `https://wa.me/${clubContent.whatsapp}` : null
   return (
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-5 pb-6 pt-[env(safe-area-inset-top)]">
       <header className="flex h-14 items-center justify-between gap-3">
-        <p aria-label={clubContent.name} className="text-primary"><Wordmark name={clubContent.shortName} /></p>
+        <p aria-label={clubContent.name} className="text-primary"><Wordmark name={clubContent.shortName} seamClassName="stroke-on-signboard" /></p>
         <LanguageMenu className="-mr-3 text-on-surface" />
       </header>
 
@@ -47,11 +51,11 @@ export function ClubPage() {
           <div aria-hidden="true" className="photo-scrim-bottom absolute inset-0" />
           <span className="absolute left-4 top-4 rounded-full bg-accent px-3 py-1 text-label font-semibold text-on-accent">{t(messages.kind)}</span>
           <div className="absolute bottom-5 left-5 right-24 text-white">
-            <h1 id="club-name" className="text-headline font-bold leading-tight sm:text-display">{clubContent.name}</h1>
+            <h1 id="club-name" tabIndex={-1} className="focus:outline-none text-headline font-bold leading-tight sm:text-display">{clubContent.name}</h1>
             <p className="mt-1">{clubContent.city}</p>
           </div>
         </div>
-        <Link to="/" viewTransition aria-label={t(messages.seeSchedule)}
+        <Link to="/schedule" viewTransition aria-label={t(messages.seeSchedule)}
           className="pressable absolute bottom-0 right-0 flex size-20 items-center justify-center rounded-full bg-accent text-on-accent outline-offset-4">
           <ArrowUpRight aria-hidden="true" className="size-8" strokeWidth={2.25} />
         </Link>

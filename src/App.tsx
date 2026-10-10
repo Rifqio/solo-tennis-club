@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider, useLocation } from 'react-router-dom'
 import { ClubPage } from './features/public/club/ClubPage'
 import { PublicLayout } from './features/public/layout/PublicLayout'
 import { SchedulePage } from './features/public/schedule/SchedulePage'
@@ -35,8 +35,9 @@ const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     children: [
-      { index: true, element: <SchedulePage /> },
-      { path: '/club', element: <ClubPage /> },
+      { index: true, element: <HomeRoute /> },
+      { path: '/schedule', element: <SchedulePage /> },
+      { path: '/club', element: <Navigate to="/" replace /> },
       { path: '/customer/sign-in', lazy: () => import('./features/customer/auth/CustomerAccessPage') },
       { path: '/book/:sessionId', lazy: () => import('./features/customer/booking/BookingPage') },
       { path: '/bookings', lazy: () => import('./features/customer/my-bookings/MyBookingsPage') },
@@ -44,5 +45,13 @@ const router = createBrowserRouter([
     ],
   },
 ])
+
+// The club page is the home page. Schedule links from before the move (/?date=…&session=…) land on /schedule unchanged.
+function HomeRoute() {
+  const { search } = useLocation()
+  const params = new URLSearchParams(search)
+  if (params.has('date') || params.has('session')) return <Navigate to={`/schedule${search}`} replace />
+  return <ClubPage />
+}
 
 export default function App() { return <RouterProvider router={router} /> }

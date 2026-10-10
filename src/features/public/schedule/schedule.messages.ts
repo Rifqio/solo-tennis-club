@@ -7,6 +7,7 @@ export const scheduleMessages = {
   chooseDate: { id: 'Pilih tanggal', en: 'Choose date' },
   sessionCount: { id: '{count} sesi', en: '{count} sessions' },
   sessionCountOne: { id: '1 sesi', en: '1 session' },
+  openCount: { id: '{count} masih bisa dipesan', en: '{count} still open to book' },
   loading: { id: 'Memuat jadwal...', en: 'Loading schedule...' },
   loadingFor: { id: 'Memuat jadwal {date}...', en: 'Loading the schedule for {date}...' },
   error: { id: 'Jadwal belum dapat dimuat. Coba lagi.', en: 'The schedule could not be loaded. Try again.' },

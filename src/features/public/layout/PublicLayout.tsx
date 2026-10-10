@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { markOnboarded, shouldShowOnboarding } from '../onboarding/onboarding-state'
 import { BookSheet } from './BookSheet'
 import { Dock } from './Dock'
@@ -18,11 +19,15 @@ export function PublicLayout() {
   // takes the bottom of the screen, so the dock steps aside until the task is done (P2-11).
   const focusedTask = location.pathname.startsWith('/book/')
     || (location.pathname === '/customer/sign-in' && new URLSearchParams(location.search).has('returnTo'))
+  // The desktop home page is the club's front page: it carries its own top nav instead of the app rail.
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  const frontPage = isDesktop && location.pathname === '/'
+  const bare = focusedTask || frontPage
   const finishOnboarding = useCallback(() => {
     markOnboarded()
     setOnboarding(false)
     window.scrollTo(0, 0)
-    requestAnimationFrame(() => document.querySelector<HTMLElement>('[data-schedule-heading]')?.focus({ preventScroll: true }))
+    requestAnimationFrame(() => document.querySelector<HTMLElement>('main h1')?.focus({ preventScroll: true }))
   }, [])
 
   return (
@@ -32,10 +37,10 @@ export function PublicLayout() {
         {/* Horizontal motion (day slides, swipe) must never widen the page: on phones a wider page makes the browser
             zoom out, which resizes the viewport and moves the fixed dock. clip, unlike hidden, adds no scroll container.
             Bottom padding reserves the dock, the book button's rise above it, and the safe area. */}
-        <main className={focusedTask ? 'overflow-x-clip' : 'overflow-x-clip pb-[calc(7rem+env(safe-area-inset-bottom))] sm:pb-8 sm:pl-20'}>
+        <main className={bare ? 'overflow-x-clip' : 'overflow-x-clip pb-[calc(7rem+env(safe-area-inset-bottom))] sm:pb-8 sm:pl-20'}>
           <Outlet />
         </main>
-        {!focusedTask && <Dock onBook={() => setBookOpen(true)} />}
+        {!bare && <Dock onBook={() => setBookOpen(true)} />}
       </div>
       <BookSheet open={bookOpen} onClose={() => setBookOpen(false)} />
       {onboarding && (

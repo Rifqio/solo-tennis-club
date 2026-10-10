@@ -12,8 +12,8 @@ import { publicMessages } from './public.messages'
 interface DockDestination { to: string; end: boolean; label: Message; Icon: LucideIcon; className?: string }
 
 const leading: DockDestination[] = [
-  { to: '/', end: true, label: publicMessages.schedule, Icon: CalendarDays },
-  { to: '/club', end: false, label: publicMessages.club, Icon: Info },
+  { to: '/schedule', end: false, label: publicMessages.schedule, Icon: CalendarDays },
+  { to: '/', end: true, label: publicMessages.club, Icon: Info },
 ]
 const trailing: DockDestination[] = [
   { to: '/bookings', end: false, label: publicMessages.bookings, Icon: Ticket },

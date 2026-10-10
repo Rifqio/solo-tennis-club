@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils'
 import type { PublicSessionDetail } from '@shared/api/public'
 import { normalizeCustomerName } from '@shared/customer-rules'
 import { CustomerApiError, customerRequest } from '@/lib/customer-api'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { useNow } from '@/features/public/schedule/use-now'
 import { useCustomerAccess } from '../auth/use-customer-access'
 import { BookedArt } from './BookedArt'
@@ -37,6 +38,8 @@ const messages = {
     safe: '{count} slot kamu aman sampai batas bayar.', timeLeft: 'Sisa waktu bayar {h} jam {m} menit', hours: 'jam', minutes: 'menit',
     payBy: 'Bayar sebelum', payTitle: 'Cara bayar (QRIS atau transfer)', payBody: 'Info pembayaran akan muncul di sini. Sementara itu, hubungi admin klub.',
     seeBooking: 'Lihat booking', backToSchedule: 'Kembali ke jadwal', back: 'Kembali', backToScheduleLabel: 'Kembali ke jadwal',
+    people: 'orang', quickPick: 'Pilih cepat', summary: 'Ringkasan', changeSession: 'Ganti sesi', priceTimes: '{price} × {count} orang',
+    seatsLabel: '{taken} udah diambil, {mine} buat kamu, {open} masih kosong, dari {max} slot', taken: '{count} udah diambil', mine: '{count} buat kamu', open: '{count} masih kosong',
   },
   en: {
     title: 'Book slots', names: "Who's playing?", review: 'Check it over', success: 'Booked!',
@@ -52,6 +55,8 @@ const messages = {
     safe: 'Your {count} slots are held until the payment deadline.', timeLeft: '{h} hours {m} minutes left to pay', hours: 'hours', minutes: 'min',
     payBy: 'Pay by', payTitle: 'How to pay (QRIS or transfer)', payBody: 'Payment details will appear here. For now, contact the club admin.',
     seeBooking: 'See booking', backToSchedule: 'Back to schedule', back: 'Back', backToScheduleLabel: 'Back to schedule',
+    people: 'people', quickPick: 'Quick pick', summary: 'Summary', changeSession: 'Change session', priceTimes: '{price} × {count} people',
+    seatsLabel: '{taken} taken, {mine} for you, {open} still open, of {max} places', taken: '{count} taken', mine: '{count} for you', open: '{count} still open',
   },
 }
 
@@ -67,22 +72,23 @@ function TaskBand({ title, step, steps, stepLabel, backTo, onBack, backLabel, he
 }) {
   const backClass = 'state-layer pressable flex size-12 shrink-0 items-center justify-center rounded-full bg-band-tile'
   return (
-    <header className="rounded-b-lg bg-band pb-4 pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white">
-      <div className="page-gutter mx-auto flex w-full max-w-3xl flex-col gap-4 pt-4">
+    <header className="rounded-b-lg bg-band pb-4 pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white lg:mx-auto lg:mt-5 lg:w-[min(calc(100%-64px),calc(72rem-64px))] lg:rounded-lg lg:py-4">
+      {/* Desktop: one compact row, back and title on the left, the three steps on the right. */}
+      <div className="page-gutter mx-auto flex w-full max-w-3xl flex-col gap-4 pt-4 lg:max-w-none lg:flex-row lg:items-center lg:justify-between lg:px-5 lg:pt-0">
         <div className="flex items-center gap-3">
           {onBack
             ? <button type="button" onClick={onBack} aria-label={backLabel} className={backClass}><ChevronLeft aria-hidden="true" className="size-6" /></button>
-            : <Link to={backTo ?? '/'} aria-label={backLabel} className={backClass}><ChevronLeft aria-hidden="true" className="size-6" /></Link>}
+            : <Link to={backTo ?? '/schedule'} aria-label={backLabel} className={backClass}><ChevronLeft aria-hidden="true" className="size-6" /></Link>}
           <h1 ref={heading} tabIndex={-1} className="min-w-0 text-headline font-bold focus:outline-none">{title}</h1>
         </div>
-        <ol aria-label={stepLabel} className="grid grid-cols-3 gap-1.5">
+        <ol aria-label={stepLabel} className="grid grid-cols-3 gap-1.5 lg:flex">
           {steps.map((label, index) => {
             const position = index + 1
             const current = position === step
             const done = position < step
             return (
               <li key={label} aria-current={current ? 'step' : undefined}
-                className={cn('flex h-9 items-center justify-center gap-1 rounded-xs text-label transition-colors duration-200', current ? 'bg-accent font-semibold text-on-accent' : 'bg-band-tile')}>
+                className={cn('flex h-9 items-center justify-center gap-1 rounded-xs text-label transition-colors duration-200 lg:h-12 lg:rounded-full lg:px-5', current ? 'bg-accent font-semibold text-on-accent' : 'bg-band-tile')}>
                 {done && <Check aria-hidden="true" className="size-4" strokeWidth={2.5} />}
                 {label}
               </li>
@@ -121,6 +127,41 @@ function SessionSummary({ session, language }: { session: PublicSessionDetail; l
   )
 }
 
+// Desktop step 1: one tap to a common group size, up to the places left.
+function QuickPick({ quantity, maximum, label, onPick }: { quantity: number; maximum: number; label: string; onPick: (value: number) => void }) {
+  const choices = [1, 2, 3, 4, 5].filter(value => value <= maximum)
+  if (choices.length < 2) return null
+  return (
+    <div role="group" aria-label={label} className="flex gap-2">
+      {choices.map(value => (
+        <button key={value} type="button" aria-pressed={value === quantity} onClick={() => onPick(value)}
+          className={cn('state-layer pressable size-12 rounded-full text-title font-bold tabular-nums', value === quantity ? 'bg-primary text-on-primary' : 'border border-outline-variant text-on-surface')}>{value}</button>
+      ))}
+    </div>
+  )
+}
+
+// Desktop step 1: the session's places drawn as seats (taken, yours, still open), so the count has a picture.
+function Seats({ max, remaining, mine, text }: { max: number; remaining: number; mine: number; text: typeof messages.id }) {
+  if (!Number.isSafeInteger(max) || max < 1 || max > 24) return null
+  const taken = Math.max(0, max - remaining)
+  const open = Math.max(0, remaining - mine)
+  return (
+    <div className="flex w-full max-w-[32rem] flex-col items-center gap-3 border-t border-outline-variant pt-5">
+      <div role="img" aria-label={fill(text.seatsLabel, { taken, mine, open, max })} className="flex flex-wrap justify-center gap-2">
+        {Array.from({ length: max }, (_, index) => (
+          <span key={index} className={cn('h-10 w-8 rounded-xs transition-colors duration-200', index < taken ? 'bg-outline-variant' : index < taken + mine ? 'bg-primary' : 'border-2 border-primary/30')} />
+        ))}
+      </div>
+      <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-label text-on-surface-variant">
+        <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-3 rounded-[3px] bg-outline-variant" />{fill(text.taken, { count: taken })}</li>
+        <li className="flex items-center gap-1.5 font-semibold text-on-surface"><span aria-hidden="true" className="size-3 rounded-[3px] bg-primary" />{fill(text.mine, { count: mine })}</li>
+        <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-3 rounded-[3px] border-2 border-primary/30" />{fill(text.open, { count: open })}</li>
+      </ul>
+    </div>
+  )
+}
+
 export function Component() {
   const { sessionId = '' } = useParams()
   const [query, setQuery] = useSearchParams()
@@ -131,6 +172,7 @@ export function Component() {
   const text = messages[language]
   const reduceMotion = useReducedMotion()
   const now = useNow(30_000)
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
   const [session, setSession] = useState<PublicSessionDetail | null>(null)
   const [options, setOptions] = useState<Options | null>(null)
   const [loadError, setLoadError] = useState(false)
@@ -144,7 +186,7 @@ export function Component() {
   const [requestId, setRequestId] = useState(() => crypto.randomUUID())
   const heading = useRef<HTMLHeadingElement>(null)
   const returnTo = `/book/${encodeURIComponent(sessionId)}?${new URLSearchParams({ ...(query.get('date') ? { date: query.get('date')! } : {}), quantity: String(quantity) })}`
-  const schedulePath = query.get('date') ? `/?date=${encodeURIComponent(query.get('date')!)}` : '/'
+  const schedulePath = query.get('date') ? `/schedule?date=${encodeURIComponent(query.get('date')!)}` : '/schedule'
 
   useEffect(() => {
     const controller = new AbortController()
@@ -284,7 +326,8 @@ export function Component() {
     )
   }
 
-  const title = step === 1 ? text.title : step === 2 ? text.names : text.review
+  // Desktop keeps "Pesan slot" in the band; the step's question heads its card instead.
+  const title = step === 1 || isDesktop ? text.title : step === 2 ? text.names : text.review
   const band = <TaskBand title={title} step={step} steps={text.steps} stepLabel={fill(text.stepLabel, { step })} heading={heading} backLabel={step === 1 ? text.backToScheduleLabel : text.back}
     backTo={step === 1 ? schedulePath : undefined} onBack={step === 1 ? undefined : () => setStep(step - 1)} />
 
@@ -303,29 +346,42 @@ export function Component() {
 
   const canContinue = Boolean(currentOptions?.canReserve) && quantity <= (currentOptions?.remainingPlaces ?? 0)
   const amount = formatIdr(total, language)
+  const action = step === 1 ? <Button variant="filled" className="px-8 lg:min-h-14 lg:w-full" disabled={!canContinue} onClick={startNames}>{activeSession ? text.continue : text.signIn}</Button>
+    : step === 2 ? <Button variant="filled" className="px-8 lg:min-h-14 lg:w-full" onClick={reviewNames} disabled={names.length !== quantity || names.some(name => !normalizeCustomerName(name))}>{text.continue}</Button>
+    : <Button variant="filled" className="px-5 lg:min-h-14 lg:w-full" disabled={pending || !options?.canReserve || !options} pendingLabel={pending ? text.working : undefined} onClick={() => void confirm()}>{text.confirm}</Button>
+  const unitPrice = currentOptions?.unitPriceIdr ?? session.priceIdr
+  const remaining = currentOptions?.remainingPlaces ?? session.remainingPlaces
 
   return (
     <div className="flex min-h-dvh flex-col">
       {band}
-      <m.div key={step} {...stepMotion} className="page-gutter mx-auto flex w-full max-w-3xl min-w-0 flex-col gap-4 pb-6 pt-4">
+      {/* Desktop: the step in a card beside the summary card, tops and bottoms aligned. */}
+      <div className="page-gutter mx-auto flex w-full max-w-3xl min-w-0 flex-col lg:max-w-[72rem] lg:flex-row lg:items-stretch lg:gap-5 lg:pb-12 lg:pt-5">
+      <m.div key={step} {...stepMotion} className="flex min-w-0 flex-1 flex-col gap-4 pb-6 pt-4 lg:rounded-lg lg:bg-surface-container-lowest lg:p-8">
         {step === 1 && <>
-          <SessionSummary session={session} language={language} />
-          <section aria-labelledby="how-many" className="flex flex-col items-center gap-3.5 rounded-sm bg-surface-container-lowest px-4 py-5">
-            <h2 id="how-many" className="text-title font-semibold">{text.howMany}</h2>
+          {!isDesktop && <SessionSummary session={session} language={language} />}
+          <section aria-labelledby="how-many" className="flex flex-col items-center gap-3.5 rounded-sm bg-surface-container-lowest px-4 py-5 lg:flex-1 lg:justify-center lg:gap-6 lg:p-0">
+            <h2 id="how-many" className="text-title font-semibold lg:text-headline lg:font-bold">{text.howMany}</h2>
             <div className="flex items-center gap-6">
               <button type="button" aria-label={text.fewer} disabled={quantity <= 1} onClick={() => changeQuantity(quantity - 1)}
                 className="state-layer pressable flex size-14 items-center justify-center rounded-sm border border-outline text-on-surface disabled:opacity-40">
                 <Minus aria-hidden="true" className="size-6" strokeWidth={2.5} />
               </button>
-              <output aria-live="polite" className="min-w-16 text-center text-display font-bold tabular-nums">{quantity}</output>
+              <span className="flex min-w-16 flex-col items-center lg:min-w-30">
+                <output aria-live="polite" className="text-center text-display font-bold tabular-nums lg:text-poster">{quantity}</output>
+                {isDesktop && <span className="font-semibold text-on-surface-variant">{text.people}</span>}
+              </span>
               <button type="button" aria-label={text.more} disabled={quantity >= maximum} onClick={() => changeQuantity(quantity + 1)}
                 className="state-layer pressable flex size-14 items-center justify-center rounded-sm bg-primary text-on-primary disabled:opacity-40">
                 <Plus aria-hidden="true" className="size-6" strokeWidth={2.5} />
               </button>
             </div>
-            <p className="text-label font-semibold text-primary">{fill(text.left, { count: currentOptions?.remainingPlaces ?? session.remainingPlaces })}</p>
+            {isDesktop ? <>
+              <QuickPick quantity={quantity} maximum={maximum} label={text.quickPick} onPick={changeQuantity} />
+              <Seats max={session.maxParticipants} remaining={remaining} mine={quantity} text={text} />
+            </> : <p className="text-label font-semibold text-primary">{fill(text.left, { count: remaining })}</p>}
           </section>
-          <dl className="rounded-sm bg-surface-container-lowest px-4">
+          <dl className="rounded-sm bg-surface-container-lowest px-4 lg:hidden">
             <div className="flex justify-between gap-3 border-b border-outline-variant py-2.5"><dt className="text-on-surface-variant">{text.pricePerSlot}</dt><dd className="tabular-nums">{formatIdr(currentOptions?.unitPriceIdr ?? session.priceIdr, language)}</dd></div>
             <div className="flex justify-between gap-3 py-2.5"><dt className="text-on-surface-variant">{fill(text.slots, { count: quantity })}</dt><dd className="font-semibold tabular-nums">{amount}</dd></div>
           </dl>
@@ -334,6 +390,7 @@ export function Component() {
         </>}
 
         {step === 2 && <>
+          {isDesktop && <h2 className="text-headline font-bold">{text.names}</h2>}
           <p className="text-on-surface-variant">{text.nameHint}</p>
           <div className="grid gap-4 sm:grid-cols-2">{visibleNames.map((name, localIndex) => {
             const index = page * 10 + localIndex
@@ -349,7 +406,8 @@ export function Component() {
         </>}
 
         {step === 3 && <>
-          <section aria-label={session.className} className="rounded-sm bg-surface-container-lowest px-4 pb-1 pt-3.5">
+          {isDesktop && <h2 className="text-headline font-bold">{text.review}</h2>}
+          <section aria-label={session.className} className="rounded-sm bg-surface-container-lowest px-4 pb-1 pt-3.5 lg:border lg:border-outline-variant">
             <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
               <Scoreboard time={session.startTime} size="sm" />
               <p className="flex min-w-0 flex-col leading-snug"><span className="font-semibold">{session.className}</span><span className="text-label text-on-surface-variant">{session.levelName}</span></p>
@@ -369,12 +427,29 @@ export function Component() {
           {errorMessage && <StatusPanel tone="error" title={errorMessage} />}
         </>}
       </m.div>
+      {isDesktop && (
+        <aside aria-label={text.summary} className="flex w-[22rem] shrink-0 flex-col overflow-hidden rounded-lg bg-surface-container-lowest xl:w-[24rem]">
+          <div className="relative h-36 bg-band-tile">
+            <img src="/photos/club-schedule.webp" alt="" className="size-full object-cover" />
+            <span className="absolute bottom-4 left-4 rounded-xs bg-band-tile px-3 py-1.5 text-title font-bold tabular-nums text-on-signboard">{session.startTime}</span>
+          </div>
+          <div className="flex flex-col gap-1 px-5 pb-1 pt-4">
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="break-words text-title font-bold">{session.className}</h2>
+              <Link to={schedulePath} className="flex min-h-12 shrink-0 items-center text-label font-semibold text-primary">{text.changeSession}</Link>
+            </div>
+            <p className="text-on-surface-variant">{formatClubDateMedium(session.date, language)} · {session.startTime}-{session.endTime} · {session.venueName}</p>
+          </div>
+          <dl className="mt-auto flex flex-col px-5 py-3">
+            <div className="flex justify-between gap-4 py-2"><dt className="text-on-surface-variant">{fill(text.priceTimes, { price: formatIdr(unitPrice, language), count: quantity })}</dt><dd className="tabular-nums">{amount}</dd></div>
+            <div className="flex items-baseline justify-between gap-4 border-t border-outline-variant pb-1 pt-3"><dt className="font-bold">{text.total}</dt><dd className="text-headline font-bold tabular-nums">{amount}</dd></div>
+          </dl>
+          <div className="px-5 pb-5 pt-1">{action}</div>
+        </aside>
+      )}
+      </div>
 
-      <ActionBar caption={step === 1 ? text.total : fill(text.totalFor, { count: quantity })} amount={amount}>
-        {step === 1 && <Button variant="filled" className="px-8" disabled={!canContinue} onClick={startNames}>{activeSession ? text.continue : text.signIn}</Button>}
-        {step === 2 && <Button variant="filled" className="px-8" onClick={reviewNames} disabled={names.length !== quantity || names.some(name => !normalizeCustomerName(name))}>{text.continue}</Button>}
-        {step === 3 && <Button variant="filled" className="px-5" disabled={pending || !options?.canReserve || !options} pendingLabel={pending ? text.working : undefined} onClick={() => void confirm()}>{text.confirm}</Button>}
-      </ActionBar>
+      {!isDesktop && <ActionBar caption={step === 1 ? text.total : fill(text.totalFor, { count: quantity })} amount={amount}>{action}</ActionBar>}
     </div>
   )
 }

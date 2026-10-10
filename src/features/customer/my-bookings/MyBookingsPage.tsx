@@ -1,4 +1,5 @@
 import { ChevronRight, Clock3, MessageCircle } from 'lucide-react'
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { StatusPanel } from '@/components/ui/status-panel'
@@ -6,12 +7,14 @@ import { commonMessages } from '@/i18n/common.messages'
 import { clubDayOfMonth, formatClubTime, formatClubWeekdayShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
+import { useMediaQuery } from '@/lib/use-media-query'
 import type { Language } from '@/i18n/types'
 import type { CustomerBookingItem, CustomerBookingView } from '@shared/api/customer-bookings'
 import { clubDateOf } from '@shared/club-time'
 import { CourtBand } from '@/features/public/layout/CourtBand'
 import { useNow } from '@/features/public/schedule/use-now'
 import { clubContent } from '@/features/public/club/club-content'
+import { BookingDetailPanel } from './BookingDetailPanel'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBookings } from './use-customer-bookings'
 
@@ -90,6 +93,36 @@ function HistoryRow({ booking }: { booking: CustomerBookingItem }) {
   )
 }
 
+// Desktop: one row per booking on hairlines; the chosen row turns Deep Court and fills the panel beside the list.
+function DesktopRow({ booking, now, selected, onSelect }: { booking: CustomerBookingItem; now: number; selected: boolean; onSelect: () => void }) {
+  const { language, t } = useI18n()
+  const { session } = booking
+  const unpaid = booking.status === 'awaiting_payment' && Date.parse(booking.originalDeadline) > now
+  const past = booking.status === 'expired' || session.cancelled
+  const chip = unpaid ? t(messages.unpaid) : booking.status === 'expired' ? t(messages.lapsed) : t(messages.paid)
+  return (
+    <button type="button" aria-pressed={selected} onClick={onSelect}
+      className={cn('pressable grid min-h-21 w-full grid-cols-[4rem_minmax(0,1fr)_auto_1.25rem] items-center gap-4 rounded-sm px-4 py-2.5 text-left transition-colors duration-200',
+        selected ? 'bg-primary text-on-primary' : 'state-layer text-on-surface hover:bg-surface-container-lowest')}>
+      <span aria-hidden="true" className={cn('flex h-16 flex-col items-center justify-center rounded-sm leading-tight',
+        selected ? 'bg-surface-container-lowest text-primary' : past ? 'bg-surface-container-high text-on-surface-variant' : 'bg-band-tile text-on-signboard')}>
+        <span className="text-label font-semibold">{formatClubWeekdayShort(session.date, language)}</span>
+        <span className="text-numeral font-bold tabular-nums">{clubDayOfMonth(session.date)}</span>
+      </span>
+      <span className="flex min-w-0 flex-col gap-0.5 leading-snug">
+        <span className="break-words text-title font-bold">{session.className}</span>
+        <span className={cn('text-label tabular-nums', selected ? 'text-on-primary' : 'text-on-surface-variant')}>
+          {session.startTime}-{session.endTime} · {t(messages.slot, { count: booking.quantity })} · {session.venueName}
+          {unpaid && ` · ${t(messages.due, { time: deadlineLabel(booking.originalDeadline, now, language) })}`}
+        </span>
+      </span>
+      <span className={cn('whitespace-nowrap rounded-full px-3 py-0.5 text-label font-semibold',
+        selected ? 'bg-surface-container-lowest text-primary' : unpaid ? 'bg-warning-container text-warning' : past ? 'bg-surface-container-high text-on-surface-variant' : 'bg-primary-container text-primary')}>{chip}</span>
+      <ChevronRight aria-hidden="true" className="size-5" strokeWidth={2.25} />
+    </button>
+  )
+}
+
 // History in months, newest first.
 function byMonth(items: CustomerBookingItem[], language: Language) {
   const groups: { label: string; items: CustomerBookingItem[] }[] = []
@@ -112,14 +145,19 @@ export function Component() {
   const items = loaded.status === 'ready' ? loaded.items : []
   // Upcoming bookings whose deadline passed while the screen was open move out of the active list.
   const shown = view === 'upcoming' ? items.filter(item => item.status !== 'awaiting_payment' || Date.parse(item.originalDeadline) > now) : items
+  // Desktop lists rows beside the chosen booking's detail; phones open each booking on its own screen.
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  const [pickedId, setPickedId] = useState<string | null>(null)
+  const panelId = shown.find(item => item.id === pickedId)?.id ?? shown[0]?.id ?? null
+  const desktopList = isDesktop && loaded.status === 'ready' && shown.length > 0
 
   return <>
     <CourtBand title={t(messages.heading)}>
       {loaded.status !== 'signedOut' && (
-        <nav aria-label={t(messages.tabs)} className="mb-4 grid grid-cols-2 gap-1 rounded-sm bg-band-tile p-1">
+        <nav aria-label={t(messages.tabs)} className="mb-4 grid grid-cols-2 gap-1 rounded-sm bg-band-tile p-1 lg:w-[22rem]">
           {(['upcoming', 'history'] as const).map(value => (
             <Link key={value} to={value === 'history' ? '/bookings?view=history' : '/bookings'} replace aria-current={view === value ? 'page' : undefined}
-              onClick={event => { event.preventDefault(); setParams(value === 'history' ? { view: 'history' } : {}, { replace: true }) }}
+              onClick={event => { event.preventDefault(); setPickedId(null); setParams(value === 'history' ? { view: 'history' } : {}, { replace: true }) }}
               className={cn('pressable flex min-h-12 items-center justify-center gap-2 rounded-xs text-label font-semibold',
                 view === value ? 'bg-surface-container-lowest text-on-surface' : 'text-on-signboard')}>
               {t(value === 'history' ? messages.history : messages.active)}
@@ -131,8 +169,21 @@ export function Component() {
         </nav>
       )}
     </CourtBand>
-    <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4">
-      {loaded.status === 'loading' ? (
+    <div className={cn('page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4', desktopList && 'max-w-[72rem] flex-row items-start gap-6 pt-6')}>
+      {desktopList ? <>
+        <section aria-label={t(view === 'history' ? messages.history : messages.active)} className="flex min-w-0 flex-1 flex-col gap-5">
+          {(view === 'history' ? byMonth(shown, language) : [{ label: t(messages.active), items: shown }]).map(group => (
+            <div key={group.label} className="flex flex-col gap-2">
+              <h2 className="text-label font-semibold text-on-surface-variant">{group.label}</h2>
+              <ul className="flex flex-col border-t border-outline-variant">
+                {group.items.map(booking => <li key={booking.id} className="border-b border-outline-variant py-1"><DesktopRow booking={booking} now={now} selected={booking.id === panelId} onSelect={() => setPickedId(booking.id)} /></li>)}
+              </ul>
+            </div>
+          ))}
+          {view === 'history' && loaded.status === 'ready' && loaded.nextCursor && <Button variant="outlined" className="self-start" onClick={() => void loadMore()} pendingLabel={loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
+        </section>
+        {panelId && <div className="w-[24rem] shrink-0 xl:w-[26rem]"><BookingDetailPanel id={panelId} /></div>}
+      </> : loaded.status === 'loading' ? (
         <div className="flex flex-col gap-3"><p role="status" className="sr-only">{t(messages.loading)}</p>
           {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-28 rounded-sm bg-surface-container" />)}</div>
       ) : loaded.status === 'signedOut' ? (
@@ -146,7 +197,7 @@ export function Component() {
       ) : shown.length === 0 ? (
         <section className="flex flex-col items-start gap-3 rounded-sm bg-surface-container-lowest p-5">
           <p>{t(view === 'history' ? messages.emptyHistory : messages.emptyActive)}</p>
-          {view === 'upcoming' && <Button asChild variant="filled"><Link to="/">{t(messages.findSession)}</Link></Button>}
+          {view === 'upcoming' && <Button asChild variant="filled"><Link to="/schedule">{t(messages.findSession)}</Link></Button>}
         </section>
       ) : view === 'upcoming' ? (
         <ul className="flex flex-col gap-3">{shown.map(booking => <li key={booking.id}><ActiveCard booking={booking} now={now} /></li>)}</ul>

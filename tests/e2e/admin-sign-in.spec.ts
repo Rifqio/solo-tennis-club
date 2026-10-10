@@ -8,6 +8,7 @@ test('admin signs in from Club, reads a dated published session, and signs out w
   const auth = await signInAdmin(request)
   const date = addClubDays(clubToday(), 15)
   const published = await publishSession(request, auth, { date })
+  // /club redirects home; arriving through it skips the phone onboarding, which shows on every / load in testing mode.
   await page.goto('/club')
   await page.getByRole('link', { name: 'Masuk admin' }).click()
   await page.getByRole('textbox', { name: 'Email', exact: true }).fill(e2eAdminEmail)
@@ -15,7 +16,7 @@ test('admin signs in from Club, reads a dated published session, and signs out w
   await page.getByRole('button', { name: 'Masuk', exact: true }).click()
   await expect(page).toHaveURL(/\/admin\/sessions$/)
   await page.goto('/admin/sessions?date=' + date)
-  await expect(page.getByRole('heading', { name: published.session.className })).toBeVisible()
+  await expect(page.getByRole('heading', { name: published.session.className }).first()).toBeVisible()
   await page.getByRole('button', { name: 'Keluar', exact: true }).click()
   await expect(page).toHaveURL(/\/admin\/sign-in$/)
   expect((await page.request.get('/api/admin/sessions')).status()).toBe(401)
@@ -80,7 +81,7 @@ test('E5 loading prevents duplicate requests and throttle exposes retry timing',
   expect(requests).toBe(1)
   release()
   await expect(page.getByRole('alert')).toContainText('2 menit')
-  await expect(page.getByRole('button', { name: 'Masuk', exact: true })).toBeDisabled()
+  await expect(page.getByRole('button', { name: /^Tunggu \d:\d\d$/ })).toBeDisabled()
 })
 
 test('E4 expiry recovers at the same dated destination, and sign-out failure does not fake success', async ({ page }) => {

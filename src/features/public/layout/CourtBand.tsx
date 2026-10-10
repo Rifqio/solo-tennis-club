@@ -22,10 +22,12 @@ export function CourtBand({ title, headingRef, action, children, className }: Co
   return (
     <header className={cn(
       'relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] text-on-signboard [view-transition-name:app-bar] [&_:focus-visible]:outline-white',
+      // Desktop: an inset card aligned with the content column below it, rather than a band across the window.
+      'lg:mx-auto lg:mt-5 lg:w-[min(calc(100%-64px),calc(72rem-64px))] lg:rounded-lg lg:pt-1',
       className,
     )}>
       <CourtLines className="pointer-events-none absolute -right-12 -top-4 -z-10 h-64 text-on-signboard/15 sm:right-8" />
-      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col lg:max-w-[72rem]">
+      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col lg:max-w-none lg:px-8">
         <div className="flex h-14 items-center justify-between gap-3">
           {/* Text identity until the club supplies a logo (R-23); no image is invented. */}
           <p aria-label={clubContent.name}><Wordmark name={clubContent.shortName} /></p>
@@ -33,7 +35,7 @@ export function CourtBand({ title, headingRef, action, children, className }: Co
         </div>
         {title && (
           <div className="flex min-h-12 items-center justify-between gap-3 pb-3">
-            <h1 ref={headingRef} tabIndex={headingRef ? -1 : undefined} className="text-headline font-bold">{title}</h1>
+            <h1 ref={headingRef} tabIndex={headingRef ? -1 : undefined} className="text-headline font-bold lg:text-display">{title}</h1>
             {action}
           </div>
         )}

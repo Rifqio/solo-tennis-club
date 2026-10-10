@@ -186,7 +186,7 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
   }
 
   return <>
-    {!embedded && <AdminBand title={t(initial ? config.edit : config.add)} back={{ to: `/admin/${config.path}`, label: t(copy.manage) }} />}
+    {!embedded && <AdminBand title={t(initial ? config.edit : config.add)} back={{ to: `/admin/${config.path}`, label: `${t(copy.manage)} › ${t(config.label)}` }} />}
     <form ref={form} noValidate onSubmit={submit} aria-busy={pending} className={embedded ? 'flex flex-1 flex-col' : 'flex min-h-[calc(100dvh-8rem)] flex-col'}>
       <div className={embedded ? 'flex flex-col gap-5 p-6' : 'page-gutter mx-auto flex w-full max-w-[50rem] flex-1 flex-col gap-5 py-5'}>
         {embedded && <div className="flex flex-col gap-0.5">
@@ -195,7 +195,7 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
         </div>}
         {baseline?.archived && <StatusPanel tone="warning" title={t(copy.archivedTitle)}><p>{t(copy.archivedBody)}</p></StatusPanel>}
         {kind === 'coach' && <CoachPhotoField record={baseline} name={name} onChange={photoChanged} />}
-        <TextField name="name" label={t(messages.name)} value={name} onChange={event => setName(event.target.value)} error={errorFor('name')} maxLength={120} required />
+        <TextField name="name" label={t(config.nameLabel)} value={name} onChange={event => setName(event.target.value)} error={errorFor('name')} maxLength={120} required />
         {venue && <TextField name="address" label={t(messages.address)} value={address} onChange={event => setAddress(event.target.value)} error={errorFor('address')} maxLength={300} />}
         {venue && <div className="flex flex-col gap-3">
           <TextField id="venue-map" name="mapUrl" type="url" inputMode="url" label={t(copy.mapLink)} hint={t(copy.mapHint)} placeholder="https://maps.app.goo.gl/..."
@@ -228,7 +228,7 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
           {embedded && archiveAction('mr-auto px-4')}
           {embedded && justSaved && !dirty && <span role="status" className="flex items-center gap-2 font-semibold text-primary"><Check aria-hidden="true" className="size-5" />{t(copy.savedShort)}</span>}
           <Button className={embedded ? 'px-8' : 'w-full'} variant="filled" type="submit" disabled={pending || reading || archiving || Boolean(latest)} pendingLabel={pending ? t(messages.saving) : undefined}>
-            {t(messages.save)}
+            {t(embedded ? messages.save : config.save)}
           </Button>
         </div>
       </div>

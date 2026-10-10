@@ -61,12 +61,12 @@ export function BookingGroup({ booking, active }: { booking: AdminRosterBooking;
           </p>
           {href
             ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t(copy.chat, { name: booking.bookerName })}
-                className="inline-flex min-h-12 items-center gap-1.5 self-start text-label font-semibold text-primary tabular-nums">
+                className="inline-flex min-h-12 max-w-full items-center gap-1.5 self-start break-all text-label font-semibold text-primary tabular-nums">
                 <MessageCircle aria-hidden="true" className="size-4" />{booking.bookerPhone}
               </a>
             : <span className="text-label tabular-nums text-on-surface-variant">{booking.bookerPhone}</span>}
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-1 text-right">
+        <div className="flex max-w-[45%] flex-col items-end gap-1 text-right">
           <span className={cn('rounded-full px-2.5 py-0.5 text-label font-semibold',
             active ? 'border border-warning text-warning' : 'bg-surface-container-high text-on-surface-variant')}>{t(active ? copy.unpaid : copy.lapsed)}</span>
           <span className="text-label tabular-nums text-on-surface-variant">{t(active ? copy.deadline : copy.lapsedAt, { time })}</span>
@@ -116,7 +116,8 @@ export function Component() {
   const filter: Filter = chosen ?? (counts.unpaid > 0 ? 'unpaid' : 'all')
   const shown = groups.filter(row => filter === 'all' || (filter === 'unpaid') === row.active)
   const session = data.session
-  const filters: Filter[] = counts.lapsed > 0 ? ['unpaid', 'lapsed', 'all'] : ['unpaid', 'all']
+  // Board order: everyone first, then who still owes, then who lapsed.
+  const filters: Filter[] = counts.lapsed > 0 ? ['all', 'unpaid', 'lapsed'] : ['all', 'unpaid']
 
   return <>
     <AdminBand title={session.className} back={back}>
@@ -134,7 +135,7 @@ export function Component() {
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       {session.status !== 'scheduled' && <StatusPanel tone="info" title={t(copy.cancelled)} />}
       {data.bookings.length === 0 ? <StatusPanel tone="info" title={t(copy.empty)} /> : <>
-        <div role="group" aria-label={t(copy.filter)} className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+        <div role="group" aria-label={t(copy.filter)} className="flex flex-wrap gap-2">
           {filters.map(value => {
             const on = filter === value
             return (

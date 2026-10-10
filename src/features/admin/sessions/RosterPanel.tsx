@@ -68,7 +68,8 @@ export function RosterPanel({ id }: { id: string }) {
   const counts = { all: placesOf(groups), unpaid: placesOf(groups.filter(row => row.active)), lapsed: placesOf(groups.filter(row => !row.active)) }
   const filter: Filter = chosen ?? (counts.unpaid > 0 ? 'unpaid' : 'all')
   const shown = groups.filter(row => filter === 'all' || (filter === 'unpaid') === row.active)
-  const filters: Filter[] = counts.lapsed > 0 ? ['unpaid', 'lapsed', 'all'] : ['unpaid', 'all']
+  // Board order: everyone first, then who still owes, then who lapsed.
+  const filters: Filter[] = counts.lapsed > 0 ? ['all', 'unpaid', 'lapsed'] : ['all', 'unpaid']
   const { session } = data
 
   return (

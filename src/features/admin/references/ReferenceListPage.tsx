@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
+import { CoachAvatar } from '../forms/CoachAvatar'
 import { AdminBand } from '../shell/AdminBand'
 import { referenceConfig } from './reference-config'
 import { ReferenceTabs } from './ReferenceTabs'
@@ -53,7 +54,8 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
               {savedId === row.id && <StatusPanel tone="success" title={t(messages.saved)} />}
               <Link to={`/admin/${config.path}/${row.id}/edit`} viewTransition
                 className="state-layer flex items-center justify-between gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
-                <span className="flex min-w-0 flex-col gap-0.5">
+                {kind === 'coach' && <CoachAvatar name={row.name} photoUrl={row.photoUrl} />}
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <h2 className="break-words font-semibold">{row.name}</h2>
                   {venue && <span className="break-words text-label text-on-surface-variant">{row.address || t(copy.noAddress)}</span>}
                   {venue && <span className={cn('mt-1 self-start rounded-full px-2.5 py-0.5 text-label font-semibold',

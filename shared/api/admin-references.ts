@@ -17,6 +17,8 @@ export interface ReferenceRecord {
   mapUrl: string | null
   latitude: number | null
   longitude: number | null
+  // Coaches only: the portrait path, or null for initials.
+  photoUrl: string | null
   version: number
   isSample: boolean
 }

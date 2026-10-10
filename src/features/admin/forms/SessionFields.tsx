@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useI18n } from '@/i18n/use-i18n'
+import { CoachPicker } from './CoachPicker'
 import { ChoiceChips } from '@/components/ui/choice-chips'
 import { IntegerField } from '@/components/ui/integer-field'
 import { StepperField } from '@/components/ui/stepper-field'
@@ -50,7 +51,7 @@ export function SessionFields({ section, values, setField, errors, options, opti
   if (section === 'venue') return <>
     <ChoiceChips name="levelId" label={t(messages.level)} options={withMissing(options.levels, [values.levelId])} value={values.levelId} onChange={value => setField('levelId', value)} error={errorFor('levelId')} status={status(copy.noneLevel, options.levels.length)} />
     <ChoiceChips name="venueId" label={t(messages.venue)} options={withMissing(options.venues, [values.venueId])} value={values.venueId} onChange={value => setField('venueId', value)} error={errorFor('venueId')} status={status(copy.noneVenue, options.venues.length)} />
-    <ChoiceChips name="coachIds" label={t(copy.coaches)} hint={t(copy.coachesHint)} options={withMissing(options.coaches, values.coachIds)} value={values.coachIds} onChange={value => setField('coachIds', value)} error={errorFor('coachIds')} status={status(copy.noneCoach, options.coaches.length)} />
+    <CoachPicker name="coachIds" label={t(copy.coaches)} hint={t(copy.coachesHint)} options={withMissing(options.coaches, values.coachIds)} value={values.coachIds} onChange={value => setField('coachIds', value)} error={errorFor('coachIds')} status={status(copy.noneCoach, options.coaches.length)} />
   </>
 
   if (section === 'duration') {

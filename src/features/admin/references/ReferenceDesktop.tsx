@@ -7,6 +7,7 @@ import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
+import { CoachAvatar } from '../forms/CoachAvatar'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
 import { referenceConfig } from './reference-config'
@@ -60,7 +61,8 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
                   <Link to={`/admin/${config.path}/${row.id}/edit`} viewTransition aria-current={active ? 'page' : undefined}
                     className={cn('state-layer flex min-h-14 items-center justify-between gap-3 rounded-sm px-3.5 py-2.5 transition-colors duration-200',
                       active ? 'bg-primary text-on-primary' : 'text-on-surface')}>
-                    <span className="flex min-w-0 flex-col gap-0.5">
+                    {kind === 'coach' && <CoachAvatar name={row.name} photoUrl={row.photoUrl} />}
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span className="break-words font-semibold">{row.name}</span>
                       {venue && <span className={cn('self-start rounded-full px-2.5 py-0.5 text-label font-semibold',
                         active ? 'bg-surface-container-lowest text-primary' : row.mapUrl ? 'bg-secondary-container text-on-secondary-container' : 'border border-warning text-warning')}>

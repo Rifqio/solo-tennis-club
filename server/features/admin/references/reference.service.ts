@@ -14,6 +14,7 @@ type ReferenceRow = {
   mapUrl?: string | null
   latitude?: number | null
   longitude?: number | null
+  photoUrl?: string | null
 }
 
 function toReferenceRecord(kind: ReferenceKind, row: ReferenceRow): ReferenceRecord {
@@ -25,6 +26,7 @@ function toReferenceRecord(kind: ReferenceKind, row: ReferenceRow): ReferenceRec
     mapUrl: row.mapUrl ?? null,
     latitude: row.latitude ?? null,
     longitude: row.longitude ?? null,
+    photoUrl: row.photoUrl ?? null,
     version: row.version,
     isSample: row.isSample,
   }

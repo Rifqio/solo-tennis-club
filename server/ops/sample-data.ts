@@ -29,7 +29,29 @@ const SESSIONS: Array<[number, string, number, boolean?]> = [
   [13, '08:00', 0], [13, '10:00', 1],
 ]
 
+// The sample coaches from board D10, with portraits copied from the design canvas (public/photos/coaches/*.json).
+// Two have no photo on purpose, so the picker's initials fallback is visible.
+const SAMPLE_COACHES: Array<[string, string | null]> = [
+  ['Contoh Budi Santoso', '/photos/coaches/budi.webp'], ['Contoh Rina Wulandari', '/photos/coaches/rina.webp'],
+  ['Contoh Dewi Lestari', '/photos/coaches/dewi.webp'], ['Contoh Agus Pratama', '/photos/coaches/agus.webp'],
+  ['Contoh Yoga Saputra', '/photos/coaches/yoga.webp'], ['Contoh Hendra Wijaya', '/photos/coaches/hendra.webp'],
+  ['Contoh Fajar Nugroho', '/photos/coaches/fajar.webp'], ['Contoh Maya Anggraini', '/photos/coaches/maya.webp'],
+  ['Contoh Sari Puspita', null], ['Contoh Rizky Hidayat', null],
+]
+
 const key = (name: string) => name.toLowerCase()
+
+// Adds the sample coaches and fills a missing portrait; a coach the admin already gave a photo keeps it. Returns how
+// many coaches it created or updated.
+export async function seedSampleCoaches(prisma: PrismaClient) {
+  let changed = 0
+  for (const [name, photoUrl] of SAMPLE_COACHES) {
+    const existing = await prisma.coach.findUnique({ where: { nameKey: key(name) } })
+    if (!existing) { await prisma.coach.create({ data: { name, nameKey: key(name), photoUrl, isSample: true } }); changed++ }
+    else if (!existing.photoUrl && photoUrl) { await prisma.coach.update({ where: { id: existing.id }, data: { photoUrl } }); changed++ }
+  }
+  return changed
+}
 
 export type SeedOutcome = 'created' | 'skipped' | 'refreshed'
 
@@ -83,3 +105,4 @@ export async function seedSampleData(prisma: PrismaClient, { now = new Date(), r
 }
 
 export const SAMPLE_SESSION_COUNT = SESSIONS.length
+export const SAMPLE_COACH_COUNT = COACHES.length + SAMPLE_COACHES.length

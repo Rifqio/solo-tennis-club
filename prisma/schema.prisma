@@ -45,6 +45,8 @@ model Coach {
   id String @id @default(cuid())
   name String
   nameKey String @unique
+  // Path to the coach's portrait (cards in the Kelas coach picker); null shows initials.
+  photoUrl String?
   createRequestId String? @unique
   version Int @default(1)
   isSample Boolean @default(false)

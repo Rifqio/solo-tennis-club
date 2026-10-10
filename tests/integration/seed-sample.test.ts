@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process'
 import { afterAll, beforeAll, expect, test } from 'vitest'
 import { createApp } from '../../server/app.ts'
 import { projectRoot } from '../../server/config/database-file.ts'
-import { SAMPLE_SESSION_COUNT, seedSampleData } from '../../server/ops/sample-data.ts'
+import { SAMPLE_COACH_COUNT, SAMPLE_SESSION_COUNT, seedSampleCoaches, seedSampleData } from '../../server/ops/sample-data.ts'
 import { addClubDays, clubDateTimeToInstant, clubToday } from '../../shared/club-time.ts'
 import type { PublicScheduleResponse } from '../../shared/api/public.ts'
 import { createTestDatabase } from '../support/test-db.ts'
@@ -53,6 +53,16 @@ test('the public schedule marks seeded sessions as sample data', async () => {
     expect(body.sessions.length).toBeGreaterThan(0)
     expect(body.sessions.every(session => session.isSample && session.className.startsWith('Contoh'))).toBe(true)
   } finally { await server.close() }
+})
+
+test('sample coaches are added once with portraits, and an existing photo is never overwritten', async () => {
+  await seedSampleData(db.prisma)
+  expect(await seedSampleCoaches(db.prisma)).toBe(10)
+  expect(await db.prisma.coach.count({ where: { isSample: true } })).toBe(SAMPLE_COACH_COUNT)
+  expect(await db.prisma.coach.count({ where: { isSample: true, photoUrl: { not: null } } })).toBe(8)
+  await db.prisma.coach.update({ where: { nameKey: 'contoh budi santoso' }, data: { photoUrl: '/photos/coaches/own.webp' } })
+  expect(await seedSampleCoaches(db.prisma)).toBe(0)
+  expect((await db.prisma.coach.findUnique({ where: { nameKey: 'contoh budi santoso' } }))?.photoUrl).toBe('/photos/coaches/own.webp')
 })
 
 test('the seed command refuses to run in production and writes nothing', async () => {

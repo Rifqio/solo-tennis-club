@@ -7,9 +7,11 @@ export interface SessionDefaults {
   minParticipants: number; maxParticipants: number; coachIds: string[]
 }
 export interface NamedOption { id: string; name: string }
+// A coach for the photo-card picker: portrait (null shows initials) and how many classes use them by default.
+export interface CoachOption extends NamedOption { photoUrl: string | null; classCount: number }
 export interface SessionOptions {
   classes: (NamedOption & { defaults: SessionDefaults })[]
-  levels: NamedOption[]; venues: NamedOption[]; coaches: NamedOption[]
+  levels: NamedOption[]; venues: NamedOption[]; coaches: CoachOption[]
 }
 export interface AdminSessionDetail {
   id: string; version: number; classId: string; className: string; date: string; startTime: string; endTime: string

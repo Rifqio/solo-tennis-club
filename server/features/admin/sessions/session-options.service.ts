@@ -20,6 +20,6 @@ export async function getSessionOptions(database: PrismaClient): Promise<Session
     })),
     levels,
     venues,
-    coaches,
+    coaches: coaches.map(row => ({ id: row.id, name: row.name, photoUrl: row.photoUrl, classCount: row._count.defaultClasses })),
   }
 }

@@ -51,7 +51,7 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
   const record = currentId === 'new' ? null : listed ?? single.data
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
-    <div className="page-gutter mx-auto flex w-full max-w-[72rem] items-start gap-6 py-6">
+    <div className="admin-column flex items-start gap-5 py-5">
       <section aria-label={t(copy.heading)} className="flex min-h-[34rem] w-[24rem] shrink-0 flex-col gap-3 xl:w-[28rem]">
         <Link to="/admin/classes/new" aria-current={currentId === 'new' ? 'page' : undefined}
           className={cn('state-layer pressable flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-sm font-semibold',

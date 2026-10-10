@@ -64,7 +64,7 @@ test('usage lists the classes using a coach, level or venue with each class\'s n
 
 test('coach photo upload checks the bytes, size, origin and CSRF, serves the file, and cleans up replaced uploads', async () => {
   const { coaches: [coach] } = await createSampleCatalog(db.prisma)
-  const upload = (body: Buffer, headers: Record<string, string> = {}) => adminFetch(server.baseUrl, auth, `/coaches/${coach.id}/photo`, { method: 'PUT', body, headers: { 'Content-Type': 'image/png', ...headers } })
+  const upload = (body: Buffer, headers: Record<string, string> = {}) => adminFetch(server.baseUrl, auth, `/coaches/${coach.id}/photo`, { method: 'PUT', body: new Uint8Array(body), headers: { 'Content-Type': 'image/png', ...headers } })
   expect((await upload(PNG, { 'X-CSRF-Token': '' })).status).toBe(403)
   expect((await upload(PNG, { Origin: 'http://evil.example' })).status).toBe(403)
   const notImage = await upload(Buffer.from('<svg onload="alert(1)"></svg>'))

@@ -42,7 +42,7 @@ export function ClassListPage() {
   if (isDesktop) return <ClassDesktop selected={null} />
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
-    <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4 lg:max-w-[72rem]">
+    <div className="page-gutter admin-column mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4">
       <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} busy={list.searching} />
       {list.items.some(row => row.isSample) && <SampleDataNotice />}
       {list.status === 'loading' ? (

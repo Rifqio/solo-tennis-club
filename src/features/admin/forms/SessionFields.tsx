@@ -46,12 +46,13 @@ export function SessionFields({ section, values, setField, errors, options, opti
     : optionsStatus === 'error' ? <p role="status" className="text-on-surface-variant">{t(copy.failed)}</p>
     : count === 0 ? <Link to="/admin/manage" className="flex min-h-12 items-center text-primary underline underline-offset-4">{t(empty)}</Link> : undefined
   // A saved id whose option is gone still shows, so the admin sees what is selected and can change it.
-  const withMissing = (list: { id: string; name: string }[], ids: string[]) => [...list, ...ids.filter(id => id && !list.some(option => option.id === id)).map((id, index) => ({ id, name: t(optionsStatus === 'ready' ? copy.missing : copy.pending, { n: index + 1 }) }))]
+  // Archived records are offered only where they are already chosen; new picks see the active ones.
+  const withMissing = <T extends { id: string; name: string; archived?: boolean }>(all: T[], ids: string[]) => { const list = all.filter(option => !option.archived || ids.includes(option.id)); return [...list, ...ids.filter(id => id && !list.some(option => option.id === id)).map((id, index) => ({ id, name: t(optionsStatus === 'ready' ? copy.missing : copy.pending, { n: index + 1 }) }))] }
 
   if (section === 'venue') return <>
-    <ChoiceChips name="levelId" label={t(messages.level)} options={withMissing(options.levels, [values.levelId])} value={values.levelId} onChange={value => setField('levelId', value)} error={errorFor('levelId')} status={status(copy.noneLevel, options.levels.length)} />
-    <ChoiceChips name="venueId" label={t(messages.venue)} options={withMissing(options.venues, [values.venueId])} value={values.venueId} onChange={value => setField('venueId', value)} error={errorFor('venueId')} status={status(copy.noneVenue, options.venues.length)} />
-    <CoachPicker name="coachIds" label={t(copy.coaches)} hint={t(copy.coachesHint)} options={withMissing(options.coaches, values.coachIds)} value={values.coachIds} onChange={value => setField('coachIds', value)} error={errorFor('coachIds')} status={status(copy.noneCoach, options.coaches.length)} />
+    <ChoiceChips name="levelId" label={t(messages.level)} options={withMissing(options.levels, [values.levelId])} value={values.levelId} onChange={value => setField('levelId', value)} error={errorFor('levelId')} status={status(copy.noneLevel, options.levels.filter(option => !option.archived).length)} />
+    <ChoiceChips name="venueId" label={t(messages.venue)} options={withMissing(options.venues, [values.venueId])} value={values.venueId} onChange={value => setField('venueId', value)} error={errorFor('venueId')} status={status(copy.noneVenue, options.venues.filter(option => !option.archived).length)} />
+    <CoachPicker name="coachIds" label={t(copy.coaches)} hint={t(copy.coachesHint)} options={withMissing(options.coaches, values.coachIds)} value={values.coachIds} onChange={value => setField('coachIds', value)} error={errorFor('coachIds')} status={status(copy.noneCoach, options.coaches.filter(option => !option.archived).length)} />
   </>
 
   if (section === 'duration') {

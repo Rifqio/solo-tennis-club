@@ -43,7 +43,7 @@ export function AdminLayout() {
 
   return <AdminShellContext.Provider value={shell}>
     <div className="min-h-dvh bg-surface text-on-surface">
-      <main className={showDock ? 'overflow-x-clip pb-[calc(7rem+env(safe-area-inset-bottom))] sm:pb-8 sm:pl-20' : 'overflow-x-clip'}>
+      <main className={showDock ? 'overflow-x-clip pb-[calc(7rem+env(safe-area-inset-bottom))] sm:pb-12 sm:pl-20 lg:pl-24' : 'overflow-x-clip'}>
         {failure && <div className="page-gutter mx-auto max-w-[50rem] pt-4"><StatusPanel tone="error" title={failure} action={{ label: t(authMessages.signOut), onAction: shell.signOut }} /></div>}
         {/* No page fade here: page changes move through view transitions by direction (src/lib/nav-motion.ts). */}
         <Outlet />

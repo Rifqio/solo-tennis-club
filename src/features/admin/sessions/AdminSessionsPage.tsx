@@ -125,7 +125,7 @@ export function AdminSessionsPage() {
     <AdminBand title={t(messages.heading)} action={<TodayChip selected={selected} today={bounds.today} onSelect={select} />}>
       <DateStrip dates={computeStripWindow({ selected, currentStart: stripStart, ...bounds })} selected={selected} {...bounds} onSelect={select} />
     </AdminBand>
-    <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:max-w-[72rem] lg:flex-row lg:items-start lg:gap-6 lg:pt-6">
+    <div className="page-gutter admin-column mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:flex-row lg:items-start lg:gap-5 lg:pt-5">
     <div className="flex min-w-0 flex-1 flex-col gap-3">
       <div className="flex flex-col gap-1">
         <h2 className="text-title font-bold">{formatClubDateMedium(selected, language)} <span className="text-label font-normal text-on-surface-variant">WIB</span></h2>

@@ -14,7 +14,7 @@ type Shown<T> = { key: string; page: PagedList<T> }
 // `refresh`: any value that changes when the list should be fetched again (for example the navigation key).
 export function useAdminList<T>(path: string | null, search: string, refresh?: unknown) {
   const { get, state: auth } = useAdminAuth()
-  const key = path ? `${path}?q=${encodeURIComponent(search.trim())}` : ''
+  const key = path ? `${path}${path.includes('?') ? '&' : '?'}q=${encodeURIComponent(search.trim())}` : ''
   const [state, setState] = useState<ListState<T> | null>(null)
   // The rows on screen, kept while a new search loads so the list never blanks between keystrokes.
   const [shown, setShown] = useState<Shown<T> | null>(null)

@@ -3,15 +3,15 @@ gsd_state_version: "1.0"
 current_phase: 2
 current_phase_name: Reserve Places and See Daily Rosters
 status: executing
-stopped_at: 02-02 reservation source implemented; manual acceptance and concurrency proof pending
-last_updated: "2026-10-09"
-last_activity: 2026-10-09
-last_activity_desc: 02-02 capacity-safe customer reservations implemented; build/lint pass; manual acceptance pending
+stopped_at: 02-03 and 02-04 implemented with the Courtside admin/member screens; manual acceptance pending, 02-05 next
+last_updated: "2026-10-10"
+last_activity: 2026-10-10
+last_activity_desc: 02-03 customer bookings + expiry worker and 02-04 incoming bookings implemented; 188 tests pass
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 16
-  completed_plans: 13
+  completed_plans: 15
   percent: 20
 ---
 
@@ -95,7 +95,11 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - [ ] Complete user manual UI checks for 02-01.
 - [x] Implement 02-02 capacity-safe customer reservations and real occupancy; build/lint pass, local migrations applied.
 - [ ] Complete user manual acceptance and independent-connection concurrency/rollback proof for 02-02.
-- [ ] Implement 02-03 through 02-05 using the recorded plans.
+- [x] Implement 02-03 private bookings and expiry worker (2026-10-10); see 02-03-SUMMARY.md.
+- [x] Implement 02-04 roster and incoming bookings (2026-10-10); see 02-04-SUMMARY.md.
+- [x] Build the approved Courtside canvas boards: club page, venue Maps links, wrong-code state, admin shell/sessions/roster/manage/classes (2026-10-10).
+- [ ] Complete user manual acceptance for 02-03 and 02-04 on a phone.
+- [ ] Implement 02-05 admin-created bookings and integrated development acceptance.
 - [ ] Select/integrate real OTP delivery and verify AUTH-02 before Phase 2 release completion.
 - [ ] Before production launch, review real club content/logo/catalog, exclude samples and verify deployment/provisioning operations.
 
@@ -114,9 +118,9 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 
 ## Session Continuity
 
-Last session: 2026-10-09
-Stopped at: 02-02 reservation source implemented; manual acceptance and concurrency proof pending
-Resume file: .planning/phases/02-reserve-places-and-see-daily-rosters/02-02-PLAN.md
+Last session: 2026-10-10
+Stopped at: 02-04 implemented; 02-05 next
+Resume file: .planning/phases/02-reserve-places-and-see-daily-rosters/02-05-PLAN.md
 
 ## Manual acceptance update
 

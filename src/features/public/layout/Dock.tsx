@@ -1,4 +1,4 @@
-import { CalendarDays, Info, Plus, UserRound } from 'lucide-react'
+import { CalendarDays, Info, Plus, Ticket, UserRound } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { m } from 'motion/react'
 import { NavLink } from 'react-router-dom'
@@ -11,12 +11,12 @@ import { publicMessages } from './public.messages'
 
 interface DockDestination { to: string; end: boolean; label: Message; Icon: LucideIcon; className?: string }
 
-// Booking saya joins the right side once plan 02-03 builds it; until then Akun holds that side alone.
 const leading: DockDestination[] = [
   { to: '/', end: true, label: publicMessages.schedule, Icon: CalendarDays },
   { to: '/club', end: false, label: publicMessages.club, Icon: Info },
 ]
 const trailing: DockDestination[] = [
+  { to: '/bookings', end: false, label: publicMessages.bookings, Icon: Ticket },
   { to: '/customer/sign-in', end: false, label: publicMessages.account, Icon: UserRound },
 ]
 
@@ -78,7 +78,7 @@ export function Dock({ onBook }: { onBook: () => void }) {
       className="fixed inset-x-0 bottom-0 z-30 pb-[env(safe-area-inset-bottom)] [view-transition-name:nav-bar] [&_:focus-visible]:outline-accent sm:inset-x-auto sm:inset-y-0 sm:left-0 sm:w-20 sm:pb-0"
     >
       <div aria-hidden="true" className="dock-notch absolute inset-0 rounded-t-lg bg-dock sm:rounded-none" />
-      <div className="relative grid h-18 grid-cols-[1fr_1fr_5.5rem_2fr] sm:flex sm:h-auto sm:flex-col sm:items-center sm:gap-2 sm:pt-[calc(1rem+env(safe-area-inset-top))]">
+      <div className="relative grid h-18 grid-cols-[1fr_1fr_5.5rem_1fr_1fr] sm:flex sm:h-auto sm:flex-col sm:items-center sm:gap-2 sm:pt-[calc(1rem+env(safe-area-inset-top))]">
         {leading.map(destination => <Destination key={destination.to} {...destination} />)}
         <BookButton onOpen={onBook} />
         {trailing.map(destination => <Destination key={destination.to} {...destination} />)}

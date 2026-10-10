@@ -37,6 +37,8 @@ const router = createBrowserRouter([
       { path: '/club', element: <ClubPage /> },
       { path: '/customer/sign-in', lazy: () => import('./features/customer/auth/CustomerAccessPage') },
       { path: '/book/:sessionId', lazy: () => import('./features/customer/booking/BookingPage') },
+      { path: '/bookings', lazy: () => import('./features/customer/my-bookings/MyBookingsPage') },
+      { path: '/bookings/:id', lazy: () => import('./features/customer/my-bookings/MyBookingDetailPage') },
     ],
   },
 ])

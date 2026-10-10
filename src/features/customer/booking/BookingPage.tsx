@@ -36,7 +36,7 @@ const messages = {
     confirm: 'Konfirmasi booking', working: 'Menyimpan booking…', closed: 'Booking sudah ditutup atau slotnya penuh.',
     safe: '{count} slot kamu aman sampai batas bayar.', timeLeft: 'Sisa waktu bayar {h} jam {m} menit', hours: 'jam', minutes: 'menit',
     payBy: 'Bayar sebelum', payTitle: 'Cara bayar (QRIS atau transfer)', payBody: 'Info pembayaran akan muncul di sini. Sementara itu, hubungi admin klub.',
-    backToSchedule: 'Kembali ke jadwal', back: 'Kembali', backToScheduleLabel: 'Kembali ke jadwal',
+    seeBooking: 'Lihat booking', backToSchedule: 'Kembali ke jadwal', back: 'Kembali', backToScheduleLabel: 'Kembali ke jadwal',
   },
   en: {
     title: 'Book slots', names: "Who's playing?", review: 'Check it over', success: 'Booked!',
@@ -51,7 +51,7 @@ const messages = {
     confirm: 'Confirm booking', working: 'Saving booking…', closed: 'Booking has closed or the session is full.',
     safe: 'Your {count} slots are held until the payment deadline.', timeLeft: '{h} hours {m} minutes left to pay', hours: 'hours', minutes: 'min',
     payBy: 'Pay by', payTitle: 'How to pay (QRIS or transfer)', payBody: 'Payment details will appear here. For now, contact the club admin.',
-    backToSchedule: 'Back to schedule', back: 'Back', backToScheduleLabel: 'Back to schedule',
+    seeBooking: 'See booking', backToSchedule: 'Back to schedule', back: 'Back', backToScheduleLabel: 'Back to schedule',
   },
 }
 
@@ -275,7 +275,10 @@ export function Component() {
             <p className="font-semibold">{text.payTitle}</p>
             <p className="mt-0.5">{text.payBody}</p>
           </m.section>
-          <Button asChild variant="filled" className="mt-auto min-h-14"><Link to={schedulePath}>{text.backToSchedule}</Link></Button>
+          <div className="mt-auto flex flex-col gap-2">
+            <Button asChild variant="filled" className="min-h-14"><Link to={`/bookings/${result.booking.id}`}>{text.seeBooking}</Link></Button>
+            <Button asChild variant="text" className="text-on-signboard"><Link to={schedulePath}>{text.backToSchedule}</Link></Button>
+          </div>
         </div>
       </div>
     )

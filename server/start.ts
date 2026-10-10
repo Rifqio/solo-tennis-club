@@ -4,12 +4,14 @@ import { createApp } from './app.ts'
 import { createPrismaClient, initializeDatabase } from './db.ts'
 import { projectRoot, resolveDatabaseFile } from './config/database-file.ts'
 import { resolve } from 'node:path'
+import { startExpiryWorker } from './features/booking-expiry/expiry.service.ts'
 
 export async function startServer(options: {
   mode: 'development' | 'production'; port?: number; host?: string; databaseFile?: string
 }) {
   const prisma = createPrismaClient(resolveDatabaseFile(options.databaseFile))
   let vite: ViteDevServer | undefined
+  let expiry: ReturnType<typeof startExpiryWorker> | undefined
   try {
     await initializeDatabase(prisma)
     if (options.mode === 'development') {
@@ -20,6 +22,7 @@ export async function startServer(options: {
     const developmentOrigins = Array.isArray(allowedHosts) ? allowedHosts
       .filter(host => !host.startsWith('.') && /^[a-zA-Z0-9.-]+$/.test(host))
       .map(host => `https://${host}`) : []
+    expiry = startExpiryWorker(prisma)
     const app = createApp({ prisma, mode: options.mode, distDir: resolve(projectRoot, 'dist'), viteMiddleware: vite?.middlewares, developmentOrigins })
     const server = createServer(app)
     const port = options.port ?? Number(process.env.LAFU_PORT ?? 3000)
@@ -35,6 +38,7 @@ export async function startServer(options: {
       process.off('SIGINT', onSignal)
       process.off('SIGTERM', onSignal)
       await new Promise<void>((resolveClose, reject) => server.close(error => error ? reject(error) : resolveClose()))
+      await expiry?.stop()
       await vite?.close()
       await prisma.$disconnect()
     })()
@@ -45,6 +49,7 @@ export async function startServer(options: {
     console.log('Lafu listening on ' + url)
     return { url, close }
   } catch (error) {
+    await expiry?.stop()
     await vite?.close()
     await prisma.$disconnect()
     throw error

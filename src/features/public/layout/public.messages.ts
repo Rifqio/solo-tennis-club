@@ -3,6 +3,7 @@ export const publicMessages = {
   schedule: { id: 'Jadwal', en: 'Schedule' },
   club: { id: 'Klub', en: 'Club' },
   about: { id: 'Tentang Lafu', en: 'About Lafu' },
+  bookings: { id: 'Booking', en: 'Bookings' },
   account: { id: 'Akun', en: 'Account' },
   book: { id: 'Pesan', en: 'Book' },
   bookSheetTitle: { id: 'Pesan sesi', en: 'Book a session' },

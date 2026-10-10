@@ -3,7 +3,8 @@ import { z } from 'zod'
 import type { PrismaClient } from '../../../generated/prisma/client.ts'
 import type { ClassInput } from '../../../../shared/api/admin-classes.ts'
 import { ApiError } from '../../../http/errors.ts'
-import { getClass, listClasses, saveClass } from './class.service.ts'
+import { getClass, listClassPage, saveClass } from './class.service.ts'
+import { parseNamePageQuery } from '../listing/name-page.ts'
 
 const numeric = z.union([z.number(), z.string(), z.null()]).optional()
 const fields = {
@@ -29,8 +30,8 @@ function parseClassInput(body: unknown, editing: boolean): ClassInput {
 }
 
 export function createClassController(database: PrismaClient) {
-  const list: RequestHandler = async (_request, response) => {
-    response.json(await listClasses(database))
+  const list: RequestHandler = async (request, response) => {
+    response.json(await listClassPage(database, parseNamePageQuery(request.query)))
   }
   const detail: RequestHandler<{ id: string }> = async (request, response) => {
     response.json(await getClass(database, request.params.id))

@@ -4,7 +4,8 @@ import type { PrismaClient } from '../../../generated/prisma/client.ts'
 import type { ReferenceKind, ReferenceInput } from '../../../../shared/api/admin-references.ts'
 import { ApiError } from '../../../http/errors.ts'
 import { MAP_URL_MAX } from '../../../../shared/maps.ts'
-import { listReferences, getReference, saveReference } from './reference.service.ts'
+import { listReferencePage, getReference, saveReference } from './reference.service.ts'
+import { parseNamePageQuery } from '../listing/name-page.ts'
 import { resolveMapLocation } from './map-location.service.ts'
 
 export function createReferenceController(database: PrismaClient, kind: ReferenceKind) {
@@ -29,8 +30,8 @@ export function createReferenceController(database: PrismaClient, kind: Referenc
     return result.data as ReferenceInput
   }
 
-  const list: RequestHandler = async (_request, response) => {
-    response.json(await listReferences(database, kind))
+  const list: RequestHandler = async (request, response) => {
+    response.json(await listReferencePage(database, kind, parseNamePageQuery(request.query)))
   }
   const detail: RequestHandler<{ id: string }> = async (request, response) => {
     response.json(await getReference(database, kind, request.params.id))

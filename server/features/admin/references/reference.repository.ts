@@ -1,5 +1,6 @@
 import type { Database } from '../../../database/transaction.ts'
 import type { ReferenceKind } from '../../../../shared/api/admin-references.ts'
+import { nameAfterWhere, nameOrder, nameSearchWhere, type NameCursor } from '../listing/name-page.ts'
 
 type ReferenceData = {
   name: string
@@ -13,12 +14,21 @@ type ReferenceData = {
 
 export function createReferenceRepository(database: Database, kind: ReferenceKind) {
   return {
-    list() {
-      const orderBy = [{ nameKey: 'asc' as const }, { id: 'asc' as const }]
+    // One page in name order: matches for the search, after the cursor row.
+    listPage(search: string, after: NameCursor | null, take: number) {
+      const where = { AND: [nameSearchWhere(search), nameAfterWhere(after)] }
       switch (kind) {
-        case 'coach': return database.coach.findMany({ orderBy })
-        case 'venue': return database.venue.findMany({ orderBy })
-        case 'level': return database.level.findMany({ orderBy })
+        case 'coach': return database.coach.findMany({ where, orderBy: nameOrder, take })
+        case 'venue': return database.venue.findMany({ where, orderBy: nameOrder, take })
+        case 'level': return database.level.findMany({ where, orderBy: nameOrder, take })
+      }
+    },
+    count(search: string) {
+      const where = nameSearchWhere(search)
+      switch (kind) {
+        case 'coach': return database.coach.count({ where })
+        case 'venue': return database.venue.count({ where })
+        case 'level': return database.level.count({ where })
       }
     },
     findById(id: string) {

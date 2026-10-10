@@ -1,5 +1,6 @@
 import type { Prisma } from '../../../generated/prisma/client.ts'
 import type { Database } from '../../../database/transaction.ts'
+import { nameAfterWhere, nameOrder, nameSearchWhere, type NameCursor } from '../listing/name-page.ts'
 
 const classRelations = {
   defaultLevel: true,
@@ -20,11 +21,17 @@ export function createClassRepository(database: Database) {
     findByRequestId(createRequestId: string) {
       return database.tennisClass.findUnique({ where: { createRequestId }, include: classRelations })
     },
-    list() {
+    // One page in name order: matches for the search, after the cursor row.
+    listPage(search: string, after: NameCursor | null, take: number) {
       return database.tennisClass.findMany({
+        where: { AND: [nameSearchWhere(search), nameAfterWhere(after)] },
         include: classRelations,
-        orderBy: [{ nameKey: 'asc' }, { id: 'asc' }],
+        orderBy: nameOrder,
+        take,
       })
+    },
+    count(search: string) {
+      return database.tennisClass.count({ where: nameSearchWhere(search) })
     },
     create(data: Prisma.TennisClassUncheckedCreateInput) {
       return database.tennisClass.create({ data })

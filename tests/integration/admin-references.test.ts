@@ -27,13 +27,33 @@ for (const path of ['coaches', 'venues', 'levels']) {
     expect(await update.json()).toMatchObject({ id: row.id, version: 2, name: name + ' edited' })
     const stale = await adminFetch(server.baseUrl, auth, `/${path}/${row.id}`, { method: 'PUT', body: JSON.stringify({ name: 'Stale edit', version: 1 }) })
     expect(stale.status).toBe(409); expect(await stale.json()).toMatchObject({ error: { code: 'STALE_VERSION', latest: { version: 2 } } })
-    const list = await (await adminFetch(server.baseUrl, auth, `/${path}`)).json()
-    expect(list.filter((record: { id: string }) => record.id === row.id)).toHaveLength(1)
+    const list = await (await adminFetch(server.baseUrl, auth, `/${path}?q=${encodeURIComponent(name + ' edited')}`)).json()
+    expect(list).toMatchObject({ total: 1, nextCursor: null })
+    expect(list.items.filter((record: { id: string }) => record.id === row.id)).toHaveLength(1)
     expect((await adminFetch(server.baseUrl, auth, `/${path}/${row.id}`, { method: 'DELETE', body: '{}' })).status).toBe(404)
     const invalid = await adminFetch(server.baseUrl, auth, `/${path}`, { method: 'POST', body: JSON.stringify({ name: 'x'.repeat(121), createRequestId: randomUUID() }) })
     expect(invalid.status).toBe(400); expect(await invalid.json()).toMatchObject({ error: { fields: { name: 'TOO_LONG' } } })
   })
 }
+test('lists page 20 at a time in name order, search on the server, and reject a tampered cursor', async () => {
+  const prefix = 'Paging ' + randomUUID().slice(0, 8)
+  for (let index = 0; index < 25; index++) {
+    const response = await adminFetch(server.baseUrl, auth, '/coaches', { method: 'POST', body: JSON.stringify({ name: `${prefix} ${String(index).padStart(2, '0')}`, createRequestId: randomUUID() }) })
+    expect(response.status).toBe(200)
+  }
+  const q = encodeURIComponent(prefix.toUpperCase())
+  const first = await (await adminFetch(server.baseUrl, auth, `/coaches?q=${q}`)).json()
+  expect(first.items).toHaveLength(20)
+  expect(first.total).toBe(25)
+  expect(first.nextCursor).toEqual(expect.any(String))
+  const second = await (await adminFetch(server.baseUrl, auth, `/coaches?q=${q}&cursor=${encodeURIComponent(first.nextCursor)}`)).json()
+  expect(second).toMatchObject({ total: 25, nextCursor: null })
+  const names = [...first.items, ...second.items].map((record: { name: string }) => record.name)
+  expect(names).toEqual(Array.from({ length: 25 }, (_, index) => `${prefix} ${String(index).padStart(2, '0')}`))
+  expect((await adminFetch(server.baseUrl, auth, '/coaches?cursor=not-a-cursor')).status).toBe(400)
+  expect((await adminFetch(server.baseUrl, auth, '/coaches?limit=500')).status).toBe(400)
+})
+
 test('venue rename propagates to existing public sessions without leaking internal fields', async () => {
   const catalog = await createSampleCatalog(db.prisma)
   const session = await createSampleSession(db.prisma, { catalog })

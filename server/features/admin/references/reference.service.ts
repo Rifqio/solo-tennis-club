@@ -3,6 +3,8 @@ import type { ReferenceKind, ReferenceInput, ReferenceRecord } from '../../../..
 import { validateReferenceFields, toNameKey } from '../../../../shared/reference-rules.ts'
 import { inTransaction, isUniqueConstraintError, type Database } from '../../../database/transaction.ts'
 import { ApiError } from '../../../http/errors.ts'
+import type { PagedList } from '../../../../shared/api/admin-list.ts'
+import { encodeNameCursor, type NamePageQuery } from '../listing/name-page.ts'
 import { createReferenceRepository } from './reference.repository.ts'
 
 type ReferenceRow = {
@@ -43,9 +45,12 @@ function venueFields(input: ReferenceInput) {
   }
 }
 
-export async function listReferences(database: Database, kind: ReferenceKind): Promise<ReferenceRecord[]> {
-  const rows = await createReferenceRepository(database, kind).list()
-  return rows.map(row => toReferenceRecord(kind, row))
+export async function listReferencePage(database: Database, kind: ReferenceKind, query: NamePageQuery): Promise<PagedList<ReferenceRecord>> {
+  const repository = createReferenceRepository(database, kind)
+  const [rows, total] = await Promise.all([repository.listPage(query.search, query.after, query.limit + 1), repository.count(query.search)])
+  const page = rows.slice(0, query.limit)
+  const last = page.at(-1)
+  return { items: page.map(row => toReferenceRecord(kind, row)), nextCursor: rows.length > query.limit && last ? encodeNameCursor(last) : null, total }
 }
 
 export async function getReference(database: Database, kind: ReferenceKind, id: string): Promise<ReferenceRecord> {

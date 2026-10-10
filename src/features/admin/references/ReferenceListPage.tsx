@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ReferenceKind, ReferenceRecord } from '@shared/api/admin-references'
@@ -7,7 +8,8 @@ import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
-import { useAdminResource } from '../forms/use-admin-resource'
+import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
+import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { CoachAvatar } from '../forms/CoachAvatar'
 import { AdminBand } from '../shell/AdminBand'
 import { referenceConfig } from './reference-config'
@@ -24,11 +26,14 @@ const copy = {
   pinNote: { id: 'Tanpa titik Maps, member dibawa ke pencarian nama lokasi di Google Maps.', en: 'Without a Maps pin, members get a Google Maps search for the venue name.' },
 }
 
+// Phones and tablets: the list on its own screen, 20 at a time with a server-side search; each row opens the editor.
 export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
   const { t } = useI18n()
   const config = referenceConfig[kind]
   const isDesktop = useMediaQuery('(min-width: 64rem)')
-  const { data, response, retry } = useAdminResource<ReferenceRecord[]>(isDesktop ? null : `/api/admin/${config.path}`)
+  const [query, setQuery] = useState('')
+  const search = useSettledSearch(query)
+  const list = useAdminList<ReferenceRecord>(isDesktop ? null : `/api/admin/${config.path}`, search)
   const location = useLocation()
   const savedId = (location.state as { savedId?: string } | null)?.savedId
   const venue = kind === 'venue'
@@ -38,17 +43,18 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
       <ReferenceTabs current={kind} />
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4">
-      {data?.some(record => record.isSample) && <SampleDataNotice />}
-      {!response ? (
+      <ListSearch value={query} onChange={setQuery} label={t(config.search)} placeholder={t(config.search)} />
+      {list.items.some(record => record.isSample) && <SampleDataNotice />}
+      {list.status === 'loading' ? (
         <div className="flex flex-col gap-2.5"><p role="status" className="sr-only">{t(messages.loading)}</p>
           {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="h-16 rounded-sm bg-surface-container" />)}</div>
-      ) : !data ? (
-        <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: retry }} />
-      ) : data.length === 0 ? (
-        <StatusPanel tone="info" title={t(config.empty)} />
+      ) : list.status === 'error' ? (
+        <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
+      ) : list.total === 0 ? (
+        search ? <ListNoMatch query={search} noun={config.noun} /> : <StatusPanel tone="info" title={t(config.empty)} />
       ) : (
         <ul className="flex flex-col gap-2.5">
-          {data.map(row => (
+          {list.items.map(row => (
             <li key={row.id} className="flex flex-col gap-2">
               {savedId === row.id && <StatusPanel tone="success" title={t(messages.saved)} />}
               <Link to={`/admin/${config.path}/${row.id}/edit`} viewTransition
@@ -67,7 +73,8 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
           ))}
         </ul>
       )}
-      {venue && data?.some(row => !row.mapUrl) && <p className="text-label text-on-surface-variant">{t(copy.pinNote)}</p>}
+      <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={config.noun} />
+      {venue && list.items.some(row => !row.mapUrl) && <p className="text-label text-on-surface-variant">{t(copy.pinNote)}</p>}
       <Link to={`/admin/${config.path}/new`} viewTransition
         className="state-layer pressable mt-1 flex min-h-13 items-center justify-center gap-2 rounded-sm border border-primary font-semibold text-primary">
         <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(config.add)}

@@ -5,6 +5,8 @@ import { validateClassFields } from '../../../../shared/class-rules.ts'
 import { toNameKey } from '../../../../shared/reference-rules.ts'
 import { inTransaction, isUniqueConstraintError, type Database } from '../../../database/transaction.ts'
 import { ApiError } from '../../../http/errors.ts'
+import type { PagedList } from '../../../../shared/api/admin-list.ts'
+import { encodeNameCursor, type NamePageQuery } from '../listing/name-page.ts'
 import { createClassRepository, type ClassRow } from './class.repository.ts'
 import { createReferenceRepository } from '../references/reference.repository.ts'
 
@@ -34,9 +36,12 @@ export async function getClass(database: Database, id: string): Promise<ClassRec
   return toClassRecord(row)
 }
 
-export async function listClasses(database: PrismaClient): Promise<ClassRecord[]> {
-  const rows = await createClassRepository(database).list()
-  return rows.map(toClassRecord)
+export async function listClassPage(database: PrismaClient, query: NamePageQuery): Promise<PagedList<ClassRecord>> {
+  const repository = createClassRepository(database)
+  const [rows, total] = await Promise.all([repository.listPage(query.search, query.after, query.limit + 1), repository.count(query.search)])
+  const page = rows.slice(0, query.limit)
+  const last = page.at(-1)
+  return { items: page.map(toClassRecord), nextCursor: rows.length > query.limit && last ? encodeNameCursor(last) : null, total }
 }
 
 async function validateDefaultReferences(database: Database, input: ClassInput) {

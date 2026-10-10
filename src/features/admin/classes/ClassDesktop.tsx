@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { m } from 'motion/react'
 import { Plus } from 'lucide-react'
@@ -10,6 +11,8 @@ import { selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
+import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
+import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
 import { ClassForm } from './ClassFormPage'
@@ -19,42 +22,54 @@ const copy = {
   subtitle: { id: 'Atur sekali, tiap bikin sesi baru detailnya langsung keisi.', en: 'Set it once and every new session starts filled in.' },
   empty: { id: 'Belum ada kelas. Bikin satu dulu biar sesi gampang diisi.', en: 'No classes yet. Add one so sessions are quick to fill in.' },
   add: { id: 'Tambah kelas', en: 'Add class' },
+  noun: { id: 'kelas', en: 'classes' },
+  search: { id: 'Cari kelas', en: 'Search classes' },
   minutes: { id: '{count} mnt', en: '{count} min' },
   perSlot: { id: '{price} / slot', en: '{price} / slot' },
   limits: { id: 'Min {min} · Max {max}', en: 'Min {min} · Max {max}' },
 }
 
-// Desktop Kelas (board D10): the class cards on the left, the chosen class's editor on the right. Cards and "Tambah"
-// link to the phone routes, so saving and the unsaved-changes guard work unchanged. `selected` is a class id, 'new',
-// or null on the list route (the saved or first class).
+// Desktop Kelas (board D10): the class cards on the left, 20 at a time with a server-side search, scrolling with the
+// page, and the chosen class's editor on the right. Cards and "Tambah" link to the phone routes, so saving and
+// the unsaved-changes guard work unchanged. `selected` is a class id, 'new', or null on the list route (the saved
+// class, else the first one).
 export function ClassDesktop({ selected }: { selected: string | null }) {
   const { t, language } = useI18n()
   const location = useLocation()
+  const [query, setQuery] = useState('')
+  const search = useSettledSearch(query)
   // Refetched on every navigation (a save lands back here); the last list stays on screen meanwhile.
-  const { data, response, retry } = useAdminResource<ClassRecord[]>('/api/admin/classes', location.key)
+  const list = useAdminList<ClassRecord>('/api/admin/classes', search, location.key)
   const savedId = (location.state as { savedId?: string } | null)?.savedId
-  const currentId = selected ?? savedId ?? data?.[0]?.id ?? 'new'
-  const record = currentId === 'new' ? null : data?.find(row => row.id === currentId) ?? null
+  // On the list route the editor opens the first class of the unfiltered list, and keeps it while the admin searches.
+  const [firstId, setFirstId] = useState<string | null>(null)
+  if (!firstId && !search && list.items[0]) setFirstId(list.items[0].id)
+  const currentId = selected ?? savedId ?? firstId ?? (list.status === 'ready' && !search ? 'new' : null)
+  const listed = list.items.find(row => row.id === currentId)
+  // A class that is not among the loaded cards (opened by link, or beyond the first page) is fetched on its own.
+  const single = useAdminResource<ClassRecord>(currentId && currentId !== 'new' && !listed ? `/api/admin/classes/${currentId}` : null, location.key)
+  const record = currentId === 'new' ? null : listed ?? single.data
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter mx-auto flex w-full max-w-[72rem] items-start gap-6 py-6">
       <section aria-label={t(copy.heading)} className="flex w-[24rem] shrink-0 flex-col gap-3 xl:w-[28rem]">
         <Link to="/admin/classes/new" aria-current={currentId === 'new' ? 'page' : undefined}
-          className={cn('state-layer pressable flex min-h-12 items-center justify-center gap-2 rounded-sm font-semibold',
+          className={cn('state-layer pressable flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-sm font-semibold',
             currentId === 'new' ? 'bg-primary text-on-primary' : 'border border-primary text-primary')}>
           <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(copy.add)}
         </Link>
-        {data?.some(row => row.isSample) && <SampleDataNotice />}
-        {!response ? (
+        <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} />
+        {list.items.some(row => row.isSample) && <SampleDataNotice />}
+        {list.status === 'loading' ? (
           <div className="flex flex-col gap-3"><p role="status" className="sr-only">{t(messages.loading)}</p>
             {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-36 rounded-lg bg-surface-container" />)}</div>
-        ) : !data ? (
-          <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: retry }} />
-        ) : data.length === 0 ? (
-          <StatusPanel tone="info" title={t(copy.empty)} />
+        ) : list.status === 'error' ? (
+          <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
+        ) : list.total === 0 ? (
+          search ? <ListNoMatch query={search} noun={copy.noun} /> : <StatusPanel tone="info" title={t(copy.empty)} />
         ) : (
           <ul className="flex flex-col gap-3">
-            {data.map(row => {
+            {list.items.map(row => {
               const active = row.id === currentId
               return (
                 <li key={row.id}>
@@ -82,11 +97,13 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
             })}
           </ul>
         )}
+        <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={copy.noun} />
       </section>
+      {/* The editor is taller than a screen, so it scrolls with the page rather than pinning (its save button stays reachable). */}
       <div className="min-w-0 flex-1 overflow-hidden rounded-lg bg-surface-container-lowest">
         {savedId && savedId === currentId && <div className="px-6 pt-6"><StatusPanel tone="success" title={t(messages.saved)} /></div>}
-        {currentId !== 'new' && !record
-          ? <div className="p-6"><StatusPanel tone="info" title={t(response && data ? messages.loadError : messages.loading)} /></div>
+        {currentId === null || (currentId !== 'new' && !record)
+          ? <div className="p-6"><StatusPanel tone={single.response && !single.data ? 'error' : 'info'} title={t(single.response && !single.data ? messages.loadError : messages.loading)} /></div>
           : <ClassForm key={`${currentId}:${record?.version ?? 0}`} initial={record} embedded />}
       </div>
     </div>

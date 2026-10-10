@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ClassRecord } from '@shared/api/admin-classes'
@@ -7,7 +8,8 @@ import { formatIdr } from '@/i18n/format'
 import { commonMessages } from '@/i18n/common.messages'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
-import { useAdminResource } from '../forms/use-admin-resource'
+import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
+import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
 import { ClassDesktop } from './ClassDesktop'
@@ -18,33 +20,39 @@ const copy = {
   empty: { id: 'Belum ada kelas. Bikin satu dulu biar sesi gampang diisi.', en: 'No classes yet. Add one so sessions are quick to fill in.' },
   add: { id: 'Tambah kelas', en: 'Add class' },
   edit: { id: 'Ubah kelas', en: 'Edit class' },
+  noun: { id: 'kelas', en: 'classes' },
+  search: { id: 'Cari kelas', en: 'Search classes' },
   minutes: { id: '{count} mnt', en: '{count} min' },
   perSlot: { id: '{price} / slot', en: '{price} / slot' },
   limits: { id: 'Min {min} · Max {max}', en: 'Min {min} · Max {max}' },
   coaches: { id: 'Coach: {names}', en: 'Coaches: {names}' },
 }
 
+// Phones and tablets: the class cards on their own screen, 20 at a time with a server-side search.
 export function ClassListPage() {
   const { t, language } = useI18n()
   const isDesktop = useMediaQuery('(min-width: 64rem)')
-  const { data, response, retry } = useAdminResource<ClassRecord[]>(isDesktop ? null : '/api/admin/classes')
+  const [query, setQuery] = useState('')
+  const search = useSettledSearch(query)
+  const list = useAdminList<ClassRecord>(isDesktop ? null : '/api/admin/classes', search)
   const location = useLocation()
   const savedId = (location.state as { savedId?: string } | null)?.savedId
   if (isDesktop) return <ClassDesktop selected={null} />
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4 lg:max-w-[72rem]">
-      {data?.some(row => row.isSample) && <SampleDataNotice />}
-      {!response ? (
+      <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} />
+      {list.items.some(row => row.isSample) && <SampleDataNotice />}
+      {list.status === 'loading' ? (
         <div className="flex flex-col gap-2.5"><p role="status" className="sr-only">{t(messages.loading)}</p>
           {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-36 rounded-sm bg-surface-container" />)}</div>
-      ) : !data ? (
-        <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: retry }} />
-      ) : data.length === 0 ? (
-        <StatusPanel tone="info" title={t(copy.empty)} />
+      ) : list.status === 'error' ? (
+        <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
+      ) : list.total === 0 ? (
+        search ? <ListNoMatch query={search} noun={copy.noun} /> : <StatusPanel tone="info" title={t(copy.empty)} />
       ) : (
         <ul className="grid gap-2.5 lg:grid-cols-2">
-          {data.map(row => (
+          {list.items.map(row => (
             <li key={row.id} className="flex flex-col gap-2">
               {savedId === row.id && <StatusPanel tone="success" title={t(messages.saved)} />}
               <Link to={`/admin/classes/${row.id}/edit`} viewTransition className="state-layer flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest px-4 py-3.5">
@@ -66,6 +74,7 @@ export function ClassListPage() {
           ))}
         </ul>
       )}
+      <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={copy.noun} />
       <Link to="/admin/classes/new" viewTransition className="state-layer pressable mt-1 flex min-h-13 items-center justify-center gap-2 rounded-sm border border-primary font-semibold text-primary lg:self-start lg:px-8">
         <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(copy.add)}
       </Link>

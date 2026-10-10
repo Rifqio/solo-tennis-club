@@ -8,6 +8,10 @@ export function createAuthRepository(database: Database) {
     findAccountByEmail(email: string) {
       return database.adminAccount.findUnique({ where: { email } })
     },
+    // Development sign-in only: the oldest active real admin, never the placeholder development admin.
+    findFirstActiveAccount(excludeId: string) {
+      return database.adminAccount.findFirst({ where: { isActive: true, id: { not: excludeId } }, orderBy: { createdAt: 'asc' } })
+    },
     createAccount(data: Prisma.AdminAccountCreateInput) {
       return database.adminAccount.create({ data })
     },

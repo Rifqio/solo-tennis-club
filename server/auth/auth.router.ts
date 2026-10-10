@@ -14,6 +14,10 @@ export function createSignInRouter(database: PrismaClient, config: RuntimeConfig
     json({ limit: '32kb' }),
     controller.signIn,
   )
+  // Testing shortcut: mounted only on development servers, never in production.
+  if (config.developmentMode) {
+    router.post('/auth/dev-sign-in', requireSameOrigin(config), requireJson, json({ limit: '1kb' }), controller.developmentSignIn)
+  }
   return router
 }
 

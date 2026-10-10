@@ -9,6 +9,7 @@ export const authMessages = {
   areaManage: { id: 'Daftar coach, lokasi, dan level.', en: 'Coach, venue and level lists.' },
   forgot: { id: 'Lupa kata sandi? Hubungi pengurus yang membuat akun admin Anda.', en: 'Forgot your password? Ask the club organiser who created your admin account.' },
   wait: { id: 'Tunggu {time}', en: 'Wait {time}' },
+  devShortcut: { id: 'Mode pengembangan: kosongkan email dan kata sandi lalu tekan Masuk.', en: 'Development mode: leave email and password empty and press Sign in.' },
   email: { id: 'Email', en: 'Email' },
   emailHint: { id: 'Gunakan email admin yang telah disiapkan untuk klub.', en: 'Use the admin email provisioned for the club.' },
   password: { id: 'Kata sandi', en: 'Password' },

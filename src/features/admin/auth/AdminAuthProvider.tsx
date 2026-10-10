@@ -38,7 +38,9 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     reload: () => { setState({ status: 'loading' }); setAttempt(value => value + 1) },
     signIn: async (email: string, password: string) => {
       generation.current += 1
-      const result = await adminSend<AdminSessionInfo>('POST', '/api/admin/auth/sign-in', { email, password })
+      // Development builds only: empty email and password use the server's development sign-in (testing shortcut).
+      const development = import.meta.env.DEV && !email && !password
+      const result = await adminSend<AdminSessionInfo>('POST', development ? '/api/admin/auth/dev-sign-in' : '/api/admin/auth/sign-in', development ? {} : { email, password })
       if (result.kind === 'ok') {
         if (identity !== null && identity !== result.data.admin.email) { try { sessionStorage.removeItem('lafu.sessionDraft') } catch { /* Storage is optional. */ } }
         setIdentity(result.data.admin.email)

@@ -31,3 +31,15 @@ export async function signInAdmin(database: PrismaClient, input: SignInInput) {
     session,
   }
 }
+
+// Development servers only (the route is not mounted in production): sign in as the first active admin without a
+// password, so local testing does not need credentials typed after every restart.
+export async function signInDevelopmentAdmin(database: PrismaClient) {
+  const account = await createAuthRepository(database).findFirstActiveAccount(DEVELOPMENT_ADMIN_ID)
+  if (!account) throw new ApiError(404, 'NOT_FOUND')
+  const session = await createAdminSession(database, account.id)
+  return {
+    admin: { email: account.email, displayName: account.displayName },
+    session,
+  }
+}

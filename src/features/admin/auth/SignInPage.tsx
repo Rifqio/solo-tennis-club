@@ -62,7 +62,9 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (sending.current || locked) return
-    const invalid = { email: !email.trim(), password: !password }
+    // Development builds: both fields empty signs in through the development shortcut instead of failing validation.
+    const shortcut = import.meta.env.DEV && !email.trim() && !password
+    const invalid = { email: !shortcut && !email.trim(), password: !shortcut && !password }
     setMissing(invalid)
     if (invalid.email || invalid.password) {
       form.current?.querySelector<HTMLInputElement>(invalid.email ? '[name=email]' : '[name=password]')?.focus()
@@ -145,6 +147,7 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
               <p className="text-on-surface-variant">{t(authMessages.intro)}</p>
             </div>
             {notice && <StatusPanel tone="info" title={t(notice)} />}
+            {import.meta.env.DEV && <p className="rounded-sm bg-warning-container px-4 py-3 text-label font-semibold text-warning">{t(authMessages.devShortcut)}</p>}
             <form ref={form} onSubmit={submit} noValidate className="flex min-w-0 flex-col gap-5" aria-busy={pending}>
               <TextField name="email" label={t(authMessages.email)} hint={t(authMessages.emailHint)} type="email" autoComplete="username" inputMode="email" autoCapitalize="none" spellCheck={false}
                 placeholder="nama@email.com" leading={<Mail className="size-5" />}

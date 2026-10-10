@@ -17,8 +17,8 @@ function Band({ title, children }: { title: string; children?: ReactNode }) {
   return (
     <header className="rounded-b-lg bg-band pb-5 pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white">
       <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2">
-        <Link to="/bookings" viewTransition className="pressable -ml-1 mt-2 flex min-h-11 items-center gap-3 self-start rounded-full pr-3 text-label">
-          <span className="flex size-11 items-center justify-center rounded-full bg-band-tile"><ChevronLeft aria-hidden="true" className="size-6" /></span>
+        <Link to="/bookings" viewTransition className="pressable -ml-1 mt-2 flex min-h-12 items-center gap-3 self-start rounded-full pr-3 text-label">
+          <span className="flex size-12 items-center justify-center rounded-full bg-band-tile"><ChevronLeft aria-hidden="true" className="size-6" /></span>
           {t(messages.back)}
         </Link>
         <h1 className="break-words text-headline font-bold leading-tight">{title}</h1>
@@ -110,7 +110,7 @@ export function Component() {
         <Fact label={t(messages.level)}><span className="font-semibold">{session.levelName}</span></Fact>
         <Fact label={t(messages.venue)}>
           <a href={venueMapsHref(session.venueName, session.venueMapUrl, session.venueAddress)} target="_blank" rel="noopener noreferrer"
-            className="-my-1 inline-flex min-h-11 flex-col items-end justify-center">
+            className="-my-1 inline-flex min-h-12 flex-col items-end justify-center">
             <span className="font-semibold">{session.venueName}</span>
             {session.venueAddress && <span className="text-label text-on-surface-variant">{session.venueAddress}</span>}
             <span className="inline-flex items-center gap-1 text-label font-semibold text-primary">{t(messages.openMaps)}<ExternalLink aria-hidden="true" className="size-3.5" strokeWidth={2.25} /></span>

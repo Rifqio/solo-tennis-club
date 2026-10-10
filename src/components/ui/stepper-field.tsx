@@ -26,7 +26,7 @@ export function StepperField({ name, label, value, onChange, min = 0, max = 999,
     onChange(String(Math.min(max, Math.max(min, next))))
   }
   const describedBy = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined
-  const button = 'state-layer pressable flex size-11 shrink-0 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface disabled:opacity-40'
+  const button = 'state-layer pressable flex size-12 shrink-0 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface disabled:opacity-40'
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-2">
       <label htmlFor={id} className="text-label font-medium text-on-surface">{label}</label>
@@ -34,7 +34,7 @@ export function StepperField({ name, label, value, onChange, min = 0, max = 999,
         <button type="button" aria-label={decreaseLabel} aria-controls={id} disabled={current !== null && current <= min} onClick={() => nudge(-1)} className={button}><Minus aria-hidden="true" className="size-4" strokeWidth={2.5} /></button>
         <input id={id} name={name} value={value} onChange={event => onChange(event.target.value.replace(/[^\d]/g, ''))}
           inputMode="numeric" pattern="[0-9]*" aria-invalid={error ? true : undefined} aria-describedby={describedBy}
-          className="w-full min-w-0 bg-transparent text-center text-title font-bold tabular-nums text-on-surface outline-none" />
+          className="h-12 w-full min-w-0 bg-transparent text-center text-title font-bold tabular-nums text-on-surface outline-none" />
         <button type="button" aria-label={increaseLabel} aria-controls={id} disabled={current !== null && current >= max} onClick={() => nudge(1)} className={button}><Plus aria-hidden="true" className="size-4" strokeWidth={2.5} /></button>
       </div>
       {hint && <p id={`${id}-hint`} className="text-label text-on-surface-variant">{hint}</p>}

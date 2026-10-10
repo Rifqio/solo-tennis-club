@@ -31,6 +31,7 @@ const copy = {
   noneVenue: { id: 'Belum ada lokasi. Tambah dulu di Kelola.', en: 'No venues yet. Add one in Manage first.' },
   noneLevel: { id: 'Belum ada level. Tambah dulu di Kelola.', en: 'No levels yet. Add one in Manage first.' },
   missing: { id: 'Pilihan {n} sudah nggak tersedia', en: 'Choice {n} is no longer available' },
+  pending: { id: 'Pilihan {n}: namanya belum dimuat', en: 'Choice {n}: name not loaded yet' },
 }
 
 // The fields a class and a session share, as chips and steppers so a phone needs no dropdowns or keyboard for the
@@ -42,9 +43,9 @@ export function SessionFields({ section, values, setField, errors, options, opti
   const errorFor = (field: keyof DefaultValues) => errors[field] ? t(fieldErrorMessage(field, errors[field]), { field: t(labels[field]) }) : undefined
   const status = (empty: { id: string; en: string }, count: number) => optionsStatus === 'loading' ? <p role="status" className="text-on-surface-variant">{t(copy.loading)}</p>
     : optionsStatus === 'error' ? <p role="status" className="text-on-surface-variant">{t(copy.failed)}</p>
-    : count === 0 ? <Link to="/admin/manage" className="flex min-h-11 items-center text-primary underline underline-offset-4">{t(empty)}</Link> : undefined
+    : count === 0 ? <Link to="/admin/manage" className="flex min-h-12 items-center text-primary underline underline-offset-4">{t(empty)}</Link> : undefined
   // A saved id whose option is gone still shows, so the admin sees what is selected and can change it.
-  const withMissing = (list: { id: string; name: string }[], ids: string[]) => [...list, ...ids.filter(id => id && !list.some(option => option.id === id)).map((id, index) => ({ id, name: t(copy.missing, { n: index + 1 }) }))]
+  const withMissing = (list: { id: string; name: string }[], ids: string[]) => [...list, ...ids.filter(id => id && !list.some(option => option.id === id)).map((id, index) => ({ id, name: t(optionsStatus === 'ready' ? copy.missing : copy.pending, { n: index + 1 }) }))]
 
   if (section === 'venue') return <>
     <ChoiceChips name="levelId" label={t(messages.level)} options={withMissing(options.levels, [values.levelId])} value={values.levelId} onChange={value => setField('levelId', value)} error={errorFor('levelId')} status={status(copy.noneLevel, options.levels.length)} />

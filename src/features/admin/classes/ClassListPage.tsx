@@ -46,7 +46,7 @@ export function ClassListPage() {
               <Link to={`/admin/classes/${row.id}/edit`} viewTransition className="state-layer flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest px-4 py-3.5">
                 <span className="flex items-start justify-between gap-3">
                   <span className="flex min-w-0 flex-col leading-snug">
-                    <span className="break-words font-bold">{row.name}<span className="sr-only">, {t(copy.edit)}</span></span>
+                    <h2 className="break-words font-bold">{row.name}</h2><span className="sr-only">{t(copy.edit)}</span>
                     <span className="break-words text-label text-on-surface-variant">{row.levelName} · {row.venueName}</span>
                   </span>
                   <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-on-surface-variant" />

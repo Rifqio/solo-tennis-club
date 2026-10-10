@@ -99,7 +99,7 @@ export function Component() {
           const on = value === filter
           return (
             <button key={value} type="button" aria-pressed={on} onClick={() => setParams(value === 'unpaid' ? {} : { status: value }, { replace: true })}
-              className={cn('state-layer pressable flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3.5 text-label font-semibold',
+              className={cn('state-layer pressable flex min-h-12 shrink-0 items-center gap-2 rounded-full px-3.5 text-label font-semibold',
                 on ? 'bg-surface-container-lowest text-on-surface' : 'bg-band-tile text-on-signboard')}>
               {t(messages[value])}
               {value === 'unpaid' && data && data.unpaidCount > 0 && (

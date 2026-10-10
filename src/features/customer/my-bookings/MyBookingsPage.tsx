@@ -60,11 +60,11 @@ function ActiveCard({ booking, now }: { booking: CustomerBookingItem; now: numbe
           </span>
           {whatsapp && (
             <a href={whatsapp} target="_blank" rel="noopener noreferrer" aria-label={t(messages.chatAdmin)}
-              className="state-layer pressable flex size-11 items-center justify-center rounded-sm border border-outline-variant bg-surface-container-lowest">
+              className="state-layer pressable flex size-12 items-center justify-center rounded-sm border border-outline-variant bg-surface-container-lowest">
               <MessageCircle aria-hidden="true" className="size-5" />
             </a>
           )}
-          <Button asChild variant="filled" className="min-h-11 px-4"><Link to={`/bookings/${booking.id}`} viewTransition>{t(messages.howToPay)}</Link></Button>
+          <Button asChild variant="filled" className="min-h-12 px-4"><Link to={`/bookings/${booking.id}`} viewTransition>{t(messages.howToPay)}</Link></Button>
         </div>
       )}
     </article>
@@ -120,7 +120,7 @@ export function Component() {
           {(['upcoming', 'history'] as const).map(value => (
             <Link key={value} to={value === 'history' ? '/bookings?view=history' : '/bookings'} replace aria-current={view === value ? 'page' : undefined}
               onClick={event => { event.preventDefault(); setParams(value === 'history' ? { view: 'history' } : {}, { replace: true }) }}
-              className={cn('pressable flex min-h-11 items-center justify-center gap-2 rounded-xs text-label font-semibold',
+              className={cn('pressable flex min-h-12 items-center justify-center gap-2 rounded-xs text-label font-semibold',
                 view === value ? 'bg-surface-container-lowest text-on-surface' : 'text-on-signboard')}>
               {t(value === 'history' ? messages.history : messages.active)}
               {value === 'upcoming' && view === 'upcoming' && shown.length > 0 && (

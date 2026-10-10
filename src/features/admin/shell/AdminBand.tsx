@@ -33,8 +33,8 @@ export function AdminBand({ title, back, subtitle, action, children }: AdminBand
       <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col pb-4 lg:max-w-[72rem]">
         <div className="flex h-14 items-center justify-between gap-3">
           {back ? (
-            <Link to={back.to} viewTransition className="pressable -ml-1 flex min-h-11 items-center gap-3 rounded-full pr-3 text-label">
-              <span className="flex size-11 items-center justify-center rounded-full bg-band-tile"><ChevronLeft aria-hidden="true" className="size-6" /></span>
+            <Link to={back.to} viewTransition className="pressable -ml-1 flex min-h-12 items-center gap-3 rounded-full pr-3 text-label">
+              <span className="flex size-12 items-center justify-center rounded-full bg-band-tile"><ChevronLeft aria-hidden="true" className="size-6" /></span>
               {back.label}
             </Link>
           ) : (
@@ -45,15 +45,13 @@ export function AdminBand({ title, back, subtitle, action, children }: AdminBand
           )}
           <div className="-mr-3 flex items-center">
             <LanguageMenu />
-            {!back && (
-              <button type="button" onClick={signOut} disabled={signingOut} aria-label={t(signingOut ? authMessages.signingOut : authMessages.signOut)}
-                className="state-layer pressable flex size-12 items-center justify-center rounded-full disabled:opacity-60">
-                <LogOut aria-hidden="true" className="size-5" />
-              </button>
-            )}
+            <button type="button" onClick={signOut} disabled={signingOut} aria-label={t(signingOut ? authMessages.signingOut : authMessages.signOut)}
+              className="state-layer pressable flex size-12 items-center justify-center rounded-full disabled:opacity-60">
+              <LogOut aria-hidden="true" className="size-5" />
+            </button>
           </div>
         </div>
-        <div className={cn('flex min-h-11 items-center justify-between gap-3', back && 'pt-1')}>
+        <div className={cn('flex min-h-12 items-center justify-between gap-3', back && 'pt-1')}>
           <h1 className="min-w-0 break-words text-headline font-bold leading-tight">{title}</h1>
           {action}
         </div>

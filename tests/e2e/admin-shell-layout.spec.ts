@@ -30,12 +30,13 @@ for (const width of LAYOUT_WIDTHS) for (const language of ['id', 'en']) {
     await expectNoHorizontalScroll(page)
     await expectTouchTargets(page)
     const nav = page.getByRole('navigation', { name: language === 'id' ? 'Navigasi admin' : 'Admin navigation' })
-    await expect(nav.getByRole('link')).toHaveCount(3)
+    // Sesi, Booking, Tambah sesi, Kelas, Kelola.
+    await expect(nav.getByRole('link')).toHaveCount(5)
     const last = page.getByRole('heading', { name: 'Contoh kelas 8', exact: true })
     await last.scrollIntoViewIfNeeded()
     if (width < 640) {
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
-      const listBox = await page.locator('main > div > ul').boundingBox()
+      const listBox = await page.locator('main ul').last().boundingBox()
       const navBox = await nav.boundingBox()
       expect(listBox!.y + listBox!.height).toBeLessThanOrEqual(navBox!.y)
     }

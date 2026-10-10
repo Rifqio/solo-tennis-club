@@ -165,7 +165,7 @@ function ReferenceForm({ kind, initial }: { kind: ReferenceKind; initial: Refere
       <div className="sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
         <div className="page-gutter mx-auto w-full max-w-[50rem]">
           <Button className="w-full" variant="filled" type="submit" disabled={pending || reading || Boolean(latest)} pendingLabel={pending ? t(messages.saving) : undefined}>
-            {t(initial ? messages.save : config.add)}
+            {t(messages.save)}
           </Button>
         </div>
       </div>

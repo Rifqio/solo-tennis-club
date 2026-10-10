@@ -71,7 +71,7 @@ export function Component() {
         </span>
         {href && (
           <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t(messages.chatLabel, { name: booking.bookerName })}
-            className="pressable flex min-h-11 shrink-0 items-center gap-2 rounded-sm bg-band px-4 font-semibold text-on-signboard">
+            className="pressable flex min-h-12 shrink-0 items-center gap-2 rounded-sm bg-band px-4 font-semibold text-on-signboard">
             <MessageCircle aria-hidden="true" className="size-5" />{t(messages.chat)}
           </a>
         )}
@@ -84,7 +84,7 @@ export function Component() {
         <div className="flex justify-between gap-4 py-3">
           <dt className="text-label text-on-surface-variant">{t(messages.session)}</dt>
           <dd className="flex flex-col items-end text-right">
-            <Link to={`/admin/sessions/${session.id}/roster`} viewTransition className="inline-flex min-h-8 items-center font-semibold text-primary">{session.className}</Link>
+            <Link to={`/admin/sessions/${session.id}/roster`} viewTransition className="inline-flex min-h-12 items-center font-semibold text-primary">{session.className}</Link>
             <span className="text-label tabular-nums text-on-surface-variant">{formatClubDateShort(session.date, language)}, {session.startTime}-{session.endTime}</span>
           </dd>
         </div>

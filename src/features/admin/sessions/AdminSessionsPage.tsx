@@ -57,7 +57,7 @@ function SessionCard({ row, saved }: { row: AdminSessionDetail; saved: boolean }
         <span className={cn('shrink-0 rounded-xs px-2 py-1.5 text-title font-bold tabular-nums',
           cancelled ? 'bg-surface-container-high text-on-surface-variant line-through' : 'bg-band-tile text-on-signboard')}>{row.startTime}</span>
         <span className="flex min-w-0 flex-col leading-snug">
-          <span className="break-words font-bold">{row.className}</span>
+          <h3 className="break-words font-bold">{row.className}</h3>
           <span className="break-words text-label text-on-surface-variant">{cancelled ? t(messages.cancelled) : facts}</span>
         </span>
       </div>
@@ -123,7 +123,8 @@ export function AdminSessionsPage() {
       </div>
       {sessions.some(row => row.isSample) && <SampleDataNotice />}
       {data?.truncated && <StatusPanel tone="info" title={t(messages.truncated)} />}
-      {!response ? (
+      {/* A 401 sends the admin to sign-in, which explains it; no second message here meanwhile. */}
+      {!response || (response.kind === 'http' && response.status === 401) ? (
         <div className="flex flex-col gap-3">
           <p role="status" className="sr-only">{t(messages.loading)}</p>
           {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-44 rounded-sm bg-surface-container" />)}

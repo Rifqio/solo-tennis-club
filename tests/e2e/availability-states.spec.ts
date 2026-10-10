@@ -10,7 +10,7 @@ for (const [availability, remaining, indonesian, englishLabel] of [['available',
     await expect(page.getByText(indonesian, { exact: true })).toBeVisible()
     await english(page); await expect(page.getByText(englishLabel, { exact: true })).toBeVisible()
     await page.getByRole('button', { name: /Contoh kelas statusfixture/ }).click()
-    const dialog = page.getByRole('dialog'); await expect(dialog.getByText(englishLabel, { exact: true })).toBeVisible()
+    const dialog = page.getByRole('dialog'); await expect(dialog.getByText(englishLabel, { exact: true }).first()).toBeVisible()
     if (availability === 'cancelled') await expect(dialog).toContainText('This session is cancelled')
     await expect(dialog).toContainText('150,000')
   })

@@ -35,8 +35,7 @@ export function MapPreview({ latitude, longitude }: { latitude: number; longitud
         <path d="M16 39C16 39 2 24 2 15a14 14 0 0 1 28 0c0 9-14 24-14 24z" className="fill-band-tile stroke-white" strokeWidth="2" />
         <circle cx="16" cy="15" r="5" className="fill-accent" />
       </svg>
-      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer"
-        className="absolute bottom-0 right-0 bg-surface-container-lowest/85 px-1.5 text-label text-on-surface">© OpenStreetMap</a>
+      <span className="absolute bottom-0 right-0 bg-surface-container-lowest/85 px-1.5 text-label text-on-surface">© OpenStreetMap contributors</span>
     </div>
   )
 }

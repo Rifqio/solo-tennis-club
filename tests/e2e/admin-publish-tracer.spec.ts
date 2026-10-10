@@ -8,8 +8,10 @@ test('published session is visible to a separate signed-out browser', async ({ r
     await page.goto('/?date=' + published.session.date)
     const row = page.getByRole('listitem').filter({ hasText: published.session.className })
     await expect(row).toContainText('19:30')
-    await expect(row).toContainText('WIB')
     await expect(row).toContainText('150.000')
+    // Times are WIB; the detail names the zone next to the time.
+    await row.getByRole('button').first().click()
+    await expect(page.getByRole('dialog')).toContainText('WIB')
     expect((await context.request.get('/api/admin/session-options')).status()).toBe(401)
   } finally { await context.close() }
 })

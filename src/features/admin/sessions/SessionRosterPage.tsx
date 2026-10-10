@@ -63,7 +63,7 @@ function BookingGroup({ booking, active }: { booking: AdminRosterBooking; active
           </p>
           {href
             ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t(copy.chat, { name: booking.bookerName })}
-                className="inline-flex min-h-8 items-center gap-1.5 self-start text-label font-semibold text-primary tabular-nums">
+                className="inline-flex min-h-12 items-center gap-1.5 self-start text-label font-semibold text-primary tabular-nums">
                 <MessageCircle aria-hidden="true" className="size-4" />{booking.bookerPhone}
               </a>
             : <span className="text-label tabular-nums text-on-surface-variant">{booking.bookerPhone}</span>}
@@ -141,7 +141,7 @@ export function Component() {
             const on = filter === value
             return (
               <button key={value} type="button" aria-pressed={on} onClick={() => setFilter(value)}
-                className={cn('state-layer pressable flex min-h-11 shrink-0 items-center gap-2 rounded-full pl-3.5 pr-1.5 text-label',
+                className={cn('state-layer pressable flex min-h-12 shrink-0 items-center gap-2 rounded-full pl-3.5 pr-1.5 text-label',
                   on ? 'bg-band-tile font-semibold text-on-signboard' : 'border border-outline-variant bg-surface-container-lowest')}>
                 {t(copy[value])}
                 <span className={cn('flex h-7 min-w-7 items-center justify-center rounded-full px-2 font-bold tabular-nums',

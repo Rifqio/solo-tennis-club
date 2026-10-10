@@ -91,7 +91,7 @@ test('E4 expiry recovers at the same dated destination, and sign-out failure doe
   await expect(page).toHaveURL(/\/admin\/sessions$/)
   await page.route('**/api/admin/sessions?**', route => route.fulfill({ status: 401, json: { error: { code: 'UNAUTHENTICATED' } } }))
   await page.getByRole('button', { name: 'Tanggal berikutnya', exact: true }).click()
-  await expect(page.getByText('Sesi admin berakhir. Masuk lagi untuk melanjutkan.')).toBeVisible()
+  await expect(page.getByRole('status').getByText('Sesi admin berakhir. Masuk lagi untuk melanjutkan.')).toBeVisible()
   const destination = page.url()
   await page.unroute('**/api/admin/sessions?**')
   await page.getByRole('textbox', { name: 'Email', exact: true }).fill(e2eAdminEmail)

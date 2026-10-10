@@ -12,12 +12,13 @@ interface ChoiceChipsProps {
   onChange: (value: string | string[]) => void
   hint?: string
   error?: string
-  // Shown instead of the chips while options load, fail, or when there are none.
+  // A line above the chips while options load or fail, or in place of them when there are none.
   status?: ReactNode
 }
 
 // Choices as tappable chips: Deep Court when picked, outlined otherwise. Built on real radio or checkbox inputs, so
-// keyboard, screen readers and form focus behave as native fields do.
+// keyboard, screen readers and form focus behave as native fields do. The input covers the whole chip, so taps,
+// voice control and test tools reach the real control.
 export function ChoiceChips({ name, label, options, value, onChange, hint, error, status }: ChoiceChipsProps) {
   const id = useId()
   const multiple = Array.isArray(value)
@@ -26,16 +27,17 @@ export function ChoiceChips({ name, label, options, value, onChange, hint, error
   return (
     <fieldset data-field={name} tabIndex={-1} aria-invalid={error ? true : undefined} aria-describedby={describedBy} className="flex min-w-0 flex-col gap-2 outline-none">
       <legend className="mb-2 text-label font-medium text-on-surface">{label}</legend>
-      {status ?? (
+      {status}
+      {options.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {options.map(option => {
             const on = selected(option.id)
             return (
               <label key={option.id}
-                className={cn('state-layer pressable relative flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-label transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary',
+                className={cn('state-layer pressable relative flex min-h-12 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-label transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary',
                   on ? 'bg-band-tile font-semibold text-on-signboard' : 'border border-outline-variant bg-surface-container-lowest text-on-surface',
                   error && !on && 'border-error')}>
-                <input type={multiple ? 'checkbox' : 'radio'} name={name} value={option.id} checked={on} className="sr-only"
+                <input type={multiple ? 'checkbox' : 'radio'} name={name} value={option.id} checked={on} className="absolute inset-0 size-full cursor-pointer appearance-none rounded-full opacity-0"
                   onChange={event => {
                     if (!multiple) onChange(option.id)
                     else onChange(event.target.checked ? [...value, option.id] : value.filter(item => item !== option.id))

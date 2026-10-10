@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { addClubDays, clubToday } from '../../shared/club-time.ts'
-import { browserSignIn, chooseOption, english } from './support/browser-admin.ts'
+import { browserSignIn, chooseOption, english, expectDuration, setDuration } from './support/browser-admin.ts'
 import { getSessionOptions, publishSession, signInAdmin } from './support/admin-api.ts'
 import { expectNoHorizontalScroll, expectTouchTargets } from './support/layout-checks.ts'
 import type { AdminSessionDetail } from '../../shared/api/admin-sessions.ts'
@@ -9,14 +9,14 @@ test('guided session publish: editable defaults, back/continue, review all coach
   const date = addClubDays(clubToday(),181)
   await browserSignIn(page); await page.goto('/admin/sessions/new?date=' + date)
   await chooseOption(page, 'Kelas', options.classes[0].name)
-  await page.getByLabel('Waktu mulai (WIB)').fill('06:30')
-  await expect(page.getByLabel('Durasi (menit)')).toHaveValue(String(options.classes[0].defaults.durationMinutes))
+  await page.getByLabel('Waktu mulai (WIB)', { exact: true }).fill('06:30')
+  await expectDuration(page, String(options.classes[0].defaults.durationMinutes))
   await page.getByRole('button', { name: 'Lanjut', exact: true }).click()
   await expect(page.getByText('Langkah 2 dari 4', { exact: true })).toBeVisible()
   for (const coach of options.coaches.slice(0,2)) await page.getByLabel(coach.name, { exact: true }).check()
-  await page.getByRole('button', { name: 'Kembali', exact: true }).click(); await expect(page.getByLabel('Waktu mulai (WIB)')).toHaveValue('06:30')
+  await page.getByRole('button', { name: 'Kembali', exact: true }).click(); await expect(page.getByLabel('Waktu mulai (WIB)', { exact: true })).toHaveValue('06:30')
   await page.getByRole('button', { name: 'Lanjut', exact: true }).click(); await page.getByRole('button', { name: 'Lanjut', exact: true }).click()
-  await page.getByLabel('Harga per slot (Rp)').fill('175000')
+  await page.getByLabel('Harga per slot', { exact: true }).fill('175000')
   await page.getByRole('button', { name: 'Lanjut', exact: true }).click(); await expect(page.getByText('Langkah 4 dari 4', { exact: true })).toBeVisible()
   for (const coach of options.coaches.slice(0,2)) await expect(page.getByText(coach.name, { exact: true })).toBeVisible()
   let saved: AdminSessionDetail | null = null; let requests = 0
@@ -42,13 +42,13 @@ test('safe edit retains local values on conflict; explicit latest replacement re
   await page.setViewportSize({ width: 320, height: 568 }); await browserSignIn(page)
   await page.goto(`/admin/sessions/${created.session.id}/edit`)
   await page.getByRole('button', { name: 'Lanjut', exact: true }).click(); await page.getByRole('button', { name: 'Lanjut', exact: true }).click()
-  await page.getByLabel('Harga per slot (Rp)').fill('180000'); await page.getByRole('button', { name: 'Lanjut', exact: true }).click()
+  await page.getByLabel('Harga per slot', { exact: true }).fill('180000'); await page.getByRole('button', { name: 'Lanjut', exact: true }).click()
   await page.route(`**/api/admin/sessions/${created.session.id}`, route => route.request().method() === 'PUT' ? route.fulfill({ status: 409, json: { error: { code: 'STALE_VERSION', latest: { ...created.session, version: 2, priceIdr: 190000 } } } }) : route.continue())
   await page.getByRole('button', { name: 'Simpan perubahan sesi', exact: true }).click()
   await expect(page.getByText('Isian Anda', { exact: true })).toBeVisible(); await expect(page.getByText(/180\.000/).first()).toBeVisible()
   await page.getByRole('button', { name: 'Gunakan versi terbaru', exact: true }).click()
   await page.getByRole('button', { name: 'Lanjut', exact: true }).click(); await page.getByRole('button', { name: 'Lanjut', exact: true }).click()
-  await expect(page.getByLabel('Harga per slot (Rp)')).toHaveValue('190000')
+  await expect(page.getByLabel('Harga per slot', { exact: true })).toHaveValue('190000')
   await expectNoHorizontalScroll(page); await expectTouchTargets(page)
 })
 test('E6 create draft survives reload, language switch and missing-reference detour; class overrides require confirmation', async ({ page, request }) => {
@@ -58,16 +58,17 @@ test('E6 create draft survives reload, language switch and missing-reference det
   const fixtures = { ...options, classes: [first,second] }
   await browserSignIn(page); await page.route('**/api/admin/session-options', route => route.fulfill({ json: fixtures }))
   await page.goto('/admin/sessions/new')
-  await chooseOption(page,'Kelas',first.name); await page.getByLabel('Durasi (menit)').fill('120'); await page.getByLabel('Waktu mulai (WIB)').fill('06:30')
+  await chooseOption(page,'Kelas',first.name); await setDuration(page, '120'); await page.getByLabel('Waktu mulai (WIB)', { exact: true }).fill('06:30')
   await chooseOption(page,'Kelas',second.name); await expect(page.getByRole('alertdialog')).toContainText('Ganti kelas?')
-  await page.getByRole('button', { name: 'Pertahankan kelas' }).click(); await expect(page.getByLabel('Durasi (menit)')).toHaveValue('120')
-  await page.reload(); await expect(page.getByLabel('Durasi (menit)')).toHaveValue('120')
-  await english(page); await expect(page.getByLabel('Duration (minutes)')).toHaveValue('120')
+  await page.getByRole('button', { name: 'Pertahankan kelas' }).click(); await expectDuration(page, '120')
+  await page.reload(); await expectDuration(page, '120')
+  await english(page); await expectDuration(page, '120', 'en')
   await page.unroute('**/api/admin/session-options'); await page.route('**/api/admin/session-options', route => route.fulfill({ json: { ...fixtures, venues: [] } }))
   await page.reload(); await page.getByRole('link', { name: 'Manage', exact: true }).first().click()
-  await expect(page).toHaveURL(/\/admin\/manage$/)
+  // Kelola opens on its first list.
+  await expect(page).toHaveURL(/\/admin\/(manage|coaches)$/)
   await page.unroute('**/api/admin/session-options'); await page.route('**/api/admin/session-options', route => route.fulfill({ json: fixtures }))
-  await page.goBack(); await expect(page.getByLabel('Duration (minutes)')).toHaveValue('120')
+  await page.goBack(); if (page.url().endsWith('/admin/manage')) await page.goBack(); await expectDuration(page, '120', 'en')
   const draft = await page.evaluate(() => JSON.parse(sessionStorage.getItem('lafu.sessionDraft')!))
   expect(draft.owner).toBeDefined(); expect(draft).not.toHaveProperty('csrfToken'); expect(draft).not.toHaveProperty('password')
 })

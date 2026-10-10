@@ -93,7 +93,7 @@ function PlayerList({ names }: { names: string[] }) {
     <section className="flex flex-col gap-2 rounded-sm border border-primary/25 bg-primary-container p-3 text-on-primary-container">
       <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)}
         aria-label={expanded ? undefined : t(messages.seeAllLabel, { count: names.length })}
-        className="state-layer pressable -m-1 flex min-h-11 items-center justify-between gap-2 rounded-xs p-1 text-left">
+        className="state-layer pressable -m-1 flex min-h-12 items-center justify-between gap-2 rounded-xs p-1 text-left">
         <span className="text-label font-semibold">{title}</span>
         <span className="flex items-center gap-0.5 text-label font-semibold text-primary">
           {expanded ? t(messages.showLess) : t(messages.seeAll)}
@@ -237,7 +237,7 @@ export function SessionDetailSheet({ id, seed = null, knownPlayers, onClose, ret
         <Fact label={t(messages.venue)}>
           <a href={venueMapsHref(view.venueName, detail?.venueMapUrl, detail?.venueAddress)} target="_blank" rel="noopener noreferrer"
             aria-label={t(messages.openMapsLabel, { venue: view.venueName })}
-            className="state-layer -my-1 inline-flex min-h-11 flex-col items-end justify-center rounded-xs py-1">
+            className="state-layer -my-1 inline-flex min-h-12 flex-col items-end justify-center rounded-xs py-1">
             <span>{view.venueName}</span>
             {detail?.venueAddress && <span className="text-label font-normal text-on-surface-variant">{detail.venueAddress}</span>}
             <span className="inline-flex items-center gap-1 text-label text-primary">{t(messages.openMaps)}<ExternalLink aria-hidden="true" className="size-3.5" strokeWidth={2.25} /></span>

@@ -15,8 +15,9 @@ export async function expectTouchTargets(page: Page, selector = 'a, button, inpu
     const box = target.getBoundingClientRect()
     // Skip hidden and visually-hidden (sr-only, 1x1) controls; they are not touch targets.
     if (box.width <= 1 || box.height <= 1) return []
-    const tooShort = box.height < 48
-    const tooNarrow = element.hasAttribute('data-icon-only') && box.width < 48
+    // Sub-pixel layout (grid tracks, fractional rem) can report 47.99 for a 48px control; that is still 48 on screen.
+    const tooShort = box.height < 47.9
+    const tooNarrow = element.hasAttribute('data-icon-only') && box.width < 47.9
     return tooShort || tooNarrow ? [`${element.tagName.toLowerCase()} "${element.textContent?.trim() ?? ''}" ${Math.round(box.width)}x${Math.round(box.height)}`] : []
   }))
   expect(undersized, 'every visible control is at least 48px').toEqual([])

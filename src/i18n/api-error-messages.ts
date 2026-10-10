@@ -27,6 +27,7 @@ export const apiErrorMessages: Record<ApiErrorCode, Message> = {
   BOOKING_CLOSED: { id: 'Pemesanan untuk sesi ini sudah ditutup.', en: 'Reservations for this session are closed.' },
   SESSION_CHANGED: { id: 'Detail sesi berubah. Muat ulang sebelum mengonfirmasi.', en: 'Session details changed. Reload before confirming.' },
   IDEMPOTENCY_CONFLICT: { id: 'Permintaan ini sudah dipakai untuk data berbeda. Muat ulang dan coba lagi.', en: 'This request was already used for different details. Reload and try again.' },
+  MAP_LINK_UNREADABLE: { id: 'Link ini nggak kebaca. Salin ulang dari tombol Bagikan di Google Maps.', en: "We couldn't read this link. Copy it again from Share in Google Maps." },
 }
 
 export const fieldErrorMessages: Record<FieldErrorCode, Message> = {
@@ -43,6 +44,7 @@ export const fieldErrorMessages: Record<FieldErrorCode, Message> = {
   DATE_IN_PAST: { id: 'Pilih tanggal dan waktu yang belum lewat.', en: 'Choose a date and time that has not passed.' },
   DATE_TOO_FAR: { id: 'Tanggal terlalu jauh ke depan. Pilih tanggal yang lebih dekat.', en: 'The date is too far ahead. Choose an earlier date.' },
   DUPLICATE_NAME: { id: 'Nama ini sudah digunakan. Gunakan nama lain.', en: 'This name is already in use. Use a different name.' },
+  MAP_LINK_UNREADABLE: { id: 'Link ini nggak kebaca. Salin ulang dari tombol Bagikan di Google Maps.', en: "We couldn't read this link. Copy it again from Share in Google Maps." },
 }
 
 // The UI-SPEC price sentence is more specific than the generic integer message.

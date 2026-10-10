@@ -14,7 +14,7 @@ test('public detail has an exact allowlist, stored coach order and integer capac
   const response = await fetch(server.baseUrl + `/api/public/sessions/${row.id}`)
   expect(response.headers.get('cache-control')).toBe('no-store')
   const detail = await response.json()
-  expect(Object.keys(detail).sort()).toEqual(['id','startsAt','endsAt','date','startTime','endTime','className','levelName','venueName','venueAddress','priceIdr','remainingPlaces','availability','isSample','coaches','minParticipants','maxParticipants','durationMinutes','version'].sort())
+  expect(Object.keys(detail).sort()).toEqual(['id','startsAt','endsAt','date','startTime','endTime','className','levelName','venueName','venueAddress','venueMapUrl','priceIdr','remainingPlaces','availability','isSample','coaches','minParticipants','maxParticipants','durationMinutes','version'].sort())
   expect(detail).toMatchObject({ coaches: [...catalog.coaches].reverse().map(coach => coach.name), priceIdr: 150000, minParticipants: 4, maxParticipants: 8, remainingPlaces: 8, availability: 'available' })
 })
 test('unknown and malformed detail ids return 404 without exposing private data', async () => {

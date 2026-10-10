@@ -48,7 +48,7 @@ export function createPublicSessionRepository(database: Database) {
         select: {
           ...summaryFields,
           minParticipants: true,
-          venue: { select: { name: true, address: true, isSample: true } },
+          venue: { select: { name: true, address: true, mapUrl: true, isSample: true } },
           coaches: {
             orderBy: { position: 'asc' },
             select: { coach: { select: { name: true, isSample: true } } },

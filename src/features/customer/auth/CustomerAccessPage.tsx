@@ -31,6 +31,7 @@ export function Component() {
   const [code, setCode] = useState('')
   const [name, setName] = useState('')
   const [invalid, setInvalid] = useState<string | null>(null)
+  const [codeEdited, setCodeEdited] = useState(false)
   const [now, setNow] = useState(Date.now)
   const heading = useRef<HTMLHeadingElement>(null)
   const form = useRef<HTMLFormElement>(null)
@@ -52,8 +53,11 @@ export function Component() {
   const title = state.stage === 'code' ? messages.codeHeading
     : state.stage === 'name' ? messages.nameHeading
     : state.stage === 'complete' ? messages.account : messages.heading
+  // A wrong code is shown on the boxes themselves (red, a shake, one line under them), not as a panel.
+  const codeRejected = state.stage === 'code' && access.failure !== 'network' && access.failure?.code === 'OTP_INVALID'
+  const wrongCode = codeRejected && !codeEdited
   const errorText = access.failure === 'network' ? t(messages.network)
-    : access.failure ? t(apiErrorMessages[access.failure.code], { seconds: retrySeconds }) : null
+    : access.failure && !codeRejected ? t(apiErrorMessages[access.failure.code], { seconds: retrySeconds }) : null
 
   if (state.stage === 'complete' && params.has('returnTo')) return <Navigate to={returnPath} replace />
 
@@ -71,6 +75,7 @@ export function Component() {
       await access.requestCode(normalized)
     } else if (state.stage === 'code') {
       if (!/^\d{6}$/.test(code)) return showInvalid('code')
+      setCodeEdited(false)
       if (await access.verifyCode(code)) setCode('')
     } else if (state.stage === 'name') {
       const normalized = normalizeCustomerName(name)
@@ -133,7 +138,7 @@ export function Component() {
               leading={<Smartphone className="size-5" />}
               value={phone} onChange={event => { setPhone(event.target.value); setInvalid(null) }} error={invalid === 'phone' ? t(messages.phoneError) : undefined} maxLength={50} required />}
             {state.stage === 'code' && <CodeBoxes name="code" label={t(messages.code)} value={code}
-              onValueChange={value => { setCode(value); setInvalid(null) }} error={invalid === 'code' ? t(messages.codeError) : undefined} required />}
+              onValueChange={value => { setCode(value); setInvalid(null); setCodeEdited(true) }} error={invalid === 'code' ? t(messages.codeError) : wrongCode ? t(messages.wrongCode) : undefined} required />}
             {state.stage === 'name' && <TextField name="name" label={t(messages.name)} autoComplete="name" value={name} leading={<UserRound className="size-5" />}
               onChange={event => { setName(event.target.value); setInvalid(null) }} error={invalid === 'name' ? t(messages.nameError) : undefined} maxLength={120} required />}
             {state.stage === 'code' && <div className="flex flex-wrap items-center justify-between gap-2">

@@ -316,6 +316,17 @@
   background: linear-gradient(to bottom, rgba(15, 17, 18, 0.62) 0%, rgba(15, 17, 18, 0.35) 55%, rgba(15, 17, 18, 0) 100%);
 }
 
+/* Club photo card: the bottom-right corner is cut away for the round "see schedule" button that sits in it. */
+.corner-notch {
+  -webkit-mask: radial-gradient(circle at 100% 100%, transparent 2.75rem, #000 2.8rem);
+  mask: radial-gradient(circle at 100% 100%, transparent 2.75rem, #000 2.8rem);
+}
+
+/* Club photo: ink rising from the bottom under the club name. */
+.photo-scrim-bottom {
+  background: linear-gradient(to top, rgba(15, 17, 18, 0.82) 0%, rgba(15, 17, 18, 0) 56%);
+}
+
 /* The dock's notch: a circle cut from the bar around the raised book button (phones only; the rail has none). */
 @media (max-width: 39.99rem) {
   .dock-notch {

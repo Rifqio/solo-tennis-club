@@ -11,6 +11,7 @@ export const customerAuthMessages = {
   code: { id: 'Kode enam digit', en: 'Six-digit code' },
   codeHint: { id: 'Kode dikirim ke {phone}. Berlaku 5 menit.', en: 'Sent to {phone}. Valid for 5 minutes.' },
   codeError: { id: 'Kodenya 6 angka.', en: 'The code has 6 digits.' },
+  wrongCode: { id: 'Kodenya belum cocok. Cek lagi, ya.', en: "That code doesn't match. Check it and try again." },
   verify: { id: 'Verifikasi', en: 'Verify' },
   verifying: { id: 'Memverifikasi...', en: 'Verifying...' },
   editPhone: { id: 'Ubah nomor', en: 'Edit number' },

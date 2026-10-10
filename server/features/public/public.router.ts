@@ -8,5 +8,6 @@ export function createPublicRouter({ prisma }: { prisma: PrismaClient }) {
   router.get('/sessions/:id', controller.detail)
   router.get('/schedule', controller.schedule)
   router.get('/upcoming', controller.upcoming)
+  router.get('/venues', controller.venues)
   return router
 }

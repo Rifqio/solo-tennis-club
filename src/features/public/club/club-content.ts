@@ -3,20 +3,25 @@ import type { Message } from '@/i18n/types'
 export interface ClubContent {
   name: string
   shortName: string
+  city: string
   description: Message | null
-  contact: Message | null
-  address: Message | null
+  // Digits only, with the country code (62...), for a wa.me link.
+  whatsapp: string | null
+  instagram: string | null
   logoSrc: string | null
-  photos: string[]
+  photo: string
 }
 
-// Real content is club-supplied. Only the confirmed name exists so far; everything else stays null until the club provides bilingual text and media.
+// Real content is club-supplied. The name and city are confirmed; the story and contacts stay null until the club
+// provides them, and the screen leaves those parts out instead of inventing them.
 export const clubContent: ClubContent = {
   name: 'Lawu Fun Tennis Club',
   shortName: 'Lafu',
+  city: 'Surakarta',
   description: null,
-  contact: null,
-  address: null,
+  whatsapp: null,
+  instagram: null,
   logoSrc: null,
-  photos: [],
+  // Generic licensed photography (public/photos/court-net.webp.json) until the club sends its own.
+  photo: '/photos/court-net.webp',
 }

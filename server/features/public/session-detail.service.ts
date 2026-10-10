@@ -16,6 +16,7 @@ export async function getPublicSessionDetail(database: PrismaClient, id: string)
       ...toPublicSessionSummary(row, occupied.get(id) ?? 0),
       version: row.version,
       venueAddress: row.venue.address,
+      venueMapUrl: row.venue.mapUrl,
       coaches: row.coaches.map(link => link.coach.name),
       minParticipants: row.minParticipants,
       maxParticipants: row.maxParticipants,

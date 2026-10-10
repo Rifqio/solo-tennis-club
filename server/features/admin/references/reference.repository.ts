@@ -5,6 +5,9 @@ type ReferenceData = {
   name: string
   nameKey: string
   address?: string | null
+  mapUrl?: string | null
+  latitude?: number | null
+  longitude?: number | null
   createRequestId?: string
 }
 

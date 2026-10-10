@@ -11,6 +11,9 @@ type ReferenceRow = {
   version: number
   isSample: boolean
   address?: string | null
+  mapUrl?: string | null
+  latitude?: number | null
+  longitude?: number | null
 }
 
 function toReferenceRecord(kind: ReferenceKind, row: ReferenceRow): ReferenceRecord {
@@ -19,8 +22,22 @@ function toReferenceRecord(kind: ReferenceKind, row: ReferenceRow): ReferenceRec
     kind,
     name: row.name,
     address: row.address ?? null,
+    mapUrl: row.mapUrl ?? null,
+    latitude: row.latitude ?? null,
+    longitude: row.longitude ?? null,
     version: row.version,
     isSample: row.isSample,
+  }
+}
+
+// A venue keeps its Maps link only together with the pin it points at.
+function venueFields(input: ReferenceInput) {
+  const mapUrl = input.mapUrl?.trim() || null
+  return {
+    address: input.address?.trim() || null,
+    mapUrl,
+    latitude: mapUrl ? input.latitude ?? null : null,
+    longitude: mapUrl ? input.longitude ?? null : null,
   }
 }
 
@@ -55,7 +72,7 @@ export async function saveReference(
       const data = {
         name: input.name.trim().replace(/\s+/g, ' '),
         nameKey: toNameKey(input.name),
-        ...(kind === 'venue' ? { address: input.address?.trim() || null } : {}),
+        ...(kind === 'venue' ? venueFields(input) : {}),
       }
       if (!id) {
         const created = await repository.create({ ...data, createRequestId: input.createRequestId })

@@ -1,3 +1,4 @@
+import { venueMapsHref } from '@shared/maps'
 import { ChevronDown, ExternalLink, UsersRound } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { ReactNode, RefObject } from 'react'
@@ -25,13 +26,6 @@ const toneClasses = {
   full: 'text-on-surface',
   cancelled: 'text-on-surface-variant',
 } as const
-
-// A Google Maps search for the venue. When venues gain an admin-pasted share link or pinned location,
-// that link replaces the search so the pin is exact.
-function mapsSearchUrl(venue: string, address?: string | null) {
-  const query = [venue, address].filter(Boolean).join(', ')
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
-}
 
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -241,7 +235,7 @@ export function SessionDetailSheet({ id, seed = null, knownPlayers, onClose, ret
       <dl className="-mt-2 flex flex-col">
         <Fact label={t(messages.level)}>{view.levelName}</Fact>
         <Fact label={t(messages.venue)}>
-          <a href={mapsSearchUrl(view.venueName, detail?.venueAddress)} target="_blank" rel="noopener noreferrer"
+          <a href={venueMapsHref(view.venueName, detail?.venueMapUrl, detail?.venueAddress)} target="_blank" rel="noopener noreferrer"
             aria-label={t(messages.openMapsLabel, { venue: view.venueName })}
             className="state-layer -my-1 inline-flex min-h-11 flex-col items-end justify-center rounded-xs py-1">
             <span>{view.venueName}</span>

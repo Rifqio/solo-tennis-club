@@ -1,4 +1,5 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+import { useAnimate, useReducedMotion } from 'motion/react'
 import type { ComponentProps } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -18,10 +19,19 @@ export function CodeBoxes({ label, value, length = 6, hint, error, onValueChange
   const [focused, setFocused] = useState(false)
   const describedBy = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined
   const active = Math.min(value.length, length - 1)
+  const [scope, animate] = useAnimate<HTMLDivElement>()
+  const input = useRef<HTMLInputElement>(null)
+  const reduceMotion = useReducedMotion()
+  // A wrong code shakes the row once and selects the digits, so typing one replaces the whole code.
+  useEffect(() => {
+    if (!error) return
+    input.current?.select()
+    if (!reduceMotion && scope.current) void animate(scope.current, { x: [0, -10, 9, -7, 5, -3, 1, 0] }, { duration: 0.42, ease: 'easeOut' })
+  }, [error, reduceMotion, animate, scope])
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       <label htmlFor={id} className="sr-only">{label}</label>
-      <div className="relative">
+      <div ref={scope} className="relative">
         <div aria-hidden="true" className="grid gap-2" style={{ gridTemplateColumns: `repeat(${length}, minmax(0, 1fr))` }}>
           {Array.from({ length }, (_, index) => {
             const digit = value[index] ?? ''
@@ -31,7 +41,7 @@ export function CodeBoxes({ label, value, length = 6, hint, error, onValueChange
                 key={index}
                 className={cn(
                   'flex h-14 items-center justify-center rounded-sm bg-surface-container-lowest text-headline font-bold tabular-nums transition-colors duration-150',
-                  error ? 'border border-error' : current ? 'border-2 border-primary' : digit ? 'border border-on-surface' : 'border border-outline',
+                  error ? 'border-2 border-error bg-error-container text-on-error-container' : current ? 'border-2 border-primary' : digit ? 'border border-on-surface' : 'border border-outline',
                 )}
               >
                 {digit}
@@ -41,6 +51,7 @@ export function CodeBoxes({ label, value, length = 6, hint, error, onValueChange
         </div>
         <input
           {...props}
+          ref={input}
           id={id}
           value={value}
           onChange={event => onValueChange(event.target.value.replace(/\D/g, '').slice(0, length))}

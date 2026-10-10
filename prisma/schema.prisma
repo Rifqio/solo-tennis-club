@@ -58,6 +58,9 @@ model Venue {
   name String
   nameKey String @unique
   address String?
+  mapUrl String?
+  latitude Float?
+  longitude Float?
   createRequestId String? @unique
   version Int @default(1)
   isSample Boolean @default(false)

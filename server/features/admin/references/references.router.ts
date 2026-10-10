@@ -12,6 +12,7 @@ export function createReferencesRouter(database: PrismaClient) {
 
   for (const [path, kind] of routes) {
     const controller = createReferenceController(database, kind)
+    if (kind === 'venue') router.post('/venues/map-location', controller.mapLocation)
     router.get(`/${path}`, controller.list)
     router.get(`/${path}/:id`, controller.detail)
     router.post(`/${path}`, controller.create)

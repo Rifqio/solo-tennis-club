@@ -27,6 +27,8 @@ export interface PublicScheduleResponse {
 export interface PublicSessionDetail extends PublicSessionSummary {
   version: number
   venueAddress?: string | null
+  // The admin's Google Maps link for the venue, or null when none is saved.
+  venueMapUrl?: string | null
   coaches: string[]
   minParticipants: number
   maxParticipants: number
@@ -37,3 +39,6 @@ export interface PublicUpcomingResponse {
   today: string
   sessions: PublicSessionSummary[]
 }
+// The places sessions are held, for the club page.
+export interface PublicVenue { id: string; name: string; address: string | null; mapUrl: string | null; isSample: boolean }
+export interface PublicVenuesResponse { venues: PublicVenue[] }

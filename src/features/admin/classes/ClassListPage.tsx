@@ -30,8 +30,7 @@ export function ClassListPage() {
   const { data, response, retry } = useAdminResource<ClassRecord[]>(isDesktop ? null : '/api/admin/classes')
   const location = useLocation()
   const savedId = (location.state as { savedId?: string } | null)?.savedId
-  // Keyed by navigation so a save (which lands back on this route) reloads the list.
-  if (isDesktop) return <ClassDesktop key={location.key} selected={null} />
+  if (isDesktop) return <ClassDesktop selected={null} />
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4 lg:max-w-[72rem]">

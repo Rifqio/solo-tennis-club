@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState } from 'react'
-import { m, useReducedMotion } from 'motion/react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { useMediaQuery } from '@/lib/use-media-query'
@@ -19,7 +18,6 @@ export function AdminLayout() {
   const { signOut } = useAdminAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const reduceMotion = useReducedMotion()
   const [pending, setPending] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
   const sending = useRef(false)
@@ -47,7 +45,8 @@ export function AdminLayout() {
     <div className="min-h-dvh bg-surface text-on-surface">
       <main className={showDock ? 'overflow-x-clip pb-[calc(7rem+env(safe-area-inset-bottom))] sm:pb-8 sm:pl-20' : 'overflow-x-clip'}>
         {failure && <div className="page-gutter mx-auto max-w-[50rem] pt-4"><StatusPanel tone="error" title={failure} action={{ label: t(authMessages.signOut), onAction: shell.signOut }} /></div>}
-        <m.div key={location.pathname} initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduceMotion ? 0 : 0.18, ease: [0.2, 0, 0, 1] }}><Outlet /></m.div>
+        {/* No page fade here: page changes move through view transitions by direction (src/lib/nav-motion.ts). */}
+        <Outlet />
       </main>
       {showDock && <AdminDock />}
     </div>

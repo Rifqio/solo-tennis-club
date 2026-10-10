@@ -6,6 +6,8 @@ import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { clubDayOfMonth, formatClubTime, formatClubWeekdayShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
+import { m } from 'motion/react'
+import { selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { useMediaQuery } from '@/lib/use-media-query'
 import type { Language } from '@/i18n/types'
@@ -102,8 +104,9 @@ function DesktopRow({ booking, now, selected, onSelect }: { booking: CustomerBoo
   const chip = unpaid ? t(messages.unpaid) : booking.status === 'expired' ? t(messages.lapsed) : t(messages.paid)
   return (
     <button type="button" aria-pressed={selected} onClick={onSelect}
-      className={cn('pressable grid min-h-21 w-full grid-cols-[4rem_minmax(0,1fr)_auto_1.25rem] items-center gap-4 rounded-sm px-4 py-2.5 text-left transition-colors duration-200',
-        selected ? 'bg-primary text-on-primary' : 'state-layer text-on-surface hover:bg-surface-container-lowest')}>
+      className={cn('pressable relative isolate grid min-h-21 w-full grid-cols-[4rem_minmax(0,1fr)_auto_1.25rem] items-center gap-4 rounded-sm px-4 py-2.5 text-left transition-colors duration-200',
+        selected ? 'text-on-primary' : 'state-layer text-on-surface hover:bg-surface-container-lowest')}>
+      {selected && <m.span layoutId="booking-row-selection" transition={selectionSpring} className="absolute inset-0 -z-10 rounded-sm bg-primary" />}
       <span aria-hidden="true" className={cn('flex h-16 flex-col items-center justify-center rounded-sm leading-tight',
         selected ? 'bg-surface-container-lowest text-primary' : past ? 'bg-surface-container-high text-on-surface-variant' : 'bg-band-tile text-on-signboard')}>
         <span className="text-label font-semibold">{formatClubWeekdayShort(session.date, language)}</span>

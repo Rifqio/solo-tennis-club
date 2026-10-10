@@ -44,7 +44,8 @@ export function useCustomerBooking(id: string) {
       .catch(error => { if (!controller.signal.aborted) setState({ id, loaded: failureOf(error) }) })
     return () => controller.abort()
   }, [id, attempt])
-  return { loaded: state?.id === id ? state.loaded : { status: 'loading' as const }, retry: () => { setState(null); setAttempt(value => value + 1) } }
+  // `previous`: the last answer for another id, for screens that keep it visible while the next one loads.
+  return { loaded: state?.id === id ? state.loaded : { status: 'loading' as const }, previous: state?.id === id ? null : state?.loaded ?? null, retry: () => { setState(null); setAttempt(value => value + 1) } }
 }
 
 // Server time now, from the serverNow the response carried and the local clock since it arrived.

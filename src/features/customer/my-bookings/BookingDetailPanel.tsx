@@ -17,7 +17,9 @@ import { serverClock, useCustomerBooking } from './use-customer-bookings'
 export function BookingDetailPanel({ id }: { id: string }) {
   const { language, t } = useI18n()
   const reduceMotion = useReducedMotion()
-  const { loaded, retry } = useCustomerBooking(id)
+  const { loaded: current, previous, retry } = useCustomerBooking(id)
+  // While the next booking loads, the previous one stays in place instead of flashing a loading state.
+  const loaded = current.status === 'loading' && previous?.status === 'ready' ? previous : current
   const localNow = useNow(30_000)
   const frame = 'sticky top-5 flex w-full flex-col gap-5 rounded-lg bg-surface-container-lowest p-6'
 
@@ -47,7 +49,7 @@ export function BookingDetailPanel({ id }: { id: string }) {
   const chip = unpaid ? messages.unpaid : status === 'expired' ? messages.lapsed : messages.paid
 
   return (
-    <m.aside key={id} aria-label={t(messages.heading)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
+    <m.aside aria-label={t(messages.heading)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }} className={frame}>
       <div className="flex flex-col gap-1.5">
         <span className={cn('self-start rounded-full px-3 py-0.5 text-label font-semibold',

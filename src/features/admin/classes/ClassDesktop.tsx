@@ -1,10 +1,12 @@
 import { Link, useLocation } from 'react-router-dom'
+import { m } from 'motion/react'
 import { Plus } from 'lucide-react'
 import type { ClassRecord } from '@shared/api/admin-classes'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
+import { selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
@@ -27,15 +29,17 @@ const copy = {
 // or null on the list route (the saved or first class).
 export function ClassDesktop({ selected }: { selected: string | null }) {
   const { t, language } = useI18n()
-  const { data, response, retry } = useAdminResource<ClassRecord[]>('/api/admin/classes')
-  const savedId = (useLocation().state as { savedId?: string } | null)?.savedId
+  const location = useLocation()
+  // Refetched on every navigation (a save lands back here); the last list stays on screen meanwhile.
+  const { data, response, retry } = useAdminResource<ClassRecord[]>('/api/admin/classes', location.key)
+  const savedId = (location.state as { savedId?: string } | null)?.savedId
   const currentId = selected ?? savedId ?? data?.[0]?.id ?? 'new'
   const record = currentId === 'new' ? null : data?.find(row => row.id === currentId) ?? null
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter mx-auto flex w-full max-w-[72rem] items-start gap-6 py-6">
       <section aria-label={t(copy.heading)} className="flex w-[24rem] shrink-0 flex-col gap-3 xl:w-[28rem]">
-        <Link to="/admin/classes/new" viewTransition aria-current={currentId === 'new' ? 'page' : undefined}
+        <Link to="/admin/classes/new" aria-current={currentId === 'new' ? 'page' : undefined}
           className={cn('state-layer pressable flex min-h-12 items-center justify-center gap-2 rounded-sm font-semibold',
             currentId === 'new' ? 'bg-primary text-on-primary' : 'border border-primary text-primary')}>
           <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(copy.add)}
@@ -54,9 +58,10 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
               const active = row.id === currentId
               return (
                 <li key={row.id}>
-                  <Link to={`/admin/classes/${row.id}/edit`} viewTransition aria-current={active ? 'page' : undefined}
-                    className={cn('state-layer flex flex-col gap-3 rounded-lg p-4 transition-colors duration-200',
-                      active ? 'bg-primary text-on-primary' : 'bg-surface-container-lowest text-on-surface')}>
+                  <Link to={`/admin/classes/${row.id}/edit`} aria-current={active ? 'page' : undefined}
+                    className={cn('state-layer relative isolate flex flex-col gap-3 rounded-lg bg-surface-container-lowest p-4 transition-colors duration-200',
+                      active ? 'text-on-primary' : 'text-on-surface')}>
+                    {active && <m.span layoutId="class-card-selection" transition={selectionSpring} className="absolute inset-0 -z-10 rounded-lg bg-primary" />}
                     <span className="flex min-w-0 flex-col leading-snug">
                       <h2 className="break-words text-title font-bold">{row.name}</h2>
                       <span className={cn('break-words text-label', active ? 'text-on-primary' : 'text-on-surface-variant')}>{row.levelName} · {row.venueName}</span>
@@ -82,7 +87,7 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
         {savedId && savedId === currentId && <div className="px-6 pt-6"><StatusPanel tone="success" title={t(messages.saved)} /></div>}
         {currentId !== 'new' && !record
           ? <div className="p-6"><StatusPanel tone="info" title={t(response && data ? messages.loadError : messages.loading)} /></div>
-          : <ClassForm key={currentId} initial={record} embedded />}
+          : <ClassForm key={`${currentId}:${record?.version ?? 0}`} initial={record} embedded />}
       </div>
     </div>
   </>

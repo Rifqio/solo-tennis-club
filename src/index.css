@@ -300,9 +300,20 @@
 @keyframes cal-out-left { to { opacity: 0; transform: translateX(-28px); } }
 @keyframes cal-out-right { to { opacity: 0; transform: translateX(28px); } }
 
-/* Destination changes fade through (Material); the app bar and navigation stay put. */
-::view-transition-old(root) { animation: 90ms var(--ease-standard) both lafu-fade-out; }
-::view-transition-new(root) { animation: 210ms var(--ease-emphasized) 90ms both lafu-fade-in; }
+/* Page changes move by where they go (src/lib/nav-motion.ts sets <html data-nav>; DESIGN.md, Motion):
+   switching section is a quick crossfade; going deeper pushes the new screen in from the right (the Motion board's
+   push, 280ms); going back slides it the other way. The app bar and navigation stay put. */
+::view-transition-old(root) { animation: 80ms var(--ease-standard) both lafu-fade-out; }
+::view-transition-new(root) { animation: 140ms var(--ease-standard) 40ms both lafu-fade-in-flat; }
+html[data-nav='push']::view-transition-old(root) { animation: 180ms var(--ease-standard) both nav-out-left; }
+html[data-nav='push']::view-transition-new(root) { animation: 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both nav-in-right; }
+html[data-nav='pop']::view-transition-old(root) { animation: 180ms var(--ease-standard) both nav-out-right; }
+html[data-nav='pop']::view-transition-new(root) { animation: 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both nav-in-left; }
+@keyframes nav-in-right { from { opacity: 0; transform: translateX(24px); } }
+@keyframes nav-in-left { from { opacity: 0; transform: translateX(-24px); } }
+@keyframes nav-out-left { to { opacity: 0; transform: translateX(-24px); } }
+@keyframes nav-out-right { to { opacity: 0; transform: translateX(24px); } }
+@keyframes lafu-fade-in-flat { from { opacity: 0; } }
 /* Persistent chrome shows live content during the transition, so the sliding nav indicator is never crossfaded away. */
 ::view-transition-old(app-bar), ::view-transition-old(nav-bar) { display: none; }
 ::view-transition-new(app-bar), ::view-transition-new(nav-bar) { animation: none; }

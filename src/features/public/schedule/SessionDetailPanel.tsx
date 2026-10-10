@@ -12,13 +12,13 @@ interface SessionDetailPanelProps {
 }
 
 // Desktop: the chosen session sits beside the day's list instead of rising as a sheet, ready to book. Same content
-// as the sheet; it slides in a little each time the choice changes so the swap reads as a response.
+// as the sheet. It slides in once when it first appears; choosing another session swaps the content in place.
 export function SessionDetailPanel({ id, seed, knownPlayers }: SessionDetailPanelProps) {
   const { t } = useI18n()
   const reduceMotion = useReducedMotion()
   const { title, band, body, footer } = useSessionDetailContent({ id, seed, knownPlayers, hideSampleNotice: true })
   return (
-    <m.aside key={id} aria-label={t(messages.title)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
+    <m.aside aria-label={t(messages.title)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }}
       className="sticky top-5 flex w-full flex-col overflow-hidden rounded-lg bg-surface-container-lowest">
       <div className="flex flex-col gap-4 bg-band p-6 text-on-signboard">

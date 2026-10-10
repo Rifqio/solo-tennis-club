@@ -2,6 +2,8 @@ import { ChevronRight } from 'lucide-react'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
+import { m } from 'motion/react'
+import { selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import type { PublicSessionSummary } from '@shared/api/public'
 import { detailMessages } from './detail.messages'
@@ -43,9 +45,10 @@ export function SessionRows({ sessions, timings, selectedId, onSelect }: Session
         return (
           <li key={session.id} className="border-b border-outline-variant py-1">
             <div className={cn(
-              'relative grid min-h-20 grid-cols-[2rem_5.5rem_minmax(0,1fr)_auto_1.25rem] items-center gap-4 rounded-sm px-4 py-3 transition-colors duration-200',
-              selected ? 'bg-primary text-on-primary' : 'text-on-surface hover:bg-surface-container-lowest',
+              'relative isolate grid min-h-20 grid-cols-[2rem_5.5rem_minmax(0,1fr)_auto_1.25rem] items-center gap-4 rounded-sm px-4 py-3 transition-colors duration-200',
+              selected ? 'text-on-primary' : 'text-on-surface hover:bg-surface-container-lowest',
             )}>
+              {selected && <m.span layoutId="session-row-selection" transition={selectionSpring} className="absolute inset-0 -z-10 rounded-sm bg-primary" />}
               <button type="button" aria-pressed={selected} aria-label={t(scheduleMessages.openDetail, { name, time: session.startTime })} onClick={() => onSelect(session.id)}
                 className={cn('pressable absolute inset-0 rounded-sm', !selected && 'state-layer')} />
               <span className="pointer-events-none relative text-label font-semibold tabular-nums opacity-80">{String(index + 1).padStart(2, '0')}</span>

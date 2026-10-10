@@ -47,7 +47,8 @@ export function RosterPanel({ id }: { id: string }) {
       .then(response => { if (!controller.signal.aborted) setResult({ id, response }) })
     return () => controller.abort()
   }, [get, id, attempt])
-  const response = result?.id === id ? result.response : null
+  // While the next session's roster loads, the previous one stays in place instead of flashing a loading state.
+  const response = result?.response ?? null
   const data = response?.kind === 'ok' ? response.data : null
   const frame = 'sticky top-5 flex w-full flex-col overflow-hidden rounded-lg bg-surface-container-lowest'
 
@@ -71,7 +72,7 @@ export function RosterPanel({ id }: { id: string }) {
   const { session } = data
 
   return (
-    <m.aside key={id} aria-label={t(copy.label)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
+    <m.aside aria-label={t(copy.label)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }} className={frame}>
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-outline-variant p-6">
         <div className="flex min-w-0 flex-col gap-0.5">

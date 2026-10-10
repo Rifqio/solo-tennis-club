@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom'
+import { m } from 'motion/react'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ReferenceKind, ReferenceRecord } from '@shared/api/admin-references'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
+import { selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
@@ -28,8 +30,10 @@ const copy = {
 export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; selected: string | null }) {
   const { t } = useI18n()
   const config = referenceConfig[kind]
-  const { data, response, retry } = useAdminResource<ReferenceRecord[]>(`/api/admin/${config.path}`)
-  const savedId = (useLocation().state as { savedId?: string } | null)?.savedId
+  const location = useLocation()
+  // Refetched on every navigation (a save lands back here); the last list stays on screen meanwhile.
+  const { data, response, retry } = useAdminResource<ReferenceRecord[]>(`/api/admin/${config.path}`, location.key)
+  const savedId = (location.state as { savedId?: string } | null)?.savedId
   const currentId = selected ?? savedId ?? data?.[0]?.id ?? 'new'
   const record = currentId === 'new' ? null : data?.find(row => row.id === currentId) ?? null
   const venue = kind === 'venue'
@@ -39,7 +43,7 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[72rem] items-start gap-6 py-6">
       <section aria-label={t(config.label)} className="flex w-[24rem] shrink-0 flex-col gap-3 rounded-lg bg-surface-container-lowest p-4 xl:w-[28rem]">
-        <Link to={`/admin/${config.path}/new`} viewTransition aria-current={currentId === 'new' ? 'page' : undefined}
+        <Link to={`/admin/${config.path}/new`} aria-current={currentId === 'new' ? 'page' : undefined}
           className={cn('state-layer pressable flex min-h-12 items-center justify-center gap-2 rounded-sm font-semibold',
             currentId === 'new' ? 'bg-primary text-on-primary' : 'border border-primary text-primary')}>
           <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(config.add)}
@@ -58,9 +62,11 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
               const active = row.id === currentId
               return (
                 <li key={row.id}>
-                  <Link to={`/admin/${config.path}/${row.id}/edit`} viewTransition aria-current={active ? 'page' : undefined}
-                    className={cn('state-layer flex min-h-14 items-center justify-between gap-3 rounded-sm px-3.5 py-2.5 transition-colors duration-200',
-                      active ? 'bg-primary text-on-primary' : 'text-on-surface')}>
+                  <Link to={`/admin/${config.path}/${row.id}/edit`} aria-current={active ? 'page' : undefined}
+                    className={cn('state-layer relative isolate flex min-h-14 items-center justify-between gap-3 rounded-sm px-3.5 py-2.5 transition-colors duration-200',
+                      active ? 'text-on-primary' : 'text-on-surface')}>
+                    {/* Picking another row is instant; only the highlight glides to it. */}
+                    {active && <m.span layoutId={`reference-row-${kind}`} transition={selectionSpring} className="absolute inset-0 -z-10 rounded-sm bg-primary" />}
                     {kind === 'coach' && <CoachAvatar name={row.name} photoUrl={row.photoUrl} />}
                     <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span title={row.name} className="truncate font-semibold">{row.name}</span>
@@ -81,7 +87,7 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
         {savedId && savedId === currentId && <div className="px-6 pt-6"><StatusPanel tone="success" title={t(messages.saved)} /></div>}
         {currentId !== 'new' && !record
           ? <div className="p-6"><StatusPanel tone={response ? 'info' : 'info'} title={t(response && data ? messages.loadError : messages.loading)} /></div>
-          : <ReferenceForm key={`${kind}:${currentId}`} kind={kind} initial={record} embedded />}
+          : <ReferenceForm key={`${kind}:${currentId}:${record?.version ?? 0}`} kind={kind} initial={record} embedded />}
       </div>
     </div>
   </>

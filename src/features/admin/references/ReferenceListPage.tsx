@@ -32,8 +32,7 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
   const location = useLocation()
   const savedId = (location.state as { savedId?: string } | null)?.savedId
   const venue = kind === 'venue'
-  // Keyed by navigation so a save (which lands back on this route) reloads the list.
-  if (isDesktop) return <ReferenceDesktop key={location.key} kind={kind} selected={null} />
+  if (isDesktop) return <ReferenceDesktop kind={kind} selected={null} />
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>}>
       <ReferenceTabs current={kind} />

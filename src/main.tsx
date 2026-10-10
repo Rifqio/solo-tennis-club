@@ -4,6 +4,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { I18nProvider } from './i18n/I18nProvider'
+import { installNavMotion } from './lib/nav-motion'
+
+installNavMotion()
 
 const loadMotionFeatures = () => import('./lib/motion-features').then(module => module.default)
 

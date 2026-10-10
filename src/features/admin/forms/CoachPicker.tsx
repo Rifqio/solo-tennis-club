@@ -1,10 +1,12 @@
 import { useId, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { m } from 'motion/react'
 import { Check, Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet } from '@/components/ui/sheet'
 import { useI18n } from '@/i18n/use-i18n'
+import { popSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import type { CoachOption } from '@shared/api/admin-sessions'
 import { coachInitials } from './coach-initials'
@@ -66,7 +68,8 @@ function CoachCard({ option, on, name, error, onToggle }: { option: Option; on: 
         {photo
           ? <img src={photo} alt="" loading="lazy" className={cn('size-full object-cover transition duration-300', !on && 'grayscale-[35%] group-hover:grayscale-0')} />
           : <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-headline font-bold text-primary">{coachInitials(option.name)}</span>}
-        {on && <span aria-hidden="true" className="absolute right-1.5 top-1.5 flex size-7 items-center justify-center rounded-full bg-accent text-on-accent"><Check className="size-4" strokeWidth={3} /></span>}
+        {on && <m.span aria-hidden="true" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={popSpring}
+          className="absolute right-1.5 top-1.5 flex size-7 items-center justify-center rounded-full bg-accent text-on-accent"><Check className="size-4" strokeWidth={3} /></m.span>}
       </span>
       <span className="flex min-w-0 flex-col px-0.5 leading-tight">
         <span className="truncate text-label font-bold">{option.name}</span>

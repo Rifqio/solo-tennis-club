@@ -30,7 +30,7 @@ function BookingRow({ booking, filter }: { booking: AdminBookingSummary; filter:
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-snug">
         <span className="flex flex-wrap items-center gap-2">
           <span className="break-words font-bold">{booking.bookerName}</span>
-          <span className="rounded-xs bg-secondary-container px-2 text-label font-bold text-on-secondary-container">{t(messages.slot, { count: booking.quantity })}</span>
+          <span className="rounded-xs bg-primary-container px-2 text-label font-bold text-primary">{t(messages.slot, { count: booking.quantity })}</span>
           {booking.source === 'admin' && <span className="rounded-xs border border-dashed border-outline px-1.5 text-label font-semibold text-on-surface-variant">{t(messages.fromAdmin)}</span>}
         </span>
         <span className="text-label tabular-nums text-on-surface-variant">

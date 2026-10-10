@@ -47,6 +47,10 @@ export function createSessionRepository(database: Database) {
         take: 201,
       })
     },
+    // Start times of the scheduled sessions in a range, for per-day counts.
+    listScheduledStarts(start: Date, end: Date) {
+      return database.classSession.findMany({ where: { startsAt: { gte: start, lt: end }, status: 'scheduled' }, select: { startsAt: true } })
+    },
     findNextStart(start: Date, end: Date) {
       return database.classSession.findFirst({
         where: { startsAt: { gte: start, lt: end } },
@@ -59,7 +63,7 @@ export function createSessionRepository(database: Database) {
       const [classes, levels, venues, coaches] = await Promise.all([
         database.tennisClass.findMany({ orderBy, include: { defaultCoaches: { orderBy: { position: 'asc' } } } }),
         database.level.findMany({ orderBy, select: { id: true, name: true, archivedAt: true } }),
-        database.venue.findMany({ orderBy, select: { id: true, name: true, archivedAt: true } }),
+        database.venue.findMany({ orderBy, select: { id: true, name: true, address: true, mapUrl: true, archivedAt: true } }),
         database.coach.findMany({ orderBy, select: { id: true, name: true, photoUrl: true, archivedAt: true, _count: { select: { defaultClasses: true } } } }),
       ])
       return { classes, levels, venues, coaches }

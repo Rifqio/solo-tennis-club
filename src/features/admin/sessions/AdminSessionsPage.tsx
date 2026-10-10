@@ -3,7 +3,7 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
-import { formatClubDateMedium } from '@/i18n/format'
+import { formatClubDateMedium, formatClubDateShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { apiErrorMessages } from '@/i18n/api-error-messages'
 import { cn } from '@/lib/utils'
@@ -46,26 +46,23 @@ function Legend() {
   )
 }
 
-// `onSelect` (desktop): the players button chooses the session for the roster panel instead of opening its screen.
+// `onSelect` (desktop, board D5): the whole card chooses the session for the roster panel beside the list, which carries
+// "Ubah sesi"; a chosen card wears a blue ring. Phones (board 10) keep Peserta and Ubah on the card.
 function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSessionDetail; saved: boolean; selected?: boolean; onSelect?: () => void }) {
   const { t } = useI18n()
   const cancelled = row.status !== 'scheduled'
   const used = Math.max(0, row.maxParticipants - row.remainingPlaces)
   const short = row.minParticipants - used
   const facts = [row.levelName, row.venueName, `${row.durationMinutes} mnt`].join(' · ')
-  return (
-    <article className={cn('flex flex-col gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5 transition-shadow duration-200', selected && 'ring-2 ring-primary')}>
-      {saved && <StatusPanel tone="success" title={t(messages.saved)} />}
-      <div className="flex items-center gap-3">
-        <span className={cn('shrink-0 rounded-xs px-2 py-1.5 text-title font-bold tabular-nums',
-          cancelled ? 'bg-surface-container-high text-on-surface-variant line-through' : 'bg-band-tile text-on-signboard')}>{row.startTime}</span>
-        <span className="flex min-w-0 flex-col leading-snug">
-          <h3 className="break-words font-bold">{row.className}</h3>
-          <span className="break-words text-label text-on-surface-variant">{cancelled ? t(messages.cancelled) : facts}</span>
-        </span>
-      </div>
-      {!cancelled && <>
-        <div className="flex flex-col gap-1.5">
+  const heading = <div className="flex items-center gap-3 lg:gap-3.5">
+    <span className={cn('shrink-0 rounded-xs px-2 py-1.5 text-title font-bold tabular-nums lg:px-2.5',
+      cancelled ? 'bg-surface-container-high text-on-surface-variant line-through' : 'bg-band-tile text-on-signboard')}>{row.startTime}</span>
+    <span className="flex min-w-0 flex-col text-left leading-snug">
+      <h3 className="break-words font-bold lg:text-title">{row.className}</h3>
+      <span className="break-words text-label text-on-surface-variant">{cancelled ? t(messages.cancelled) : facts}</span>
+    </span>
+  </div>
+  const fill = <div className="flex flex-col gap-1.5">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-label">
             <span className="font-semibold">{t(messages.filled, { used, max: row.maxParticipants })}</span>
             <span className={cn('font-semibold', short > 0 ? 'text-warning' : 'text-primary')}>
@@ -75,10 +72,23 @@ function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSes
           <FillBar used={used} max={row.maxParticipants} min={row.minParticipants}
             label={t(messages.barLabel, { used, max: row.maxParticipants, min: row.minParticipants })} />
         </div>
+  if (onSelect && !cancelled) return (
+    <div className="flex flex-col gap-2">
+      {saved && <StatusPanel tone="success" title={t(messages.saved)} />}
+      <button type="button" aria-pressed={selected} onClick={onSelect}
+        className={cn('state-layer flex w-full flex-col gap-3 rounded-[1rem] bg-surface-container-lowest px-[1.125rem] py-4 text-on-surface transition-shadow duration-200', selected && 'ring-2 ring-primary')}>
+        {heading}{fill}
+      </button>
+    </div>
+  )
+  return (
+    <article className={cn('flex flex-col gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5 lg:rounded-[1rem] lg:px-[1.125rem] lg:py-4', cancelled && onSelect && 'opacity-70')}>
+      {saved && <StatusPanel tone="success" title={t(messages.saved)} />}
+      {heading}
+      {!cancelled && <>
+        {fill}
         <div className="grid grid-cols-2 gap-2">
-          {onSelect
-            ? <Button variant={selected ? 'filled' : 'tonal'} aria-pressed={selected} onClick={onSelect}>{t(messages.participants, { count: used })}<span className="sr-only">: {row.className}, {row.startTime}</span></Button>
-            : <Button asChild variant="tonal"><Link to={`/admin/sessions/${row.id}/roster`} viewTransition>{t(messages.participants, { count: used })}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>}
+          <Button asChild variant="tonal"><Link to={`/admin/sessions/${row.id}/roster`} viewTransition>{t(messages.participants, { count: used })}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
           <Button asChild variant="outlined"><Link to={`/admin/sessions/${row.id}/edit`} viewTransition>{t(messages.edit)}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
         </div>
       </>}
@@ -120,15 +130,17 @@ export function AdminSessionsPage() {
   // Desktop (board D5): the day's sessions with the chosen one's players in a panel beside them.
   const isDesktop = useMediaQuery('(min-width: 64rem)')
   const [pickedId, setPickedId] = useState<string | null>(null)
+  const strip = computeStripWindow({ selected, currentStart: stripStart, ...bounds })
   const panelId = isDesktop ? (sessions.find(row => row.id === pickedId && row.status === 'scheduled') ?? sessions.find(row => row.status === 'scheduled'))?.id ?? null : null
   return <>
-    <AdminBand title={t(messages.heading)} action={<TodayChip selected={selected} today={bounds.today} onSelect={select} />}>
-      <DateStrip dates={computeStripWindow({ selected, currentStart: stripStart, ...bounds })} selected={selected} {...bounds} onSelect={select} />
+    <AdminBand title={t(messages.heading)} wideChildren action={<TodayChip selected={selected} today={bounds.today} onSelect={select} />}
+      subtitle={isDesktop && <p className="text-title font-semibold">{formatClubDateShort(strip[0], language)} - {formatClubDateShort(strip[strip.length - 1], language)}</p>}>
+      <DateStrip dates={strip} selected={selected} {...bounds} onSelect={select} counts={data?.dayCounts} />
     </AdminBand>
     <div className="page-gutter admin-column mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:flex-row lg:items-start lg:gap-5 lg:pt-5">
     <div className="flex min-w-0 flex-1 flex-col gap-3">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-title font-bold">{formatClubDateMedium(selected, language)} <span className="text-label font-normal text-on-surface-variant">WIB</span></h2>
+      <div className="flex flex-col gap-1 lg:gap-2">
+        <h2 className="text-title font-bold lg:text-headline">{formatClubDateMedium(selected, language)} <span className="text-label font-normal text-on-surface-variant">WIB</span></h2>
         {sessions.some(row => row.status === 'scheduled') && <Legend />}
       </div>
       {sessions.some(row => row.isSample) && <SampleDataNotice />}
@@ -148,7 +160,7 @@ export function AdminSessionsPage() {
           {data?.nextDate && <Button onClick={() => select(data.nextDate!)}>{t(messages.next)}</Button>}
         </StatusPanel>
       ) : (
-        <ul className="grid gap-3">
+        <ul className="grid gap-3" aria-label={t(messages.heading)}>
           {sessions.map(row => <li key={row.id}><SessionCard row={row} saved={savedId === row.id} selected={row.id === panelId}
             onSelect={isDesktop ? () => setPickedId(row.id) : undefined} /></li>)}
         </ul>

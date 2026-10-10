@@ -34,7 +34,9 @@ export function ClassFormPage() {
   if (id && !resource.data) return <><AdminBand title={t({ id: 'Ubah kelas', en: 'Edit class' })} back={{ to: '/admin/classes', label: t(messages.classes) }} /><div className="page-gutter mx-auto max-w-[50rem] py-6"><StatusPanel tone={resource.response ? 'error' : 'info'} title={t(resource.response ? messages.loadError : messages.loading)} action={resource.response ? { label: t(commonMessages.retry), onAction: resource.retry } : undefined} /></div></>
   return <ClassForm key={id ?? 'new'} initial={resource.data} />
 }
-// `embedded`: inside the desktop Kelas card, without its own band and with the save button at the card's foot.
+// `embedded`: inside the desktop Kelas card (board D10), without its own band, with the fields in the board's order
+// (name, coaches, venue list, level and duration side by side, price, players) and the save button at the card's foot.
+// Phones follow board 17: name, level, venue, duration, price, players, then coaches.
 export function ClassForm({ initial, embedded = false }: { initial: ClassRecord | null; embedded?: boolean }) {
   const { t } = useI18n()
   const { send } = useAdminAuth()
@@ -70,18 +72,29 @@ export function ClassForm({ initial, embedded = false }: { initial: ClassRecord 
       else setFailure(t(messages.saveError))
     } finally { sending.current = false; setPending(false) }
   }
+  const optionsStatus = options.data ? 'ready' as const : options.response ? 'error' as const : 'loading' as const
+  const field = (section: 'level' | 'place' | 'coaches' | 'duration' | 'limits') => <SessionFields section={section} optionsStatus={optionsStatus} venueList={embedded}
+    options={options.data ?? { classes: [], levels: [], venues: [], coaches: [] }} values={values} setField={setField} errors={errors} />
   const preview = (record: ClassRecord) => <p>{record.name}<br />{record.levelName} · {record.venueName}<br />{record.defaultDurationMinutes} / Rp {record.defaultPriceIdr}<br />{record.defaultMinParticipants} – {record.defaultMaxParticipants}<br />{record.coaches.map(coach => coach.name).join(', ')}</p>
   return <>
   {!embedded && <AdminBand title={t(initial ? { id: 'Ubah kelas', en: 'Edit class' } : { id: 'Tambah kelas', en: 'Add class' })} back={{ to: '/admin/classes', label: t(messages.classes) }} />}
-  <div className={embedded ? 'flex flex-col gap-6 px-6 pt-6' : 'page-gutter mx-auto flex max-w-[50rem] flex-col gap-6 pt-5'}>
-    {embedded && <h2 className="text-headline font-bold">{t(initial ? { id: 'Ubah kelas', en: 'Edit class' } : { id: 'Tambah kelas', en: 'Add class' })}</h2>}
+  <div className={embedded ? 'flex flex-col gap-5 px-6 pt-6' : 'page-gutter mx-auto flex max-w-[50rem] flex-col gap-6 pt-5'}>
+    {embedded && <div className="flex flex-col gap-0.5">
+      <p className="text-label font-semibold text-on-surface-variant">{t(initial ? { id: 'Ubah kelas', en: 'Edit class' } : { id: 'Baru', en: 'New' })}</p>
+      <h2 className="break-words text-headline font-bold">{initial ? baseline?.name ?? initial.name : t({ id: 'Tambah kelas', en: 'Add class' })}</h2>
+    </div>}
     {!options.data && <StatusPanel tone={options.response ? 'error' : 'info'} title={t(options.response ? messages.loadError : messages.loading)} action={options.response ? { label: t(commonMessages.retry), onAction: options.retry } : undefined} />}
     {options.data && (!options.data.levels.length || !options.data.venues.length || !options.data.coaches.length) && <StatusPanel tone="info" title={t(messages.missing)}><Button asChild><Link to="/admin/manage">{t(messages.manage)}</Link></Button></StatusPanel>}
     <form ref={form} noValidate onSubmit={submit} aria-busy={pending} className="flex flex-col gap-6">
       <TextField name="name" label={t(messages.name)} value={name} onChange={event => setName(event.target.value)} required error={errors.name ? t(fieldErrorMessage('name', errors.name), { field: t(messages.name) }) : undefined} />
-      <SessionFields section="venue" optionsStatus={options.data ? 'ready' : options.response ? 'error' : 'loading'} options={options.data ?? { classes: [], levels: [], venues: [], coaches: [] }} values={values} setField={setField} errors={errors} />
-      <SessionFields section="duration" options={options.data ?? { classes: [], levels: [], venues: [], coaches: [] }} values={values} setField={setField} errors={errors} />
-      <SessionFields section="limits" options={options.data ?? { classes: [], levels: [], venues: [], coaches: [] }} values={values} setField={setField} errors={errors} />
+      {embedded ? <>
+        {field('coaches')}
+        {field('place')}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-5">{field('level')}{field('duration')}</div>
+        {field('limits')}
+      </> : <>
+        {field('level')}{field('place')}{field('duration')}{field('limits')}{field('coaches')}
+      </>}
       <FormFeedback failure={failure} latest={latest && preview(latest)} yours={<p>{name}<br />{options.data?.levels.find(row => row.id === values.levelId)?.name} · {options.data?.venues.find(row => row.id === values.venueId)?.name}<br />{values.durationMinutes} / Rp {values.priceIdr}<br />{values.minParticipants} – {values.maxParticipants}<br />{values.coachIds.map(id => options.data?.coaches.find(row => row.id === id)?.name ?? id).join(', ')}</p>} onReplace={() => { if (latest) { setBaseline(latest); setName(latest.name); setValues(fromRecord(latest)); setLatest(null); setFailure(null); setErrors({}) } }} />
       <div className={embedded ? '-mx-6 flex justify-end border-t border-outline-variant px-6 py-4' : 'sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 [margin-inline:calc(50%-50vw)] [padding-inline:max(1rem,calc(50vw-50%))]'}>
         <Button className={embedded ? 'px-10' : 'w-full'} type="submit" variant="filled" disabled={pending || !options.data || Boolean(latest)} pendingLabel={pending ? t(messages.saving) : undefined}>{t({ id: 'Simpan kelas', en: 'Save class' })}</Button>

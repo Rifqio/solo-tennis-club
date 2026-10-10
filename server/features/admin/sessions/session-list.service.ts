@@ -23,10 +23,13 @@ export async function listAdminSessions(
   const range = clubDayRange(date ?? today)
   return inTransaction(database, async transaction => {
     const repository = createSessionRepository(transaction)
-    const [rows, next] = await Promise.all([
+    const [rows, next, starts] = await Promise.all([
       repository.listFrom(range.start, date ? range.end : undefined),
       repository.findNextStart(range.end, clubDayRange(maxDate).end),
+      repository.listScheduledStarts(clubDayRange(minDate).start, clubDayRange(maxDate).end),
     ])
+    const dayCounts: Record<string, number> = {}
+    for (const { startsAt } of starts) { const day = clubDateOf(startsAt); dayCounts[day] = (dayCounts[day] ?? 0) + 1 }
     const sessions = rows.slice(0, 200)
     const occupied = await getOccupiedPlaceCounts(transaction, sessions.map(row => row.id), now)
     return {
@@ -36,6 +39,7 @@ export async function listAdminSessions(
       maxDate,
       nextDate: next ? clubDateOf(next.startsAt) : null,
       truncated: rows.length > 200,
+      dayCounts,
       sessions: sessions.map(row => toAdminSessionDetail(row, occupied.get(row.id) ?? 0)),
     }
   })

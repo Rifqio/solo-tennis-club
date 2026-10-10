@@ -19,7 +19,7 @@ export async function getSessionOptions(database: PrismaClient): Promise<Session
       },
     })),
     levels: levels.map(row => ({ id: row.id, name: row.name, archived: row.archivedAt != null })),
-    venues: venues.map(row => ({ id: row.id, name: row.name, archived: row.archivedAt != null })),
+    venues: venues.map(row => ({ id: row.id, name: row.name, address: row.address, hasPin: row.mapUrl != null, archived: row.archivedAt != null })),
     coaches: coaches.map(row => ({ id: row.id, name: row.name, photoUrl: row.photoUrl, classCount: row._count.defaultClasses, archived: row.archivedAt != null })),
   }
 }

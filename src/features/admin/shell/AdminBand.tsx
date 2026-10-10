@@ -20,6 +20,8 @@ interface AdminBandProps {
   // Sits at the end of the title row.
   action?: ReactNode
   children?: ReactNode
+  // Desktop: the children take a full-width row under the title (the Sesi date strip) instead of the right column.
+  wideChildren?: boolean
 }
 
 // The admin's court-blue band, the same family as the member screens. Phones: wordmark with an Admin chip, language
@@ -27,7 +29,7 @@ interface AdminBandProps {
 // From 640px the rail carries the mark, language and sign-out, so the band keeps only a back link when there is one.
 // From 1024px (boards D9b, D10) the band is a card in the shared admin column: title and subtitle on the left, the
 // action and tabs on the right.
-export function AdminBand({ title, back, subtitle, action, children }: AdminBandProps) {
+export function AdminBand({ title, back, subtitle, action, children, wideChildren = false }: AdminBandProps) {
   const { t } = useI18n()
   const { signOut, signingOut } = useAdminShell()
   return (
@@ -62,11 +64,12 @@ export function AdminBand({ title, back, subtitle, action, children }: AdminBand
             </div>
             {subtitle && <div className="mt-1 lg:mt-0.5">{subtitle}</div>}
           </div>
-          {(action || children) && <div className="mt-3 flex min-w-0 flex-col gap-3 lg:mt-0 lg:items-end">
+          {(action || (children && !wideChildren)) && <div className={cn('flex min-w-0 flex-col gap-3 lg:mt-0 lg:items-end', !wideChildren && 'mt-3', wideChildren && 'max-lg:hidden')}>
             {action && <div className="hidden lg:block">{action}</div>}
-            {children}
+            {!wideChildren && children}
           </div>}
         </div>
+        {wideChildren && children && <div className="mt-3 lg:mt-5">{children}</div>}
       </div>
     </header>
   )

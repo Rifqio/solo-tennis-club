@@ -1,4 +1,5 @@
 export const scheduleMessages = {
+  noSessions: { id: 'kosong', en: 'none' },
   heading: { id: 'Jadwal', en: 'Schedule' },
   dateControls: { id: 'Pilih tanggal jadwal', en: 'Choose a schedule date' },
   today: { id: 'Hari ini', en: 'Today' },

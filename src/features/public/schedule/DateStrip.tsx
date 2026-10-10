@@ -17,6 +17,8 @@ interface DateStripProps {
   minDate: string
   maxDate: string
   onSelect: (date: string) => void
+  // Admin (boards 10, D5): scheduled sessions per date, shown under each day number.
+  counts?: Record<string, number>
 }
 
 // Sits beside the band headline and only exists away from today; it pops in and out so its appearance reads as a
@@ -48,7 +50,7 @@ const GAP = 8
 
 // Sits on the court band: the month with step and calendar buttons on Deep Court circles, then a strip of
 // 56 by 72 date tiles. The selected tile is the band's one lime element, with the padel selection bar on top.
-export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }: DateStripProps) {
+export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect, counts }: DateStripProps) {
   const { language, t } = useI18n()
   const stripRef = useRef<HTMLDivElement>(null)
   // Whole tiles only: as many as fit at 56px plus gaps, each stretched to fill the row, so none rests cut in half.
@@ -100,10 +102,11 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
               key={date}
               type="button"
               aria-pressed={isSelected}
-              aria-label={`${weekday} ${clubDayOfMonth(date)}, ${isToday ? t(scheduleMessages.today) + ', ' : ''}${formatClubDateLong(date, language)}`}
+              aria-label={`${weekday} ${clubDayOfMonth(date)}, ${isToday ? t(scheduleMessages.today) + ', ' : ''}${formatClubDateLong(date, language)}${counts ? ', ' + (counts[date] ? t(counts[date] === 1 ? scheduleMessages.sessionCountOne : scheduleMessages.sessionCount, { count: counts[date] }) : t(scheduleMessages.noSessions)) : ''}`}
               onClick={() => onSelect(date)}
               className={cn(
-                'pressable relative flex h-18 snap-start flex-col lg:h-23 items-center justify-center gap-1 rounded-xs bg-band-tile transition-colors duration-200',
+                'pressable relative flex snap-start flex-col items-center justify-center gap-1 rounded-xs bg-band-tile transition-colors duration-200 lg:h-23',
+                counts ? 'h-19' : 'h-18',
                 isSelected ? 'text-on-accent' : 'text-on-signboard',
                 isToday && !isSelected && 'ring-2 ring-inset ring-white',
               )}
@@ -117,6 +120,7 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect }
               <span className="state-layer absolute inset-0 rounded-xs" />
               <span className={cn('relative text-label leading-none', isSelected && 'font-semibold')}>{weekday}</span>
               <span className="relative text-title font-bold leading-none tabular-nums lg:text-headline">{clubDayOfMonth(date)}</span>
+              {counts && <span className="relative text-label leading-none">{counts[date] ? t(counts[date] === 1 ? scheduleMessages.sessionCountOne : scheduleMessages.sessionCount, { count: counts[date] }) : t(scheduleMessages.noSessions)}</span>}
             </button>
           )
         })}

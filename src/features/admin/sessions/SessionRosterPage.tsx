@@ -57,7 +57,7 @@ export function BookingGroup({ booking, active }: { booking: AdminRosterBooking;
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="flex flex-wrap items-center gap-2">
             <span className="break-words font-bold">{booking.bookerName}</span>
-            <span className="rounded-xs bg-secondary-container px-2 text-label font-bold text-on-secondary-container">{t(copy.slot, { count: booking.quantity })}</span>
+            <span className="rounded-xs bg-primary-container px-2 text-label font-bold text-primary">{t(copy.slot, { count: booking.quantity })}</span>
           </p>
           {href
             ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t(copy.chat, { name: booking.bookerName })}

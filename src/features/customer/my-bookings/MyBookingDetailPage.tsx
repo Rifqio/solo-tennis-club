@@ -102,7 +102,7 @@ export function Component() {
       )}
       <section aria-labelledby="players" className="flex flex-col gap-2 rounded-sm bg-surface-container-lowest p-4">
         <h2 id="players" className="flex items-center gap-2 font-bold">{t(messages.players)}
-          <span className="rounded-xs bg-secondary-container px-2 text-label font-bold text-on-secondary-container">{t(messages.slot, { count: booking.quantity })}</span>
+          <span className="rounded-xs bg-primary-container px-2 text-label font-bold text-primary">{t(messages.slot, { count: booking.quantity })}</span>
         </h2>
         <ul className="flex flex-wrap gap-1.5">{booking.participants.map((name, index) => <li key={index} className="rounded-full bg-surface-container px-2.5 py-0.5 text-label">{name}</li>)}</ul>
       </section>

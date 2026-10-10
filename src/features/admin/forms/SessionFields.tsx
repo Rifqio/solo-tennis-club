@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useI18n } from '@/i18n/use-i18n'
 import { CoachPicker } from './CoachPicker'
+import { VenueList } from './VenueList'
 import { ChoiceChips } from '@/components/ui/choice-chips'
 import { IntegerField } from '@/components/ui/integer-field'
 import { StepperField } from '@/components/ui/stepper-field'
@@ -35,9 +36,14 @@ const copy = {
   pending: { id: 'Pilihan {n}: namanya belum dimuat', en: 'Choice {n}: name not loaded yet' },
 }
 
+type Section = 'venue' | 'level' | 'place' | 'coaches' | 'limits' | 'duration'
+
 // The fields a class and a session share, as chips and steppers so a phone needs no dropdowns or keyboard for the
 // usual values: level, venue and coaches as chips; duration as chips with an "other" entry; price; min and max.
-export function SessionFields({ section, values, setField, errors, options, optionsStatus = 'ready' }: { section: 'venue' | 'limits' | 'duration'; values: DefaultValues; setField: (field: keyof DefaultValues, value: string | string[]) => void; errors: Record<string, FieldErrorCode>; options: SessionOptions; optionsStatus?: 'loading' | 'error' | 'ready' }) {
+// 'venue' is level, venue and coaches together (the session editor); 'level', 'place' and 'coaches' are the same
+// fields one at a time, for screens that order them differently. `venueList`: the venue as a searchable list with
+// addresses and pins (desktop class editor, board D10) instead of chips.
+export function SessionFields({ section, values, setField, errors, options, optionsStatus = 'ready', venueList = false }: { section: Section; values: DefaultValues; setField: (field: keyof DefaultValues, value: string | string[]) => void; errors: Record<string, FieldErrorCode>; options: SessionOptions; optionsStatus?: 'loading' | 'error' | 'ready'; venueList?: boolean }) {
   const { t } = useI18n()
   const [customDuration, setCustomDuration] = useState(() => values.durationMinutes !== '' && !DURATIONS.includes(values.durationMinutes))
   const labels = { levelId: messages.level, venueId: messages.venue, durationMinutes: copy.duration, priceIdr: copy.price, minParticipants: copy.min, maxParticipants: copy.max, coachIds: copy.coaches }
@@ -49,11 +55,16 @@ export function SessionFields({ section, values, setField, errors, options, opti
   // Archived records are offered only where they are already chosen; new picks see the active ones.
   const withMissing = <T extends { id: string; name: string; archived?: boolean }>(all: T[], ids: string[]) => { const list = all.filter(option => !option.archived || ids.includes(option.id)); return [...list, ...ids.filter(id => id && !list.some(option => option.id === id)).map((id, index) => ({ id, name: t(optionsStatus === 'ready' ? copy.missing : copy.pending, { n: index + 1 }) }))] }
 
-  if (section === 'venue') return <>
-    <ChoiceChips name="levelId" label={t(messages.level)} options={withMissing(options.levels, [values.levelId])} value={values.levelId} onChange={value => setField('levelId', value)} error={errorFor('levelId')} status={status(copy.noneLevel, options.levels.filter(option => !option.archived).length)} />
-    <ChoiceChips name="venueId" label={t(messages.venue)} options={withMissing(options.venues, [values.venueId])} value={values.venueId} onChange={value => setField('venueId', value)} error={errorFor('venueId')} status={status(copy.noneVenue, options.venues.filter(option => !option.archived).length)} />
-    <CoachPicker name="coachIds" label={t(copy.coaches)} hint={t(copy.coachesHint)} options={withMissing(options.coaches, values.coachIds)} value={values.coachIds} onChange={value => setField('coachIds', value)} error={errorFor('coachIds')} status={status(copy.noneCoach, options.coaches.filter(option => !option.archived).length)} />
-  </>
+  const level = <ChoiceChips name="levelId" label={t(messages.level)} options={withMissing(options.levels, [values.levelId])} value={values.levelId} onChange={value => setField('levelId', value)} error={errorFor('levelId')} status={status(copy.noneLevel, options.levels.filter(option => !option.archived).length)} />
+  const venueStatus = status(copy.noneVenue, options.venues.filter(option => !option.archived).length)
+  const place = venueList
+    ? <VenueList name="venueId" label={t(messages.venue)} options={withMissing(options.venues, [values.venueId])} value={values.venueId} onChange={value => setField('venueId', value)} error={errorFor('venueId')} status={venueStatus} />
+    : <ChoiceChips name="venueId" label={t(messages.venue)} options={withMissing(options.venues, [values.venueId])} value={values.venueId} onChange={value => setField('venueId', value)} error={errorFor('venueId')} status={venueStatus} />
+  const coaches = <CoachPicker name="coachIds" label={t(copy.coaches)} hint={t(copy.coachesHint)} options={withMissing(options.coaches, values.coachIds)} value={values.coachIds} onChange={value => setField('coachIds', value)} error={errorFor('coachIds')} status={status(copy.noneCoach, options.coaches.filter(option => !option.archived).length)} />
+  if (section === 'venue') return <>{level}{place}{coaches}</>
+  if (section === 'level') return level
+  if (section === 'place') return place
+  if (section === 'coaches') return coaches
 
   if (section === 'duration') {
     const durationOptions = [...DURATIONS.map(minutes => ({ id: minutes, name: t(copy.minutes, { count: minutes }) })), { id: OTHER, name: t(copy.other) }]

@@ -10,9 +10,11 @@ export interface SessionDefaults {
 export interface NamedOption { id: string; name: string; archived?: boolean }
 // A coach for the photo-card picker: portrait (null shows initials) and how many classes use them by default.
 export interface CoachOption extends NamedOption { photoUrl: string | null; classCount: number }
+// Venues show their address and whether a Maps pin is saved in the desktop class editor.
+export interface VenueOption extends NamedOption { address: string | null; hasPin: boolean }
 export interface SessionOptions {
   classes: (NamedOption & { defaults: SessionDefaults })[]
-  levels: NamedOption[]; venues: NamedOption[]; coaches: CoachOption[]
+  levels: NamedOption[]; venues: VenueOption[]; coaches: CoachOption[]
 }
 export interface AdminSessionDetail {
   id: string; version: number; classId: string; className: string; date: string; startTime: string; endTime: string
@@ -26,4 +28,6 @@ export interface UpdateSessionInput extends Omit<SessionInput, 'createRequestId'
 export interface AdminSessionListResponse {
   today: string; date: string | null; minDate: string; maxDate: string; nextDate: string | null
   sessions: AdminSessionDetail[]; truncated: boolean
+  // Scheduled (not cancelled) sessions per club date across minDate..maxDate, for the date strip. Days without any are left out.
+  dayCounts: Record<string, number>
 }

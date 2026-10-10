@@ -14,7 +14,7 @@ const buttonVariants = cva(
       variant: {
         filled: 'bg-cta text-on-cta',
         accent: 'bg-accent text-on-accent',
-        tonal: 'bg-secondary-container text-on-secondary-container',
+        tonal: 'bg-primary-container text-primary',
         outlined: 'border border-outline bg-transparent text-on-surface',
         text: 'bg-transparent px-3 text-primary',
         destructive: 'bg-error text-on-error',

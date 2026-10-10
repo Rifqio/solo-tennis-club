@@ -108,7 +108,7 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
     ...availableOptions,
     classes: [...availableOptions.classes.filter(row => row.id !== latest.classId), { id: latest.classId, name: latest.className, defaults: { levelId: latest.levelId, venueId: latest.venueId, coachIds: latest.coaches.map(row => row.id), durationMinutes: latest.durationMinutes, priceIdr: latest.priceIdr, minParticipants: latest.minParticipants, maxParticipants: latest.maxParticipants } }],
     levels: [...availableOptions.levels.filter(row => row.id !== latest.levelId), { id: latest.levelId, name: latest.levelName }],
-    venues: [...availableOptions.venues.filter(row => row.id !== latest.venueId), { id: latest.venueId, name: latest.venueName }],
+    venues: [...availableOptions.venues.filter(row => row.id !== latest.venueId), availableOptions.venues.find(row => row.id === latest.venueId) ?? { id: latest.venueId, name: latest.venueName, address: null, hasPin: false }],
     // The newer version's coaches keep their portrait when they are still among the options.
     coaches: [...availableOptions.coaches.filter(row => !latest.coaches.some(coach => coach.id === row.id)),
       ...latest.coaches.map(coach => availableOptions.coaches.find(row => row.id === coach.id) ?? { ...coach, photoUrl: null, classCount: 0 })],

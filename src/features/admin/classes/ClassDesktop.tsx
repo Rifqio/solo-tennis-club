@@ -50,14 +50,13 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
   const single = useAdminResource<ClassRecord>(currentId && currentId !== 'new' && !listed ? `/api/admin/classes/${currentId}` : null, location.key)
   const record = currentId === 'new' ? null : listed ?? single.data
   return <>
-    <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
+    <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>}
+      action={<Link to="/admin/classes/new" aria-current={currentId === 'new' ? 'page' : undefined}
+        className="state-layer pressable flex min-h-12 items-center gap-2 rounded-full bg-surface-container-lowest px-5 font-semibold text-primary">
+        <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(copy.add)}
+      </Link>} />
     <div className="admin-column flex items-start gap-5 py-5">
       <section aria-label={t(copy.heading)} className="flex min-h-[34rem] w-[24rem] shrink-0 flex-col gap-3 xl:w-[28rem]">
-        <Link to="/admin/classes/new" aria-current={currentId === 'new' ? 'page' : undefined}
-          className={cn('state-layer pressable flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-sm font-semibold',
-            currentId === 'new' ? 'bg-primary text-on-primary' : 'border border-primary text-primary')}>
-          <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(copy.add)}
-        </Link>
         <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} busy={list.searching} />
         {list.items.some(row => row.isSample) && <SampleDataNotice />}
         {list.status === 'loading' ? (

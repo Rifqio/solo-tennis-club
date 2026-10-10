@@ -71,7 +71,7 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
                   <h2 title={row.name} className="truncate font-semibold">{row.name}</h2>
                   <span className="break-words text-label text-on-surface-variant">{t(referenceSubline(kind, row))}</span>
                   {venue && <span className={cn('mt-1 self-start rounded-full px-2.5 py-0.5 text-label font-semibold',
-                    row.mapUrl ? 'bg-secondary-container text-on-secondary-container' : 'border border-warning text-warning')}>{t(row.mapUrl ? copy.pinSaved : copy.pinMissing)}</span>}
+                    row.mapUrl ? 'bg-primary-container text-primary' : 'border border-warning text-warning')}>{t(row.mapUrl ? copy.pinSaved : copy.pinMissing)}</span>}
                   <span className="sr-only">{t(config.edit)}</span>
                 </span>
                 <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-on-surface-variant" />

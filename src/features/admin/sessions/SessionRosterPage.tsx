@@ -12,6 +12,7 @@ import { clubDateOf } from '@shared/club-time'
 import type { AdminResult } from '@/lib/admin-api'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { AdminBand } from '../shell/AdminBand'
+import { isActive } from './roster-status'
 
 const copy = {
   back: { id: 'Sesi', en: 'Sessions' },
@@ -39,17 +40,14 @@ const copy = {
 
 type Filter = 'all' | 'unpaid' | 'lapsed'
 
-function isActive(booking: AdminRosterBooking, now: number) {
-  return booking.status === 'awaiting_payment' && Date.parse(booking.originalDeadline) > now
-}
-
 // wa.me takes the number as digits with the country code.
 function whatsappHref(phone: string) {
   const digits = phone.replace(/\D/g, '')
   return digits ? `https://wa.me/${digits.startsWith('0') ? '62' + digits.slice(1) : digits}` : null
 }
 
-function BookingGroup({ booking, active }: { booking: AdminRosterBooking; active: boolean }) {
+// Shared with the desktop roster panel beside the day's sessions.
+export function BookingGroup({ booking, active }: { booking: AdminRosterBooking; active: boolean }) {
   const { t } = useI18n()
   const href = whatsappHref(booking.bookerPhone)
   const time = formatClubTime(booking.originalDeadline)

@@ -7,6 +7,7 @@ import { formatClubDateMedium } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { apiErrorMessages } from '@/i18n/api-error-messages'
 import { cn } from '@/lib/utils'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { DateStrip, TodayChip } from '@/features/public/schedule/DateStrip'
 import { computeStripWindow } from '@/features/public/schedule/date-strip-window'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
@@ -17,6 +18,7 @@ import type { AdminResult } from '@/lib/admin-api'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { AdminBand } from '../shell/AdminBand'
 import { sessionsMessages as messages } from './sessions.messages'
+import { RosterPanel } from './RosterPanel'
 
 const UNPAID_FILL = 'repeating-linear-gradient(135deg, var(--color-band-tile) 0 3px, color-mix(in srgb, var(--color-band-tile) 32%, transparent) 3px 6px)'
 
@@ -44,14 +46,15 @@ function Legend() {
   )
 }
 
-function SessionCard({ row, saved }: { row: AdminSessionDetail; saved: boolean }) {
+// `onSelect` (desktop): the players button chooses the session for the roster panel instead of opening its screen.
+function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSessionDetail; saved: boolean; selected?: boolean; onSelect?: () => void }) {
   const { t } = useI18n()
   const cancelled = row.status !== 'scheduled'
   const used = Math.max(0, row.maxParticipants - row.remainingPlaces)
   const short = row.minParticipants - used
   const facts = [row.levelName, row.venueName, `${row.durationMinutes} mnt`].join(' · ')
   return (
-    <article className="flex flex-col gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
+    <article className={cn('flex flex-col gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5 transition-shadow duration-200', selected && 'ring-2 ring-primary')}>
       {saved && <StatusPanel tone="success" title={t(messages.saved)} />}
       <div className="flex items-center gap-3">
         <span className={cn('shrink-0 rounded-xs px-2 py-1.5 text-title font-bold tabular-nums',
@@ -73,7 +76,9 @@ function SessionCard({ row, saved }: { row: AdminSessionDetail; saved: boolean }
             label={t(messages.barLabel, { used, max: row.maxParticipants, min: row.minParticipants })} />
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <Button asChild variant="tonal"><Link to={`/admin/sessions/${row.id}/roster`} viewTransition>{t(messages.participants, { count: used })}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
+          {onSelect
+            ? <Button variant={selected ? 'filled' : 'tonal'} aria-pressed={selected} onClick={onSelect}>{t(messages.participants, { count: used })}<span className="sr-only">: {row.className}, {row.startTime}</span></Button>
+            : <Button asChild variant="tonal"><Link to={`/admin/sessions/${row.id}/roster`} viewTransition>{t(messages.participants, { count: used })}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>}
           <Button asChild variant="outlined"><Link to={`/admin/sessions/${row.id}/edit`} viewTransition>{t(messages.edit)}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
         </div>
       </>}
@@ -112,11 +117,16 @@ export function AdminSessionsPage() {
   }, [get, selected, attempt, auth.status])
 
   const sessions = data?.sessions ?? []
+  // Desktop (board D5): the day's sessions with the chosen one's players in a panel beside them.
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  const [pickedId, setPickedId] = useState<string | null>(null)
+  const panelId = isDesktop ? (sessions.find(row => row.id === pickedId && row.status === 'scheduled') ?? sessions.find(row => row.status === 'scheduled'))?.id ?? null : null
   return <>
     <AdminBand title={t(messages.heading)} action={<TodayChip selected={selected} today={bounds.today} onSelect={select} />}>
       <DateStrip dates={computeStripWindow({ selected, currentStart: stripStart, ...bounds })} selected={selected} {...bounds} onSelect={select} />
     </AdminBand>
-    <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:max-w-[72rem]">
+    <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:max-w-[72rem] lg:flex-row lg:items-start lg:gap-6 lg:pt-6">
+    <div className="flex min-w-0 flex-1 flex-col gap-3">
       <div className="flex flex-col gap-1">
         <h2 className="text-title font-bold">{formatClubDateMedium(selected, language)} <span className="text-label font-normal text-on-surface-variant">WIB</span></h2>
         {sessions.some(row => row.status === 'scheduled') && <Legend />}
@@ -138,10 +148,13 @@ export function AdminSessionsPage() {
           {data?.nextDate && <Button onClick={() => select(data.nextDate!)}>{t(messages.next)}</Button>}
         </StatusPanel>
       ) : (
-        <ul className="grid gap-3 lg:grid-cols-2">
-          {sessions.map(row => <li key={row.id}><SessionCard row={row} saved={savedId === row.id} /></li>)}
+        <ul className="grid gap-3">
+          {sessions.map(row => <li key={row.id}><SessionCard row={row} saved={savedId === row.id} selected={row.id === panelId}
+            onSelect={isDesktop ? () => setPickedId(row.id) : undefined} /></li>)}
         </ul>
       )}
+    </div>
+    {panelId && <div className="w-[28rem] shrink-0 xl:w-[32rem]"><RosterPanel id={panelId} /></div>}
     </div>
   </>
 }

@@ -1,7 +1,7 @@
 // Written the way the club talks in its WhatsApp group: casual Indonesian, with the English words members already use
 // (booking, slot, coach, login). Each line only states what the app does today.
 export const onboardingMessages = {
-  label: { id: 'Kenalan sama Lafu', en: 'Welcome to Lafu' },
+  label: { id: 'Kenalan sama STC', en: 'Welcome to STC' },
   skip: { id: 'Lewati', en: 'Skip' },
   previous: { id: 'Sebelumnya', en: 'Previous' },
   next: { id: 'Lanjut', en: 'Next' },

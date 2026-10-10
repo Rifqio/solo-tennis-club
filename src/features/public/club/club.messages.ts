@@ -1,5 +1,5 @@
 export const clubMessages = {
-  heading: { id: 'Tentang Lafu', en: 'About Lafu' },
+  heading: { id: 'Tentang STC', en: 'About STC' },
   kind: { id: 'Klub tenis', en: 'Tennis club' },
   seeSchedule: { id: 'Lihat jadwal', en: 'See the schedule' },
   chatAdmin: { id: 'Chat admin', en: 'Chat the admin' },

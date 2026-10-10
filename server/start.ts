@@ -46,7 +46,7 @@ export async function startServer(options: {
     process.once('SIGINT', onSignal)
     process.once('SIGTERM', onSignal)
     const url = 'http://' + host + ':' + address.port
-    console.log('Lafu listening on ' + url)
+    console.log('STC listening on ' + url)
     return { url, close }
   } catch (error) {
     await expiry?.stop()

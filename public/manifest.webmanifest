@@ -1,7 +1,7 @@
 {
-  "name": "Lafu - Lawu Fun Tennis Club",
-  "short_name": "Lafu",
-  "description": "Jadwal kelas tenis Lawu Fun Tennis Club.",
+  "name": "STC - Solo Tennis Club",
+  "short_name": "STC",
+  "description": "Jadwal kelas tenis Solo Tennis Club.",
   "lang": "id",
   "start_url": "/",
   "scope": "/",

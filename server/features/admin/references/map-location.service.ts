@@ -9,7 +9,7 @@ const TIMEOUT_MS = 5000
 
 // Asks for the page without following, and returns where it redirects to.
 const fetchRedirect: FetchRedirect = async (url, signal) => {
-  const response = await fetch(url, { redirect: 'manual', signal, headers: { 'user-agent': 'Mozilla/5.0 (Lafu venue link check)' } })
+  const response = await fetch(url, { redirect: 'manual', signal, headers: { 'user-agent': 'Mozilla/5.0 (STC venue link check)' } })
   await response.body?.cancel()
   return response.status >= 300 && response.status < 400 ? response.headers.get('location') : null
 }

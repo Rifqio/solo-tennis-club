@@ -15,7 +15,7 @@ export const apiErrorMessages: Record<ApiErrorCode, Message> = {
   DATE_OUT_OF_RANGE: { id: 'Tanggal ini di luar jangkauan jadwal. Pilih tanggal lain.', en: 'This date is outside the schedule range. Choose another date.' },
   UNAUTHENTICATED: { id: 'Sesi admin berakhir. Masuk lagi untuk melanjutkan.', en: 'Your admin session has ended. Sign in again to continue.' },
   CSRF_FAILED: { id: 'Permintaan tidak dapat diverifikasi. Muat ulang halaman lalu coba lagi.', en: 'The request could not be verified. Reload the page and try again.' },
-  ORIGIN_REJECTED: { id: 'Permintaan ditolak. Buka Lafu dari alamat biasanya lalu coba lagi.', en: 'The request was refused. Open Lafu from its usual address and try again.' },
+  ORIGIN_REJECTED: { id: 'Permintaan ditolak. Buka STC dari alamat biasanya lalu coba lagi.', en: 'The request was refused. Open STC from its usual address and try again.' },
   UNSUPPORTED_MEDIA_TYPE: { id: 'Format permintaan tidak didukung. Muat ulang halaman lalu coba lagi.', en: 'The request format is not supported. Reload the page and try again.' },
   PAYLOAD_TOO_LARGE: { id: 'Data yang dikirim terlalu besar. Persingkat isian lalu coba lagi.', en: 'The submitted data is too large. Shorten your entries and try again.' },
   SIGN_IN_FAILED: { id: 'Email atau kata sandi tidak cocok. Periksa lalu coba lagi.', en: 'Email or password does not match. Check and try again.' },

@@ -53,7 +53,7 @@ export async function verifyBackup(file: string): Promise<{ ok: true } | { ok: f
     if (missing.length) return { ok: false, reason: 'Missing migrations: ' + missing.join(', ') }
     return { ok: true }
   } catch (error) {
-    return { ok: false, reason: 'Not a readable Lafu database: ' + (error instanceof Error ? error.message : String(error)) }
+    return { ok: false, reason: 'Not a readable STC database: ' + (error instanceof Error ? error.message : String(error)) }
   } finally {
     await prisma.$disconnect()
   }

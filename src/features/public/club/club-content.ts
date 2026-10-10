@@ -15,8 +15,8 @@ export interface ClubContent {
 // Real content is club-supplied. The name and city are confirmed; the story and contacts stay null until the club
 // provides them, and the screen leaves those parts out instead of inventing them.
 export const clubContent: ClubContent = {
-  name: 'Lawu Fun Tennis Club',
-  shortName: 'Lafu',
+  name: 'Solo Tennis Club',
+  shortName: 'STC',
   city: 'Surakarta',
   description: null,
   whatsapp: null,

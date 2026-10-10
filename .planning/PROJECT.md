@@ -1,8 +1,8 @@
-# Lafu — Lawu Fun Tennis Club
+# STC — Solo Tennis Club
 
 ## What This Is
 
-A mobile-first web application for Lawu Fun Tennis Club (Lafu), replacing a shared schedule spreadsheet and WhatsApp booking workflow with customer self-service and an operational admin portal. Visitors can explore the club and browse schedules without signing in, then reserve places, pay by static QRIS or bank transfer, and submit payment proof from their phones. Customers and administrators can use the application in Indonesian or English, with expanded layouts on tablets and desktops.
+A mobile-first web application for Solo Tennis Club (STC; formerly Lawu Fun Tennis Club / Lafu), replacing a shared schedule spreadsheet and WhatsApp booking workflow with customer self-service and an operational admin portal. Visitors can explore the club and browse schedules without signing in, then reserve places, pay by static QRIS or bank transfer, and submit payment proof from their phones. Customers and administrators can use the application in Indonesian or English, with expanded layouts on tablets and desktops.
 
 ## Core Value
 
@@ -88,7 +88,7 @@ Details such as cutoff configuration scope, recurring-series edit behavior, book
 
 The workspace is `E:\Code\TApp`, with package name `lafu`. The React/TypeScript/Vite starter has become a public schedule and club application backed by Express and Prisma/SQLite. Completed Phase 1 summaries record public browsing, protected admin publication, bilingual UI foundations, and operations utilities; customer booking remains Phase 2 work. Planning files belong in this workspace's `.planning`, independently of the parent directory. Current architecture is in Phase 1's 01-SKELETON.md; DESIGN.md owns Jalur Lawu, and 01-DESIGN-BLUEPRINT.md proposes the remaining Phase 1 screens and acceptance scenarios.
 
-The confirmed club name is Lawu Fun Tennis Club, abbreviated Lafu. The application supports Indonesian and English. Logo assets and a final visual identity have not yet been supplied or selected. Impeccable supplied UI brainstorming before implementation, and the user selected building directly from an agreed design brief instead of generating a mockup first. The user confirmed Antislop for UI validation during planning and building on 2026-10-08; apply its core, UI, and mobile-layout checks alongside functional, browser, and accessibility verification.
+The club name is Solo Tennis Club, abbreviated STC (renamed by the user on 2026-10-10 from Lawu Fun Tennis Club / Lafu; the code still carries the old name until the rename todo in STATE.md is done). The application supports Indonesian and English. Logo assets and a final visual identity have not yet been supplied or selected. Impeccable supplied UI brainstorming before implementation, and the user selected building directly from an agreed design brief instead of generating a mockup first. The user confirmed Antislop for UI validation during planning and building on 2026-10-08; apply its core, UI, and mobile-layout checks alongside functional, browser, and accessibility verification.
 
 The user wants booking to feel easy and guided even for people unfamiliar with technology, and likes the AYO Android application's presentation. The reference is its Google Play listing and app screenshots at https://play.google.com/store/apps/details?id=coid.ayo.ayo_mobile_app&hl=en, specifically not the AYO website. This is inspiration for mobile presentation; no AYO features or visual identity are automatically adopted.
 
@@ -127,7 +127,7 @@ The user selected Community matchday on the Impeccable direction page: a familia
 | Track refunds while moving money manually | Handle paid cancellations within the initial manual-payment scope | Pending |
 | Defer technical architecture decisions | Product rules should be established before selecting implementation details | Pending |
 | Start with SQLite and Prisma; exclude Supabase | User selected a simple initial database and ORM during Phase 1 planning | Selected 2026-10-08; migrated persistence and backup/restore implemented in 01-01 and 01-06; integrated acceptance pending |
-| Use Lawu Fun Tennis Club / Lafu as the product's club identity | The user confirmed the actual club name | Pending |
+| Use Solo Tennis Club / STC as the product's club identity (was Lawu Fun Tennis Club / Lafu until 2026-10-10) | The user renamed the club on 2026-10-10 | Pending |
 | Support Indonesian and English in customer and admin workflows | The user confirmed both application languages | Pending |
 | Select Community matchday as the UI presentation direction | It matches the user's AYO app reference while keeping Lafu booking and payment states understandable | Pending |
 | Use Impeccable for UI brainstorming and Antislop for validation during planning/building | User confirmed this workflow; the agreed direction informs evidence-based UI checks | Pending |

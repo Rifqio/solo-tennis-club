@@ -11,9 +11,9 @@ Mobile-first, Indonesian/English, text-based states, and private booking/payment
 
 ## Project
 
-**Lafu — Lawu Fun Tennis Club**
+**STC — Solo Tennis Club** (formerly Lawu Fun Tennis Club / Lafu; renamed 2026-10-10)
 
-A mobile-first web application for Lawu Fun Tennis Club (Lafu), replacing a shared schedule spreadsheet and WhatsApp booking workflow with customer self-service and an operational admin portal. Visitors can explore the club and browse schedules without signing in, then reserve places, pay by static QRIS or bank transfer, and submit payment proof from their phones. Customers and administrators can use the application in Indonesian or English, with expanded layouts on tablets and desktops.
+A mobile-first web application for Solo Tennis Club (STC), replacing a shared schedule spreadsheet and WhatsApp booking workflow with customer self-service and an operational admin portal. Visitors can explore the club and browse schedules without signing in, then reserve places, pay by static QRIS or bank transfer, and submit payment proof from their phones. Customers and administrators can use the application in Indonesian or English, with expanded layouts on tablets and desktops.
 
 **Core Value:** Customers can book tennis classes from their phones with clear, reliable availability, while club admins can manage those bookings and payments without spreadsheets.
 

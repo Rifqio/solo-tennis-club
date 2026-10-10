@@ -74,6 +74,8 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - [Phase 1]: User chose react-day-picker for the date picker (2026-10-08): Club Calendar in a bottom sheet on phones and a popover from 640px, replacing UI-SPEC's native input; recorded in DESIGN.md.
 - [Phase 1]: 01-06 sample seed is richer than planned at the user's request (two weeks, empty days, cancelled, long names) and gained --refresh; still isSample, "Contoh"-named, development only.
 - [Phase 1]: Schedule close-out, public details, reference/class management and guided create/edit are implemented and summarized. Build/lint and all 137 non-browser tests passed before acceptance. User subsequently confirmed manual workflow testing; shortcut cleanup has its own fresh verification record.
+- [2026-10-10]: **Club renamed.** "Lawu Fun Tennis Club" / "Lafu" is now **Solo Tennis Club** / **STC** (Solo = Surakarta). Use the full name on first or prominent mention and STC for the wordmark and compact spots. The canvas is renamed; the code is not yet (see Pending Todos). Earlier entries keep the old name as history.
+- [2026-10-10]: Desktop design epic started before 02-05, from the user's four Dribbble references. Decisions: the public club page gets a top nav, while app and admin screens use the ink rail from DESIGN.md. Entrance and scroll-reveal motion appears on the club page only; app screens keep the functional motion. Boards D1 Klub and D2 Jadwal are on the canvas; booking flow, Booking kamu and admin desktop come next. Unsplash stock photos stand in until the club supplies photos.
 - [Phase 1]: Schema gate push-event heuristic skipped per documented GSD_SKIP_SCHEMA_CHECK after real committed migrate deploy/status and clean-file tests passed; do not substitute db push for migration history.
 
 ### Pending Todos
@@ -100,6 +102,8 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - [x] Build the approved Courtside canvas boards: club page, venue Maps links, wrong-code state, admin shell/sessions/roster/manage/classes (2026-10-10).
 - [ ] Complete user manual acceptance for 02-03 and 02-04 on a phone.
 - [ ] Implement 02-05 admin-created bookings and integrated development acceptance.
+- [ ] Finish the desktop design epic on the canvas (booking flow, Booking kamu, admin desktop), then build the desktop layouts.
+- [ ] Rename the club in code to Solo Tennis Club / STC: index.html title/meta, club-content.ts, club.messages.ts, api-error-messages.ts, docs. Ask before renaming technical identifiers: cookies `lafu_*` (renaming signs everyone out), env vars `LAFU_*`, `data/lafu.db` and backup names, the localStorage key `lafu.language`, and the package name.
 - [ ] Select/integrate real OTP delivery and verify AUTH-02 before Phase 2 release completion.
 - [ ] Before production launch, review real club content/logo/catalog, exclude samples and verify deployment/provisioning operations.
 

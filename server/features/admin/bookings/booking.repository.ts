@@ -20,6 +20,8 @@ const detailFields = {
   ...summaryFields,
   participants: { select: { name: true }, orderBy: { position: 'asc' } },
   customer: { select: { displayName: true, phone: true, verifiedAt: true } },
+  version: true,
+  ownershipEvents: { select: { createdAt: true, admin: { select: { displayName: true } } }, orderBy: { createdAt: 'desc' }, take: 1 },
 } satisfies Prisma.BookingSelect
 
 export type AdminBookingRow = Prisma.BookingGetPayload<{ select: typeof summaryFields }>
@@ -57,6 +59,22 @@ export function createAdminBookingRepository(database: Database) {
     },
     findDetail(id: string) {
       return database.booking.findUnique({ where: { id }, select: detailFields })
+    },
+    findLinkTarget(id: string) {
+      return database.booking.findUnique({ where: { id }, select: { id: true, version: true, customerId: true, bookerPhone: true } })
+    },
+    findVerifiedCustomerByPhone(phone: string) {
+      return database.customer.findFirst({ where: { phone, isActive: true }, select: { id: true, displayName: true, phone: true, verifiedAt: true } })
+    },
+    findVerifiedCustomer(id: string) {
+      return database.customer.findFirst({ where: { id, isActive: true }, select: { id: true, phone: true } })
+    },
+    // Only an unowned booking at the version the admin saw; zero rows means someone changed or linked it first.
+    linkIfUnownedAtVersion(id: string, customerId: string, version: number) {
+      return database.booking.updateMany({ where: { id, version, customerId: null }, data: { customerId, version: { increment: 1 } } })
+    },
+    recordOwnershipEvent(data: { bookingId: string; adminId: string; customerId: string; bookingVersion: number }) {
+      return database.bookingOwnershipEvent.create({ data: { ...data, previousCustomerId: null } })
     },
   }
 }

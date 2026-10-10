@@ -19,6 +19,7 @@ model AdminAccount {
   sessions AdminSession[]
   createdSessions ClassSession[] @relation("CreatedBy")
   updatedSessions ClassSession[] @relation("UpdatedBy")
+  bookingOwnershipEvents BookingOwnershipEvent[]
 }
 model AdminSession {
   id String @id @default(cuid())
@@ -158,6 +159,7 @@ model Customer {
   updatedAt DateTime @updatedAt
   sessions CustomerSession[]
   bookings Booking[]
+  ownershipEvents BookingOwnershipEvent[]
 }
 
 model Booking {
@@ -180,6 +182,7 @@ model Booking {
   version Int @default(1)
   createdAt DateTime @default(now())
   participants BookingParticipant[]
+  ownershipEvents BookingOwnershipEvent[]
   @@unique([actorKind, actorId, createRequestId])
   @@index([sessionId, status, originalDeadline])
   @@index([customerId, createdAt])
@@ -192,6 +195,22 @@ model BookingParticipant {
   position Int
   name String
   @@unique([bookingId, position])
+}
+
+// Who gave a booking to which verified customer, and when. Linking changes ownership only, never places, names,
+// price or deadline. previousCustomerId stays null while bookings can only be linked from no owner.
+model BookingOwnershipEvent {
+  id String @id @default(cuid())
+  bookingId String
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  adminId String?
+  admin AdminAccount? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  previousCustomerId String?
+  customerId String?
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  bookingVersion Int
+  createdAt DateTime @default(now())
+  @@index([bookingId, createdAt])
 }
 
 model CustomerSession {

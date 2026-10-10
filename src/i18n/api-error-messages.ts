@@ -28,6 +28,8 @@ export const apiErrorMessages: Record<ApiErrorCode, Message> = {
   SESSION_CHANGED: { id: 'Detail sesi berubah. Muat ulang sebelum mengonfirmasi.', en: 'Session details changed. Reload before confirming.' },
   IDEMPOTENCY_CONFLICT: { id: 'Permintaan ini sudah dipakai untuk data berbeda. Muat ulang dan coba lagi.', en: 'This request was already used for different details. Reload and try again.' },
   MAP_LINK_UNREADABLE: { id: 'Link ini nggak kebaca. Salin ulang dari tombol Bagikan di Google Maps.', en: "We couldn't read this link. Copy it again from Share in Google Maps." },
+  BOOKING_ALREADY_LINKED: { id: 'Booking ini sudah terhubung ke akun lain. Kepemilikannya nggak bisa dipindah dari sini.', en: 'This booking is already linked to another account. Ownership cannot be moved from here.' },
+  CUSTOMER_MISMATCH: { id: 'Nomor akun ini beda dengan nomor di booking. Booking hanya bisa dihubungkan ke nomor yang sama persis.', en: "This account's number differs from the booking's number. A booking can only be linked to the exact same number." },
 }
 
 export const fieldErrorMessages: Record<FieldErrorCode, Message> = {

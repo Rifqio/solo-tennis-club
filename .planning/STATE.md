@@ -103,6 +103,7 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - [ ] Complete user manual acceptance for 02-03 and 02-04 on a phone.
 - [ ] Implement 02-05 admin-created bookings and integrated development acceptance.
 - [ ] Finish the desktop design epic on the canvas (booking flow, Booking kamu, admin desktop), then build the desktop layouts.
+- [ ] New scope (2026-10-10, user request, desktop first): an admin **Rekap** dashboard with monthly revenue and an Excel export. Revenue counts only Lunas bookings; unpaid money shows separately as "Nunggu dibayar". The .xlsx has a Ringkasan sheet (headline numbers plus a per-class table) and a Booking sheet (one row per booking). Board D7 is on the canvas. It is not yet in REQUIREMENTS.md or ROADMAP.md, and it depends on Phase 3 payment confirmation for real paid dates. Mobile comes after desktop is approved.
 - [ ] Rename the club in code to Solo Tennis Club / STC: index.html title/meta, club-content.ts, club.messages.ts, api-error-messages.ts, docs. Ask before renaming technical identifiers: cookies `lafu_*` (renaming signs everyone out), env vars `LAFU_*`, `data/lafu.db` and backup names, the localStorage key `lafu.language`, and the package name.
 - [ ] Select/integrate real OTP delivery and verify AUTH-02 before Phase 2 release completion.
 - [ ] Before production launch, review real club content/logo/catalog, exclude samples and verify deployment/provisioning operations.

@@ -17,6 +17,7 @@ import { CustomerApiError, customerRequest } from '@/lib/customer-api'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { useNow } from '@/features/public/schedule/use-now'
 import { useCustomerAccess } from '../auth/use-customer-access'
+import { CourtLines } from '@/components/brand/court-lines'
 import { BookedArt } from './BookedArt'
 
 type Options = { sessionVersion: number; unitPriceIdr: number; remainingPlaces: number; bookingClosesAt: string; serverNow: string; canReserve: boolean }
@@ -38,7 +39,7 @@ const messages = {
     safe: '{count} slot kamu aman sampai batas bayar.', timeLeft: 'Sisa waktu bayar {h} jam {m} menit', hours: 'jam', minutes: 'menit',
     payBy: 'Bayar sebelum', payTitle: 'Cara bayar (QRIS atau transfer)', payBody: 'Info pembayaran akan muncul di sini. Sementara itu, hubungi admin klub.',
     seeBooking: 'Lihat booking', backToSchedule: 'Kembali ke jadwal', back: 'Kembali', backToScheduleLabel: 'Kembali ke jadwal',
-    people: 'orang', quickPick: 'Pilih cepat', summary: 'Ringkasan', changeSession: 'Ganti sesi', priceTimes: '{price} × {count} orang',
+    unpaid: 'Belum bayar', people: 'orang', quickPick: 'Pilih cepat', summary: 'Ringkasan', changeSession: 'Ganti sesi', priceTimes: '{price} × {count} orang',
     seatsLabel: '{taken} udah diambil, {mine} buat kamu, {open} masih kosong, dari {max} slot', taken: '{count} udah diambil', mine: '{count} buat kamu', open: '{count} masih kosong',
   },
   en: {
@@ -55,7 +56,7 @@ const messages = {
     safe: 'Your {count} slots are held until the payment deadline.', timeLeft: '{h} hours {m} minutes left to pay', hours: 'hours', minutes: 'min',
     payBy: 'Pay by', payTitle: 'How to pay (QRIS or transfer)', payBody: 'Payment details will appear here. For now, contact the club admin.',
     seeBooking: 'See booking', backToSchedule: 'Back to schedule', back: 'Back', backToScheduleLabel: 'Back to schedule',
-    people: 'people', quickPick: 'Quick pick', summary: 'Summary', changeSession: 'Change session', priceTimes: '{price} × {count} people',
+    unpaid: 'Not paid yet', people: 'people', quickPick: 'Quick pick', summary: 'Summary', changeSession: 'Change session', priceTimes: '{price} × {count} people',
     seatsLabel: '{taken} taken, {mine} for you, {open} still open, of {max} places', taken: '{count} taken', mine: '{count} for you', open: '{count} still open',
   },
 }
@@ -291,6 +292,48 @@ export function Component() {
     const hoursLeft = Math.floor(minutesLeft / 60)
     const cell = 'flex size-16 items-center justify-center rounded-xs bg-band-tile text-headline font-bold tabular-nums'
     const rise = (delay: number) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.42, ease: 'easeOut' as const } })
+    const payBy = new Date(deadline).toLocaleString(language === 'id' ? 'id-ID' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })
+    // Desktop (board D3): the moment on the left in Court Blue, what was booked on a white card to the right.
+    if (isDesktop) {
+      return (
+        <div className="page-gutter mx-auto w-full max-w-[72rem] py-5">
+          <section className="relative isolate flex flex-wrap items-center gap-10 overflow-hidden rounded-lg bg-band p-[clamp(2rem,4vw,3.5rem)] text-on-signboard [&_:focus-visible]:outline-white">
+            <CourtLines className="pointer-events-none absolute -right-10 -top-12 -z-10 h-[26rem] text-on-signboard/15" />
+            <div className="flex min-w-0 flex-[1_1_22rem] flex-col gap-5">
+              <m.span initial={reduceMotion ? false : { scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 380, damping: 20 }}
+                aria-hidden="true" className="flex size-18 items-center justify-center rounded-full bg-surface-container-lowest text-primary">
+                <Check className="size-9" strokeWidth={3} />
+              </m.span>
+              <div className="flex flex-col gap-1.5">
+                <h1 ref={heading} tabIndex={-1} className="text-display font-bold focus:outline-none">{text.success}</h1>
+                <p className="text-title font-normal">{fill(text.safe, { count: result.booking.quantity })}</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <span role="timer" aria-label={fill(text.timeLeft, { h: hoursLeft, m: minutesLeft % 60 })} className="flex items-baseline gap-1.5 rounded-sm bg-band-tile px-4 py-3 tabular-nums">
+                  <span aria-hidden="true" className="text-display font-bold leading-none">{String(hoursLeft).padStart(2, '0')}</span><span aria-hidden="true" className="text-label">{text.hours}</span>
+                  <span aria-hidden="true" className="text-display font-bold leading-none">{String(minutesLeft % 60).padStart(2, '0')}</span><span aria-hidden="true" className="text-label">{text.minutes}</span>
+                </span>
+                <span className="flex flex-col leading-snug"><span className="text-label">{text.payBy}</span><span className="text-title font-bold">{payBy} WIB</span></span>
+              </div>
+              <p className="max-w-[32rem] rounded-sm bg-band-tile px-4 py-3 text-label"><span className="font-semibold">{text.payTitle}. </span>{text.payBody}</p>
+              <div className="flex flex-wrap gap-3">
+                <Button asChild variant="filled" className="min-h-14 px-7"><Link to={`/bookings/${result.booking.id}`}>{text.seeBooking}</Link></Button>
+                <Button asChild variant="tonal" className="min-h-14 bg-surface-container-lowest px-7 text-primary"><Link to={schedulePath}>{text.backToSchedule}</Link></Button>
+              </div>
+            </div>
+            <section aria-label={session.className} className="flex min-w-0 max-w-[26rem] flex-[1_1_20rem] flex-col gap-3.5 rounded-md bg-surface-container-lowest p-6 text-on-surface">
+              <span className="self-start rounded-full bg-warning-container px-3 py-0.5 text-label font-semibold text-warning">{text.unpaid}</span>
+              <span className="flex flex-col leading-snug">
+                <span className="break-words text-title font-bold">{session.className}</span>
+                <span className="text-label text-on-surface-variant">{formatClubDateMedium(session.date, language)} · {session.startTime}-{session.endTime} WIB</span>
+              </span>
+              <ul className="flex flex-wrap gap-1.5">{result.booking.participants.map(participant => <li key={participant.id} className="rounded-full bg-surface-container px-3 py-1 text-label">{participant.name}</li>)}</ul>
+              <span className="flex justify-between gap-3 border-t border-outline-variant pt-3"><span className="text-on-surface-variant">{text.total}</span><span className="font-bold tabular-nums">{formatIdr(result.booking.totalPriceIdr, language)}</span></span>
+            </section>
+          </section>
+        </div>
+      )
+    }
     // Court Blue with white text and the lime action, per the club owner's review; the art plays the moment once.
     return (
       <div className="flex min-h-dvh flex-col bg-band text-on-signboard [&_:focus-visible]:outline-white">
@@ -306,7 +349,7 @@ export function Component() {
               <span aria-hidden="true" className="text-headline font-bold">:</span>
               <span aria-hidden="true" className={cell}>{String(minutesLeft % 60).padStart(2, '0')}</span>
             </div>
-            <p className="rounded-full bg-band-tile px-3.5 py-1.5 text-label">{text.payBy} <span className="font-semibold">{new Date(deadline).toLocaleString(language === 'id' ? 'id-ID' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })} WIB</span></p>
+            <p className="rounded-full bg-band-tile px-3.5 py-1.5 text-label">{text.payBy} <span className="font-semibold">{payBy} WIB</span></p>
           </m.div>
           <m.section {...rise(0.94)} aria-label={session.className} className="flex flex-col gap-1.5 rounded-sm bg-surface-container-lowest p-4 text-on-surface">
             <div className="flex flex-wrap justify-between gap-x-3"><span className="font-semibold">{session.className}</span><span className="tabular-nums">{formatClubDateMedium(session.date, language)}, {formatClubTime(session.startsAt)}</span></div>

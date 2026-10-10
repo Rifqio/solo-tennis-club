@@ -1,11 +1,12 @@
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import { addClubDays, clubDateTimeToInstant, clubToday } from '../../shared/club-time.ts'
 
-// Development-only sample catalog. Every record is isSample, every name starts with "Contoh" (Indonesian for "example"),
-// and the public schedule shows the sample-data notice beside them. No club facts, no bookings, no occupancy.
+// Development-only sample catalog. Every record is isSample and the screens show the sample-data notice beside them.
+// Levels, venues and classes start with "Contoh" (Indonesian for "example"); coaches carry plain names, at the club
+// owner's request (2026-10-10), so the coach cards read naturally. No club facts, no bookings, no occupancy.
 const LEVELS = ['Contoh Level Pemula', 'Contoh Level Menengah']
 const VENUES = ['Contoh Lapangan 1', 'Contoh Lapangan 2 Indoor']
-const COACHES = ['Contoh Pelatih A', 'Contoh Pelatih B', 'Contoh Pelatih C']
+const COACHES = ['Pelatih A', 'Pelatih B', 'Pelatih C']
 const CLASSES = [
   { name: 'Contoh Kelas Dasar', level: 0, venue: 0, duration: 90, price: 120000, min: 4, max: 8, coaches: [0] },
   // Long name on purpose, to review wrapping on small phones; two default coaches and an odd capacity.
@@ -32,19 +33,27 @@ const SESSIONS: Array<[number, string, number, boolean?]> = [
 // The sample coaches from board D10, with portraits copied from the design canvas (public/photos/coaches/*.json).
 // Two have no photo on purpose, so the picker's initials fallback is visible.
 const SAMPLE_COACHES: Array<[string, string | null]> = [
-  ['Contoh Budi Santoso', '/photos/coaches/budi.webp'], ['Contoh Rina Wulandari', '/photos/coaches/rina.webp'],
-  ['Contoh Dewi Lestari', '/photos/coaches/dewi.webp'], ['Contoh Agus Pratama', '/photos/coaches/agus.webp'],
-  ['Contoh Yoga Saputra', '/photos/coaches/yoga.webp'], ['Contoh Hendra Wijaya', '/photos/coaches/hendra.webp'],
-  ['Contoh Fajar Nugroho', '/photos/coaches/fajar.webp'], ['Contoh Maya Anggraini', '/photos/coaches/maya.webp'],
-  ['Contoh Sari Puspita', null], ['Contoh Rizky Hidayat', null],
+  ['Budi Santoso', '/photos/coaches/budi.webp'], ['Rina Wulandari', '/photos/coaches/rina.webp'],
+  ['Dewi Lestari', '/photos/coaches/dewi.webp'], ['Agus Pratama', '/photos/coaches/agus.webp'],
+  ['Yoga Saputra', '/photos/coaches/yoga.webp'], ['Hendra Wijaya', '/photos/coaches/hendra.webp'],
+  ['Fajar Nugroho', '/photos/coaches/fajar.webp'], ['Maya Anggraini', '/photos/coaches/maya.webp'],
+  ['Sari Puspita', null], ['Rizky Hidayat', null],
 ]
 
 const key = (name: string) => name.toLowerCase()
 
-// Adds the sample coaches and fills a missing portrait; a coach the admin already gave a photo keeps it. Returns how
-// many coaches it created or updated.
+// Renames legacy "Contoh" sample coaches, adds the sample coaches and fills a missing portrait; a coach the admin
+// already gave a photo keeps it. Returns how many coaches it created or updated.
 export async function seedSampleCoaches(prisma: PrismaClient) {
   let changed = 0
+  // Sample coaches seeded before 2026-10-10 were named "Contoh <name>"; drop the prefix where the plain name is free.
+  for (const name of [...COACHES, ...SAMPLE_COACHES.map(([coach]) => coach)]) {
+    const legacy = await prisma.coach.findUnique({ where: { nameKey: key('Contoh ' + name) } })
+    if (legacy?.isSample && !(await prisma.coach.findUnique({ where: { nameKey: key(name) } }))) {
+      await prisma.coach.update({ where: { id: legacy.id }, data: { name, nameKey: key(name), version: { increment: 1 } } })
+      changed++
+    }
+  }
   for (const [name, photoUrl] of SAMPLE_COACHES) {
     const existing = await prisma.coach.findUnique({ where: { nameKey: key(name) } })
     if (!existing) { await prisma.coach.create({ data: { name, nameKey: key(name), photoUrl, isSample: true } }); changed++ }

@@ -68,7 +68,7 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
                     </span>
                     {row.coaches.length > 0 && (
                       <span className="flex flex-wrap gap-1.5">
-                        {row.coaches.map(coach => <span key={coach.id} className={cn('rounded-full border px-2.5 py-0.5 text-label', active ? 'border-on-primary/40' : 'border-outline-variant')}>{coach.name}</span>)}
+                        {row.coaches.map(coach => <span key={coach.id} title={coach.name} className={cn('max-w-[12rem] truncate rounded-full border px-2.5 py-0.5 text-label', active ? 'border-on-primary/40' : 'border-outline-variant')}>{coach.name}</span>)}
                       </span>
                     )}
                   </Link>

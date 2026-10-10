@@ -63,7 +63,7 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
                       active ? 'bg-primary text-on-primary' : 'text-on-surface')}>
                     {kind === 'coach' && <CoachAvatar name={row.name} photoUrl={row.photoUrl} />}
                     <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <span className="break-words font-semibold">{row.name}</span>
+                      <span title={row.name} className="truncate font-semibold">{row.name}</span>
                       {venue && <span className={cn('self-start rounded-full px-2.5 py-0.5 text-label font-semibold',
                         active ? 'bg-surface-container-lowest text-primary' : row.mapUrl ? 'bg-secondary-container text-on-secondary-container' : 'border border-warning text-warning')}>
                         {t(row.mapUrl ? copy.pinSaved : copy.pinMissing)}</span>}

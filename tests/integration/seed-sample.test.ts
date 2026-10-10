@@ -60,9 +60,17 @@ test('sample coaches are added once with portraits, and an existing photo is nev
   expect(await seedSampleCoaches(db.prisma)).toBe(10)
   expect(await db.prisma.coach.count({ where: { isSample: true } })).toBe(SAMPLE_COACH_COUNT)
   expect(await db.prisma.coach.count({ where: { isSample: true, photoUrl: { not: null } } })).toBe(8)
-  await db.prisma.coach.update({ where: { nameKey: 'contoh budi santoso' }, data: { photoUrl: '/photos/coaches/own.webp' } })
+  await db.prisma.coach.update({ where: { nameKey: 'budi santoso' }, data: { photoUrl: '/photos/coaches/own.webp' } })
   expect(await seedSampleCoaches(db.prisma)).toBe(0)
-  expect((await db.prisma.coach.findUnique({ where: { nameKey: 'contoh budi santoso' } }))?.photoUrl).toBe('/photos/coaches/own.webp')
+  expect((await db.prisma.coach.findUnique({ where: { nameKey: 'budi santoso' } }))?.photoUrl).toBe('/photos/coaches/own.webp')
+})
+
+test('legacy "Contoh" sample coach names lose the prefix', async () => {
+  await db.prisma.coach.create({ data: { name: 'Contoh Sari Puspita', nameKey: 'contoh sari puspita', isSample: true } })
+  await db.prisma.coach.deleteMany({ where: { nameKey: 'sari puspita' } })
+  expect(await seedSampleCoaches(db.prisma)).toBe(1)
+  expect(await db.prisma.coach.findUnique({ where: { nameKey: 'sari puspita' } })).toMatchObject({ name: 'Sari Puspita', isSample: true })
+  expect(await db.prisma.coach.count({ where: { name: { startsWith: 'Contoh' } } })).toBe(0)
 })
 
 test('the seed command refuses to run in production and writes nothing', async () => {

@@ -56,7 +56,7 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
                 className="state-layer flex items-center justify-between gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
                 {kind === 'coach' && <CoachAvatar name={row.name} photoUrl={row.photoUrl} />}
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <h2 className="break-words font-semibold">{row.name}</h2>
+                  <h2 title={row.name} className="truncate font-semibold">{row.name}</h2>
                   {venue && <span className="break-words text-label text-on-surface-variant">{row.address || t(copy.noAddress)}</span>}
                   {venue && <span className={cn('mt-1 self-start rounded-full px-2.5 py-0.5 text-label font-semibold',
                     row.mapUrl ? 'bg-secondary-container text-on-secondary-container' : 'border border-warning text-warning')}>{t(row.mapUrl ? copy.pinSaved : copy.pinMissing)}</span>}

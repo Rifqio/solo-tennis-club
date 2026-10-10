@@ -61,7 +61,7 @@ export function ClassListPage() {
                     <span key={fact} className="rounded-full bg-surface-container px-2.5 py-0.5 text-label tabular-nums">{fact}</span>
                   ))}
                 </span>
-                {row.coaches.length > 0 && <span className="break-words text-label text-on-surface-variant">{t(copy.coaches, { names: row.coaches.map(coach => coach.name).join(', ') })}</span>}
+                {row.coaches.length > 0 && <span title={row.coaches.map(coach => coach.name).join(', ')} className="truncate text-label text-on-surface-variant">{t(copy.coaches, { names: row.coaches.map(coach => coach.name).join(', ') })}</span>}
               </Link>
             </li>
           ))}

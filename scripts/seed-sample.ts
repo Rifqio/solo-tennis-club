@@ -19,7 +19,7 @@ try {
     skipped: 'Sample data already present; nothing changed (use --refresh to re-date sessions): ',
   }
   console.log(messages[outcome] + file)
-  console.log(coaches ? `Sample coaches added or given a photo: ${coaches}` : 'Sample coaches already present with their photos.')
+  console.log(coaches ? `Sample coaches added, renamed or given a photo: ${coaches}` : 'Sample coaches already present with their photos.')
 } catch (error) {
   console.error('Seeding failed: ' + (error instanceof Error ? error.message : String(error)))
   process.exitCode = 1

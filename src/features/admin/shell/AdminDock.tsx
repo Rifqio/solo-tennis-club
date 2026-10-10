@@ -48,7 +48,7 @@ export function AdminDock() {
           <span className="state-layer flex size-16 -translate-y-6 items-center justify-center rounded-full bg-accent text-on-accent shadow-fab group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-accent sm:size-14 sm:translate-y-0 sm:shadow-none">
             <Plus aria-hidden="true" className="size-7" strokeWidth={2.5} />
           </span>
-          <span className="-mt-6 text-center text-label font-semibold leading-tight text-on-ink sm:mt-0">{t(shellMessages.addSession)}</span>
+          <span className="-mt-6 text-center text-label font-semibold leading-tight text-on-ink sm:mt-0 sm:max-w-18">{t(shellMessages.addSession)}</span>
         </NavLink>
         {adminNavTrailing.map(item => <Tab key={item.to} {...item} />)}
       </div>

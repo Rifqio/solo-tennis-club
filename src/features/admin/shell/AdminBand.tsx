@@ -28,9 +28,9 @@ export function AdminBand({ title, back, subtitle, action, children }: AdminBand
   const { t } = useI18n()
   const { signOut, signingOut } = useAdminShell()
   return (
-    <header className="relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white">
+    <header className="relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white lg:mx-auto lg:mt-5 lg:w-[min(calc(100%-64px),calc(72rem-64px))] lg:rounded-lg lg:pt-1">
       <CourtLines className="pointer-events-none absolute -right-12 -top-4 -z-10 h-64 text-on-signboard/15 sm:right-8" />
-      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col pb-4 lg:max-w-[72rem]">
+      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col pb-4 lg:max-w-none lg:px-8 lg:pb-6">
         <div className="flex h-14 items-center justify-between gap-3">
           {back ? (
             <Link to={back.to} viewTransition className="pressable -ml-1 flex min-h-12 items-center gap-3 rounded-full pr-3 text-label">
@@ -52,7 +52,7 @@ export function AdminBand({ title, back, subtitle, action, children }: AdminBand
           </div>
         </div>
         <div className={cn('flex min-h-12 items-center justify-between gap-3', back && 'pt-1')}>
-          <h1 className="min-w-0 break-words text-headline font-bold leading-tight">{title}</h1>
+          <h1 className="min-w-0 break-words text-headline font-bold leading-tight lg:text-display">{title}</h1>
           {action}
         </div>
         {subtitle && <div className="mt-1">{subtitle}</div>}

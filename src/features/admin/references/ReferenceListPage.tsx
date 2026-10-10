@@ -5,11 +5,13 @@ import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
 import { AdminBand } from '../shell/AdminBand'
 import { referenceConfig } from './reference-config'
 import { ReferenceTabs } from './ReferenceTabs'
+import { ReferenceDesktop } from './ReferenceDesktop'
 import { adminMessages as messages } from '../forms/admin.messages'
 
 const copy = {
@@ -24,10 +26,13 @@ const copy = {
 export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
   const { t } = useI18n()
   const config = referenceConfig[kind]
-  const { data, response, retry } = useAdminResource<ReferenceRecord[]>(`/api/admin/${config.path}`)
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  const { data, response, retry } = useAdminResource<ReferenceRecord[]>(isDesktop ? null : `/api/admin/${config.path}`)
   const location = useLocation()
   const savedId = (location.state as { savedId?: string } | null)?.savedId
   const venue = kind === 'venue'
+  // Keyed by navigation so a save (which lands back on this route) reloads the list.
+  if (isDesktop) return <ReferenceDesktop key={location.key} kind={kind} selected={null} />
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>}>
       <ReferenceTabs current={kind} />

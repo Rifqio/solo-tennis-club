@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ClassRecord } from '@shared/api/admin-classes'
 import { useI18n } from '@/i18n/use-i18n'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { formatIdr } from '@/i18n/format'
 import { commonMessages } from '@/i18n/common.messages'
 import { StatusPanel } from '@/components/ui/status-panel'
@@ -9,6 +10,7 @@ import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminResource } from '../forms/use-admin-resource'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
+import { ClassDesktop } from './ClassDesktop'
 
 const copy = {
   heading: { id: 'Kelas', en: 'Classes' },
@@ -24,9 +26,12 @@ const copy = {
 
 export function ClassListPage() {
   const { t, language } = useI18n()
-  const { data, response, retry } = useAdminResource<ClassRecord[]>('/api/admin/classes')
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  const { data, response, retry } = useAdminResource<ClassRecord[]>(isDesktop ? null : '/api/admin/classes')
   const location = useLocation()
   const savedId = (location.state as { savedId?: string } | null)?.savedId
+  // Keyed by navigation so a save (which lands back on this route) reloads the list.
+  if (isDesktop) return <ClassDesktop key={location.key} selected={null} />
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4 lg:max-w-[72rem]">

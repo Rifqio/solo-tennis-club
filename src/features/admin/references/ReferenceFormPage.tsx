@@ -11,6 +11,7 @@ import { StatusPanel } from '@/components/ui/status-panel'
 import { apiErrorMessages, fieldErrorMessage } from '@/i18n/api-error-messages'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { useAdminResource } from '../forms/use-admin-resource'
 import { useUnsavedChangesGuard } from '../forms/use-unsaved-changes-guard'
@@ -18,6 +19,7 @@ import { FormFeedback } from '../forms/FormFeedback'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
 import { MapPreview } from './MapPreview'
+import { ReferenceDesktop } from './ReferenceDesktop'
 import { referenceConfig } from './reference-config'
 
 const copy = {
@@ -38,7 +40,10 @@ export function ReferenceFormPage({ kind }: { kind: ReferenceKind }) {
   const { id } = useParams()
   const config = referenceConfig[kind]
   const { t } = useI18n()
-  const resource = useAdminResource<ReferenceRecord>(id ? `/api/admin/${config.path}/${id}` : null)
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  const resource = useAdminResource<ReferenceRecord>(id && !isDesktop ? `/api/admin/${config.path}/${id}` : null)
+  // Desktop shows the list and this form side by side.
+  if (isDesktop) return <ReferenceDesktop kind={kind} selected={id ?? 'new'} />
   if (id && !resource.data) return <>
     <AdminBand title={t(config.edit)} back={{ to: `/admin/${config.path}`, label: t(copy.manage) }} />
     <div className="page-gutter mx-auto max-w-[50rem] py-6"><StatusPanel tone={resource.response ? 'error' : 'info'} title={t(resource.response ? messages.loadError : messages.loading)} action={resource.response ? { label: t(commonMessages.retry), onAction: resource.retry } : undefined} /></div>
@@ -51,7 +56,8 @@ function pinOf(record: ReferenceRecord | null): Pin | null {
     ? { mapUrl: record.mapUrl, latitude: record.latitude, longitude: record.longitude } : null
 }
 
-function ReferenceForm({ kind, initial }: { kind: ReferenceKind; initial: ReferenceRecord | null }) {
+// `embedded`: inside the desktop Kelola card, without its own band and with the save button at the card's foot.
+export function ReferenceForm({ kind, initial, embedded = false }: { kind: ReferenceKind; initial: ReferenceRecord | null; embedded?: boolean }) {
   const config = referenceConfig[kind]
   const { t } = useI18n()
   const { send } = useAdminAuth()
@@ -133,9 +139,10 @@ function ReferenceForm({ kind, initial }: { kind: ReferenceKind; initial: Refere
   }
 
   return <>
-    <AdminBand title={t(initial ? config.edit : config.add)} back={{ to: `/admin/${config.path}`, label: t(copy.manage) }} />
-    <form ref={form} noValidate onSubmit={submit} aria-busy={pending} className="flex min-h-[calc(100dvh-8rem)] flex-col">
-      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-1 flex-col gap-5 py-5">
+    {!embedded && <AdminBand title={t(initial ? config.edit : config.add)} back={{ to: `/admin/${config.path}`, label: t(copy.manage) }} />}
+    <form ref={form} noValidate onSubmit={submit} aria-busy={pending} className={embedded ? 'flex flex-col' : 'flex min-h-[calc(100dvh-8rem)] flex-col'}>
+      <div className={embedded ? 'flex flex-col gap-5 p-6' : 'page-gutter mx-auto flex w-full max-w-[50rem] flex-1 flex-col gap-5 py-5'}>
+        {embedded && <h2 className="text-headline font-bold">{t(initial ? config.edit : config.add)}</h2>}
         <TextField name="name" label={t(messages.name)} value={name} onChange={event => setName(event.target.value)} error={errorFor('name')} maxLength={120} required />
         {venue && <TextField name="address" label={t(messages.address)} value={address} onChange={event => setAddress(event.target.value)} error={errorFor('address')} maxLength={300} />}
         {venue && <div className="flex flex-col gap-3">
@@ -162,9 +169,9 @@ function ReferenceForm({ kind, initial }: { kind: ReferenceKind; initial: Refere
         </div>}
         <FormFeedback failure={failure} latest={latest && <p>{latest.name}<br />{latest.address}</p>} yours={<p>{name}<br />{address}</p>} onReplace={replaceWithLatest} />
       </div>
-      <div className="sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
-        <div className="page-gutter mx-auto w-full max-w-[50rem]">
-          <Button className="w-full" variant="filled" type="submit" disabled={pending || reading || Boolean(latest)} pendingLabel={pending ? t(messages.saving) : undefined}>
+      <div className={embedded ? 'border-t border-outline-variant px-6 py-4' : 'sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3'}>
+        <div className={embedded ? 'flex justify-end' : 'page-gutter mx-auto w-full max-w-[50rem]'}>
+          <Button className={embedded ? 'px-10' : 'w-full'} variant="filled" type="submit" disabled={pending || reading || Boolean(latest)} pendingLabel={pending ? t(messages.saving) : undefined}>
             {t(messages.save)}
           </Button>
         </div>

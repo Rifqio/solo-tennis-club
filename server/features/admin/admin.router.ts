@@ -7,6 +7,7 @@ import { requireCsrf, requireJson, requireSameOrigin } from '../../http/mutation
 import { createSessionsRouter } from './sessions/sessions.router.ts'
 import { createReferencesRouter } from './references/references.router.ts'
 import { createClassesRouter } from './classes/classes.router.ts'
+import { createAdminBookingsRouter } from './bookings/bookings.router.ts'
 export function createAdminRouter({ prisma, config }: { prisma: PrismaClient; config: RuntimeConfig }) {
   const router = Router()
   router.use((_req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next() })
@@ -18,5 +19,6 @@ export function createAdminRouter({ prisma, config }: { prisma: PrismaClient; co
   router.use(createSessionsRouter(prisma))
   router.use(createReferencesRouter(prisma))
   router.use(createClassesRouter(prisma))
+  router.use(createAdminBookingsRouter(prisma))
   return router
 }

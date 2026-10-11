@@ -58,7 +58,7 @@ export function ClubHomeDesktop({ venues }: ClubHomeDesktopProps) {
           <a href="#contact" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-medium xl:px-4">{t(messages.navContact)}</a>
         </nav>
         <div className="flex items-center gap-2 justify-self-end">
-          <LanguageMenu className="border border-outline-variant bg-surface-container-lowest text-on-surface" />
+          <LanguageMenu className="text-on-surface" />
           <Link to="/account" viewTransition data-nav="push" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-semibold xl:px-4">{t(messages.account)}</Link>
           <Link to="/schedule" viewTransition data-nav="tab" className="state-layer pressable flex min-h-12 items-center whitespace-nowrap rounded-full bg-cta px-5 font-semibold text-on-cta xl:px-6">{t(messages.seeSchedule)}</Link>
         </div>

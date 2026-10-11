@@ -114,7 +114,7 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
               <Wordmark name={clubContent.shortName} />
               <span aria-hidden="true" className="rounded-full bg-ink-raised px-2.5 py-0.5 text-label font-semibold max-[359px]:hidden">{t(shellMessages.admin)}</span>
             </p>
-            <LanguageMenu className="border border-on-ink/25 text-on-ink lg:hidden" />
+            <LanguageMenu className="text-on-ink lg:hidden" />
           </div>
 
           <div className="flex flex-col gap-1.5 lg:hidden">
@@ -141,7 +141,7 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
       </header>
 
       <main className="page-gutter mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 lg:max-w-none lg:px-12 lg:py-12">
-        <div className="hidden justify-end lg:flex"><LanguageMenu className="border border-outline-variant text-on-surface" /></div>
+        <div className="hidden justify-end lg:flex"><LanguageMenu className="text-on-surface" /></div>
         <div className="flex flex-1 flex-col lg:items-center lg:justify-center">
           <div className="flex w-full flex-1 flex-col gap-6 lg:max-w-[29rem] lg:flex-none lg:rounded-lg lg:bg-surface-container-lowest lg:p-10">
             <div className="hidden flex-col gap-1.5 lg:flex">

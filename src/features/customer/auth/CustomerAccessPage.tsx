@@ -198,7 +198,7 @@ export function Component() {
             className="state-layer pressable -ml-2.5 flex min-h-12 items-center gap-1.5 rounded-full pl-2.5 pr-4 font-semibold">
             <ChevronLeft aria-hidden="true" className="size-5" />{back.text}
           </Link>
-          <LanguageMenu className="border border-outline-variant text-on-surface" />
+          <LanguageMenu className="text-on-surface" />
         </div>
         <ConnectionBanner voice="member" className="mx-auto w-full max-w-[26.25rem]" />
         <div className="flex flex-1 flex-col justify-center">

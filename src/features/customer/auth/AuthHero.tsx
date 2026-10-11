@@ -21,7 +21,7 @@ export function AuthHero({ backTo, backLabel, compact = false }: { backTo: strin
           <ChevronLeft aria-hidden="true" className="size-6" />
         </Link>
         <p aria-label={clubContent.name}><Wordmark name={clubContent.shortName} /></p>
-        <LanguageMenu className="bg-band-tile" />
+        <LanguageMenu />
       </div>
     </div>
   )

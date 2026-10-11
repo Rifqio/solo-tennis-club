@@ -113,7 +113,7 @@ export function Dock({ onBook }: { onBook: () => void }) {
           {/* The rail keeps the plain Akun icon; initials there read as a second logo. */}
           <Destination {...trailing[1]} />
           <div className="mt-auto flex flex-col items-center gap-2">
-            <LanguageMenu className="size-12 px-0 ring-1 ring-on-ink-variant/40" />
+            <LanguageMenu className="size-12 px-0" />
             {member.session && <SignOut csrfToken={member.session.csrfToken} onDone={member.clear} />}
           </div>
         </div>

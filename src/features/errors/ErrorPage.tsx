@@ -109,7 +109,7 @@ export function ErrorPage({ code, audience = 'member', header = true, fill = tru
       {header && isDesktop && (
         <header className="mx-auto flex h-20 w-full max-w-[77.5rem] items-center justify-between gap-4 px-10">
           <ClubMark onBand={false} />
-          <LanguageMenu className="border border-outline-variant bg-surface-container-lowest text-on-surface" />
+          <LanguageMenu className="text-on-surface" />
         </header>
       )}
       <main className={cn('flex flex-1 flex-col lg:mx-auto lg:w-full lg:max-w-[77.5rem] lg:flex-row lg:flex-wrap lg:items-stretch lg:gap-6 lg:px-10 lg:pb-12', header ? 'lg:pt-2' : 'lg:pt-5')}>
@@ -118,7 +118,7 @@ export function ErrorPage({ code, audience = 'member', header = true, fill = tru
           {header && !isDesktop && (
             <div className="flex h-14 items-center justify-between px-4 pt-3 [&_:focus-visible]:outline-white">
               <ClubMark onBand />
-              <LanguageMenu className="bg-band-tile" />
+              <LanguageMenu />
             </div>
           )}
           <div className="flex flex-1 items-center justify-center"><CodeArt code={code} /></div>

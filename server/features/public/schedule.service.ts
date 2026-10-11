@@ -45,10 +45,13 @@ export async function getPublicSchedule(
   const { start, end } = clubDayRange(date)
   return inTransaction(database, async transaction => {
     const repository = createPublicSessionRepository(transaction)
-    const [sessions, next] = await Promise.all([
+    const [sessions, next, starts] = await Promise.all([
       repository.listInRange(start, end),
       repository.findNextStart(end, clubDayRange(maxDate).end),
+      repository.listScheduledStarts(clubDayRange(minDate).start, clubDayRange(maxDate).end),
     ])
+    const dayCounts: Record<string, number> = {}
+    for (const { startsAt } of starts) { const day = clubDateOf(startsAt); dayCounts[day] = (dayCounts[day] ?? 0) + 1 }
     const occupied = await getOccupiedPlaceCounts(transaction, sessions.map(session => session.id), now)
     return {
       date,
@@ -57,6 +60,7 @@ export async function getPublicSchedule(
       nextDate: next ? clubDateOf(next.startsAt) : null,
       minDate,
       maxDate,
+      dayCounts,
       sessions: sessions.map(session => toPublicSessionSummary(session, occupied.get(session.id) ?? 0)),
     }
   })

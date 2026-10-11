@@ -35,6 +35,9 @@ export function createPublicSessionRepository(database: Database) {
         take,
       })
     },
+    listScheduledStarts(start: Date, end: Date) {
+      return database.classSession.findMany({ where: { status: 'scheduled', startsAt: { gte: start, lt: end } }, select: { startsAt: true } })
+    },
     findNextStart(start: Date, end: Date) {
       return database.classSession.findFirst({
         where: { startsAt: { gte: start, lt: end } },

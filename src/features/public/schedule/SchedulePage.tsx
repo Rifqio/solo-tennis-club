@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { useSearchParams } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
-import { clubDayOfMonth, formatClubDateLong, formatClubDateMedium, formatClubWeekdayShort } from '@/i18n/format'
+import { clubDayOfMonth, formatClubDateLong, formatClubDateMedium, formatClubMonthShort, formatClubMonthYear, formatClubWeekdayShort } from '@/i18n/format'
+import type { Language } from '@/i18n/types'
 import { useI18n } from '@/i18n/use-i18n'
 import { selectionHaptic } from '@/lib/haptics'
 import { contentSpring, SHARED_AXIS_OFFSET } from '@/lib/motion'
@@ -14,6 +15,7 @@ import { addClubDays, clubToday, isClubDate } from '@shared/club-time'
 import { publicScheduleWindow } from '@shared/schedule-window'
 import { computeStripWindow } from './date-strip-window'
 import { DateStrip, TodayChip } from './DateStrip'
+import { CalendarPicker } from './CalendarPicker'
 import { SampleDataNotice } from './SampleDataNotice'
 import { ScheduleList, ScheduleListPlaceholder } from './ScheduleList'
 import { scheduleMessages } from './schedule.messages'
@@ -29,6 +31,15 @@ import { isUnavailable } from './session-booking'
 import { useSessionPlayers } from './use-session-players'
 import { SessionDetailPanel } from './SessionDetailPanel'
 import { SessionRows } from './SessionRows'
+
+// "11-17 Oktober 2026", or "28 Sep - 4 Okt 2026" when the week crosses a month.
+function weekLabel(dates: string[], language: Language) {
+  const first = dates[0], last = dates[dates.length - 1]
+  const sameMonth = first.slice(0, 7) === last.slice(0, 7)
+  return sameMonth
+    ? `${clubDayOfMonth(first)}-${clubDayOfMonth(last)} ${formatClubMonthYear(last, language)}`
+    : `${clubDayOfMonth(first)} ${formatClubMonthShort(first.slice(0, 7), language)} - ${clubDayOfMonth(last)} ${formatClubMonthShort(last.slice(0, 7), language)} ${last.slice(0, 4)}`
+}
 
 export function SchedulePage() {
   const { language, t } = useI18n()
@@ -51,6 +62,9 @@ export function SchedulePage() {
   const selected = requestedDate ?? (schedule.status === 'ready' ? schedule.data.date : bounds.today)
   const dates = computeStripWindow({ selected, currentStart: stripStart, ...bounds })
   const selectedLabel = formatClubDateLong(selected, language)
+  // The week tiles keep the last counts while another day loads, so their second line does not blink.
+  const [dayCounts, setDayCounts] = useState<Record<string, number> | undefined>(undefined)
+  if (schedule.status === 'ready' && schedule.data.dayCounts !== dayCounts) setDayCounts(schedule.data.dayCounts)
 
   // +1 when travelling to a later day, -1 to an earlier one: the list slides in from that side (shared axis).
   const [direction, setDirection] = useState(1)
@@ -121,11 +135,30 @@ export function SchedulePage() {
     <>
       {/* The band holds the date (month, step buttons, tiles); the content below never repeats it as a heading.
           The visually hidden heading is where focus returns when a sheet closes. */}
-      <CourtBand title={t(scheduleMessages.heading)} action={<TodayChip selected={selected} today={bounds.today} onSelect={selectDate} />}>
-        <section aria-label={t(scheduleMessages.dateControls)}>
-          <DateStrip dates={dates} selected={selected} onSelect={selectDate} {...bounds} />
-        </section>
-      </CourtBand>
+      {isDesktop ? (
+        // D2: the headline with the week it shows, Hari ini and the calendar at its end, then the week between arrows.
+        <CourtBand>
+          <div className="flex flex-wrap items-end justify-between gap-4 pb-5 pt-1">
+            <div className="flex flex-col gap-0.5">
+              <h1 className="text-display font-bold">{t(scheduleMessages.heading)}</h1>
+              <p className="text-title font-semibold tabular-nums">{weekLabel(dates, language)}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <TodayChip selected={selected} today={bounds.today} onSelect={selectDate} />
+              <CalendarPicker selected={selected} {...bounds} onSelect={selectDate} triggerClassName="bg-band-tile text-on-signboard" />
+            </div>
+          </div>
+          <section aria-label={t(scheduleMessages.dateControls)}>
+            <DateStrip layout="week" dates={dates} selected={selected} onSelect={selectDate} counts={dayCounts} {...bounds} />
+          </section>
+        </CourtBand>
+      ) : (
+        <CourtBand title={t(scheduleMessages.heading)} action={<TodayChip selected={selected} today={bounds.today} onSelect={selectDate} />}>
+          <section aria-label={t(scheduleMessages.dateControls)}>
+            <DateStrip dates={dates} selected={selected} onSelect={selectDate} {...bounds} />
+          </section>
+        </CourtBand>
+      )}
 
       <div className="page-gutter desk-column mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-3 lg:flex-row lg:items-start lg:gap-6 lg:pt-6">
       <div className="flex min-w-0 flex-1 flex-col gap-3">

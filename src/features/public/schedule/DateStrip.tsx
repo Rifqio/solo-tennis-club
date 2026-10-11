@@ -17,8 +17,11 @@ interface DateStripProps {
   minDate: string
   maxDate: string
   onSelect: (date: string) => void
-  // Admin (boards 10, D5): scheduled sessions per date, shown under each day number.
+  // Scheduled sessions per date, shown under each day number (admin boards 10 and D5, public desktop D2).
   counts?: Record<string, number>
+  // "week" (desktop Jadwal, D2): seven fixed tiles between previous and next week buttons; the month, Hari ini and
+  // calendar live in the band heading instead.
+  layout?: 'strip' | 'week'
 }
 
 // Sits beside the band headline and only exists away from today; it pops in and out so its appearance reads as a
@@ -50,7 +53,7 @@ const GAP = 8
 
 // Sits on the court band: the month with step and calendar buttons on Deep Court circles, then a strip of
 // 56 by 72 date tiles. The selected tile is the band's one lime element, with the padel selection bar on top.
-export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect, counts }: DateStripProps) {
+export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect, counts, layout = 'strip' }: DateStripProps) {
   const { language, t } = useI18n()
   const stripRef = useRef<HTMLDivElement>(null)
   // Whole tiles only: as many as fit at 56px plus gaps, each stretched to fill the row, so none rests cut in half.
@@ -73,6 +76,57 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect, 
   }, [selected, reduceMotion])
 
   const roundButton = 'bg-band-tile text-on-signboard'
+  const tiles = dates.map(date => {
+    const isSelected = date === selected
+    const isToday = date === today
+    const weekday = formatClubWeekdayShort(date, language)
+    const count = counts ? (counts[date] ? t(counts[date] === 1 ? scheduleMessages.sessionCountOne : scheduleMessages.sessionCount, { count: counts[date] }) : t(scheduleMessages.noSessions)) : null
+    return (
+      <button
+        key={date}
+        type="button"
+        aria-pressed={isSelected}
+        aria-label={`${weekday} ${clubDayOfMonth(date)}, ${isToday ? t(scheduleMessages.today) + ', ' : ''}${formatClubDateLong(date, language)}${count ? ', ' + count : ''}`}
+        onClick={() => onSelect(date)}
+        className={cn(
+          'pressable relative flex snap-start flex-col items-center justify-center gap-1 rounded-xs bg-band-tile transition-colors duration-200 lg:h-23',
+          counts ? 'h-19' : 'h-18',
+          isSelected ? 'text-on-accent' : 'text-on-signboard',
+          isToday && !isSelected && 'ring-2 ring-inset ring-white',
+        )}
+      >
+        {/* One shared lime tile, carrying its Deep Court selection bar, springs from the previous day to this one. */}
+        {isSelected && (
+          <m.span layoutId="day-selection" transition={selectionSpring} className="absolute inset-0 rounded-xs bg-accent">
+            <span className="absolute left-1/2 top-0 h-[3px] w-4 -translate-x-1/2 rounded-b-xs bg-band-tile" />
+          </m.span>
+        )}
+        <span className="state-layer absolute inset-0 rounded-xs" />
+        <span className={cn('relative text-label leading-none', isSelected && 'font-semibold')}>{weekday}</span>
+        <span className="relative text-title font-bold leading-none tabular-nums lg:text-headline">{clubDayOfMonth(date)}</span>
+        {count && <span className="relative text-label leading-none">{count}</span>}
+      </button>
+    )
+  })
+
+  if (layout === 'week') {
+    // A week back or forward lands on that week's first day; the window then starts there.
+    const previousWeek = addClubDays(dates[0], -7) < minDate ? minDate : addClubDays(dates[0], -7)
+    const nextWeek = addClubDays(dates[0], 7)
+    const arrow = 'pressable flex w-12 shrink-0 items-center justify-center rounded-xs disabled:cursor-default disabled:bg-transparent disabled:text-on-signboard/40'
+    return (
+      <div className="flex items-stretch gap-2 pb-6">
+        <button type="button" aria-label={t(scheduleMessages.previousWeek)} disabled={dates[0] <= minDate} onClick={() => onSelect(previousWeek)} className={cn(arrow, roundButton)}>
+          <ChevronLeft aria-hidden="true" className="size-6" />
+        </button>
+        <div className="grid min-w-0 flex-1 grid-cols-7 gap-2">{tiles}</div>
+        <button type="button" aria-label={t(scheduleMessages.nextWeek)} disabled={nextWeek > maxDate} onClick={() => onSelect(nextWeek)} className={cn(arrow, roundButton)}>
+          <ChevronRight aria-hidden="true" className="size-6" />
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -93,37 +147,7 @@ export function DateStrip({ dates, selected, today, minDate, maxDate, onSelect, 
         style={{ gridAutoColumns: `calc((100% - ${(visibleCells - 1) * GAP}px) / ${visibleCells})` }}
         className="grid snap-x snap-mandatory grid-flow-col gap-2 overflow-x-auto pb-4 [scrollbar-width:none] lg:pb-6"
       >
-        {dates.map(date => {
-          const isSelected = date === selected
-          const isToday = date === today
-          const weekday = formatClubWeekdayShort(date, language)
-          return (
-            <button
-              key={date}
-              type="button"
-              aria-pressed={isSelected}
-              aria-label={`${weekday} ${clubDayOfMonth(date)}, ${isToday ? t(scheduleMessages.today) + ', ' : ''}${formatClubDateLong(date, language)}${counts ? ', ' + (counts[date] ? t(counts[date] === 1 ? scheduleMessages.sessionCountOne : scheduleMessages.sessionCount, { count: counts[date] }) : t(scheduleMessages.noSessions)) : ''}`}
-              onClick={() => onSelect(date)}
-              className={cn(
-                'pressable relative flex snap-start flex-col items-center justify-center gap-1 rounded-xs bg-band-tile transition-colors duration-200 lg:h-23',
-                counts ? 'h-19' : 'h-18',
-                isSelected ? 'text-on-accent' : 'text-on-signboard',
-                isToday && !isSelected && 'ring-2 ring-inset ring-white',
-              )}
-            >
-              {/* One shared lime tile, carrying its Deep Court selection bar, springs from the previous day to this one. */}
-              {isSelected && (
-                <m.span layoutId="day-selection" transition={selectionSpring} className="absolute inset-0 rounded-xs bg-accent">
-                  <span className="absolute left-1/2 top-0 h-[3px] w-4 -translate-x-1/2 rounded-b-xs bg-band-tile" />
-                </m.span>
-              )}
-              <span className="state-layer absolute inset-0 rounded-xs" />
-              <span className={cn('relative text-label leading-none', isSelected && 'font-semibold')}>{weekday}</span>
-              <span className="relative text-title font-bold leading-none tabular-nums lg:text-headline">{clubDayOfMonth(date)}</span>
-              {counts && <span className="relative text-label leading-none">{counts[date] ? t(counts[date] === 1 ? scheduleMessages.sessionCountOne : scheduleMessages.sessionCount, { count: counts[date] }) : t(scheduleMessages.noSessions)}</span>}
-            </button>
-          )
-        })}
+        {tiles}
       </div>
     </div>
   )

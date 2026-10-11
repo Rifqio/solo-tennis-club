@@ -8,5 +8,5 @@ export function publicFixture(id = 'samplefixture', patch: Partial<PublicSession
     durationMinutes: 90, minParticipants: 2, maxParticipants: 8, coaches: ['Contoh pelatih satu','Contoh pelatih dua'], ...patch }
 }
 export function scheduleFixture(sessions: PublicSessionDetail[], patch: Partial<PublicScheduleResponse> = {}): PublicScheduleResponse {
-  return { date: fixtureDate, today: clubToday(), timeZone: 'Asia/Jakarta', minDate: clubToday(), maxDate: addClubDays(clubToday(),365), nextDate: null, sessions, ...patch }
+  return { date: fixtureDate, today: clubToday(), timeZone: 'Asia/Jakarta', minDate: clubToday(), maxDate: addClubDays(clubToday(),365), nextDate: null, dayCounts: {}, sessions, ...patch }
 }

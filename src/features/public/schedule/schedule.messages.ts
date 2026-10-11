@@ -5,6 +5,8 @@ export const scheduleMessages = {
   today: { id: 'Hari ini', en: 'Today' },
   previousDate: { id: 'Tanggal sebelumnya', en: 'Previous date' },
   nextDate: { id: 'Tanggal berikutnya', en: 'Next date' },
+  previousWeek: { id: 'Minggu sebelumnya', en: 'Previous week' },
+  nextWeek: { id: 'Minggu berikutnya', en: 'Next week' },
   chooseDate: { id: 'Pilih tanggal', en: 'Choose date' },
   sessionCount: { id: '{count} sesi', en: '{count} sessions' },
   sessionCountOne: { id: '1 sesi', en: '1 session' },

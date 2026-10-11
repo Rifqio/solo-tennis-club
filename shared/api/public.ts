@@ -22,6 +22,8 @@ export interface PublicScheduleResponse {
   nextDate: string | null
   minDate: string
   maxDate: string
+  // Scheduled sessions per club date across the window, for the desktop week tiles (board D2). Dates without any are absent.
+  dayCounts: Record<string, number>
   sessions: PublicSessionSummary[]
 }
 export interface PublicSessionDetail extends PublicSessionSummary {

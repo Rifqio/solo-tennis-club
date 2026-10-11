@@ -10,6 +10,7 @@ import type { Message } from '@/i18n/types'
 import { selectionHaptic } from '@/lib/haptics'
 import { popSpring, selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { adminNavLeading, adminNavTrailing } from './admin-nav'
 import { authMessages } from '../auth/auth.messages'
 import { shellMessages } from './shell.messages'
@@ -17,14 +18,16 @@ import { useAdminShell } from './admin-shell-context'
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-interface Destination { to: string; label: Message; Icon: LucideIcon; also: string[] }
+interface Destination { to: string; label: Message; Icon: LucideIcon; also: string[]; railOnly?: boolean; phoneAlso?: string[] }
 
-function Tab({ to, label, Icon, also }: Destination) {
+function Tab({ to, label, Icon, also, railOnly = false, phoneAlso = [] }: Destination) {
   const { t } = useI18n()
   const { pathname } = useLocation()
+  // On the phone dock, Kelola also stands for Kelas, which lives inside it there.
+  const isPhone = useMediaQuery('(max-width: 39.99rem)')
   // `/admin` itself opens Sesi, but only exactly: as a prefix it would match every admin screen.
   const active = pathname === to || pathname.startsWith(to + '/')
-    || also.some(path => pathname === path || (path !== '/admin' && pathname.startsWith(path + '/')))
+    || [...also, ...(isPhone ? phoneAlso : [])].some(path => pathname === path || (path !== '/admin' && pathname.startsWith(path + '/')))
   return (
     // Always a section switch (a short crossfade), whatever the depth of the screen it leaves. The open screen itself
     // does not reload: tapping it scrolls back to the top.
@@ -33,7 +36,7 @@ function Tab({ to, label, Icon, also }: Destination) {
         if (pathname === to) { event.preventDefault(); window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' }); return }
         if (!active) selectionHaptic()
       }}
-      className="pressable relative isolate flex min-h-16 flex-col items-center justify-center gap-0.5 sm:w-[4.5rem] lg:w-20">
+      className={cn('pressable relative isolate min-h-16 flex-col items-center justify-center gap-0.5 sm:w-[4.5rem] lg:w-20', railOnly ? 'hidden sm:flex' : 'flex')}>
       {/* Rail (from 640px, board D9b): the open screen sits on a raised ink tile that glides between items. */}
       {active && <m.span layoutId="admin-rail-tile" transition={selectionSpring} aria-hidden="true" className="absolute inset-0 -z-10 hidden rounded-[1rem] bg-ink-raised sm:block" />}
       <Icon aria-hidden="true" className={cn('size-6 transition-colors duration-200', active ? 'text-accent sm:text-on-ink' : 'text-on-ink-variant')} strokeWidth={active ? 2.25 : 2} />
@@ -45,8 +48,8 @@ function Tab({ to, label, Icon, also }: Destination) {
   )
 }
 
-// The member dock's ink bar, for admins: Sesi and Booking on the left, Tambah sesi raised into the notch, Kelas and
-// Kelola on the right. From 640px it becomes a left rail: the club mark, Tambah sesi, the screens, then language and
+// The member dock's ink bar, for admins: Sesi and Booking on the left, Tambah sesi raised into the notch, Rekap and
+// Kelola on the right (Kelas is a tab inside Kelola on phones). From 640px it becomes a left rail: the club mark, Tambah sesi, the screens, then language and
 // sign-out at its foot, so the bands above each screen carry only the screen itself.
 export function AdminDock() {
   const { t } = useI18n()

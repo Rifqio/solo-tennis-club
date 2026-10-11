@@ -24,6 +24,7 @@ import { revealInvalid } from '@/lib/reveal-invalid'
 const areaHints = {
   '/admin/sessions': authMessages.areaSessions,
   '/admin/bookings': authMessages.areaBookings,
+  '/admin/recap': authMessages.areaRecap,
   '/admin/classes': authMessages.areaClasses,
   '/admin/coaches': authMessages.areaManage,
 } as const

@@ -5,6 +5,7 @@ export const authMessages = {
   deskIntro: { id: 'Satu akun admin untuk semua urusan klub:', en: 'One admin account for everything the club runs:' },
   areaSessions: { id: 'Jadwal harian dan peserta tiap sesi.', en: 'Daily schedule and who is in each session.' },
   areaBookings: { id: 'Booking masuk dan status bayar.', en: 'Incoming bookings and payment status.' },
+  areaRecap: { id: 'Pendapatan, pembayaran tertunda, dan keterisian per bulan.', en: 'Monthly revenue, pending payments and fill rate.' },
   areaClasses: { id: 'Coach, level, harga, dan kuota tiap kelas.', en: 'Coach, level, price and places per class.' },
   areaManage: { id: 'Daftar coach, lokasi, dan level.', en: 'Coach, venue and level lists.' },
   forgot: { id: 'Lupa kata sandi? Hubungi pengurus yang membuat akun admin Anda.', en: 'Forgot your password? Ask the club organiser who created your admin account.' },

@@ -23,6 +23,7 @@ const router = createBrowserRouter([
             { path: 'bookings', lazy: () => import('./features/admin/bookings/AdminBookingsPage') },
             { path: 'bookings/:id', lazy: () => import('./features/admin/bookings/AdminBookingDetailPage') },
           ] },
+          { path: 'recap', lazy: () => import('./features/admin/recap/AdminRecapPage') },
           { path: 'manage', lazy: () => import('./features/admin/manage/ManagePage') },
           { lazy: () => import('./features/admin/classes/classes-route'), children: [
             { path: 'classes', lazy: () => import('./features/admin/classes/ClassListPage') },

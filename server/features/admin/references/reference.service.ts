@@ -6,6 +6,7 @@ import { ApiError } from '../../../http/errors.ts'
 import type { PagedList } from '../../../../shared/api/admin-list.ts'
 import { encodeNameCursor, type NamePageQuery } from '../listing/name-page.ts'
 import { createReferenceRepository } from './reference.repository.ts'
+import { createClassRepository } from '../classes/class.repository.ts'
 
 type ReferenceRow = {
   id: string
@@ -90,7 +91,9 @@ export async function setReferenceArchived(database: PrismaClient, kind: Referen
 
 export async function getReferenceCounts(database: Database): Promise<ReferenceCounts> {
   const [coach, venue, level] = await Promise.all((['coach', 'venue', 'level'] as const).map(kind => createReferenceRepository(database, kind).countActive()))
-  return { coach, venue, level }
+  // Kelas sits beside the three lists as a tab on phones (Kelola), so its count travels with them.
+  const classes = await createClassRepository(database).count('')
+  return { coach, venue, level, classes }
 }
 
 export async function saveReference(

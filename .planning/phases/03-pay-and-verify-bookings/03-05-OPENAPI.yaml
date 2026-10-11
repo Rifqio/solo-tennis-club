@@ -1,0 +1,34 @@
+openapi: 3.1.0
+info:
+  title: STC admin recap (03-05)
+  version: 1.0.0
+  description: Types in shared/api/admin-recap.ts. Admin session required (reads only). A booking counts in the month of its session date.
+paths:
+  /api/admin/recap:
+    get:
+      summary: The month in numbers (OPER-12)
+      parameters:
+        - { name: month, in: query, required: true, schema: { type: string, pattern: '^\d{4}-(0[1-9]|1[0-2])$' } }
+      responses:
+        '200':
+          description: >
+            AdminRecapResponse. revenueIdr = paid (confirmed) bookings of the month's sessions not cancelled.
+            pending = unpaid or awaiting-correction bookings still before their deadline. places = places held by active
+            bookings against places offered. sessions = held, upcoming, cancelled. months = six months of paid revenue
+            ending with this month. comparison = the whole month before (finished month) or what the month before had
+            been paid by the same day (running month); null when there is nothing paid to compare with.
+        '400': { description: 'VALIDATION_FAILED (month INVALID_FORMAT); DATE_OUT_OF_RANGE (a month after the current one)' }
+        '401': { description: UNAUTHENTICATED }
+  /api/admin/recap/export:
+    get:
+      summary: The same month as an Excel workbook (OPER-13)
+      parameters:
+        - { name: month, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: 'rekap-STC-YYYY-MM.xlsx with sheets Ringkasan, Per kelas, Booking (every booking of the month''s sessions)'
+          content: { application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {} }
+        '400': { description: VALIDATION_FAILED or DATE_OUT_OF_RANGE }
+  /api/admin/reference-counts:
+    get:
+      summary: Now also carries `classes` (the Kelas tab inside Kelola on phones)

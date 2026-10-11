@@ -31,7 +31,7 @@ export interface ReferenceUsage {
   classes: { id: string; name: string; levelName: string; venueName: string; durationMinutes: number; nextSessionAt: string | null }[]
 }
 // GET /api/admin/reference-counts: active records per list, for the Kelola tabs.
-export interface ReferenceCounts { coach: number; venue: number; level: number }
+export interface ReferenceCounts { coach: number; venue: number; level: number; classes: number }
 // POST /api/admin/{coaches|venues|levels}/:id/archive and /restore.
 export interface ArchiveInput { version: number }
 // PUT /api/admin/coaches/:id/photo takes the image itself (JPEG, PNG or WebP, at most 5 MB) as the body.

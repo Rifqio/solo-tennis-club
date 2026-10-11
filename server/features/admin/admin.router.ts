@@ -9,6 +9,7 @@ import { createReferencesRouter } from './references/references.router.ts'
 import { createCoachPhotoRouter } from './references/coach-photo.router.ts'
 import { createClassesRouter } from './classes/classes.router.ts'
 import { createAdminBookingsRouter } from './bookings/bookings.router.ts'
+import { createRecapRouter } from './recap/recap.router.ts'
 import { createAdminEvidenceRouter } from '../payments/evidence.router.ts'
 export function createAdminRouter({ prisma, config, uploadsDir, privateDir }: { prisma: PrismaClient; config: RuntimeConfig; uploadsDir: string; privateDir: string }) {
   const router = Router()
@@ -26,5 +27,6 @@ export function createAdminRouter({ prisma, config, uploadsDir, privateDir }: { 
   router.use(createReferencesRouter(prisma))
   router.use(createClassesRouter(prisma))
   router.use(createAdminBookingsRouter(prisma))
+  router.use(createRecapRouter(prisma))
   return router
 }

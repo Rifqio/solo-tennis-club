@@ -54,6 +54,25 @@ export function formatClubMonthYear(date: string, language: Language) {
   return monthYearFormats[language].format(clubDateTimeToInstant(date, '12:00'))
 }
 
+const monthShortFormats = {
+  id: new Intl.DateTimeFormat(LOCALE.id, { month: 'short', timeZone: CLUB_TIME_ZONE }),
+  en: new Intl.DateTimeFormat(LOCALE.en, { month: 'short', timeZone: CLUB_TIME_ZONE }),
+}
+const monthLongFormats = {
+  id: new Intl.DateTimeFormat(LOCALE.id, { month: 'long', timeZone: CLUB_TIME_ZONE }),
+  en: new Intl.DateTimeFormat(LOCALE.en, { month: 'long', timeZone: CLUB_TIME_ZONE }),
+}
+
+// "Okt" for a club month ("2026-10"), as the Rekap bars label it.
+export function formatClubMonthShort(month: string, language: Language) {
+  return monthShortFormats[language].format(clubDateTimeToInstant(`${month}-15`, '12:00')).replace('.', '')
+}
+
+// "1-10 Oktober" / "1-10 October": a stretch of days inside one month.
+export function formatClubDayRange(from: string, to: string, language: Language) {
+  return `${clubDayOfMonth(from)}-${clubDayOfMonth(to)} ${monthLongFormats[language].format(clubDateTimeToInstant(from, '12:00'))}`
+}
+
 // Day of month straight from the club date string, so no timezone can shift it.
 export function clubDayOfMonth(date: string) {
   return Number(date.slice(8, 10))

@@ -13,6 +13,8 @@ import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
 import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
+import { ReferenceTabs } from '../references/ReferenceTabs'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { useRevealSaved } from '@/lib/use-reveal-saved'
 
 const copy = {
@@ -29,6 +31,8 @@ const copy = {
   coaches: { id: 'Coach: {names}', en: 'Coaches: {names}' },
 }
 
+const manageHeading = { id: 'Kelola', en: 'Manage' }
+
 // Phones and tablets: the class cards on their own screen, 20 at a time with a server-side search.
 export function ClassListPage() {
   const { t, language } = useI18n()
@@ -36,10 +40,14 @@ export function ClassListPage() {
   const search = useSettledSearch(query)
   const list = useAdminList<ClassRecord>('/api/admin/classes', search)
   const location = useLocation()
+  const isPhone = useMediaQuery('(max-width: 39.99rem)')
   const savedId = (location.state as { savedId?: string } | null)?.savedId
   useRevealSaved(savedId, list.status === 'ready')
   return <>
-    <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
+    {/* Phones reach Kelas through Kelola (board 19): the same band and tabs, with Kelas chosen. */}
+    {isPhone
+      ? <AdminBand title={t(manageHeading)} subtitle={<p>{t(copy.subtitle)}</p>}><ReferenceTabs current="classes" /></AdminBand>
+      : <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />}
     <div className="page-gutter desk-column mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4">
       <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} busy={list.searching} />
       {list.items.some(row => row.isSample) && <SampleDataNotice />}

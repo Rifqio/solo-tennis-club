@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test'
 import { addClubDays, clubToday } from '../../shared/club-time.ts'
-import { browserSignIn, chooseOption, english, expectDuration, setDuration } from './support/browser-admin.ts'
+import { browserSignIn, chooseOption, english, expectDuration, setDuration, pickCoaches, expectToast } from './support/browser-admin.ts'
 import { getSessionOptions, publishSession, signInAdmin } from './support/admin-api.ts'
 import { expectNoHorizontalScroll, expectTouchTargets } from './support/layout-checks.ts'
+import { sessionDetail } from './support/session-detail.ts'
 import type { AdminSessionDetail } from '../../shared/api/admin-sessions.ts'
 test('guided session publish: editable defaults, back/continue, review all coaches, repeat-safe retry, public details', async ({ page, request, browser }) => {
   const auth = await signInAdmin(request); const options = await getSessionOptions(request)
@@ -13,7 +14,7 @@ test('guided session publish: editable defaults, back/continue, review all coach
   await expectDuration(page, String(options.classes[0].defaults.durationMinutes))
   await page.getByRole('button', { name: 'Lanjut', exact: true }).click()
   await expect(page.getByText('Langkah 2 dari 4', { exact: true })).toBeVisible()
-  for (const coach of options.coaches.slice(0,2)) await page.getByLabel(coach.name, { exact: true }).check()
+  await pickCoaches(page, options.coaches.slice(0,2).map(coach => coach.name))
   await page.getByRole('button', { name: 'Kembali', exact: true }).click(); await expect(page.getByLabel('Waktu mulai (WIB)', { exact: true })).toHaveValue('06:30')
   await page.getByRole('button', { name: 'Lanjut', exact: true }).click(); await page.getByRole('button', { name: 'Lanjut', exact: true }).click()
   await page.getByLabel('Harga per slot', { exact: true }).fill('175000')
@@ -29,12 +30,14 @@ test('guided session publish: editable defaults, back/continue, review all coach
   await page.getByRole('button', { name: 'Simpan dan tampilkan sesi', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('Isian tetap tersedia')
   await page.unroute('**/api/admin/sessions'); await page.getByRole('button', { name: 'Simpan dan tampilkan sesi', exact: true }).click()
-  await expect(page.getByText('Sesi tersimpan dan tampil di jadwal.', { exact: true })).toBeVisible(); expect(requests).toBe(1)
+  await expectToast(page, 'Sesi tersimpan dan tampil di jadwal.'); expect(requests).toBe(1)
   const listResponse = await request.get('/api/admin/sessions?date=' + date)
   const list = await listResponse.json(); expect(list.sessions.filter((row: { id: string }) => row.id === (saved as unknown as AdminSessionDetail).id)).toHaveLength(1)
   const visitor = await browser.newContext(); const publicPage = await visitor.newPage()
-  await publicPage.goto('/schedule?date=' + date); await publicPage.getByRole('button', { name: new RegExp('06:30.*' + options.classes[0].name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')) }).click()
-  await expect(publicPage.getByRole('dialog')).toContainText('175.000'); for (const coach of options.coaches.slice(0,2)) await expect(publicPage.getByRole('dialog')).toContainText(coach.name)
+  // Opened by id: both projects publish the same class at 06:30 on this date into the shared database.
+  await publicPage.goto(`/schedule?date=${date}&session=${(saved as unknown as AdminSessionDetail).id}`)
+  const detail = sessionDetail(publicPage)
+  await expect(detail).toContainText('175.000'); for (const coach of options.coaches.slice(0,2)) await expect(detail).toContainText(coach.name)
   await visitor.close(); void auth
 })
 test('safe edit retains local values on conflict; explicit latest replacement recovers; 320px actions remain reachable', async ({ page, request }) => {
@@ -64,7 +67,7 @@ test('E6 create draft survives reload, language switch and missing-reference det
   await page.reload(); await expectDuration(page, '120')
   await english(page); await expectDuration(page, '120', 'en')
   await page.unroute('**/api/admin/session-options'); await page.route('**/api/admin/session-options', route => route.fulfill({ json: { ...fixtures, venues: [] } }))
-  await page.reload(); await page.getByRole('link', { name: 'Manage', exact: true }).first().click()
+  await page.reload(); await page.getByRole('main').getByRole('link', { name: 'Manage', exact: true }).click()
   // Kelola opens on its first list.
   await expect(page).toHaveURL(/\/admin\/(manage|coaches)$/)
   await page.unroute('**/api/admin/session-options'); await page.route('**/api/admin/session-options', route => route.fulfill({ json: fixtures }))

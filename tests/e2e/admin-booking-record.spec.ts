@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import { browserSignIn, english } from './support/browser-admin.ts'
+import { browserSignIn, english, expectToast } from './support/browser-admin.ts'
 import { expectNoHorizontalScroll, expectTouchTargets, LAYOUT_WIDTHS } from './support/layout-checks.ts'
 
 // 02-05: an admin records a WhatsApp/desk booking from the roster, then links it to the customer who verified the
@@ -81,7 +81,7 @@ test('record a booking in three steps on a phone, with validation, defaults and 
   await page.getByRole('button', { name: 'Simpan booking' }).click()
 
   await expect(page).toHaveURL(new RegExp(`/admin/bookings/${bookingId}$`))
-  await expect(page.getByText('Booking tercatat')).toBeVisible()
+  await expectToast(page, /^Booking tercatat\. Slot ditahan sampai \d{2}:\d{2} WIB\.$/)
   // The retry reused the first request ID, so the server could replay rather than book twice.
   expect(requestIds).toHaveLength(2)
   expect(requestIds[1]).toBe(requestIds[0])
@@ -113,12 +113,13 @@ test('leaving a half-filled booking asks before discarding; full and closed sess
 test('link the booking to the verified account only after confirming, in Indonesian and English', async ({ page }) => {
   await browserSignIn(page)
   let linked = false
-  let lookups = 0
+  // The account exists only once "Cek lagi" is pressed. (A flag, not a request count: the lookup may be asked again
+  // when the desktop drawer settles, and an aborted request still reaches the route.)
+  let registered = false
   await page.route(`**/api/admin/bookings/${bookingId}`, route => route.fulfill({ json: detail(linked) }))
   await page.route('**/api/admin/verified-customers?*', route => {
-    lookups++
     expect(new URL(route.request().url()).searchParams.get('phone')).toBe('+6281234609999')
-    return route.fulfill({ json: { customer: lookups === 1 ? null : { id: 'customerfixture', displayName: 'Rina Verified', phone: '+6281234609999', verifiedAt: now.toISOString() } } })
+    return route.fulfill({ json: { customer: !registered ? null : { id: 'customerfixture', displayName: 'Rina Verified', phone: '+6281234609999', verifiedAt: now.toISOString() } } })
   })
   await page.route(`**/api/admin/bookings/${bookingId}/customer-link`, route => {
     expect(route.request().method()).toBe('PUT')
@@ -129,11 +130,12 @@ test('link the booking to the verified account only after confirming, in Indones
 
   for (const width of LAYOUT_WIDTHS) {
     await page.setViewportSize({ width, height: 900 })
-    lookups = 0
+    registered = false
     linked = false
     await page.goto(`/admin/bookings/${bookingId}`)
     await expect(page.getByText('Belum ada akun dengan nomor +6281234609999.')).toBeVisible()
     await expect(page.getByText('Bantu lewat pengurus klub.', { exact: false })).toBeVisible()
+    registered = true
     await page.getByRole('button', { name: 'Cek lagi' }).click()
     await page.getByRole('button', { name: 'Hubungkan ke akun Rina Verified' }).click()
     const dialog = page.getByRole('alertdialog', { name: 'Hubungkan booking ke Rina Verified?' })
@@ -144,12 +146,12 @@ test('link the booking to the verified account only after confirming, in Indones
     expect(linked).toBe(false)
     await page.getByRole('button', { name: 'Hubungkan ke akun Rina Verified' }).click()
     await page.getByRole('button', { name: 'Ya, hubungkan' }).click()
-    await expect(page.getByText('Dihubungkan', { exact: false })).toBeVisible()
+    await expect(page.getByText(/^Dihubungkan /)).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Akun pemesan' })).toHaveCount(0)
   }
 
   linked = false
-  lookups = 1
+  registered = true
   await page.goto(`/admin/bookings/${bookingId}`)
   await english(page)
   await expect(page.getByRole('button', { name: 'Link to Rina Verified' })).toBeVisible()

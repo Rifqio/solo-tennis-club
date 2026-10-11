@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test'
 import type { AdminSessionDetail, AdminSessionListResponse } from '../../shared/api/admin-sessions.ts'
 import { addClubDays, clubDateTimeToInstant, clubToday } from '../../shared/club-time.ts'
+import { browserSignIn } from './support/browser-admin.ts'
 import { LAYOUT_WIDTHS, expectNoHorizontalScroll, expectTouchTargets } from './support/layout-checks.ts'
 
 const today = clubToday()
-const info = { admin: { email: 'fixture@lafu.test', displayName: 'Test administrator' }, csrfToken: 'test-only-token', expiresAt: '2099-01-01T00:00:00Z' }
 function fixture(index: number, long = false): AdminSessionDetail {
   return {
     id: 'sample-' + index, version: 1, classId: 'sample-class', className: long ? 'Contoh kelas tenis untuk pengujian dengan nama panjang '.repeat(5) : 'Contoh kelas ' + index,
@@ -14,11 +14,10 @@ function fixture(index: number, long = false): AdminSessionDetail {
   }
 }
 function response(sessions: AdminSessionDetail[]): AdminSessionListResponse {
-  return { today, date: today, minDate: today, maxDate: addClubDays(today, 365), nextDate: null, sessions, truncated: false }
+  return { today, date: today, minDate: today, maxDate: addClubDays(today, 365), nextDate: null, sessions, truncated: false, dayCounts: {} }
 }
-test.beforeEach(async ({ page }) => {
-  await page.route('**/api/admin/auth/session', route => route.fulfill({ json: info }))
-})
+// A real sign-in: from 640px the rail asks the server for its own counts, which a mocked session cannot answer.
+test.beforeEach(async ({ page }) => { await browserSignIn(page) })
 
 for (const width of LAYOUT_WIDTHS) for (const language of ['id', 'en']) {
   test(`E4/E8 responsive shell at ${width}px in ${language}`, async ({ page }) => {

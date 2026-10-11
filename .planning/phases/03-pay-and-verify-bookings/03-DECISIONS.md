@@ -19,10 +19,7 @@ Fixed by the requirements and not reopened here:
 | Unique code digits (e.g. Rp 200.037) | **No.** Admins match by booker name, time and proof. Unique digits confuse members and complicate refunds. |
 | Until the club's real details arrive | The board's placeholder, clearly labelled "Contoh QR, belum bisa dipakai bayar", which the app already does for sample data. |
 
-**Needed from the club before release:**
-- The QRIS image and the merchant name or NMID.
-- The bank name, account number and account holder.
-- Whether QRIS and transfer go to the same account. This only changes the copy.
+**Club details (decided 2026-10-11):** the sample QR is enough for now. Phase 3 ships with the board's labelled sample QRIS ("Contoh QR, belum bisa dipakai bayar") and placeholder bank details, and no step waits on the club. The real QRIS image and the bank name, account number and account holder go into club content whenever the club supplies them; nothing else changes.
 
 ## 2. Proof files and privacy
 

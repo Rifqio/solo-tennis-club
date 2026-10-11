@@ -15,4 +15,8 @@ export const publicMessages = {
   bookSheetEmptyBody: { id: 'Pemesanan ditutup 5 jam sebelum sesi mulai. Lihat jadwal untuk sesi lain.', en: 'Booking closes 5 hours before a session starts. Check the schedule for other sessions.' },
   bookSheetCutoff: { id: 'Pemesanan ditutup 5 jam sebelum sesi mulai.', en: 'Booking closes 5 hours before a session starts.' },
   seeSchedule: { id: 'Lihat jadwal', en: 'View schedule' },
+  home: { id: 'Halaman {club}', en: '{club} home page' },
+  signOut: { id: 'Keluar', en: 'Sign out' },
+  signedOut: { id: 'Kamu sudah keluar.', en: 'You are signed out.' },
+  signOutFailed: { id: 'Belum bisa keluar. Coba lagi.', en: 'Could not sign out. Try again.' },
 }

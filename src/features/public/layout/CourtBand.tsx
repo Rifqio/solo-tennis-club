@@ -28,8 +28,9 @@ export function CourtBand({ title, headingRef, action, children, className }: Co
       className,
     )}>
       <CourtLines className="pointer-events-none absolute -right-12 -top-4 -z-10 h-64 text-on-signboard/15 sm:right-8" />
-      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col lg:max-w-none lg:px-8">
-        <div className="flex h-14 items-center justify-between gap-3">
+      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col sm:pt-5 lg:max-w-none lg:px-8">
+        {/* From 640px the rail carries the club mark and the language action, so this row is phones only. */}
+        <div className="flex h-14 items-center justify-between gap-3 sm:hidden">
           {/* Text identity until the club supplies a logo (R-23); no image is invented. */}
           <p aria-label={clubContent.name}><Wordmark name={clubContent.shortName} /></p>
           <LanguageMenu className="-mr-3" />

@@ -11,7 +11,7 @@ async function skipPhoneOnboarding(page: Page, label: string) {
   await expect(page.getByRole('dialog')).toBeHidden()
 }
 
-test('visitor opens the Club tab and switches to English, remembered on reload', async ({ page }) => {
+test('visitor opens the club page (Klub tab on phones, the club mark on the rail) and switches to English, remembered on reload', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   await page.goto(sampleSchedulePath)
@@ -20,7 +20,7 @@ test('visitor opens the Club tab and switches to English, remembered on reload',
   const sampleRow = page.getByRole('listitem').filter({ hasText: 'Sample tennis class' })
   await expect(sampleRow).toContainText('Rp 150.000')
 
-  await page.getByRole('navigation', { name: 'Navigasi utama' }).getByRole('link', { name: 'Klub' }).click()
+  await page.getByRole('navigation', { name: 'Navigasi utama' }).getByRole('link', { name: /^(Klub|Halaman Solo Tennis Club)$/ }).click()
   await expect(page).toHaveURL(/:\d+\/$/)
   await expect(page.getByText('Tentang klub', { exact: true })).toBeVisible()
   await expect(page.getByRole('main')).toContainText('Cerita klub segera hadir.')

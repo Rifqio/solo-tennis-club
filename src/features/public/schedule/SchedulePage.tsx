@@ -1,4 +1,4 @@
-import { AnimatePresence, LayoutGroup, m } from 'motion/react'
+import { AnimatePresence, LayoutGroup, m, useReducedMotion } from 'motion/react'
 import type { PanInfo } from 'motion/react'
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -54,6 +54,7 @@ export function SchedulePage() {
 
   // +1 when travelling to a later day, -1 to an earlier one: the list slides in from that side (shared axis).
   const [direction, setDirection] = useState(1)
+  const reduceMotion = useReducedMotion()
   const isTouch = useMediaQuery('(pointer: coarse)')
   // Desktop shows the day as rows with the chosen session in a side panel; phones and tablets keep cards and a sheet.
   const isDesktop = useMediaQuery('(min-width: 64rem)')
@@ -158,9 +159,9 @@ export function SchedulePage() {
               center: { opacity: 1, x: 0 },
               exit: (dir: number) => ({ opacity: 0, x: dir * -SHARED_AXIS_OFFSET, transition: { duration: 0.09 } }),
             }}
-            initial="enter"
+            initial={reduceMotion ? false : 'enter'}
             animate="center"
-            exit="exit"
+            exit={reduceMotion ? undefined : 'exit'}
             transition={contentSpring}
             drag={isTouch ? 'x' : false}
             dragDirectionLock

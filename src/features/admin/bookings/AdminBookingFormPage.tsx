@@ -21,6 +21,7 @@ import { useAdminResource } from '../forms/use-admin-resource'
 import { useUnsavedChangesGuard } from '../forms/use-unsaved-changes-guard'
 import { AdminBand } from '../shell/AdminBand'
 import { adminBookingFormMessages as messages } from './bookings.messages'
+import { stepEnter, useStepDirection } from '@/lib/step-motion'
 
 type Step = 1 | 2 | 3
 type Errors = Partial<Record<'bookerName' | 'bookerPhone' | 'participantNames', FieldErrorCode>>
@@ -61,6 +62,7 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
   const reduceMotion = useReducedMotion()
   const [options, setOptions] = useState(initial)
   const [step, setStep] = useState<Step>(1)
+  const direction = useStepDirection(step)
   const [bookerName, setBookerName] = useState('')
   const [bookerPhone, setBookerPhone] = useState('')
   const [quantity, setQuantity] = useState('1')
@@ -172,7 +174,7 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
     } finally { setPending(false) }
   }
 
-  const stepMotion = { initial: reduceMotion ? false : { opacity: 0, x: 16 }, animate: { opacity: 1, x: 0 }, transition: { duration: reduceMotion ? 0 : 0.18, ease: [0.2, 0, 0, 1] as const } }
+  const stepMotion = stepEnter(direction, reduceMotion)
   const when = `${formatClubDateShort(session.date, language)}, ${session.startTime}-${session.endTime} WIB`
   const total = formatIdr(options.unitPriceIdr * Math.max(count, 0), language)
   const row = 'flex justify-between gap-4 py-3'

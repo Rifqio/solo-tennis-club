@@ -19,7 +19,8 @@ import { useMediaQuery } from '@/lib/use-media-query'
 import { useNow } from '@/features/public/schedule/use-now'
 import { useCustomerAccess } from '../auth/use-customer-access'
 import { CourtLines } from '@/components/brand/court-lines'
-import { BookedArt } from './BookedArt'
+import { BookedArt, BookedBadge } from './BookedArt'
+import { stepEnter, useStepDirection } from '@/lib/step-motion'
 
 type Options = { sessionVersion: number; unitPriceIdr: number; remainingPlaces: number; bookingClosesAt: string; serverNow: string; canReserve: boolean }
 type CreatedBooking = { booking: { id: string; quantity: number; totalPriceIdr: number; originalDeadline: string; participants: { id: string; position: number; name: string }[] }; replayed: boolean; serverNow: string }
@@ -181,6 +182,7 @@ export function Component() {
   const [quantity, setQuantity] = useState(() => Math.max(1, Number(query.get('quantity')) || 1))
   const [names, setNames] = useState<string[]>([])
   const [step, setStep] = useState(1)
+  const direction = useStepDirection(step)
   const [page, setPage] = useState(0)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -286,14 +288,13 @@ export function Component() {
   }
 
   const errorMessage = error && error in apiErrorMessages ? apiErrorMessages[error as keyof typeof apiErrorMessages][language] : null
-  const stepMotion = { initial: { opacity: reduceMotion ? 1 : 0, x: reduceMotion ? 0 : 12 }, animate: { opacity: 1, x: 0 }, transition: { duration: reduceMotion ? 0 : 0.18 } }
+  const stepMotion = stepEnter(direction, reduceMotion)
 
   if (result && session) {
     const deadline = Date.parse(result.booking.originalDeadline)
     const minutesLeft = Math.max(0, Math.floor((deadline - now) / 60_000))
     const hoursLeft = Math.floor(minutesLeft / 60)
     const cell = 'flex size-16 items-center justify-center rounded-xs bg-band-tile text-headline font-bold tabular-nums'
-    const rise = (delay: number) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.42, ease: 'easeOut' as const } })
     const payBy = new Date(deadline).toLocaleString(language === 'id' ? 'id-ID' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })
     // Desktop (board D3): the moment on the left in Court Blue, what was booked on a white card to the right.
     if (isDesktop) {
@@ -302,10 +303,7 @@ export function Component() {
           <section className="relative isolate flex flex-wrap items-center gap-10 overflow-hidden rounded-lg bg-band p-[clamp(2rem,4vw,3.5rem)] text-on-signboard [&_:focus-visible]:outline-white">
             <CourtLines className="pointer-events-none absolute -right-10 -top-12 -z-10 h-[26rem] text-on-signboard/15" />
             <div className="flex min-w-0 flex-[1_1_22rem] flex-col gap-5">
-              <m.span initial={reduceMotion ? false : { scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 380, damping: 20 }}
-                aria-hidden="true" className="flex size-18 items-center justify-center rounded-full bg-surface-container-lowest text-primary">
-                <Check className="size-9" strokeWidth={3} />
-              </m.span>
+              <BookedBadge className="size-18" />
               <div className="flex flex-col gap-1.5">
                 <h1 ref={heading} tabIndex={-1} className="text-display font-bold focus:outline-none">{text.success}</h1>
                 <p className="text-title font-normal">{fill(text.safe, { count: result.booking.quantity })}</p>
@@ -341,27 +339,28 @@ export function Component() {
       <div className="flex min-h-dvh flex-col bg-band text-on-signboard [&_:focus-visible]:outline-white">
         <div className="page-gutter mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)]">
           <BookedArt />
-          <m.div {...rise(0.7)} className="flex flex-col gap-2 text-center">
+          {/* Only the art moves; the facts are there to read at once. */}
+          <div className="flex flex-col gap-2 text-center">
             <h1 ref={heading} tabIndex={-1} className="text-display font-bold focus:outline-none">{text.success}</h1>
             <p className="text-title font-normal">{fill(text.safe, { count: result.booking.quantity })}</p>
-          </m.div>
-          <m.div {...rise(0.82)} className="flex flex-col items-center gap-2.5">
+          </div>
+          <div className="flex flex-col items-center gap-2.5">
             <div role="timer" aria-label={fill(text.timeLeft, { h: hoursLeft, m: minutesLeft % 60 })} className="flex items-center gap-2">
               <span aria-hidden="true" className={cell}>{String(hoursLeft).padStart(2, '0')}</span>
               <span aria-hidden="true" className="text-headline font-bold">:</span>
               <span aria-hidden="true" className={cell}>{String(minutesLeft % 60).padStart(2, '0')}</span>
             </div>
             <p className="rounded-full bg-band-tile px-3.5 py-1.5 text-label">{text.payBy} <span className="font-semibold">{payBy} WIB</span></p>
-          </m.div>
-          <m.section {...rise(0.94)} aria-label={session.className} className="flex flex-col gap-1.5 rounded-sm bg-surface-container-lowest p-4 text-on-surface">
+          </div>
+          <section aria-label={session.className} className="flex flex-col gap-1.5 rounded-sm bg-surface-container-lowest p-4 text-on-surface">
             <div className="flex flex-wrap justify-between gap-x-3"><span className="font-semibold">{session.className}</span><span className="tabular-nums">{formatClubDateMedium(session.date, language)}, {formatClubTime(session.startsAt)}</span></div>
             <p className="text-label text-on-surface-variant">{result.booking.participants.map(participant => participant.name).join(', ')}</p>
             <div className="flex justify-between gap-3 border-t border-outline-variant pt-2"><span className="text-on-surface-variant">{text.total}</span><span className="font-bold tabular-nums">{formatIdr(result.booking.totalPriceIdr, language)}</span></div>
-          </m.section>
-          <m.section {...rise(0.94)} aria-label={text.payTitle} className="rounded-sm bg-band-tile p-4 text-label">
+          </section>
+          <section aria-label={text.payTitle} className="rounded-sm bg-band-tile p-4 text-label">
             <p className="font-semibold">{text.payTitle}</p>
             <p className="mt-0.5">{text.payBody}</p>
-          </m.section>
+          </section>
           <div className="mt-auto flex flex-col gap-2">
             <Button asChild variant="filled" className="min-h-14"><Link to={`/bookings/${result.booking.id}`} viewTransition data-nav="push">{text.seeBooking}</Link></Button>
             <Button asChild variant="text" className="text-on-signboard"><Link to={schedulePath} viewTransition data-nav="pop">{text.backToSchedule}</Link></Button>

@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { animate, AnimatePresence, m, useMotionValue } from 'motion/react'
+import { animate, AnimatePresence, m, useMotionValue, useReducedMotion } from 'motion/react'
 import type { PanInfo } from 'motion/react'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Wordmark } from '@/components/brand/ball-mark'
@@ -21,6 +21,8 @@ function StartBar({ onFinish }: { onFinish: () => void }) {
   const x = useMotionValue(0)
   const [travel, setTravel] = useState(0)
   const dragged = useRef(false)
+  // animate() runs outside MotionConfig, so reduced motion is honoured here by hand: the handle jumps instead.
+  const snap = useReducedMotion() ? { duration: 0 } : popSpring
 
   useLayoutEffect(() => {
     const track = trackRef.current
@@ -33,8 +35,8 @@ function StartBar({ onFinish }: { onFinish: () => void }) {
   }, [])
 
   const handleDragEnd = () => {
-    if (x.get() >= travel * 0.8) { void animate(x, travel, popSpring); onFinish() }
-    else void animate(x, 0, popSpring)
+    if (x.get() >= travel * 0.8) { void animate(x, travel, snap); onFinish() }
+    else void animate(x, 0, snap)
     // The click that follows a drag must not count as a tap.
     window.setTimeout(() => { dragged.current = false }, 0)
   }
@@ -103,6 +105,7 @@ function Pager({ index, onStep }: { index: number; onStep: (next: number) => voi
 // the last slide. "Lewati" sits top right on every slide. Finishing or skipping lands on today's schedule.
 export default function Onboarding({ onDone }: { onDone: () => void }) {
   const { t } = useI18n()
+  const reduceMotion = useReducedMotion()
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState(1)
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -141,7 +144,8 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.35 }}
+          // The photo crossfades with the slide; with reduced motion it simply changes.
+          transition={reduceMotion ? { duration: 0 } : contentSpring}
           className="absolute inset-0 size-full object-cover"
         />
       </AnimatePresence>

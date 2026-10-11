@@ -1,5 +1,6 @@
 import { Search, X } from 'lucide-react'
 import { m } from 'motion/react'
+import { listRowMotion } from '@/lib/motion'
 import { Button } from '@/components/ui/button'
 import { useI18n } from '@/i18n/use-i18n'
 import type { Message } from '@/i18n/types'
@@ -53,7 +54,7 @@ export function ListMore({ shown, total, hasMore, loading, onMore, noun }: { sho
 export function ListNoMatch({ query, noun }: { query: string; noun: Message }) {
   const { t } = useI18n()
   return (
-    <m.p role="status" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
+    <m.p role="status" initial={listRowMotion.initial} animate={listRowMotion.animate} transition={listRowMotion.transition}
       className="rounded-sm bg-surface-container p-4 text-on-surface-variant">{t(copy.noMatch, { noun: t(noun), query: query.trim() })}</m.p>
   )
 }

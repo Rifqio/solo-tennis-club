@@ -28,6 +28,7 @@ import { adminMessages as messages } from '../forms/admin.messages'
 import { newSessionDraft, draftFromSession, applyClassDefaults, hasOverrides, loadDraft, saveDraft, clearDraft } from './session-draft'
 import type { SessionDraft } from './session-draft'
 import { SessionReview } from './SessionReview'
+import { stepEnter, useStepDirection } from '@/lib/step-motion'
 const stepNames = [{ id: 'Kelas dan waktu', en: 'Class and time' }, { id: 'Level, lokasi, dan coach', en: 'Level, venue, and coaches' }, { id: 'Harga dan batas peserta', en: 'Price and participant limits' }, { id: 'Periksa sesi', en: 'Review session' }]
 const stepFields = [['classId', 'date', 'startTime', 'durationMinutes'], ['levelId', 'venueId', 'coachIds'], ['priceIdr', 'minParticipants', 'maxParticipants']]
 export function SessionEditorPage() {
@@ -55,7 +56,6 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
   const [latest, setLatest] = useState<AdminSessionDetail | null>(null)
   const [newClassId, setNewClassId] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
-  const [direction, setDirection] = useState(1)
   const reduceMotion = useReducedMotion()
   const sending = useRef(false)
   const editor = useRef<HTMLDivElement>(null)
@@ -65,7 +65,8 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
   const guard = useUnsavedChangesGuard(dirty, () => { if (draft.mode === 'create') { try { clearDraft(sessionStorage) } catch { /* Storage is optional. */ } } }, pending)
   useEffect(() => { if (draft.mode === 'create') { try { saveDraft(sessionStorage, draft) } catch { /* Storage is optional. */ } } }, [draft])
   useEffect(() => { stepHeading.current?.focus({ preventScroll: true }); stepHeading.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' }) }, [draft.step])
-  const goToStep = (step: number) => { setDirection(step < draft.step ? -1 : 1); setDraft(current => ({ ...current, step })) }
+  const goToStep = (step: number) => setDraft(current => ({ ...current, step }))
+  const direction = useStepDirection(draft.step)
   const setField = (field: string, value: string | string[]) => setDraft(current => ({ ...current, [field]: value }))
   const errorFor = (field: string, label: string) => errors[field] ? t(fieldErrorMessage(field, errors[field]), { field: label }) : undefined
   const payload = () => ({ classId: draft.classId, date: draft.date, startTime: draft.startTime, levelId: draft.levelId, venueId: draft.venueId, coachIds: draft.coachIds,
@@ -125,7 +126,7 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
     <div><p className="text-label text-on-surface-variant">{t({ id: 'Langkah {n} dari 4', en: 'Step {n} of 4' }, { n: draft.step })}</p><h2 ref={stepHeading} tabIndex={-1} className="scroll-mt-24 text-title font-bold focus:outline-none">{t(stepNames[draft.step - 1])}</h2></div>
     {!options.data && <StatusPanel tone={options.response ? 'error' : 'info'} title={t(options.response ? messages.loadError : messages.loading)} action={options.response ? { label: t(commonMessages.retry), onAction: options.retry } : undefined} />}
     {options.data && !complete && <StatusPanel tone="info" title={t(messages.missing)}><Button asChild><Link to="/admin/manage" onClick={() => { if (draft.mode === 'create') { try { saveDraft(sessionStorage, draft) } catch { /* Storage is optional. */ } guard.allowNavigation() } }}>{t(messages.manage)}</Link></Button><Button asChild><Link to="/admin/classes/new" onClick={() => { if (draft.mode === 'create') { try { saveDraft(sessionStorage, draft) } catch { /* Storage is optional. */ } guard.allowNavigation() } }}>{t({ id: 'Tambah kelas', en: 'Add class' })}</Link></Button></StatusPanel>}
-    <m.div key={draft.step} initial={reduceMotion ? false : { opacity: 0, x: direction * 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: reduceMotion ? 0 : 0.2, ease: [0.2, 0, 0, 1] }} className="flex min-w-0 flex-col gap-6">
+    <m.div key={draft.step} {...stepEnter(direction, reduceMotion)} className="flex min-w-0 flex-col gap-6">
       {draft.step === 1 && <>
         <SelectField name="classId" label={t(messages.classes)} value={draft.classId} options={availableOptions.classes} placeholder={t(messages.choose)} hint={t({ id: 'Memilih kelas mengisi nilai awal yang dapat diubah untuk sesi ini.', en: 'Choosing a class fills defaults you can edit for this session.' })} error={errorFor('classId', t(messages.classes))} onChange={id => {
           if (id === draft.classId) return

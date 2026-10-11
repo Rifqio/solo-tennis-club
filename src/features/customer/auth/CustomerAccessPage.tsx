@@ -18,6 +18,9 @@ import { customerAuthMessages as messages } from './customer-auth.messages'
 import { useCustomerAccess } from './use-customer-access'
 import { safeCustomerReturnPath } from './customer-return-path'
 import { AuthHero } from './AuthHero'
+import { stepEnter, useStepDirection } from '@/lib/step-motion'
+
+const stagePosition: Record<string, number | null> = { loading: null, loadError: null, phone: 1, code: 2, name: 3, complete: 4 }
 
 export function Component() {
   const { t } = useI18n()
@@ -36,6 +39,8 @@ export function Component() {
   const heading = useRef<HTMLHeadingElement>(null)
   const form = useRef<HTMLFormElement>(null)
   const reduceMotion = useReducedMotion()
+  // Phone, code, then name: the form slides the way the visitor is going; the first form after loading just appears.
+  const direction = useStepDirection(stagePosition[state.stage])
 
   useEffect(() => {
     heading.current?.focus({ preventScroll: true })
@@ -115,8 +120,7 @@ export function Component() {
 
   return <div className="flex min-h-dvh flex-col">
     <AuthHero backTo={schedulePath} backLabel={t(messages.backLabel)} compact={state.stage !== 'phone' && state.stage !== 'loading'} />
-    <m.section key={state.stage} initial={{ opacity: reduceMotion ? 1 : 0, x: reduceMotion ? 0 : state.stage === 'phone' ? -12 : 12 }}
-      animate={{ opacity: 1, x: 0 }} transition={{ duration: reduceMotion ? 0 : 0.2 }}
+    <m.section key={state.stage} {...stepEnter(direction, reduceMotion)}
       className="page-gutter mx-auto flex w-full max-w-lg min-w-0 flex-1 flex-col gap-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6">
       <div className="flex flex-col gap-1.5 text-center">
         <h1 ref={heading} tabIndex={-1} className="text-headline font-bold text-on-surface focus:outline-none">{t(title)}</h1>

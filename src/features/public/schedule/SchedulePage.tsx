@@ -122,7 +122,7 @@ export function SchedulePage() {
         </section>
       </CourtBand>
 
-      <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-3 lg:max-w-[72rem] lg:flex-row lg:items-start lg:gap-6 lg:pt-6">
+      <div className="page-gutter desk-column mx-auto flex w-full max-w-[50rem] flex-col gap-3 pt-3 lg:flex-row lg:items-start lg:gap-6 lg:pt-6">
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="lg:flex lg:flex-col lg:gap-0.5">
           <h2 data-schedule-heading tabIndex={-1} className="sr-only focus:outline-none lg:not-sr-only lg:text-headline lg:font-bold">{selectedLabel} <span className="text-label font-medium text-on-surface-variant">WIB</span></h2>

@@ -82,7 +82,7 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
         <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={t(copy.search)}
           className="min-w-0 flex-1 bg-transparent text-body text-on-surface outline-none placeholder:text-on-surface-variant" />
       </label>} />
-    <div className="admin-column flex items-start py-5">
+    <div className="desk-column flex items-start py-5">
       <section aria-label={t(messages.heading)} aria-busy={list.searching} className="min-w-0 flex-1 overflow-hidden rounded-lg bg-surface-container-lowest">
         {list.status === 'loading' ? (
           <div className="flex flex-col gap-2 p-6"><p role="status" className="sr-only">{t(messages.loading)}</p>

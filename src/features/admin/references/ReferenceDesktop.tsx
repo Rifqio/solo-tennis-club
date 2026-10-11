@@ -61,7 +61,7 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>}>
       <div className="lg:min-w-[28rem]"><ReferenceTabs current={kind} /></div>
     </AdminBand>
-    <div className="admin-column flex items-start gap-5 py-5">
+    <div className="desk-column flex items-start gap-5 py-5">
       <section aria-label={t(config.label)} className="flex min-h-[36rem] w-[24rem] shrink-0 flex-col rounded-lg bg-surface-container-lowest xl:w-[28.75rem]">
         <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-5">
           <h2 className="text-title font-bold">{archive ? <ArchiveHeading kind={kind} /> : t(config.label)}</h2>

@@ -234,9 +234,10 @@
 }
 
 /* Page gutters: 16px phones, 24px from 640px, 32px from 1024px, never inside a device's safe area. */
-/* Admin desktop (boards D9b, D10): band and content share one column, at most 1240px, with a gutter that grows
-   with the window. Below 1024px it does nothing and screens keep their phone and tablet widths. */
-@utility admin-column {
+/* Desktop column for every app screen, customer and admin (boards D2-D6, D9b, D10): band and content share one
+   column, at most 1240px, with a gutter that grows with the window. Below 1024px it does nothing and screens keep their
+   phone and tablet widths. */
+@utility desk-column {
   @media (width >= 64rem) {
     /* Important: screens pair it with phone widths (w-full, max-w-[50rem], page-gutter) that must yield here. */
     width: min(100% - 2 * clamp(1rem, 2.4vw, 2rem), 77.5rem) !important;

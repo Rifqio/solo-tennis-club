@@ -36,7 +36,7 @@ export function AdminBand({ title, back, subtitle, action, children, wideChildre
   // The action renders once: beside the title on phones and tablets, in the right column from 1024px.
   const wide = useMediaQuery('(min-width: 64rem)')
   return (
-    <header className="relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white admin-column lg:mt-5 lg:rounded-lg lg:pt-0">
+    <header className="relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white desk-column lg:mt-5 lg:rounded-lg lg:pt-0">
       <CourtLines className="pointer-events-none absolute -right-12 -top-4 -z-10 h-64 text-on-signboard/15 sm:right-8" />
       <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col pb-4 sm:pt-4 lg:max-w-none lg:px-8 lg:py-5">
         <div className={cn('flex h-14 items-center justify-between gap-3', !back && 'sm:hidden')}>

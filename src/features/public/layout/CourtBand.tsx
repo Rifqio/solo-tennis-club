@@ -22,8 +22,8 @@ export function CourtBand({ title, headingRef, action, children, className }: Co
   return (
     <header className={cn(
       'relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] text-on-signboard [view-transition-name:app-bar] [&_:focus-visible]:outline-white',
-      // Desktop: an inset card aligned with the content column below it, rather than a band across the window.
-      'lg:mx-auto lg:mt-5 lg:w-[min(calc(100%-64px),calc(72rem-64px))] lg:rounded-lg lg:pt-1',
+      // Desktop: an inset card in the shared column (desk-column), aligned with the content below it.
+      'desk-column lg:mt-5 lg:rounded-lg lg:pt-1',
       className,
     )}>
       <CourtLines className="pointer-events-none absolute -right-12 -top-4 -z-10 h-64 text-on-signboard/15 sm:right-8" />

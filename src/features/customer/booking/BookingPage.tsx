@@ -73,7 +73,7 @@ function TaskBand({ title, step, steps, stepLabel, backTo, onBack, backLabel, he
 }) {
   const backClass = 'state-layer pressable flex size-12 shrink-0 items-center justify-center rounded-full bg-band-tile'
   return (
-    <header className="rounded-b-lg bg-band pb-4 pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white lg:mx-auto lg:mt-5 lg:w-[min(calc(100%-64px),calc(72rem-64px))] lg:rounded-lg lg:py-4">
+    <header className="rounded-b-lg bg-band pb-4 pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white desk-column lg:mt-5 lg:rounded-lg lg:py-4">
       {/* Desktop: one compact row, back and title on the left, the three steps on the right. */}
       <div className="page-gutter mx-auto flex w-full max-w-3xl flex-col gap-4 pt-4 lg:max-w-none lg:flex-row lg:items-center lg:justify-between lg:px-5 lg:pt-0">
         <div className="flex items-center gap-3">
@@ -296,7 +296,7 @@ export function Component() {
     // Desktop (board D3): the moment on the left in Court Blue, what was booked on a white card to the right.
     if (isDesktop) {
       return (
-        <div className="page-gutter mx-auto w-full max-w-[72rem] py-5">
+        <div className="page-gutter desk-column mx-auto w-full py-5">
           <section className="relative isolate flex flex-wrap items-center gap-10 overflow-hidden rounded-lg bg-band p-[clamp(2rem,4vw,3.5rem)] text-on-signboard [&_:focus-visible]:outline-white">
             <CourtLines className="pointer-events-none absolute -right-10 -top-12 -z-10 h-[26rem] text-on-signboard/15" />
             <div className="flex min-w-0 flex-[1_1_22rem] flex-col gap-5">
@@ -399,7 +399,7 @@ export function Component() {
     <div className="flex min-h-dvh flex-col">
       {band}
       {/* Desktop: the step in a card beside the summary card, tops and bottoms aligned. */}
-      <div className="page-gutter mx-auto flex w-full max-w-3xl min-w-0 flex-col lg:max-w-[72rem] lg:flex-row lg:items-stretch lg:gap-5 lg:pb-12 lg:pt-5">
+      <div className="page-gutter desk-column mx-auto flex w-full max-w-3xl min-w-0 flex-col lg:flex-row lg:items-stretch lg:gap-5 lg:pb-12 lg:pt-5">
       <m.div key={step} {...stepMotion} className="flex min-w-0 flex-1 flex-col gap-4 pb-6 pt-4 lg:rounded-lg lg:bg-surface-container-lowest lg:p-8">
         {step === 1 && <>
           {!isDesktop && <SessionSummary session={session} language={language} />}

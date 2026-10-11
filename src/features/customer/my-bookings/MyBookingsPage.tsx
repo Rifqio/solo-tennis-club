@@ -172,7 +172,7 @@ export function Component() {
         </nav>
       )}
     </CourtBand>
-    <div className={cn('page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4', desktopList && 'max-w-[72rem] flex-row items-start gap-6 pt-6')}>
+    <div className={cn('page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4', desktopList && 'desk-column flex-row items-start gap-6 pt-6')}>
       {desktopList ? <>
         <section aria-label={t(view === 'history' ? messages.history : messages.active)} className="flex min-w-0 flex-1 flex-col gap-5">
           {(view === 'history' ? byMonth(shown, language) : [{ label: t(messages.active), items: shown }]).map(group => (

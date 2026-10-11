@@ -1,10 +1,11 @@
+import { sampleSchedulePath } from './support/sample-session.ts'
 import { expect, test } from '@playwright/test'
 import { sessionDetail } from './support/session-detail.ts'
 
 test('signed-out visitor sees SQLite sample session without sign-in', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
-  await page.goto('/schedule')
+  await page.goto(sampleSchedulePath)
   await expect(page.getByRole('heading', { name: 'Jadwal', exact: true })).toBeAttached()
   await expect(page.getByRole('heading', { level: 2 }).first()).toContainText('WIB')
   const row = page.getByRole('listitem').filter({ hasText: 'Sample tennis class' })

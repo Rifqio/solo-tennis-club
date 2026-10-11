@@ -29,8 +29,8 @@ for (const width of LAYOUT_WIDTHS) for (const language of ['id', 'en']) {
     await expectNoHorizontalScroll(page)
     await expectTouchTargets(page)
     const nav = page.getByRole('navigation', { name: language === 'id' ? 'Navigasi admin' : 'Admin navigation' })
-    // Sesi, Booking, Tambah sesi, Kelas, Kelola.
-    await expect(nav.getByRole('link')).toHaveCount(5)
+    // From 640px the rail: Sesi, Booking, Tambah sesi, Rekap, Kelas, Kelola (phones fold Kelas into Kelola).
+    await expect(nav.getByRole('link')).toHaveCount(width < 640 ? 5 : 6)
     const last = page.getByRole('heading', { name: 'Contoh kelas 8', exact: true })
     await last.scrollIntoViewIfNeeded()
     if (width < 640) {

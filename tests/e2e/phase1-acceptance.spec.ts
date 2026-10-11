@@ -14,7 +14,10 @@ test('Phase 1 UI-only admin setup, publication, safe edit and signed-out bilingu
     await page.goto(`/admin/${path}/new`); await page.getByLabel(/^Nama (coach|lokasi|level)$/).fill(name)
     await page.getByRole('button', { name: /^Simpan( coach| lokasi| level)?$/ }).click(); await expectToast(page, `${name} ditambahkan.`)
   }
-  await page.getByRole('navigation', { name: 'Navigasi admin' }).getByRole('link', { name: 'Kelas', exact: true }).click()
+  // Phones reach Kelas through Kelola (board 19); the rail has it directly.
+  const adminNav = page.getByRole('navigation', { name: 'Navigasi admin' })
+  if (page.viewportSize()!.width < 640) { await adminNav.getByRole('link', { name: 'Kelola', exact: true }).click(); await page.getByRole('link', { name: /^Kelas/ }).click() }
+  else await adminNav.getByRole('link', { name: 'Kelas', exact: true }).click()
   await page.getByRole('link', { name: 'Tambah kelas', exact: true }).first().click()
   await page.getByLabel('Nama', { exact: true }).fill(className); await chooseOption(page,'Level',levelName); await chooseOption(page,'Lokasi',venueName)
   await setDuration(page, '90'); await page.getByLabel('Harga per slot', { exact: true }).fill('150000'); await page.getByLabel('Min pemain', { exact: true }).fill('2'); await page.getByLabel('Max pemain', { exact: true }).fill('8')

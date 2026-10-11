@@ -25,6 +25,8 @@ function detail(linked: boolean) {
       customer: linked ? { displayName: 'Rina Verified', phone: '+6281234609999', verifiedAt: now.toISOString() } : null,
       linked: linked ? { at: now.toISOString(), by: 'Test administrator' } : null,
       session: { id: sessionId, className: 'Contoh Kelas Sore', date: '2026-10-12', startTime: '16:00', startsAt: options.session.startsAt, cancelled: false, levelName: 'Contoh Level', venueName: 'Contoh Lapangan', endTime: '17:30' },
+      // Payment fields since 03-03/03-04: no proofs, no recorded payments yet.
+      proofs: [], payments: [], confirmed: null, paymentNote: null,
     },
   }
 }

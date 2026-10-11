@@ -6,6 +6,7 @@ import { projectRoot } from '../../../server/config/database-file.ts'
 import { createPrismaClient, initializeDatabase } from '../../../server/db.ts'
 import { startServer } from '../../../server/start.ts'
 import { createSampleCatalog, createSampleSession } from '../../support/fixtures.ts'
+import { SAMPLE_SESSION_STARTS_AT } from './sample-session.ts'
 import { provisionAdmin } from '../../../server/auth/provisioning.ts'
 import { e2eAdminEmail, e2eAdminPassword } from './e2e-credentials.ts'
 
@@ -22,7 +23,7 @@ const prisma = createPrismaClient(databaseFile)
 try {
   await initializeDatabase(prisma)
   await provisionAdmin(prisma, { email: e2eAdminEmail, password: e2eAdminPassword, displayName: 'E2E administrator' })
-  await createSampleSession(prisma, { catalog: await createSampleCatalog(prisma) })
+  await createSampleSession(prisma, { catalog: await createSampleCatalog(prisma), startsAt: SAMPLE_SESSION_STARTS_AT })
 } finally { await prisma.$disconnect() }
 process.env.LAFU_COOKIE_SECURE = 'false'
 await startServer({ mode: 'production', databaseFile })

@@ -1,3 +1,4 @@
+import { sampleSchedulePath } from './support/sample-session.ts'
 /// <reference lib="dom" />
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
@@ -13,7 +14,7 @@ async function skipPhoneOnboarding(page: Page, label: string) {
 test('visitor opens the Club tab and switches to English, remembered on reload', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
-  await page.goto('/schedule')
+  await page.goto(sampleSchedulePath)
   await expect(page.locator('html')).toHaveAttribute('lang', 'id')
   await expect(page.getByRole('heading', { name: 'Jadwal', exact: true })).toBeAttached()
   const sampleRow = page.getByRole('listitem').filter({ hasText: 'Sample tennis class' })
@@ -39,6 +40,9 @@ test('visitor opens the Club tab and switches to English, remembered on reload',
   expect(await page.evaluate(() => window.localStorage.getItem('lafu.language'))).toBe('en')
 
   await page.getByRole('link', { name: 'Schedule', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Schedule', exact: true })).toBeAttached()
+  // The sample session is tomorrow (support/sample-session.ts): open its day, still in English.
+  await page.goto(sampleSchedulePath)
   const englishRow = page.getByRole('listitem').filter({ hasText: 'Sample tennis class' })
   await expect(englishRow).toContainText('Rp 150,000')
   await expect(englishRow).toContainText('18:00')

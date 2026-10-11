@@ -1,3 +1,4 @@
+import { sampleSchedulePath } from './support/sample-session.ts'
 /// <reference lib="dom" />
 import { expect, test } from '@playwright/test'
 import { expectNoHorizontalScroll, expectTouchTargets, LAYOUT_WIDTHS } from './support/layout-checks'
@@ -52,7 +53,7 @@ test('schedule load failure names the problem and retries', async ({ page }) => 
     if (requests === 1) await route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: { code: 'INTERNAL' } }) })
     else await route.continue()
   })
-  await page.goto('/schedule')
+  await page.goto(sampleSchedulePath)
   const alert = page.getByRole('alert')
   await expect(alert).toContainText('Jadwal belum dapat dimuat. Coba lagi.')
   await alert.getByRole('button', { name: 'Coba lagi' }).click()

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { m, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime } from '@/i18n/format'
@@ -14,7 +14,8 @@ import type { AdminResult } from '@/lib/admin-api'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { BookingGroup } from './SessionRosterPage'
 import { isActive } from './roster-status'
-import { panelEnter } from '@/lib/motion'
+import { listRowMotion, panelEnter } from '@/lib/motion'
+import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
 
 const copy = {
   label: { id: 'Peserta', en: 'Players' },
@@ -98,13 +99,14 @@ export function RosterPanel({ id }: { id: string }) {
       <div className="flex flex-col gap-3 p-6">
         {session.status !== 'scheduled' && <StatusPanel tone="info" title={t(copy.cancelled)} />}
         {data.bookings.length === 0 ? <p className="text-on-surface-variant">{t(copy.empty)}</p> : <>
-          <div role="group" aria-label={t(copy.filter)} className="flex flex-wrap gap-2">
+          <div role="group" aria-label={t(copy.filter)} className="isolate flex flex-wrap gap-2">
             {filters.map(value => {
               const on = filter === value
               return (
                 <button key={value} type="button" aria-pressed={on} onClick={() => setFilter(value)}
-                  className={cn('state-layer pressable flex min-h-12 items-center gap-2 rounded-full pl-3.5 pr-1.5 text-label',
-                    on ? 'bg-band-tile font-semibold text-on-signboard' : 'border border-outline-variant bg-surface-container-lowest')}>
+                  className={cn('selection-item pressable flex min-h-12 items-center gap-2 rounded-full pl-3.5 pr-1.5 text-label',
+                    on && 'font-semibold text-on-signboard')}>
+                  {on ? <SelectionMark layoutId="roster-filter" className="rounded-full bg-band-tile" /> : <SelectionBase className="rounded-full border border-outline-variant bg-surface-container-lowest" />}
                   {t(copy[value])}
                   <span className={cn('flex h-7 min-w-7 items-center justify-center rounded-full px-2 font-bold tabular-nums',
                     on ? 'bg-surface-container-lowest text-primary' : value === 'unpaid' ? 'bg-warning-container text-warning' : 'bg-surface-container text-on-surface-variant')}>{counts[value]}</span>
@@ -115,7 +117,7 @@ export function RosterPanel({ id }: { id: string }) {
           {data.truncated && <StatusPanel tone="info" title={t(copy.truncated)} />}
           {shown.length === 0
             ? <p className="text-on-surface-variant">{t(copy.emptyFilter)}</p>
-            : <ul className="flex flex-col gap-2.5">{shown.map(row => <li key={row.booking.id} className="rounded-sm border border-outline-variant"><BookingGroup {...row} /></li>)}</ul>}
+            : <ul className="flex flex-col gap-2.5"><AnimatePresence initial={false} mode="popLayout">{shown.map(row => <m.li key={row.booking.id} {...listRowMotion} className="rounded-sm border border-outline-variant"><BookingGroup {...row} /></m.li>)}</AnimatePresence></ul>}
         </>}
       </div>
       {/* Board D5: the release rule beside the one thing to do next, recording a booking that came in on WhatsApp. */}

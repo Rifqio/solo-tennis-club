@@ -1,15 +1,17 @@
 import { useId, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { m } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { Check, Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet } from '@/components/ui/sheet'
 import { useI18n } from '@/i18n/use-i18n'
-import { popSpring } from '@/lib/motion'
+import { contentSpring, listRowMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import type { CoachOption } from '@shared/api/admin-sessions'
 import { coachInitials } from './coach-initials'
+import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
+import { PopIn } from '@/components/ui/pop-in'
 
 const copy = {
   pickHint: { id: '(pilih satu atau lebih)', en: '(pick one or more)' },
@@ -60,8 +62,8 @@ function CoachCard({ option, on, name, error, onToggle }: { option: Option; on: 
   const count = countOf(option)
   return (
     <label title={option.name}
-      className={cn('group relative flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-md p-1.5 transition duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary',
-        on ? '-translate-y-0.5 bg-primary-container ring-2 ring-primary' : 'hover:bg-surface-container',
+      className={cn('group relative flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-md p-1.5 pressable has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary',
+        on ? 'bg-primary-container ring-2 ring-primary' : 'hover:bg-surface-container',
         error && !on && 'ring-1 ring-error')}>
       <input type="checkbox" name={name} value={option.id} checked={on} onChange={onToggle}
         className="absolute inset-0 z-10 size-full cursor-pointer appearance-none rounded-md opacity-0" />
@@ -69,8 +71,7 @@ function CoachCard({ option, on, name, error, onToggle }: { option: Option; on: 
         {photo
           ? <img src={photo} alt="" loading="lazy" className={cn('size-full object-cover transition duration-300', !on && 'grayscale-[35%] group-hover:grayscale-0')} />
           : <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-headline font-bold text-primary">{coachInitials(option.name)}</span>}
-        {on && <m.span aria-hidden="true" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={popSpring}
-          className="absolute right-1.5 top-1.5 flex size-7 items-center justify-center rounded-full bg-accent text-on-accent"><Check className="size-4" strokeWidth={3} /></m.span>}
+        <PopIn show={on} className="absolute right-1.5 top-1.5 flex size-7 items-center justify-center rounded-full bg-accent text-on-accent"><Check className="size-4" strokeWidth={3} /></PopIn>
       </span>
       <span className="flex min-w-0 flex-col px-0.5 leading-tight">
         <span className="truncate text-label font-bold">{option.name}</span>
@@ -140,22 +141,30 @@ export function CoachPicker({ name, label, hint, error, options, value, onChange
             <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={t(copy.searchPlaceholder)}
               className="min-w-0 flex-1 bg-transparent text-body text-on-surface outline-none placeholder:text-on-surface-variant" />
           </label>
-          <div role="group" aria-label={t(copy.filter)} className="flex gap-2">
+          <div role="group" aria-label={t(copy.filter)} className="isolate flex gap-2">
             {[false, true].map(free => (
               <button key={String(free)} type="button" aria-pressed={onlyFree === free} onClick={() => setOnlyFree(free)}
-                className={cn('state-layer pressable min-h-12 whitespace-nowrap rounded-full px-4 text-label font-semibold',
-                  onlyFree === free ? 'bg-band-tile text-on-signboard' : 'border border-outline-variant text-on-surface')}>
+                className={cn('selection-item pressable min-h-12 whitespace-nowrap rounded-full px-4 text-label font-semibold',
+                  onlyFree === free ? 'text-on-signboard' : 'text-on-surface')}>
+                {onlyFree === free ? <SelectionMark layoutId={`${id}-filter`} className="rounded-full bg-band-tile" /> : <SelectionBase className="rounded-full border border-outline-variant" />}
                 {free ? t(copy.free, { count: options.filter(option => countOf(option) === 0).length }) : t(copy.all, { count: options.length })}
               </button>
             ))}
           </div>
         </div>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(7.75rem,1fr))] gap-3.5">
-          {listed.map(option => <CoachCard key={option.id} option={option} on={value.includes(option.id)} name={`${name}-all`} error={false} onToggle={() => toggle(option.id)} />)}
-          <Link to="/admin/coaches/new" className="state-layer flex min-h-40 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary/30 p-2 text-label font-semibold text-primary">
-            <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-full bg-primary-container"><Plus className="size-5" strokeWidth={2.5} /></span>
-            {t(copy.newCoach)}
-          </Link>
+          {/* Searching and filtering: cards that stay glide to their new place, the others leave quickly. */}
+          <AnimatePresence initial={false} mode="popLayout">
+            {listed.map(option => <m.div key={option.id} {...listRowMotion} className="flex min-w-0 flex-col">
+              <CoachCard option={option} on={value.includes(option.id)} name={`${name}-all`} error={false} onToggle={() => toggle(option.id)} />
+            </m.div>)}
+          </AnimatePresence>
+          <m.div layout="position" transition={contentSpring} className="flex flex-col">
+            <Link to="/admin/coaches/new" className="state-layer pressable flex min-h-40 flex-1 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary/30 p-2 text-label font-semibold text-primary">
+              <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-full bg-primary-container"><Plus className="size-5" strokeWidth={2.5} /></span>
+              {t(copy.newCoach)}
+            </Link>
+          </m.div>
           {listed.length === 0 && <p role="status" className="col-span-full rounded-sm bg-surface-container p-4 text-on-surface-variant">{t(copy.noMatch, { query: query.trim() })}</p>}
         </div>
       </Sheet>

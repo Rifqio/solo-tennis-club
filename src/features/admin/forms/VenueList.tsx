@@ -5,6 +5,8 @@ import { Search } from 'lucide-react'
 import type { VenueOption } from '@shared/api/admin-sessions'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
+import { SelectionMark } from '@/components/ui/selection-mark'
+import { PopIn } from '@/components/ui/pop-in'
 
 const copy = {
   pick: { id: '(pilih satu)', en: '(choose one)' },
@@ -37,16 +39,18 @@ export function VenueList({ name, label, options, value, onChange, error, status
         <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={t(copy.search)}
           className="min-w-0 flex-1 bg-transparent text-body text-on-surface outline-none placeholder:text-on-surface-variant" />
       </label>}
-      {options.length > 0 && <div className={cn('flex max-h-[14.5rem] flex-col gap-1 overflow-y-auto rounded-[1rem] border p-1.5', error ? 'border-error' : 'border-outline-variant')}>
+      {options.length > 0 && <div className={cn('isolate flex max-h-[14.5rem] flex-col gap-1 overflow-y-auto rounded-[1rem] border p-1.5', error ? 'border-error' : 'border-outline-variant')}>
         {shown.map(option => {
           const on = option.id === value
           const venue = 'address' in option ? option : null
           return (
-            <label key={option.id} className={cn('state-layer relative grid min-h-14 cursor-pointer grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-md px-3 py-2 transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary',
-              on ? 'bg-band-tile text-on-signboard' : 'text-on-surface')}>
+            <label key={option.id} className={cn('selection-item pressable grid min-h-14 cursor-pointer grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-md px-3 py-2 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary',
+              on ? 'text-on-signboard' : 'text-on-surface')}>
+              {/* The fill glides to the venue picked; the dot pops in. */}
+              {on && <SelectionMark layoutId={`${id}-venue`} className="rounded-md bg-band-tile" />}
               <input type="radio" name={name} value={option.id} checked={on} onChange={() => onChange(option.id)} className="absolute inset-0 size-full cursor-pointer appearance-none opacity-0" />
               <span aria-hidden="true" className={cn('flex size-5 items-center justify-center rounded-full border-2', on ? 'border-on-signboard' : 'border-outline')}>
-                {on && <span className="size-2.5 rounded-full bg-on-signboard" />}
+                <PopIn show={on} className="size-2.5 rounded-full bg-on-signboard" />
               </span>
               <span className="flex min-w-0 flex-col leading-snug">
                 <span className="truncate font-bold">{option.name}</span>

@@ -1,6 +1,6 @@
 import { AnimatePresence, m } from 'motion/react'
 import type { PublicSessionSummary } from '@shared/api/public'
-import { contentSpring } from '@/lib/motion'
+import { listRowMotion } from '@/lib/motion'
 import { SessionCard } from './SessionCard'
 import type { SessionTiming } from './session-timing'
 
@@ -20,14 +20,7 @@ export function ScheduleList({ sessions, timings, now, markedId, players, onOpen
     <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6">
       <AnimatePresence initial={false} mode="popLayout">
         {sessions.map(session => (
-          <m.li
-            key={session.id}
-            layout="position"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }}
-            transition={contentSpring}
-          >
+          <m.li key={session.id} {...listRowMotion}>
             <SessionCard session={session} timing={timings?.get(session.id)} now={now} marked={session.id === markedId} players={players?.[session.id]} onOpen={onOpen} />
           </m.li>
         ))}

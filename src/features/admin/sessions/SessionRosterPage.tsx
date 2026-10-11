@@ -13,6 +13,9 @@ import type { AdminResult } from '@/lib/admin-api'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { AdminBand } from '../shell/AdminBand'
 import { isActive } from './roster-status'
+import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
+import { AnimatePresence, m } from 'motion/react'
+import { listRowMotion } from '@/lib/motion'
 
 const copy = {
   back: { id: 'Sesi', en: 'Sessions' },
@@ -142,13 +145,14 @@ export function Component() {
         </Button>
       )}
       {data.bookings.length === 0 ? <StatusPanel tone="info" title={t(copy.empty)} /> : <>
-        <div role="group" aria-label={t(copy.filter)} className="flex flex-wrap gap-2">
+        <div role="group" aria-label={t(copy.filter)} className="isolate flex flex-wrap gap-2">
           {filters.map(value => {
             const on = filter === value
             return (
               <button key={value} type="button" aria-pressed={on} onClick={() => setFilter(value)}
-                className={cn('state-layer pressable flex min-h-12 shrink-0 items-center gap-2 rounded-full pl-3.5 pr-1.5 text-label',
-                  on ? 'bg-band-tile font-semibold text-on-signboard' : 'border border-outline-variant bg-surface-container-lowest')}>
+                className={cn('selection-item pressable flex min-h-12 shrink-0 items-center gap-2 rounded-full pl-3.5 pr-1.5 text-label',
+                  on && 'font-semibold text-on-signboard')}>
+                {on ? <SelectionMark layoutId="roster-filter" className="rounded-full bg-band-tile" /> : <SelectionBase className="rounded-full border border-outline-variant bg-surface-container-lowest" />}
                 {t(copy[value])}
                 <span className={cn('flex h-7 min-w-7 items-center justify-center rounded-full px-2 font-bold tabular-nums',
                   on ? 'bg-surface-container-lowest text-primary' : value === 'unpaid' ? 'bg-warning-container text-warning' : 'bg-surface-container text-on-surface-variant')}>{counts[value]}</span>
@@ -159,7 +163,7 @@ export function Component() {
         {data.truncated && <StatusPanel tone="info" title={t(copy.truncated)} />}
         {shown.length === 0
           ? <p className="text-on-surface-variant">{t(copy.emptyFilter)}</p>
-          : <ul className="flex flex-col gap-2.5">{shown.map(row => <li key={row.booking.id}><BookingGroup {...row} /></li>)}</ul>}
+          : <ul className="flex flex-col gap-2.5"><AnimatePresence initial={false} mode="popLayout">{shown.map(row => <m.li key={row.booking.id} {...listRowMotion}><BookingGroup {...row} /></m.li>)}</AnimatePresence></ul>}
       </>}
       <Button asChild variant="text" className="-ml-3 self-start"><Link to={`/admin/sessions/${id}/edit`} viewTransition data-nav="push">{t(copy.edit)}</Link></Button>
     </div>

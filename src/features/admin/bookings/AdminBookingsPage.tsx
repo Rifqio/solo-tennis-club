@@ -77,7 +77,7 @@ function BookingsScreen() {
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-4 py-4">
       {list.status === 'loading' ? (
         <div className="flex flex-col gap-2"><p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-36 rounded-sm bg-surface-container" />)}</div>
+          {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-36 rounded-sm bg-surface-container" />)}</div>
       ) : list.status === 'error' || !data ? (
         <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
       ) : items.length === 0 ? (

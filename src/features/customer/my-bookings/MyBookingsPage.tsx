@@ -19,6 +19,7 @@ import { clubContent } from '@/features/public/club/club-content'
 import { BookingDetailPanel } from './BookingDetailPanel'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBookings } from './use-customer-bookings'
+import { SelectionMark } from '@/components/ui/selection-mark'
 
 // "Batas 11:00" when the deadline is today, "Batas Sab 11:00" when it is another day.
 function deadlineLabel(deadline: string, now: number, language: Language) {
@@ -161,13 +162,13 @@ export function Component() {
   return <>
     <CourtBand title={t(messages.heading)}>
       {loaded.status !== 'signedOut' && (
-        <nav aria-label={t(messages.tabs)} className="mb-4 grid grid-cols-2 gap-1 rounded-sm bg-band-tile p-1 lg:w-[22rem]">
+        <nav aria-label={t(messages.tabs)} className="isolate mb-4 grid grid-cols-2 gap-1 rounded-sm bg-band-tile p-1 lg:w-[22rem]">
           {(['upcoming', 'history'] as const).map(value => (
             <Link key={value} to={value === 'history' ? '/bookings?view=history' : '/bookings'} replace aria-current={chosenView === value ? 'page' : undefined}
               onClick={event => { event.preventDefault(); setPickedId(null); setParams(value === 'history' ? { view: 'history' } : {}, { replace: true }) }}
-              className={cn('pressable relative isolate flex min-h-12 items-center justify-center gap-2 rounded-xs text-label font-semibold',
+              className={cn('pressable relative flex min-h-12 items-center justify-center gap-2 rounded-xs text-label font-semibold',
                 chosenView === value ? 'text-on-surface' : 'text-on-signboard')}>
-              {chosenView === value && <m.span layoutId="bookings-view-pill" transition={selectionSpring} aria-hidden="true" className="absolute inset-0 -z-10 rounded-xs bg-surface-container-lowest" />}
+              {chosenView === value && <SelectionMark layoutId="bookings-view-pill" className="rounded-xs bg-surface-container-lowest" />}
               {t(value === 'history' ? messages.history : messages.active)}
               {value === 'upcoming' && view === 'upcoming' && shown.length > 0 && (
                 <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-band-tile px-1.5 text-on-signboard tabular-nums">{shown.length}</span>

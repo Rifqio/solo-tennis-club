@@ -23,7 +23,7 @@ Lafu's first release replaces schedule spreadsheets and WhatsApp booking records
 Integer phases are planned first-release work. Decimal phases are reserved for later urgent insertions.
 
 - [x] **Phase 1: Publish and Browse Sessions** - Admins publish real dated sessions that visitors can explore without signing in.
-- [ ] **Phase 2: Reserve Places and See Daily Rosters** - Customers and admins reserve individual or group places with reliable deadlines and operational visibility.
+- [x] **Phase 2: Reserve Places and See Daily Rosters** - Customers and admins reserve individual or group places with reliable deadlines and operational visibility.
 - [ ] **Phase 3: Pay and Verify Bookings** - Customers submit payment proof and admins complete the manual review and correction cycle from a phone.
 - [ ] **Phase 4: Adjust Bookings and Settle Cancellations** - Admins handle booking changes, cancellations, and manual refund obligations without losing capacity or payment state.
 - [ ] **Phase 5: Run Recurring Sessions and Minimum Cutoffs** - Admins manage recurring schedules and optional minimum enforcement, with the complete bilingual experience verified across devices.
@@ -171,7 +171,7 @@ Phases execute in order: 1 → 2 → 3 → 4 → 5. Discussion, policy decisions
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Publish and Browse Sessions | 10/10 | Accepted by user | 2026-10-09 |
-| 2. Reserve Places and See Daily Rosters | 2/6 source | Customer access verified; manual UI pending, 02-02 next | - |
+| 2. Reserve Places and See Daily Rosters | 6/6 | Accepted by user | 2026-10-11 |
 | 3. Pay and Verify Bookings | 0/TBD | Not started | - |
 | 4. Adjust Bookings and Settle Cancellations | 0/TBD | Not started | - |
 | 5. Run Recurring Sessions and Minimum Cutoffs | 0/TBD | Not started | - |

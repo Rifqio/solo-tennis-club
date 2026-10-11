@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 2
-current_phase_name: Reserve Places and See Daily Rosters
-status: executing
-stopped_at: 02-05 admin-created bookings and customer linking implemented on branch gsd/02-05-admin-bookings; manual acceptance pending
-last_updated: "2026-10-10"
-last_activity: 2026-10-10
-last_activity_desc: 02-05 shared admission, admin bookings, explicit linking with audit; 198 tests pass
+current_phase: 3
+current_phase_name: Pay and Verify Bookings
+status: planning
+stopped_at: Phase 2 manually accepted by the user on 2026-10-11; Phase 3 policy decisions next
+last_updated: "2026-10-11"
+last_activity: 2026-10-11
+last_activity_desc: Phase 2 accepted after the motion pass, the G1 status and feedback system and the desktop session editor; 210 unit and integration tests pass
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 16
   completed_plans: 16
-  percent: 20
+  percent: 40
 ---
 
 # Project State
@@ -22,16 +22,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-08)
 
 **Core value:** Customers can book tennis classes from their phones with clear, reliable availability, while club admins can manage those bookings and payments without spreadsheets.
-**Current focus:** Phase 2 - Reserve Places and See Daily Rosters: 02-01 and 02-02 source implemented; both manual acceptance items pending; next 02-03
+**Current focus:** Phase 3 - Pay and Verify Bookings: resolve the planning prerequisites (payment setup, proof storage and formats, payment edge cases, rejection, outside payments, deadline edges) before plans
 
 ## Current Position
 
-Phase: 2 (Reserve Places and See Daily Rosters) - EXECUTING; 02-01 customer access and 02-02 reservation source implemented
-Phase 1: 10 of 10 plans summarized, manually accepted by user on 2026-10-09. Phase 2: six plans defined; 02-00 through 02-02 source complete; 02-01 and 02-02 manual acceptance pending; 02-03 through 02-05 remain.
-Status: Customer access uses mock OTP returned through the development API. Capacity-safe reservations and occupancy are implemented; local migrations applied after backups and dev server restarted. Manual UI acceptance, concurrency proof and real OTP delivery remain separate gates.
-Last design activity: 2026-10-09, confirmed blueprint implemented with Impeccable and Antislop during mode; no GSD skills invoked. See `phases/01-publish-and-browse-sessions/01-PHASE1-REVIEW.md` for fresh evidence and manual checklist.
+Phase: 3 (Pay and Verify Bookings) - PLANNING; policy decisions precede plans (ROADMAP Phase 3 planning prerequisites).
+Phase 1: accepted 2026-10-09. Phase 2: all plans implemented and manually accepted by the user on 2026-10-11, including the desktop boards (Rekap D7 and QRIS D8 belong to Phase 3), the motion pass, the G1 status and feedback system and the desktop session editor.
+Open gates carried forward: the full browser e2e run with the updated specs; real OTP delivery and hosted deployment (release prerequisites); release cleanup (dev sign-in shortcut, ONBOARDING_ALWAYS, photo licences, lafu* identifiers).
 
-Progress: 1 of 5 phases accepted (20%); 13 of 16 defined source plans implemented, including the structural prerequisite; no Phase 2 product requirements accepted.
+Progress: 2 of 5 phases accepted (40%).
 
 ## Performance Metrics
 

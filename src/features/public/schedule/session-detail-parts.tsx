@@ -27,7 +27,7 @@ export function Players({ session, known }: { session: PublicSessionSummary; kno
   const players = reuse ? known : fetched
   if (players.status === 'unavailable') return null
   // Holds the card's height while names load, so the facts below never jump.
-  if (players.status === 'loading') return <div aria-hidden="true" className="h-12 rounded-sm bg-surface-container" />
+  if (players.status === 'loading') return <div aria-hidden="true" className="appear-late h-12 rounded-sm bg-surface-container" />
   if (players.status === 'signedOut') {
     const returnTo = `/schedule?${new URLSearchParams({ date: session.date, session: session.id })}`
     return (
@@ -90,7 +90,7 @@ function PlayerList({ names }: { names: string[] }) {
 
 // A grey bar holding the space of text that is still loading, so rows keep their height.
 export function Pending({ className }: { className?: string }) {
-  return <span aria-hidden="true" className={cn('inline-block h-4 rounded-xs bg-surface-container-high align-middle', className)} />
+  return <span aria-hidden="true" className={cn('appear-late inline-block h-4 rounded-xs bg-surface-container-high align-middle', className)} />
 }
 
 // Everything a session's detail shows, shared by the phone sheet and the desktop side panel: the title, the four fact

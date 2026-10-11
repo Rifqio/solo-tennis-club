@@ -106,7 +106,7 @@ export function Component() {
       <AdminBand title={t(copy.title)} back={back} />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
         {!response
-          ? <><p role="status" className="sr-only">{t(copy.loading)}</p><div aria-hidden="true" className="flex flex-col gap-3">{[0, 1, 2].map(key => <div key={key} className="h-28 rounded-sm bg-surface-container" />)}</div></>
+          ? <><p role="status" className="sr-only">{t(copy.loading)}</p><div aria-hidden="true" className="appear-late flex flex-col gap-3">{[0, 1, 2].map(key => <div key={key} className="h-28 rounded-sm bg-surface-container" />)}</div></>
           : <StatusPanel tone="error" title={t(copy.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
       </div>
     </>

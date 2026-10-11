@@ -26,7 +26,7 @@ function BookingDetailScreen({ id }: { id: string }) {
     return <>
       <AdminBand title={t(messages.heading)} back={back} />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
-        {!response ? <p role="status">{t(messages.loading)}</p>
+        {!response ? <p role="status" className="appear-late">{t(messages.loading)}</p>
           : response.kind === 'http' && response.status === 404 ? <StatusPanel tone="info" title={t(messages.missing)} />
           : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
       </div>

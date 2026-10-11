@@ -86,7 +86,7 @@ function ReferenceSplit({ kind, selected }: { kind: ReferenceKind; selected: str
           {list.items.some(row => row.isSample) && <div className="px-2"><SampleDataNotice /></div>}
           {list.status === 'loading' ? (
             <div className="flex flex-col gap-1"><p role="status" className="sr-only">{t(messages.loading)}</p>
-              {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="h-16 rounded-md bg-surface-container" />)}</div>
+              {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="appear-late h-16 rounded-md bg-surface-container" />)}</div>
           ) : list.status === 'error' ? (
             <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
           ) : list.total === 0 ? (

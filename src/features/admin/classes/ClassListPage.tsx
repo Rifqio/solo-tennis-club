@@ -44,7 +44,7 @@ export function ClassListPage() {
       {list.items.some(row => row.isSample) && <SampleDataNotice />}
       {list.status === 'loading' ? (
         <div className="flex flex-col gap-2.5"><p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-36 rounded-sm bg-surface-container" />)}</div>
+          {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-36 rounded-sm bg-surface-container" />)}</div>
       ) : list.status === 'error' ? (
         <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
       ) : list.total === 0 ? (

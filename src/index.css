@@ -419,6 +419,8 @@ html[data-nav='pop']::view-transition-new(root) { animation: 280ms cubic-bezier(
 
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  /* Scroll-driven reveals take their progress from scrolling, not time, so a short duration would not stop them. */
+  .club-reveal { animation: none; }
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

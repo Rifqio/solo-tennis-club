@@ -49,7 +49,7 @@ export function Component() {
     return <>
       <Band title={t(messages.heading)} />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
-        {loaded.status === 'loading' ? <p role="status">{t(messages.loading)}</p>
+        {loaded.status === 'loading' ? <p role="status" className="appear-late">{t(messages.loading)}</p>
           : loaded.status === 'missing' ? <StatusPanel tone="info" title={t(messages.missing)} />
           : loaded.status === 'signedOut' ? <StatusPanel tone="info" title={t(messages.signInTitle)} action={{ label: t(messages.signIn), onAction: () => { setNavMotion('push'); navigate(`/customer/sign-in?returnTo=${encodeURIComponent(`/bookings/${id}`)}`, { viewTransition: true }) } }} />
           : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}

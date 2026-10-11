@@ -60,7 +60,7 @@ function ReferenceList({ kind }: { kind: ReferenceKind }) {
       {list.items.some(record => record.isSample) && <SampleDataNotice />}
       {list.status === 'loading' ? (
         <div className="flex flex-col gap-2.5"><p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="h-16 rounded-sm bg-surface-container" />)}</div>
+          {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="appear-late h-16 rounded-sm bg-surface-container" />)}</div>
       ) : list.status === 'error' ? (
         <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
       ) : list.total === 0 ? (

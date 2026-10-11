@@ -15,6 +15,8 @@ export const myBookingsMessages = {
   slot: { id: '{count} slot', en: '{count} slots' },
   unpaid: { id: 'Belum bayar', en: 'Not paid yet' },
   paid: { id: 'Lunas', en: 'Paid' },
+  review: { id: 'Menunggu dicek', en: 'Being checked' },
+  correction: { id: 'Perlu diperbaiki', en: 'Needs a new proof' },
   cancelledSession: { id: 'Sesi dibatalkan', en: 'Session cancelled' },
   cancelledBody: { id: 'Booking ini nggak jalan. Chat admin kalau ada pertanyaan.', en: 'This booking will not go ahead. Chat with the admin if you have questions.' },
   moreFailed: { id: 'Booking berikutnya belum termuat. Cek koneksi kamu, lalu coba lagi.', en: 'The next bookings did not load. Check your connection, then try again.' },

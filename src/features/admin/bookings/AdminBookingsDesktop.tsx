@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { AnimatePresence, m } from 'motion/react'
 import { Search, X } from 'lucide-react'
-import type { AdminBookingFilter, AdminBookingSummary } from '@shared/api/admin-bookings'
+import type { AdminBookingFilter } from '@shared/api/admin-bookings'
 import { clubDateOf } from '@shared/club-time'
 import { Button, IconButton } from '@/components/ui/button'
 import { StatusPanel } from '@/components/ui/status-panel'
@@ -20,6 +20,7 @@ import { BOOKING_FILTERS, bookingFacts } from './booking-facts'
 import { useAdminBooking } from './use-admin-booking'
 import { useAdminBookingList } from './use-admin-booking-list'
 import { moreFailedCopy } from './bookings.messages'
+import { BookingStatusChip } from './BookingStatusChip'
 
 const copy = {
   search: { id: 'Cari nama atau nomor HP', en: 'Search by name or phone' },
@@ -40,14 +41,6 @@ function urlFor(status: AdminBookingFilter, q: string) {
   return text ? `?${text}` : ''
 }
 
-function StatusChip({ booking }: { booking: AdminBookingSummary }) {
-  const { t } = useI18n()
-  return booking.status === 'awaiting_payment'
-    ? <span className="whitespace-nowrap rounded-full bg-warning-container px-2.5 py-0.5 text-label font-bold tabular-nums text-warning">{t(messages.due, { time: formatClubTime(booking.originalDeadline) })}</span>
-    : booking.status === 'confirmed'
-      ? <span className="whitespace-nowrap rounded-full bg-band-tile px-2.5 py-0.5 text-label font-semibold text-on-signboard">{t(messages.confirmed)}</span>
-      : <span className="whitespace-nowrap rounded-full bg-surface-container-high px-2.5 py-0.5 text-label font-semibold text-on-surface-variant">{t(messages.expired)}</span>
-}
 
 // Desktop Booking masuk (board D6): the status filter and a name-or-phone search on the band, every booking as a row of
 // one table, and the chosen booking in a drawer that opens beside it (the table narrows as it slides in). The drawer
@@ -131,7 +124,7 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
                       <td className="px-3 py-3.5 text-right tabular-nums">{booking.quantity}</td>
                       <td className="px-3 py-3.5 text-right font-semibold tabular-nums">{formatIdr(booking.totalPriceIdr, language)}</td>
                       <td className="whitespace-nowrap px-3 py-3.5 text-label tabular-nums text-on-surface-variant">{formatClubDateShort(clubDateOf(new Date(booking.createdAt)), language)}, {formatClubTime(booking.createdAt)}</td>
-                      <td className="py-3.5 pl-3 pr-6"><StatusChip booking={booking} /></td>
+                      <td className="py-3.5 pl-3 pr-6"><BookingStatusChip booking={booking} /></td>
                     </tr>
                   )
                 })}

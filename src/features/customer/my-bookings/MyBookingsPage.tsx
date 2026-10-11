@@ -20,6 +20,7 @@ import { BookingDetailPanel } from './BookingDetailPanel'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBookings } from './use-customer-bookings'
 import { SelectionMark } from '@/components/ui/selection-mark'
+import { memberStatus, memberStatusLabel, owesPayment } from './member-status'
 
 // "Batas 11:00" when the deadline is today, "Batas Sab 11:00" when it is another day.
 function deadlineLabel(deadline: string, now: number, language: Language) {
@@ -42,7 +43,8 @@ function DateTile({ date, muted }: { date: string; muted?: boolean }) {
 function ActiveCard({ booking, now }: { booking: CustomerBookingItem; now: number }) {
   const { language, t } = useI18n()
   const { session } = booking
-  const unpaid = booking.status === 'awaiting_payment'
+  const state = memberStatus(booking.status, booking.originalDeadline, now)
+  const unpaid = owesPayment(state)
   const whatsapp = clubContent.whatsapp ? `https://wa.me/${clubContent.whatsapp}` : null
   return (
     <article className={cn('overflow-hidden rounded-sm bg-surface-container-lowest', unpaid && 'border border-warning/40')}>
@@ -52,7 +54,7 @@ function ActiveCard({ booking, now }: { booking: CustomerBookingItem; now: numbe
           <span className="flex items-start justify-between gap-2">
             <span className="break-words font-bold">{session.className}</span>
             <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-label font-semibold',
-              unpaid ? 'border border-warning text-warning' : 'bg-band-tile text-on-signboard')}>{t(unpaid ? messages.unpaid : messages.paid)}</span>
+              unpaid ? 'border border-warning text-warning' : state === 'review' ? 'bg-primary-container text-primary' : 'bg-band-tile text-on-signboard')}>{t(memberStatusLabel[state])}</span>
           </span>
           <span className="text-label tabular-nums text-on-surface-variant">{session.startTime}-{session.endTime} · {t(messages.slot, { count: booking.quantity })}</span>
           <span className="truncate text-label text-on-surface-variant">{session.cancelled ? t(messages.cancelledSession) : booking.participants.join(', ')}</span>
@@ -100,9 +102,10 @@ function HistoryRow({ booking }: { booking: CustomerBookingItem }) {
 function DesktopRow({ booking, now, selected, onSelect }: { booking: CustomerBookingItem; now: number; selected: boolean; onSelect: () => void }) {
   const { language, t } = useI18n()
   const { session } = booking
-  const unpaid = booking.status === 'awaiting_payment' && Date.parse(booking.originalDeadline) > now
-  const past = booking.status === 'expired' || session.cancelled
-  const chip = unpaid ? t(messages.unpaid) : booking.status === 'expired' ? t(messages.lapsed) : t(messages.paid)
+  const state = memberStatus(booking.status, booking.originalDeadline, now)
+  const unpaid = owesPayment(state)
+  const past = state === 'lapsed' || session.cancelled
+  const chip = t(memberStatusLabel[state])
   return (
     <button type="button" aria-pressed={selected} onClick={onSelect}
       className={cn('pressable relative isolate grid min-h-21 w-full grid-cols-[4rem_minmax(0,1fr)_auto_1.25rem] items-center gap-4 rounded-sm px-4 py-2.5 text-left transition-colors duration-200',
@@ -152,7 +155,7 @@ export function Component() {
   const now = loaded.status === 'ready' ? serverClock(loaded.serverNow, loaded.receivedAt, localNow) : localNow
   const items = loaded.status === 'ready' ? loaded.items : []
   // Upcoming bookings whose deadline passed while the screen was open move out of the active list.
-  const shown = view === 'upcoming' ? items.filter(item => item.status !== 'awaiting_payment' || Date.parse(item.originalDeadline) > now) : items
+  const shown = view === 'upcoming' ? items.filter(item => memberStatus(item.status, item.originalDeadline, now) !== 'lapsed') : items
   // Desktop lists rows beside the chosen booking's detail; phones open each booking on its own screen.
   const isDesktop = useMediaQuery('(min-width: 64rem)')
   const [pickedId, setPickedId] = useState<string | null>(null)

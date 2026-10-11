@@ -12,6 +12,10 @@ export function resolveDatabaseFile(input = process.env.LAFU_DATABASE_FILE): str
 export function resolveUploadsDir(databaseFile = resolveDatabaseFile()): string {
   return resolve(dirname(databaseFile), 'uploads')
 }
+// Private files (payment proofs) also live beside the database, never under a folder that is served publicly.
+export function resolvePrivateDir(databaseFile = resolveDatabaseFile()): string {
+  return resolve(dirname(databaseFile), 'private')
+}
 export function databaseUrl(file = resolveDatabaseFile()): string {
   return 'file:' + resolve(file).replaceAll('\\', '/')
 }

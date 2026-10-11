@@ -15,6 +15,7 @@ import { serverClock, useCustomerBooking } from './use-customer-bookings'
 import { panelEnter } from '@/lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { setNavMotion } from '@/lib/nav-motion'
+import { memberStatus, memberStatusLabel } from './member-status'
 
 // Desktop: the chosen booking beside the list, one question per block: what, when to pay, who and where.
 export function BookingDetailPanel({ id }: { id: string }) {
@@ -54,7 +55,7 @@ export function BookingDetailPanel({ id }: { id: string }) {
   const minutes = Math.floor((left % 3_600_000) / 60_000)
   const when = `${formatClubDateShort(clubDateOf(new Date(deadline)), language)}, ${formatClubTime(booking.originalDeadline)}`
   const whatsapp = clubContent.whatsapp ? `https://wa.me/${clubContent.whatsapp}` : null
-  const chip = status === 'cancelled' ? messages.cancelledSession : unpaid ? messages.unpaid : status === 'expired' ? messages.lapsed : messages.paid
+  const chip = status === 'cancelled' ? messages.cancelledSession : memberStatusLabel[memberStatus(booking.status, booking.originalDeadline, now)]
 
   return (
     <m.aside aria-label={t(messages.heading)} {...panelEnter(reduceMotion)} className={frame}>

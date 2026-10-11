@@ -1,6 +1,7 @@
 import type { PrismaClient } from '../../../generated/prisma/client.ts'
 import { ApiError } from '../../../http/errors.ts'
 import { createRosterRepository } from './roster.repository.ts'
+import { effectiveBookingStatus } from '../../../../shared/booking-rules.ts'
 
 export async function getAdminRoster(database: PrismaClient, sessionId: string, now = new Date()) {
   const repository = createRosterRepository(database)
@@ -11,7 +12,6 @@ export async function getAdminRoster(database: PrismaClient, sessionId: string, 
     repository.countActivePlaces(sessionId, now),
   ])
   const bookings = rows.slice(0, 200).map(booking => {
-    const expired = booking.status === 'awaiting_payment' && booking.originalDeadline <= now
     return {
       id: booking.id,
       bookerName: booking.bookerName,
@@ -19,7 +19,7 @@ export async function getAdminRoster(database: PrismaClient, sessionId: string, 
       quantity: booking.quantity,
       unitPriceIdr: booking.unitPriceIdr,
       totalPriceIdr: booking.totalPriceIdr,
-      status: expired ? 'expired' : booking.status,
+      status: effectiveBookingStatus(booking.status, booking.originalDeadline, now),
       originalDeadline: booking.originalDeadline.toISOString(),
       createdAt: booking.createdAt.toISOString(),
       participants: booking.participants.map(({ id, position, name }) => ({ id, position, name })),

@@ -9,7 +9,8 @@ import { adminBookingsMessages as messages } from './bookings.messages'
 export function bookingFacts({ booking, serverNow }: AdminBookingDetailResponse, language: Language) {
   const deadlineDate = clubDateOf(new Date(booking.originalDeadline))
   const deadline = `${deadlineDate === clubDateOf(new Date(serverNow)) ? '' : formatClubWeekdayShort(deadlineDate, language) + ' '}${formatClubTime(booking.originalDeadline)}`
-  const status = booking.status === 'awaiting_payment' ? messages.unpaid : booking.status === 'confirmed' ? messages.confirmed : messages.expired
+  const status = booking.status === 'awaiting_payment' ? messages.unpaid : booking.status === 'needs_correction' ? messages.needsCorrection
+    : booking.status === 'awaiting_verification' ? messages.review : booking.status === 'confirmed' ? messages.confirmed : messages.expired
   return { status, deadline }
 }
 

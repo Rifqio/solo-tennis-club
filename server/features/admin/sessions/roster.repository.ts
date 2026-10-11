@@ -1,5 +1,6 @@
 import type { Prisma } from '../../../generated/prisma/client.ts'
 import type { Database } from '../../../database/transaction.ts'
+import { activeBookingWhere } from '../../capacity/occupancy.ts'
 
 const sessionRelations = {
   class: true, level: true, venue: true,
@@ -25,7 +26,7 @@ export function createRosterRepository(database: Database) {
       })
     },
     countActivePlaces(sessionId: string, now: Date) {
-      return database.bookingParticipant.count({ where: { booking: { sessionId, status: 'awaiting_payment', originalDeadline: { gt: now } } } })
+      return database.bookingParticipant.count({ where: { booking: { sessionId, ...activeBookingWhere(now) } } })
     },
   }
 }

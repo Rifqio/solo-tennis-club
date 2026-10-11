@@ -1,5 +1,6 @@
 import type { Prisma } from '../../../generated/prisma/client.ts'
 import type { Database } from '../../../database/transaction.ts'
+import { DEADLINE_BOUND_STATUSES } from '../../../../shared/booking-rules.ts'
 
 const bookingFields = {
   id: true,
@@ -25,9 +26,10 @@ const bookingFields = {
 
 export type CustomerBookingRow = Prisma.BookingGetPayload<{ select: typeof bookingFields }>
 
-// Over by status: expired in storage, or unpaid past its deadline though the worker has not written it yet.
+// Over by status: expired in storage, or past its deadline while unpaid or awaiting a corrected proof, though the
+// worker has not written it yet. A proof awaiting review is never over by time.
 function overWhere(now: Date) {
-  return [{ status: 'expired' }, { status: 'awaiting_payment', originalDeadline: { lte: now } }] satisfies Prisma.BookingWhereInput[]
+  return [{ status: 'expired' }, { status: { in: [...DEADLINE_BOUND_STATUSES] }, originalDeadline: { lte: now } }] satisfies Prisma.BookingWhereInput[]
 }
 
 export function createMyBookingsRepository(database: Database) {

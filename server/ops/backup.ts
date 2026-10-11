@@ -48,6 +48,14 @@ export function backupUploads(uploadsDir: string, backupFile: string) {
   return target
 }
 
+// Private files (payment proofs) are copied the same way, as <backup name>-private/.
+export function backupPrivate(privateDir: string, backupFile: string) {
+  if (!existsSync(privateDir)) return null
+  const target = assertWritableLocation(backupFile.replace(/\.db$/, '') + '-private')
+  cpSync(privateDir, target, { recursive: true })
+  return target
+}
+
 export async function verifyBackup(file: string): Promise<{ ok: true } | { ok: false; reason: string }> {
   if (!existsSync(file) || !statSync(file).isFile()) return { ok: false, reason: 'Backup file not found' }
   const prisma = createPrismaClient(file)

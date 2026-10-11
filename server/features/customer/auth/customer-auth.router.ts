@@ -9,8 +9,9 @@ import { createMockOtpAdapter } from './otp.adapter.ts'
 import { createCustomerBookingRouter } from '../booking/booking.router.ts'
 import { createCustomerPlayersRouter } from '../players/players.router.ts'
 import { createMyBookingsRouter } from '../my-bookings/my-bookings.router.ts'
+import { createCustomerEvidenceRouter } from '../../payments/evidence.router.ts'
 
-export function createCustomerAuthRouter(database: PrismaClient, config: RuntimeConfig) {
+export function createCustomerAuthRouter(database: PrismaClient, config: RuntimeConfig, privateDir: string) {
   const router = Router()
   router.use((_request, response, next) => {
     response.set('Cache-Control', 'no-store')
@@ -33,5 +34,6 @@ export function createCustomerAuthRouter(database: PrismaClient, config: Runtime
   router.use(createCustomerBookingRouter(database))
   router.use(createCustomerPlayersRouter(database))
   router.use(createMyBookingsRouter(database))
+  router.use(createCustomerEvidenceRouter(database, privateDir))
   return router
 }

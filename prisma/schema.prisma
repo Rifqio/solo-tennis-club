@@ -1,266 +1,359 @@
 generator client {
-  provider = "prisma-client"
-  output = "../server/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../server/generated/prisma"
   moduleFormat = "esm"
-  runtime = "nodejs"
+  runtime      = "nodejs"
 }
-datasource db { 
+
+datasource db {
   provider = "sqlite"
 }
+
 model AdminAccount {
-  id String @id @default(cuid())
-  email String @unique
-  displayName String
-  passwordHash String
-  isActive Boolean @default(true)
-  passwordUpdatedAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sessions AdminSession[]
-  createdSessions ClassSession[] @relation("CreatedBy")
-  updatedSessions ClassSession[] @relation("UpdatedBy")
+  id                     String                  @id @default(cuid())
+  email                  String                  @unique
+  displayName            String
+  passwordHash           String
+  isActive               Boolean                 @default(true)
+  passwordUpdatedAt      DateTime
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  sessions               AdminSession[]
+  createdSessions        ClassSession[]          @relation("CreatedBy")
+  updatedSessions        ClassSession[]          @relation("UpdatedBy")
   bookingOwnershipEvents BookingOwnershipEvent[]
+  reviewedProofs         PaymentProof[]          @relation("ReviewedBy")
+  recordedPayments       PaymentRecord[]         @relation("RecordedBy")
+  confirmedBookings      Booking[]               @relation("ConfirmedBy")
 }
+
 model AdminSession {
-  id String @id @default(cuid())
-  tokenHash String @unique
-  csrfToken String
-  adminId String
-  admin AdminAccount @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  id         String       @id @default(cuid())
+  tokenHash  String       @unique
+  csrfToken  String
+  adminId    String
+  admin      AdminAccount @relation(fields: [adminId], references: [id], onDelete: Cascade)
   lastSeenAt DateTime
-  expiresAt DateTime
-  revokedAt DateTime?
-  createdAt DateTime @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime     @default(now())
+
   @@index([adminId])
 }
+
 model LoginAttempt {
-  id String @id @default(cuid())
-  emailKey String
-  ipKey String
+  id        String   @id @default(cuid())
+  emailKey  String
+  ipKey     String
   succeeded Boolean
   createdAt DateTime @default(now())
+
   @@index([emailKey, createdAt])
   @@index([ipKey, createdAt])
 }
+
 model Coach {
-  id String @id @default(cuid())
-  name String
-  nameKey String @unique
+  id              String              @id @default(cuid())
+  name            String
+  nameKey         String              @unique
   // Path to the coach's portrait (cards in the Kelas coach picker); null shows initials.
-  photoUrl String?
-  createRequestId String? @unique
-  version Int @default(1)
+  photoUrl        String?
+  createRequestId String?             @unique
+  version         Int                 @default(1)
   // Archived records leave lists and pickers but stay on the classes and sessions that already use them.
-  archivedAt DateTime?
-  isSample Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  defaultClasses ClassDefaultCoach[]
-  sessions SessionCoach[]
+  archivedAt      DateTime?
+  isSample        Boolean             @default(false)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  defaultClasses  ClassDefaultCoach[]
+  sessions        SessionCoach[]
 }
+
 model Venue {
-  id String @id @default(cuid())
-  name String
-  nameKey String @unique
-  address String?
-  mapUrl String?
-  latitude Float?
-  longitude Float?
-  createRequestId String? @unique
-  version Int @default(1)
+  id              String         @id @default(cuid())
+  name            String
+  nameKey         String         @unique
+  address         String?
+  mapUrl          String?
+  latitude        Float?
+  longitude       Float?
+  createRequestId String?        @unique
+  version         Int            @default(1)
   // Archived records leave lists and pickers but stay on the classes and sessions that already use them.
-  archivedAt DateTime?
-  isSample Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  classes TennisClass[]
-  sessions ClassSession[]
+  archivedAt      DateTime?
+  isSample        Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  classes         TennisClass[]
+  sessions        ClassSession[]
 }
+
 model Level {
-  id String @id @default(cuid())
-  name String
-  nameKey String @unique
-  createRequestId String? @unique
-  version Int @default(1)
+  id              String         @id @default(cuid())
+  name            String
+  nameKey         String         @unique
+  createRequestId String?        @unique
+  version         Int            @default(1)
   // Archived records leave lists and pickers but stay on the classes and sessions that already use them.
-  archivedAt DateTime?
-  isSample Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  classes TennisClass[]
-  sessions ClassSession[]
+  archivedAt      DateTime?
+  isSample        Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  classes         TennisClass[]
+  sessions        ClassSession[]
 }
+
 model TennisClass {
-  id String @id @default(cuid())
-  name String
-  nameKey String @unique
-  defaultLevelId String
-  defaultLevel Level @relation(fields: [defaultLevelId], references: [id], onDelete: Restrict)
-  defaultVenueId String
-  defaultVenue Venue @relation(fields: [defaultVenueId], references: [id], onDelete: Restrict)
+  id                     String              @id @default(cuid())
+  name                   String
+  nameKey                String              @unique
+  defaultLevelId         String
+  defaultLevel           Level               @relation(fields: [defaultLevelId], references: [id], onDelete: Restrict)
+  defaultVenueId         String
+  defaultVenue           Venue               @relation(fields: [defaultVenueId], references: [id], onDelete: Restrict)
   defaultDurationMinutes Int
-  defaultPriceIdr Int
+  defaultPriceIdr        Int
   defaultMinParticipants Int
   defaultMaxParticipants Int
-  createRequestId String? @unique
-  version Int @default(1)
-  isSample Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  defaultCoaches ClassDefaultCoach[]
-  sessions ClassSession[]
+  createRequestId        String?             @unique
+  version                Int                 @default(1)
+  isSample               Boolean             @default(false)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+  defaultCoaches         ClassDefaultCoach[]
+  sessions               ClassSession[]
 }
+
 model ClassDefaultCoach {
-  classId String
-  coachId String
+  classId  String
+  coachId  String
   position Int
-  class TennisClass @relation(fields: [classId], references: [id], onDelete: Cascade)
-  coach Coach @relation(fields: [coachId], references: [id], onDelete: Restrict)
+  class    TennisClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  coach    Coach       @relation(fields: [coachId], references: [id], onDelete: Restrict)
+
   @@id([classId, coachId])
   @@unique([classId, position])
 }
+
 model ClassSession {
-  id String @id @default(cuid())
-  classId String
-  class TennisClass @relation(fields: [classId], references: [id], onDelete: Restrict)
-  levelId String
-  level Level @relation(fields: [levelId], references: [id], onDelete: Restrict)
-  venueId String
-  venue Venue @relation(fields: [venueId], references: [id], onDelete: Restrict)
-  startsAt DateTime
-  durationMinutes Int
-  priceIdr Int
-  minParticipants Int
-  maxParticipants Int
-  status String @default("scheduled")
-  isSample Boolean @default(false)
-  createRequestId String? @unique
-  version Int @default(1)
-  capacityRevision Int @default(1)
-  createdById String?
-  createdBy AdminAccount? @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  updatedById String?
-  updatedBy AdminAccount? @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  coaches SessionCoach[]
-  bookings Booking[]
+  id               String         @id @default(cuid())
+  classId          String
+  class            TennisClass    @relation(fields: [classId], references: [id], onDelete: Restrict)
+  levelId          String
+  level            Level          @relation(fields: [levelId], references: [id], onDelete: Restrict)
+  venueId          String
+  venue            Venue          @relation(fields: [venueId], references: [id], onDelete: Restrict)
+  startsAt         DateTime
+  durationMinutes  Int
+  priceIdr         Int
+  minParticipants  Int
+  maxParticipants  Int
+  status           String         @default("scheduled")
+  isSample         Boolean        @default(false)
+  createRequestId  String?        @unique
+  version          Int            @default(1)
+  capacityRevision Int            @default(1)
+  createdById      String?
+  createdBy        AdminAccount?  @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById      String?
+  updatedBy        AdminAccount?  @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  coaches          SessionCoach[]
+  bookings         Booking[]
+
   @@index([startsAt])
 }
+
 model SessionCoach {
   sessionId String
-  coachId String
-  position Int
-  session ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  coach Coach @relation(fields: [coachId], references: [id], onDelete: Restrict)
+  coachId   String
+  position  Int
+  session   ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  coach     Coach        @relation(fields: [coachId], references: [id], onDelete: Restrict)
+
   @@id([sessionId, coachId])
   @@unique([sessionId, position])
 }
 
 model Customer {
-  id String @id @default(cuid())
-  phone String @unique
-  displayName String
-  verifiedAt DateTime
-  isActive Boolean @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sessions CustomerSession[]
-  bookings Booking[]
+  id              String                  @id @default(cuid())
+  phone           String                  @unique
+  displayName     String
+  verifiedAt      DateTime
+  isActive        Boolean                 @default(true)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  sessions        CustomerSession[]
+  bookings        Booking[]
   ownershipEvents BookingOwnershipEvent[]
+  paymentProofs   PaymentProof[]
 }
 
 model Booking {
-  id String @id @default(cuid())
-  sessionId String
-  session ClassSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
-  customerId String?
-  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  actorKind String @default("customer")
-  actorId String
-  createRequestId String
-  fingerprint String
-  bookerName String
-  bookerPhone String
-  quantity Int
-  unitPriceIdr Int
-  totalPriceIdr Int
+  id               String                  @id @default(cuid())
+  sessionId        String
+  session          ClassSession            @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  customerId       String?
+  customer         Customer?               @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  actorKind        String                  @default("customer")
+  actorId          String
+  createRequestId  String
+  fingerprint      String
+  bookerName       String
+  bookerPhone      String
+  quantity         Int
+  unitPriceIdr     Int
+  totalPriceIdr    Int
   originalDeadline DateTime
-  status String @default("awaiting_payment")
-  version Int @default(1)
-  createdAt DateTime @default(now())
-  participants BookingParticipant[]
-  ownershipEvents BookingOwnershipEvent[]
+  // awaiting_payment | awaiting_verification | needs_correction | confirmed | expired (shared/booking-status.ts).
+  status           String                  @default("awaiting_payment")
+  version          Int                     @default(1)
+  createdAt        DateTime                @default(now())
+  // Set when the booking becomes confirmed: an approved proof or a payment recorded by an admin.
+  confirmedAt      DateTime?
+  confirmedById    String?
+  confirmedBy      AdminAccount?           @relation("ConfirmedBy", fields: [confirmedById], references: [id], onDelete: SetNull)
+  // A short admin note about the payment, e.g. an overpayment to refund later.
+  paymentNote      String?
+  participants     BookingParticipant[]
+  ownershipEvents  BookingOwnershipEvent[]
+  paymentProofs    PaymentProof[]
+  paymentRecords   PaymentRecord[]
+
   @@unique([actorKind, actorId, createRequestId])
   @@index([sessionId, status, originalDeadline])
   @@index([customerId, createdAt])
 }
 
 model BookingParticipant {
-  id String @id @default(cuid())
+  id        String  @id @default(cuid())
   bookingId String
-  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  position Int
-  name String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  position  Int
+  name      String
+
   @@unique([bookingId, position])
 }
 
 // Who gave a booking to which verified customer, and when. Linking changes ownership only, never places, names,
 // price or deadline. previousCustomerId stays null while bookings can only be linked from no owner.
 model BookingOwnershipEvent {
-  id String @id @default(cuid())
-  bookingId String
-  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  adminId String?
-  admin AdminAccount? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  id                 String        @id @default(cuid())
+  bookingId          String
+  booking            Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  adminId            String?
+  admin              AdminAccount? @relation(fields: [adminId], references: [id], onDelete: SetNull)
   previousCustomerId String?
-  customerId String?
-  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  bookingVersion Int
-  createdAt DateTime @default(now())
+  customerId         String?
+  customer           Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  bookingVersion     Int
+  createdAt          DateTime      @default(now())
+
   @@index([bookingId, createdAt])
 }
 
 model CustomerSession {
-  id String @id @default(cuid())
+  id         String    @id @default(cuid())
   customerId String
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  tokenHash String @unique
-  csrfToken String
-  expiresAt DateTime
-  revokedAt DateTime?
-  createdAt DateTime @default(now())
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  csrfToken  String
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
   @@index([customerId])
   @@index([expiresAt])
 }
 
 model OtpChallenge {
-  id String @id
-  phone String
-  flowHash String
-  codeDigest String
-  expiresAt DateTime
-  resendAt DateTime
-  attempts Int @default(0)
-  consumedAt DateTime?
-  supersededAt DateTime?
-  verifiedAt DateTime?
-  proofTokenHash String? @unique
-  proofCsrfToken String?
-  profileExpiresAt DateTime?
+  id                 String    @id
+  phone              String
+  flowHash           String
+  codeDigest         String
+  expiresAt          DateTime
+  resendAt           DateTime
+  attempts           Int       @default(0)
+  consumedAt         DateTime?
+  supersededAt       DateTime?
+  verifiedAt         DateTime?
+  proofTokenHash     String?   @unique
+  proofCsrfToken     String?
+  profileExpiresAt   DateTime?
   profileCompletedAt DateTime?
-  createdAt DateTime @default(now())
+  createdAt          DateTime  @default(now())
+
   @@index([phone, createdAt])
   @@index([flowHash, createdAt])
   @@index([expiresAt])
 }
 
 model OtpAttempt {
-  id String @id @default(cuid())
-  phoneKey String
-  ipKey String
-  kind String
+  id        String   @id @default(cuid())
+  phoneKey  String
+  ipKey     String
+  kind      String
   createdAt DateTime @default(now())
+
   @@index([phoneKey, kind, createdAt])
   @@index([ipKey, kind, createdAt])
+}
+
+// One proof submission for a booking: up to three files sent together. submissionId is made by the member's browser,
+// so a retry of the same submission returns the first result instead of creating a second one.
+model PaymentProof {
+  id              String             @id @default(cuid())
+  bookingId       String
+  booking         Booking            @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  customerId      String?
+  customer        Customer?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  submissionId    String
+  submittedAt     DateTime           @default(now())
+  // pending | approved | rejected
+  status          String             @default("pending")
+  reviewedAt      DateTime?
+  reviewedById    String?
+  reviewedBy      AdminAccount?      @relation("ReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+  // amount_mismatch | unreadable | not_received | other
+  rejectionReason String?
+  rejectionNote   String?
+  files           PaymentProofFile[]
+
+  @@unique([bookingId, submissionId])
+  @@index([status, submittedAt])
+  @@index([bookingId, submittedAt])
+}
+
+// A file of a proof, stored privately under data/private/proofs/<bookingId>/<fileName>; never served as a public file.
+model PaymentProofFile {
+  id           String       @id @default(cuid())
+  proofId      String
+  proof        PaymentProof @relation(fields: [proofId], references: [id], onDelete: Cascade)
+  position     Int
+  fileName     String
+  originalName String
+  contentType  String
+  byteSize     Int
+
+  @@unique([proofId, position])
+}
+
+// A payment an admin recorded by hand: cash at the court, or a transfer or QRIS payment sent without proof.
+model PaymentRecord {
+  id           String        @id @default(cuid())
+  bookingId    String
+  booking      Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  // cash | transfer | qris
+  method       String
+  amountIdr    Int
+  // The club date the money was received (YYYY-MM-DD).
+  paidOn       String
+  note         String?
+  requestId    String        @unique
+  recordedById String?
+  recordedBy   AdminAccount? @relation("RecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+  recordedAt   DateTime      @default(now())
+
+  @@index([bookingId, recordedAt])
 }

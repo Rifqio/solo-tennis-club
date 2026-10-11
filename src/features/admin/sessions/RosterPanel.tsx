@@ -13,7 +13,7 @@ import { clubDateOf } from '@shared/club-time'
 import type { AdminResult } from '@/lib/admin-api'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { BookingGroup } from './SessionRosterPage'
-import { isActive } from './roster-status'
+import { rosterState } from './roster-status'
 import { listRowMotion, panelEnter } from '@/lib/motion'
 import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
 
@@ -71,11 +71,11 @@ export function RosterPanel({ id }: { id: string }) {
   }
 
   const now = Date.parse(data.serverNow)
-  const groups = data.bookings.map(booking => ({ booking, active: isActive(booking, now) }))
+  const groups = data.bookings.map(booking => ({ booking, state: rosterState(booking, now) }))
   const placesOf = (rows: typeof groups) => rows.reduce((sum, row) => sum + row.booking.quantity, 0)
-  const counts = { all: placesOf(groups), unpaid: placesOf(groups.filter(row => row.active)), lapsed: placesOf(groups.filter(row => !row.active)) }
+  const counts = { all: placesOf(groups), unpaid: placesOf(groups.filter(row => row.state === 'owes')), lapsed: placesOf(groups.filter(row => row.state === 'over')) }
   const filter: Filter = chosen ?? (counts.unpaid > 0 ? 'unpaid' : 'all')
-  const shown = groups.filter(row => filter === 'all' || (filter === 'unpaid') === row.active)
+  const shown = groups.filter(row => filter === 'all' || row.state === (filter === 'unpaid' ? 'owes' : 'over'))
   // Board order: everyone first, then who still owes, then who lapsed.
   const filters: Filter[] = counts.lapsed > 0 ? ['all', 'unpaid', 'lapsed'] : ['all', 'unpaid']
   const { session } = data

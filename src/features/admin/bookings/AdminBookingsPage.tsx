@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
-import { formatClubDateShort, formatClubTime } from '@/i18n/format'
+import { formatClubDateShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import type { Language, Message } from '@/i18n/types'
 import { addClubDays, clubDateOf } from '@shared/club-time'
@@ -14,15 +14,12 @@ import { BookingFilters } from './BookingFilters'
 import { BOOKING_FILTERS } from './booking-facts'
 import { useAdminBookingList } from './use-admin-booking-list'
 import { moreFailedCopy } from './bookings.messages'
+import { BookingStatusChip } from './BookingStatusChip'
 
 function BookingRow({ booking, filter }: { booking: AdminBookingSummary; filter: AdminBookingFilter }) {
   const { language, t } = useI18n()
   const { session } = booking
-  const chip = booking.status === 'awaiting_payment'
-    ? <span className="rounded-full bg-warning-container px-2.5 py-0.5 text-label font-bold tabular-nums text-warning">{t(messages.due, { time: formatClubTime(booking.originalDeadline) })}</span>
-    : booking.status === 'confirmed'
-      ? <span className="rounded-full bg-band-tile px-2.5 py-0.5 text-label font-semibold text-on-signboard">{t(messages.confirmed)}</span>
-      : <span className="rounded-full bg-surface-container-high px-2.5 py-0.5 text-label font-semibold text-on-surface-variant">{t(messages.expired)}</span>
+  const chip = <BookingStatusChip booking={booking} />
   return (
     <Link to={`/admin/bookings/${booking.id}`} viewTransition className="state-layer flex items-center gap-3 py-3">
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-snug">

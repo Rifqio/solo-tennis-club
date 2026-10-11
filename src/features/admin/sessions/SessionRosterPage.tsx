@@ -12,7 +12,8 @@ import { clubDateOf } from '@shared/club-time'
 import type { AdminResult } from '@/lib/admin-api'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { AdminBand } from '../shell/AdminBand'
-import { isActive } from './roster-status'
+import { rosterState } from './roster-status'
+import type { RosterState } from './roster-status'
 import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
 import { AnimatePresence, m } from 'motion/react'
 import { listRowMotion } from '@/lib/motion'
@@ -29,6 +30,9 @@ const copy = {
   all: { id: 'Semua', en: 'All' },
   unpaid: { id: 'Belum bayar', en: 'Awaiting payment' },
   lapsed: { id: 'Lewat batas', en: 'Past deadline' },
+  review: { id: 'Perlu dicek', en: 'Proof to check' },
+  paid: { id: 'Lunas', en: 'Paid' },
+  correction: { id: 'Bukti ditolak', en: 'Proof rejected' },
   slot: { id: '{count} slot', en: '{count} slots' },
   deadline: { id: 'Batas {time} WIB', en: 'Due {time} WIB' },
   lapsedAt: { id: 'Lewat {time} WIB, slot dilepas', en: 'Passed {time} WIB, slots released' },
@@ -51,12 +55,12 @@ function whatsappHref(phone: string) {
 }
 
 // Shared with the desktop roster panel beside the day's sessions.
-export function BookingGroup({ booking, active }: { booking: AdminRosterBooking; active: boolean }) {
+export function BookingGroup({ booking, state }: { booking: AdminRosterBooking; state: RosterState }) {
   const { t } = useI18n()
   const href = whatsappHref(booking.bookerPhone)
   const time = formatClubTime(booking.originalDeadline)
   return (
-    <article className={cn('flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest px-4 py-3', !active && 'opacity-70')}>
+    <article className={cn('flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest px-4 py-3', state === 'over' && 'opacity-70')}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="flex flex-wrap items-center gap-2">
@@ -72,8 +76,11 @@ export function BookingGroup({ booking, active }: { booking: AdminRosterBooking;
         </div>
         <div className="flex max-w-[45%] flex-col items-end gap-1 text-right">
           <span className={cn('rounded-full px-2.5 py-0.5 text-label font-semibold',
-            active ? 'border border-warning text-warning' : 'bg-surface-container-high text-on-surface-variant')}>{t(active ? copy.unpaid : copy.lapsed)}</span>
-          <span className="text-label tabular-nums text-on-surface-variant">{t(active ? copy.deadline : copy.lapsedAt, { time })}</span>
+            state === 'owes' ? 'border border-warning text-warning' : state === 'review' ? 'bg-primary-container text-primary'
+              : state === 'paid' ? 'bg-band-tile text-on-signboard' : 'bg-surface-container-high text-on-surface-variant')}>
+            {t(state === 'owes' ? (booking.status === 'needs_correction' ? copy.correction : copy.unpaid) : state === 'review' ? copy.review : state === 'paid' ? copy.paid : copy.lapsed)}
+          </span>
+          {(state === 'owes' || state === 'over') && <span className="text-label tabular-nums text-on-surface-variant">{t(state === 'owes' ? copy.deadline : copy.lapsedAt, { time })}</span>}
         </div>
       </div>
       <ul aria-label={t(copy.players)} className="flex flex-wrap gap-1.5">
@@ -113,12 +120,12 @@ export function Component() {
   }
 
   const now = Date.parse(data.serverNow)
-  const groups = data.bookings.map(booking => ({ booking, active: isActive(booking, now) }))
+  const groups = data.bookings.map(booking => ({ booking, state: rosterState(booking, now) }))
   const placesOf = (rows: typeof groups) => rows.reduce((sum, row) => sum + row.booking.quantity, 0)
-  const counts = { all: placesOf(groups), unpaid: placesOf(groups.filter(row => row.active)), lapsed: placesOf(groups.filter(row => !row.active)) }
+  const counts = { all: placesOf(groups), unpaid: placesOf(groups.filter(row => row.state === 'owes')), lapsed: placesOf(groups.filter(row => row.state === 'over')) }
   // Opens on who still has to pay; lapsed bookings stay one tap away.
   const filter: Filter = chosen ?? (counts.unpaid > 0 ? 'unpaid' : 'all')
-  const shown = groups.filter(row => filter === 'all' || (filter === 'unpaid') === row.active)
+  const shown = groups.filter(row => filter === 'all' || row.state === (filter === 'unpaid' ? 'owes' : 'over'))
   const session = data.session
   // Board order: everyone first, then who still owes, then who lapsed.
   const filters: Filter[] = counts.lapsed > 0 ? ['all', 'unpaid', 'lapsed'] : ['all', 'unpaid']

@@ -1,6 +1,6 @@
 import type { Prisma } from '../../../generated/prisma/client.ts'
 import type { Database } from '../../../database/transaction.ts'
-import { activeBookingWhere } from '../../capacity/occupancy.ts'
+import { awaitingPaymentWhere } from '../../capacity/occupancy.ts'
 
 const summaryFields = {
   id: true,
@@ -39,11 +39,11 @@ function searchWhere(search: string | null): Prisma.BookingWhereInput {
 
 export function createAdminBookingRepository(database: Database) {
   return {
-    // Still holding places: the deadline nearest now first, paged by (deadline, id).
+    // Still owing payment before the deadline: the deadline nearest now first, paged by (deadline, id).
     listUnpaid(now: Date, take: number, after: Cursor | null, search: string | null = null) {
       return database.booking.findMany({
         where: {
-          ...activeBookingWhere(now),
+          ...awaitingPaymentWhere(now),
           AND: [
             after ? { OR: [{ originalDeadline: { gt: after.at } }, { originalDeadline: after.at, id: { gt: after.id } }] } : {},
             searchWhere(search),
@@ -70,7 +70,7 @@ export function createAdminBookingRepository(database: Database) {
       })
     },
     countUnpaid(now: Date) {
-      return database.booking.count({ where: activeBookingWhere(now) })
+      return database.booking.count({ where: awaitingPaymentWhere(now) })
     },
     findDetail(id: string) {
       return database.booking.findUnique({ where: { id }, select: detailFields })

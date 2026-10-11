@@ -1,6 +1,6 @@
 import { createPrismaClient, initializeDatabase } from '../server/db.ts'
-import { resolveDatabaseFile, resolveUploadsDir } from '../server/config/database-file.ts'
-import { backupDatabase, backupUploads, resolveBackupDir } from '../server/ops/backup.ts'
+import { resolveDatabaseFile, resolvePrivateDir, resolveUploadsDir } from '../server/config/database-file.ts'
+import { backupDatabase, backupPrivate, backupUploads, resolveBackupDir } from '../server/ops/backup.ts'
 
 const databaseFile = resolveDatabaseFile()
 const prisma = createPrismaClient(databaseFile)
@@ -10,6 +10,8 @@ try {
   console.log('Backup written: ' + file)
   const uploads = backupUploads(resolveUploadsDir(databaseFile), file)
   if (uploads) console.log('Uploads copied: ' + uploads)
+  const privateFiles = backupPrivate(resolvePrivateDir(databaseFile), file)
+  if (privateFiles) console.log('Private files copied: ' + privateFiles)
 } catch (error) {
   console.error('Backup failed: ' + (error instanceof Error ? error.message : String(error)))
   process.exitCode = 1

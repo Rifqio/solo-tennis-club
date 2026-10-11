@@ -58,7 +58,7 @@ export function SessionSummaryCard({ draft, options, actions, brief = false }: {
         {fact(t(copy.price), price)}
         {fact(t({ id: 'Peserta', en: 'Players' }), limits)}
       </dl>}
-      <div className={cn('mt-auto flex flex-col gap-2 px-5 pb-5', brief ? 'pt-5' : 'pt-3')}>{actions}</div>
+      <div data-session-actions className={cn('mt-auto flex flex-col gap-2 px-5 pb-5', brief ? 'pt-5' : 'pt-3')}>{actions}</div>
     </aside>
   )
 }

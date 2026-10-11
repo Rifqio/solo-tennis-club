@@ -122,7 +122,7 @@ Plans:
 4. Rejected proof shows correction required only for the time remaining on the original deadline; replacement does not restart that deadline, and rejection after expiry releases the places and removes correction actions.
 5. A customer can complete discovery through payment/status lookup on a phone with visible primary actions and clear instructions/validation, return from OTP or payment tasks without losing booking data, resume an active reservation, and recover from capacity loss, OTP failure, or interrupted upload without false reservation or upload success. Admins can reach daily sessions, participants, bookings, and proof approval/rejection directly on a phone.
 
-**Plans:** TBD
+**Plans:** 6 slices planned 2026-10-11, see [execution plan](phases/03-pay-and-verify-bookings/03-PLAN.md); 03-01 next.
 **UI hint:** yes
 
 **Planning prerequisites:** Validate the club's actual same-phone QRIS and transfer setup. Select private evidence storage and authorized upload/retrieval, decide proof formats/retention and durable submission boundaries, and resolve partial/excess/duplicate payments, review turnaround, outside-payment recording, customer-readable rejection reasons, and rejection communication/manual fallback. Agree deadline-edge and interrupted-upload scenarios. Review must respect current booking state and cannot later revive a cancelled booking. This phase owns integrated customer-flow, daily-admin, recovery, and private-evidence acceptance while preserving earlier baseline behavior.
@@ -173,7 +173,7 @@ Phases execute in order: 1 → 2 → 3 → 4 → 5. Discussion, policy decisions
 |-------|----------------|--------|-----------|
 | 1. Publish and Browse Sessions | 10/10 | Accepted by user | 2026-10-09 |
 | 2. Reserve Places and See Daily Rosters | 6/6 | Accepted by user | 2026-10-11 |
-| 3. Pay and Verify Bookings | 0/TBD | Not started | - |
+| 3. Pay and Verify Bookings | 0/6 | Planned; 03-01 next | - |
 | 4. Adjust Bookings and Settle Cancellations | 0/TBD | Not started | - |
 | 5. Run Recurring Sessions and Minimum Cutoffs | 0/TBD | Not started | - |
 

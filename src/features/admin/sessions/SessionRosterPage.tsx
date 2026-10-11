@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
@@ -36,6 +36,7 @@ const copy = {
   truncated: { id: 'Daftarnya panjang, jadi baru sebagian yang tampil.', en: 'The list is long, so only part of it is shown.' },
   cancelled: { id: 'Sesi ini dibatalkan.', en: 'This session is cancelled.' },
   edit: { id: 'Ubah sesi', en: 'Edit session' },
+  record: { id: 'Catat booking', en: 'Record a booking' },
 }
 
 type Filter = 'all' | 'unpaid' | 'lapsed'
@@ -134,6 +135,12 @@ export function Component() {
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       {session.status !== 'scheduled' && <StatusPanel tone="info" title={t(copy.cancelled)} />}
+      {/* Bookings from WhatsApp or the desk go in from the session they are for; the form explains a closed or full session. */}
+      {session.status === 'scheduled' && (
+        <Button asChild variant="filled" className="self-stretch sm:self-start sm:px-6">
+          <Link to={`/admin/sessions/${encodeURIComponent(id)}/book`} viewTransition><Plus aria-hidden="true" className="size-5" />{t(copy.record)}</Link>
+        </Button>
+      )}
       {data.bookings.length === 0 ? <StatusPanel tone="info" title={t(copy.empty)} /> : <>
         <div role="group" aria-label={t(copy.filter)} className="flex flex-wrap gap-2">
           {filters.map(value => {

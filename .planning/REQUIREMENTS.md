@@ -171,7 +171,7 @@ Requirements and roadmap were confirmed on 2026-10-08. Each maps to one acceptan
 | OPER-04 | Phase 2 | Planned |
 | OPER-05 | Phase 3 | Pending |
 | OPER-06 | Phase 2 | Planned |
-| OPER-07 | Phase 2 | Planned |
+| OPER-07 | Phase 2 | Source implemented 2026-10-10; acceptance pending |
 | OPER-08 | Phase 3 | Pending |
 | OPER-09 | Phase 4 | Pending |
 | OPER-10 | Phase 4 | Pending |

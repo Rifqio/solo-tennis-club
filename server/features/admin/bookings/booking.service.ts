@@ -66,6 +66,11 @@ export async function listAdminBookings(database: PrismaClient, input: { filter:
   })
 }
 
+function toLinked(event: AdminBookingDetailRow['ownershipEvents'][number] | undefined) {
+  if (!event) return null
+  return { at: event.createdAt.toISOString(), by: event.admin?.displayName ?? null }
+}
+
 function toDetail(row: AdminBookingDetailRow, now: Date): AdminBookingDetailResponse['booking'] {
   const summary = toSummary(row, now)
   const endsAt = new Date(row.session.startsAt.getTime() + row.session.durationMinutes * 60_000)
@@ -74,6 +79,8 @@ function toDetail(row: AdminBookingDetailRow, now: Date): AdminBookingDetailResp
     unitPriceIdr: row.unitPriceIdr,
     participants: row.participants.map(participant => participant.name),
     customer: row.customer ? { displayName: row.customer.displayName, phone: row.customer.phone, verifiedAt: row.customer.verifiedAt.toISOString() } : null,
+    linked: toLinked(row.ownershipEvents[0]),
+    version: row.version,
     session: { ...summary.session, levelName: row.session.level.name, venueName: row.session.venue.name, endTime: clubTimeOf(endsAt) },
   }
 }

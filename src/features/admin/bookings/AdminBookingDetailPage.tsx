@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { MessageCircle } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatClubWeekdayShort, formatIdr } from '@/i18n/format'
@@ -10,7 +10,9 @@ import { clubDateOf } from '@shared/club-time'
 import type { AdminBookingDetailResponse } from '@shared/api/admin-bookings'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { AdminBand } from '../shell/AdminBand'
-import { adminBookingsMessages as messages } from './bookings.messages'
+import { adminBookingLinkMessages, adminBookingsMessages as messages } from './bookings.messages'
+import { BookingLinkSection } from './BookingLinkSection'
+import type { CreatedBookingState } from './AdminBookingFormPage'
 
 // wa.me takes the number as digits with the country code.
 function whatsappHref(phone: string) {
@@ -20,6 +22,7 @@ function whatsappHref(phone: string) {
 
 export function Component() {
   const { id = '' } = useParams()
+  const created = (useLocation().state as CreatedBookingState | null)?.created ?? null
   const { get, state: auth } = useAdminAuth()
   const { language, t } = useI18n()
   const [result, setResult] = useState<{ id: string; response: AdminResult<AdminBookingDetailResponse> } | null>(null)
@@ -54,6 +57,8 @@ export function Component() {
   const phone = booking.customer?.phone ?? booking.bookerPhone
   const href = whatsappHref(phone)
   const tile = 'rounded-sm bg-band-tile px-3 py-2.5'
+  const replaceDetail = (detail: AdminBookingDetailResponse) => setResult({ id, response: { kind: 'ok', data: detail } })
+  const linkedAt = booking.linked ? formatClubDateShort(clubDateOf(new Date(booking.linked.at)), language) + ', ' + formatClubTime(booking.linked.at) : null
 
   return <>
     <AdminBand title={booking.bookerName} back={back}
@@ -64,10 +69,18 @@ export function Component() {
       </dl>
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+      {created && (
+        <StatusPanel tone="success" title={t(adminBookingLinkMessages.created)}>
+          <p>{created.replayed ? t(adminBookingLinkMessages.replayed) : t(adminBookingLinkMessages.createdBody, { time: formatClubTime(created.deadline) })}</p>
+        </StatusPanel>
+      )}
       <section aria-label={t(booking.customer ? messages.phoneVerified : messages.phoneRecorded)} className="flex items-center justify-between gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
         <span className="flex min-w-0 flex-col leading-snug">
           <span className="text-label text-on-surface-variant">{t(booking.customer ? messages.phoneVerified : messages.phoneRecorded)}</span>
           <span className="break-all font-bold tabular-nums">{phone}</span>
+          {booking.linked && linkedAt && (
+            <span className="text-label text-on-surface-variant">{t(adminBookingLinkMessages.linkedAt, { date: linkedAt, by: booking.linked.by ? t(adminBookingLinkMessages.linkedBy, { name: booking.linked.by }) : '' })}</span>
+          )}
         </span>
         {href && (
           <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t(messages.chatLabel, { name: booking.bookerName })}
@@ -76,6 +89,7 @@ export function Component() {
           </a>
         )}
       </section>
+      {!booking.customer && <BookingLinkSection booking={booking} onChanged={replaceDetail} />}
       <section aria-labelledby="players" className="flex flex-col gap-2 rounded-sm bg-surface-container-lowest p-4">
         <h2 id="players" className="font-bold">{t(messages.players)}</h2>
         <ul className="flex flex-wrap gap-1.5">{booking.participants.map((name, index) => <li key={index} className="rounded-full bg-surface-container px-2.5 py-0.5 text-label">{name}</li>)}</ul>

@@ -3,15 +3,15 @@ gsd_state_version: "1.0"
 current_phase: 2
 current_phase_name: Reserve Places and See Daily Rosters
 status: executing
-stopped_at: 02-03 and 02-04 implemented with the Courtside admin/member screens; manual acceptance pending, 02-05 next
+stopped_at: 02-05 admin-created bookings and customer linking implemented on branch gsd/02-05-admin-bookings; manual acceptance pending
 last_updated: "2026-10-10"
 last_activity: 2026-10-10
-last_activity_desc: 02-03 customer bookings + expiry worker and 02-04 incoming bookings implemented; 188 tests pass
+last_activity_desc: 02-05 shared admission, admin bookings, explicit linking with audit; 198 tests pass
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 16
-  completed_plans: 15
+  completed_plans: 16
   percent: 20
 ---
 
@@ -101,12 +101,14 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 - [x] Implement 02-04 roster and incoming bookings (2026-10-10); see 02-04-SUMMARY.md.
 - [x] Build the approved Courtside canvas boards: club page, venue Maps links, wrong-code state, admin shell/sessions/roster/manage/classes (2026-10-10).
 - [ ] Complete user manual acceptance for 02-03 and 02-04 on a phone.
-- [ ] Implement 02-05 admin-created bookings and integrated development acceptance.
+- [x] Implement 02-05 admin-created bookings, explicit customer linking and audit (2026-10-10); see 02-05-SUMMARY.md. Browser spec authored, not run.
+- [ ] Complete user manual acceptance for 02-05 (02-05-MANUAL-CHECKS.md); migrate the live local DB after backup when merging.
 - [ ] Finish the desktop design epic on the canvas (booking flow, Booking kamu, admin desktop), then build the desktop layouts.
 - [ ] Decision (2026-10-10, user): **start QRIS payment now**, using a mock QR until the real static QRIS image and NMID arrive. The UX is a dedicated payment page, not a modal (board D8): QRIS and bank-transfer tabs, the exact amount with a copy button (static QRIS does not prefill the amount), then a proof upload and "Bukti terkirim". "Bayar sekarang" replaces "Chat admin" on Booking kamu and on the booked screen. This pulls part of Phase 3 (payment proof upload) forward. Reconcile with ROADMAP.md before planning.
-- [ ] New scope (2026-10-10, user request): **coach photos**. On Kelas, the coach picker is a photo card grid in game agent-select style: photo, name and class count; picking several is allowed (board D10). This adds a photo field and upload to coaches in Kelola. Cards without a photo show initials. Canvas photos are Unsplash stand-ins.
+- [x] (2026-10-10) Coach photos built: upload in Kelola (stored under data/uploads, backed up with db:backup), agent-select picker on Kelas. New scope (2026-10-10, user request): **coach photos**. On Kelas, the coach picker is a photo card grid in game agent-select style: photo, name and class count; picking several is allowed (board D10). This adds a photo field and upload to coaches in Kelola. Cards without a photo show initials. Canvas photos are Unsplash stand-ins.
 - [ ] New scope (2026-10-10, user request, desktop first): an admin **Rekap** dashboard with monthly revenue and an Excel export. Revenue counts only Lunas bookings; unpaid money shows separately as "Nunggu dibayar". The Excel export is a button only for now, with no logic, by user decision (2026-10-10). The file contents are decided later. Board D7 is on the canvas. It is not yet in REQUIREMENTS.md or ROADMAP.md, and it depends on Phase 3 payment confirmation for real paid dates. Mobile comes after desktop is approved.
 - [ ] Rename the club in code to Solo Tennis Club / STC: index.html title/meta, club-content.ts, club.messages.ts, api-error-messages.ts, docs. Ask before renaming technical identifiers: cookies `lafu_*` (renaming signs everyone out), env vars `LAFU_*`, `data/lafu.db` and backup names, the localStorage key `lafu.language`, and the package name.
+- [x] (2026-10-10) Admin screens brought to boards D5, D9b and D10 and phone boards 10-17; Kelola archives instead of deleting.
 - [ ] Select/integrate real OTP delivery and verify AUTH-02 before Phase 2 release completion.
 - [ ] Before production launch, review real club content/logo/catalog, exclude samples and verify deployment/provisioning operations.
 
@@ -126,8 +128,8 @@ Full product decisions are recorded in PROJECT.md and REQUIREMENTS.md.
 ## Session Continuity
 
 Last session: 2026-10-10
-Stopped at: 02-04 implemented; 02-05 next
-Resume file: .planning/phases/02-reserve-places-and-see-daily-rosters/02-05-PLAN.md
+Stopped at: 02-05 implemented (branch gsd/02-05-admin-bookings); all Phase 2 source plans done, manual acceptance and real OTP delivery remain
+Resume file: .planning/phases/02-reserve-places-and-see-daily-rosters/02-05-MANUAL-CHECKS.md
 
 ## Manual acceptance update
 

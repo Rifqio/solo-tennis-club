@@ -17,6 +17,7 @@ const router = createBrowserRouter([
           { path: 'sessions/new', lazy: () => import('./features/admin/sessions/SessionEditorPage') },
           { path: 'sessions/:id/edit', lazy: () => import('./features/admin/sessions/SessionEditorPage') },
           { path: 'sessions/:id/roster', lazy: () => import('./features/admin/sessions/SessionRosterPage') },
+          { path: 'sessions/:id/book', lazy: () => import('./features/admin/bookings/AdminBookingFormPage') },
           { path: 'bookings', lazy: () => import('./features/admin/bookings/AdminBookingsPage') },
           { path: 'bookings/:id', lazy: () => import('./features/admin/bookings/AdminBookingDetailPage') },
           { path: 'manage', lazy: () => import('./features/admin/manage/ManagePage') },

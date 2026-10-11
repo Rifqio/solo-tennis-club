@@ -17,7 +17,7 @@ const leading: DockDestination[] = [
 ]
 const trailing: DockDestination[] = [
   { to: '/bookings', end: false, label: publicMessages.bookings, Icon: Ticket },
-  { to: '/customer/sign-in', end: false, label: publicMessages.account, Icon: UserRound },
+  { to: '/account', end: false, label: publicMessages.account, Icon: UserRound },
 ]
 
 // One destination: a 24px icon over its label. Active is a lime icon with a lime dot that springs between tabs.

@@ -9,6 +9,8 @@ import { createMockOtpAdapter } from './otp.adapter.ts'
 import { createCustomerBookingRouter } from '../booking/booking.router.ts'
 import { createCustomerPlayersRouter } from '../players/players.router.ts'
 import { createMyBookingsRouter } from '../my-bookings/my-bookings.router.ts'
+import { createAccountRouter } from '../account/account.router.ts'
+import { createAccountService } from '../account/account.service.ts'
 import { createCustomerEvidenceRouter, createCustomerProofUploadRouter } from '../../payments/evidence.router.ts'
 
 export function createCustomerAuthRouter(database: PrismaClient, config: RuntimeConfig, privateDir: string) {
@@ -21,7 +23,8 @@ export function createCustomerAuthRouter(database: PrismaClient, config: Runtime
     router.use((_request, _response, next) => next(new ApiError(503, 'TEMPORARILY_UNAVAILABLE')))
     return router
   }
-  const service = createCustomerAuthService(database, createMockOtpAdapter())
+  const adapter = createMockOtpAdapter()
+  const service = createCustomerAuthService(database, adapter)
   const controller = createCustomerAuthController(database, service, config)
   router.use(createCustomerProofUploadRouter(database, config, privateDir))
   router.use(requireSameOrigin(config), requireJson, json({ limit: '8kb' }))
@@ -35,6 +38,7 @@ export function createCustomerAuthRouter(database: PrismaClient, config: Runtime
   router.use(createCustomerBookingRouter(database))
   router.use(createCustomerPlayersRouter(database))
   router.use(createMyBookingsRouter(database))
+  router.use(createAccountRouter(database, createAccountService(database, service, adapter)))
   router.use(createCustomerEvidenceRouter(database, privateDir))
   return router
 }

@@ -22,6 +22,7 @@ test('names remain human-readable and bounded without imposing an ASCII-only ide
 test('return paths preserve public date/session intent but reject external and admin destinations', () => {
   expect(safeCustomerReturnPath('/schedule?date=2026-10-20&session=session123&phone=secret')).toBe('/schedule?date=2026-10-20&session=session123')
   expect(safeCustomerReturnPath('/?date=2026-10-20&session=session123')).toBe('/schedule?date=2026-10-20&session=session123')
+  expect(safeCustomerReturnPath('/account?x=1')).toBe('/account')
   expect(safeCustomerReturnPath('/?date=no&session=bad!')).toBe('/schedule')
   expect(safeCustomerReturnPath('/club')).toBe('/')
   expect(safeCustomerReturnPath('/')).toBe('/')

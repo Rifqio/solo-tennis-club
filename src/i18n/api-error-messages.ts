@@ -49,6 +49,8 @@ export const fieldErrorMessages: Record<FieldErrorCode, Message> = {
   DATE_TOO_FAR: { id: 'Tanggal terlalu jauh ke depan. Pilih tanggal yang lebih dekat.', en: 'The date is too far ahead. Choose an earlier date.' },
   DUPLICATE_NAME: { id: 'Nama ini sudah digunakan. Gunakan nama lain.', en: 'This name is already in use. Use a different name.' },
   MAP_LINK_UNREADABLE: { id: 'Link ini nggak kebaca. Salin ulang dari tombol Bagikan di Google Maps.', en: "We couldn't read this link. Copy it again from Share in Google Maps." },
+  SAME_PHONE: { id: 'Ini nomor kamu sekarang. Masukkan nomor baru.', en: 'That is your current number. Enter the new one.' },
+  PHONE_IN_USE: { id: 'Nomor ini sudah dipakai akun lain. Hubungi admin klub kalau ini nomormu.', en: 'Another account uses this number. Contact the club admin if it is yours.' },
 }
 
 // The UI-SPEC price sentence is more specific than the generic integer message.

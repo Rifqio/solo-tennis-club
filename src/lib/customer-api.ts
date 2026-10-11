@@ -12,7 +12,7 @@ export class CustomerApiError extends Error {
 
 export async function customerRequest<T>(
   path: string,
-  options: { body?: unknown; csrfToken?: string; signal?: AbortSignal } = {},
+  options: { body?: unknown; csrfToken?: string; signal?: AbortSignal; method?: 'PUT' } = {},
 ): Promise<T> {
   const parsed = new URL(path, 'https://lafu.invalid')
   if (!path.startsWith('/api/customer/') || path.includes('\\') || parsed.origin !== 'https://lafu.invalid'
@@ -22,7 +22,7 @@ export async function customerRequest<T>(
   if (options.body !== undefined) headers['Content-Type'] = 'application/json'
   if (options.csrfToken) headers['X-CSRF-Token'] = options.csrfToken
   const response = await fetch(path, {
-    method: options.body === undefined ? 'GET' : 'POST',
+    method: options.method ?? (options.body === undefined ? 'GET' : 'POST'),
     credentials: 'same-origin',
     cache: 'no-store',
     headers,

@@ -52,6 +52,7 @@ const router = createBrowserRouter([
       { path: '/bookings', lazy: () => import('./features/customer/my-bookings/MyBookingsPage') },
       { path: '/bookings/:id', lazy: () => import('./features/customer/my-bookings/MyBookingDetailPage') },
       { path: '/bookings/:id/pay', lazy: () => import('./features/customer/payments/PayPage') },
+      { path: '/account', lazy: () => import('./features/customer/account/AccountPage') },
     ],
   },
   // Any other address: the 404 page on its own, without the app's dock or rail.

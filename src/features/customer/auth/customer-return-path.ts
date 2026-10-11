@@ -6,6 +6,8 @@ export function safeCustomerReturnPath(value: unknown): string {
     const url = new URL(value, 'https://lafu.invalid')
     if (url.origin !== 'https://lafu.invalid') return '/'
     if (url.pathname === '/club') return '/'
+    // The member's own screens, opened again after signing in.
+    if (url.pathname === '/account' || url.pathname === '/bookings') return url.pathname
     const booking = /^\/book\/([a-z0-9]{1,64})$/.exec(url.pathname)
     if (booking) {
       const params = new URLSearchParams()

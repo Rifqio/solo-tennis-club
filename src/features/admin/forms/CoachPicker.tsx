@@ -105,14 +105,15 @@ export function CoachPicker({ name, label, hint, error, options, value, onChange
   const close = () => { setOpen(false); setQuery(''); setRanked(value) }
 
   return (
-    <fieldset data-field={name} tabIndex={-1} aria-invalid={error ? true : undefined} aria-describedby={describedBy} className="flex min-w-0 flex-col gap-2 outline-none">
+    <fieldset data-field={name} tabIndex={-1} aria-invalid={error ? true : undefined} aria-describedby={describedBy} className="@container flex min-w-0 flex-col gap-2 outline-none">
       <legend className="mb-2 text-label font-medium text-on-surface">
         {label} <span className="font-normal text-on-surface-variant">{t(copy.pickHint)}</span>
         {options.length > 0 && <> · <span className="font-bold text-primary">{value.length ? t(copy.picked, { count: value.length }) : t(copy.none)}</span></>}
       </legend>
       {status}
+      {/* Columns follow the room the picker has (its card), not the screen: three in a narrow card, six in a wide one. */}
       {options.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+        <div className="grid grid-cols-3 gap-3 @2xl:grid-cols-6">
           {inline.map(option => <CoachCard key={option.id} option={option} on={value.includes(option.id)} name={name} error={Boolean(error)} onToggle={() => toggle(option.id)} />)}
           <button ref={seeAll} type="button" onClick={() => setOpen(true)}
             className="state-layer pressable flex min-h-40 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary bg-surface-container-lowest p-2 text-center text-label font-bold text-primary">

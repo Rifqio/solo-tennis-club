@@ -33,7 +33,12 @@ import { revealInvalid } from '@/lib/reveal-invalid'
 import { useToast } from '@/components/ui/use-toast'
 import { sessionsMessages as sessionMessages } from './sessions.messages'
 import { failureNeedsPanel } from '../forms/form-failure'
+import { Check } from 'lucide-react'
+import { useMediaQuery } from '@/lib/use-media-query'
+import { SessionSummaryCard } from './SessionSummaryCard'
 const stepNames = [{ id: 'Kelas dan waktu', en: 'Class and time' }, { id: 'Level, lokasi, dan coach', en: 'Level, venue, and coaches' }, { id: 'Harga dan batas peserta', en: 'Price and participant limits' }, { id: 'Periksa sesi', en: 'Review session' }]
+// Short step names for the desktop pills in the band.
+const stepPills = [{ id: 'Kelas', en: 'Class' }, { id: 'Lokasi & coach', en: 'Venue & coaches' }, { id: 'Harga', en: 'Price' }, { id: 'Cek', en: 'Check' }]
 const stepFields = [['classId', 'date', 'startTime', 'durationMinutes'], ['levelId', 'venueId', 'coachIds'], ['priceIdr', 'minParticipants', 'maxParticipants']]
 export function SessionEditorPage() {
   const { id } = useParams()
@@ -62,6 +67,7 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
   const [newClassId, setNewClassId] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const reduceMotion = useReducedMotion()
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
   const sending = useRef(false)
   const editor = useRef<HTMLDivElement>(null)
   const stepHeading = useRef<HTMLHeadingElement>(null)
@@ -124,14 +130,14 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
   const validTime = isClubDate(draft.date) && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(draft.startTime)
   const end = validTime && /^\d+$/.test(draft.durationMinutes) && Number(draft.durationMinutes) <= 720 ? new Date(clubDateTimeToInstant(draft.date, draft.startTime).getTime() + Number(draft.durationMinutes) * 60000) : null
   const steps = 4
-  return <>
-  <AdminBand title={t(initial ? { id: 'Ubah sesi', en: 'Edit session' } : { id: 'Tambah sesi', en: 'Add session' })} back={{ to: `/admin/sessions${draft.date ? `?date=${draft.date}` : ''}`, label: t({ id: 'Sesi', en: 'Sessions' }) }}>
-    <div className="flex gap-1.5" aria-hidden="true">{Array.from({ length: steps }, (_, index) => <span key={index} className={cn('h-1.5 flex-1 rounded-full', index < draft.step ? 'bg-accent' : 'bg-band-tile')} />)}</div>
-  </AdminBand>
-  <div ref={editor} className="page-gutter mx-auto flex max-w-[50rem] flex-col gap-6 overflow-x-clip py-5" aria-busy={pending}>
-    <div><p className="text-label text-on-surface-variant">{t({ id: 'Langkah {n} dari 4', en: 'Step {n} of 4' }, { n: draft.step })}</p><h2 ref={stepHeading} tabIndex={-1} className="scroll-mt-24 text-title font-bold focus:outline-none">{t(stepNames[draft.step - 1])}</h2></div>
+  const title = t(initial ? { id: 'Ubah sesi', en: 'Edit session' } : { id: 'Tambah sesi', en: 'Add session' })
+  const backTo = { to: `/admin/sessions${draft.date ? `?date=${draft.date}` : ''}`, label: t({ id: 'Sesi', en: 'Sessions' }) }
+  const stepLabel = t({ id: 'Langkah {n} dari 4', en: 'Step {n} of 4' }, { n: draft.step })
+  const notices = <>
     {!options.data && <StatusPanel tone={options.response ? 'error' : 'info'} title={t(options.response ? messages.loadError : messages.loading)} action={options.response ? { label: t(commonMessages.retry), onAction: options.retry } : undefined} />}
     {options.data && !complete && <StatusPanel tone="info" title={t(messages.missing)}><Button asChild><Link to="/admin/manage" onClick={() => { if (draft.mode === 'create') { try { saveDraft(sessionStorage, draft) } catch { /* Storage is optional. */ } guard.allowNavigation() } }}>{t(messages.manage)}</Link></Button><Button asChild><Link to="/admin/classes/new" onClick={() => { if (draft.mode === 'create') { try { saveDraft(sessionStorage, draft) } catch { /* Storage is optional. */ } guard.allowNavigation() } }}>{t({ id: 'Tambah kelas', en: 'Add class' })}</Link></Button></StatusPanel>}
+  </>
+  const stepContent = <>
     <m.div key={draft.step} {...stepEnter(direction, reduceMotion)} className="flex min-w-0 flex-col gap-6">
       {draft.step === 1 && <>
         <SelectField name="classId" label={t(messages.classes)} value={draft.classId} options={availableOptions.classes} placeholder={t(messages.choose)} hint={t({ id: 'Memilih kelas mengisi nilai awal yang dapat diubah untuk sesi ini.', en: 'Choosing a class fills defaults you can edit for this session.' })} error={errorFor('classId', t(messages.classes))} onChange={id => {
@@ -148,14 +154,60 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
       </>}
       {draft.step === 2 && <SessionFields section="venue" optionsStatus={options.data ? 'ready' : options.response ? 'error' : 'loading'} values={draft} setField={setField} errors={errors} options={availableOptions} />}
       {draft.step === 3 && <SessionFields section="limits" values={draft} setField={setField} errors={errors} options={availableOptions} />}
-      {draft.step === 4 && <><SessionReview draft={draft} options={availableOptions} /><div className="flex flex-wrap gap-2">{stepNames.slice(0, 3).map((name, index) => <Button key={name.en} variant="text" disabled={pending} onClick={() => goToStep(index + 1)}>{t(messages.edit)}: {t(name)}</Button>)}</div><StatusPanel tone="info" title={t(initial ? { id: 'Perubahan akan langsung terlihat pada jadwal publik.', en: 'Changes will appear immediately on the public schedule.' } : { id: 'Sesi akan langsung tampil di jadwal setelah disimpan.', en: 'The session appears on the schedule as soon as you save.' })} /></>}
+      {draft.step === 4 && <><SessionReview draft={draft} options={availableOptions} wide={isDesktop} /><div className="flex flex-wrap gap-2">{stepNames.slice(0, 3).map((name, index) => <Button key={name.en} variant="text" disabled={pending} onClick={() => goToStep(index + 1)}>{t(messages.edit)}: {t(name)}</Button>)}</div><StatusPanel tone="info" title={t(initial ? { id: 'Perubahan akan langsung terlihat pada jadwal publik.', en: 'Changes will appear immediately on the public schedule.' } : { id: 'Sesi akan langsung tampil di jadwal setelah disimpan.', en: 'The session appears on the schedule as soon as you save.' })} /></>}
     </m.div>
+  </>
+  const feedback = <>
     <FormFeedback failure={failure} latest={latest && <SessionReview draft={draftFromSession(owner, latest)} options={conflictOptions} />} yours={<SessionReview draft={draft} options={availableOptions} />} onReplace={() => { if (latest) { setBaseline(latest); setDraft(draftFromSession(owner, latest)); setLatest(null); setFailure(null); setErrors({}) } }} />
+  </>
+  const primaryAction = (wide: boolean) => draft.step < 4
+    ? <Button className={wide ? 'min-h-14 w-full' : 'col-start-2 min-w-0 px-3 sm:min-w-40'} variant="filled" disabled={!complete || pending} onClick={() => { if (validate(draft.step)) goToStep(draft.step + 1) }}>{t({ id: 'Lanjut', en: 'Continue' })}</Button>
+    : <Button className={wide ? 'min-h-14 w-full' : 'min-w-0 px-3 sm:min-w-56'} variant="filled" disabled={!complete || pending || Boolean(latest)} pendingLabel={pending ? t({ id: 'Menyimpan sesi...', en: 'Saving session...' }) : undefined} onClick={() => void save()}>{t(initial ? { id: 'Simpan perubahan sesi', en: 'Save session changes' } : { id: 'Simpan dan tampilkan sesi', en: 'Save and publish session' })}</Button>
+  const backAction = (wide: boolean) => draft.step > 1 && <Button className={wide ? 'w-full' : 'min-w-0 px-3'} variant="text" disabled={pending} onClick={() => goToStep(draft.step - 1)}>{t(messages.cancel)}</Button>
+
+  // Desktop (no board of its own; the member booking flow's pattern, board D3): the steps as pills in the band, the
+  // step in a white card, and the session as it stands in a summary card beside it with the actions at its foot.
+  if (isDesktop) return <>
+    <AdminBand title={title} back={backTo} action={(
+      <ol aria-label={stepLabel} className="flex gap-1.5">
+        {stepPills.map((label, index) => {
+          const position = index + 1
+          const current = position === draft.step
+          return (
+            <li key={label.en} aria-current={current ? 'step' : undefined}
+              className={cn('flex h-12 items-center gap-1.5 rounded-full px-5 text-label', current ? 'bg-accent font-semibold text-on-accent' : 'bg-band-tile')}>
+              {position < draft.step && <Check aria-hidden="true" className="size-4" strokeWidth={2.5} />}{t(label)}
+            </li>
+          )
+        })}
+      </ol>
+    )} />
+    <div ref={editor} className="desk-column flex items-start gap-5 py-5" aria-busy={pending}>
+      <section aria-labelledby="session-step" className="flex min-h-[34rem] min-w-0 flex-1 flex-col gap-6 overflow-x-clip rounded-lg bg-surface-container-lowest p-8">
+        <div><p className="sr-only">{stepLabel}</p><h2 id="session-step" ref={stepHeading} tabIndex={-1} className="text-headline font-bold focus:outline-none">{t(stepNames[draft.step - 1])}</h2></div>
+        {notices}
+        {stepContent}
+        {feedback}
+      </section>
+      <SessionSummaryCard draft={draft} options={availableOptions} brief={draft.step === 4} actions={<>{primaryAction(true)}{backAction(true)}</>} />
+    </div>
+    {guard.dialog}<DiscardChangesDialog open={newClassId !== null} classChange onKeep={() => setNewClassId(null)} onDiscard={() => { if (newClassId) selectClass(newClassId) }} />
+  </>
+
+  return <>
+  <AdminBand title={title} back={backTo}>
+    <div className="flex gap-1.5" aria-hidden="true">{Array.from({ length: steps }, (_, index) => <span key={index} className={cn('h-1.5 flex-1 rounded-full', index < draft.step ? 'bg-accent' : 'bg-band-tile')} />)}</div>
+  </AdminBand>
+  <div ref={editor} className="page-gutter mx-auto flex max-w-[50rem] flex-col gap-6 overflow-x-clip py-5" aria-busy={pending}>
+    <div><p className="text-label text-on-surface-variant">{stepLabel}</p><h2 ref={stepHeading} tabIndex={-1} className="scroll-mt-24 text-title font-bold focus:outline-none">{t(stepNames[draft.step - 1])}</h2></div>
+    {notices}
+    {stepContent}
+    {feedback}
   </div>
   <div data-bottom-chrome className="sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
     <div data-session-actions className="page-gutter mx-auto grid max-w-[50rem] grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-stretch gap-2 sm:flex sm:justify-end">
-      {draft.step > 1 && <Button className="min-w-0 px-3" variant="text" disabled={pending} onClick={() => goToStep(draft.step - 1)}>{t(messages.cancel)}</Button>}
-      {draft.step < 4 ? <Button className="col-start-2 min-w-0 px-3 sm:min-w-40" variant="filled" disabled={!complete || pending} onClick={() => { if (validate(draft.step)) goToStep(draft.step + 1) }}>{t({ id: 'Lanjut', en: 'Continue' })}</Button> : <Button className="min-w-0 px-3 sm:min-w-56" variant="filled" disabled={!complete || pending || Boolean(latest)} pendingLabel={pending ? t({ id: 'Menyimpan sesi...', en: 'Saving session...' }) : undefined} onClick={() => void save()}>{t(initial ? { id: 'Simpan perubahan sesi', en: 'Save session changes' } : { id: 'Simpan dan tampilkan sesi', en: 'Save and publish session' })}</Button>}
+      {backAction(false)}
+      {primaryAction(false)}
     </div>
   </div>
   {guard.dialog}<DiscardChangesDialog open={newClassId !== null} classChange onKeep={() => setNewClassId(null)} onDiscard={() => { if (newClassId) selectClass(newClassId) }} />

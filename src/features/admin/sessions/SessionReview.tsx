@@ -5,14 +5,15 @@ import { formatClubDateLong, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { commonMessages } from '@/i18n/common.messages'
 import { adminMessages as messages } from '../forms/admin.messages'
-export function SessionReview({ draft, options }: { draft: SessionDraft; options: SessionOptions }) {
+// `wide`: two columns, for the desktop editor's card.
+export function SessionReview({ draft, options, wide = false }: { draft: SessionDraft; options: SessionOptions; wide?: boolean }) {
   const { t, language } = useI18n()
   const unavailable = t(commonMessages.unavailable)
   const named = (group: { id: string; name: string }[], id: string) => group.find(row => row.id === id)?.name ?? unavailable
   const validTime = isClubDate(draft.date) && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(draft.startTime)
   const end = validTime && /^\d+$/.test(draft.durationMinutes) && Number(draft.durationMinutes) <= 720 ? new Date(clubDateTimeToInstant(draft.date, draft.startTime).getTime() + Number(draft.durationMinutes) * 60000) : null
   const price = /^\d+$/.test(draft.priceIdr) && Number.isSafeInteger(Number(draft.priceIdr)) ? formatIdr(Number(draft.priceIdr), language) : draft.priceIdr || unavailable
-  return <dl className="flex flex-col gap-4 break-words">
+  return <dl className={wide ? 'grid grid-cols-2 gap-x-8 gap-y-4 break-words' : 'flex flex-col gap-4 break-words'}>
     {[
       [t(messages.classes), named(options.classes, draft.classId)],
       [t({ id: 'Tanggal dan waktu', en: 'Date and time' }), `${isClubDate(draft.date) ? formatClubDateLong(draft.date, language) : draft.date} ${draft.startTime} WIB`],

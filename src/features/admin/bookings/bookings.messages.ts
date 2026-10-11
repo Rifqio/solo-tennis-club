@@ -7,6 +7,7 @@ export const adminBookingsMessages = {
   loading: { id: 'Memuat booking...', en: 'Loading bookings...' },
   error: { id: 'Booking belum bisa dimuat.', en: 'Bookings could not be loaded.' },
   emptyUnpaid: { id: 'Nggak ada yang nunggu bayar. Aman.', en: 'Nobody is waiting to pay.' },
+  emptyReview: { id: 'Belum ada bukti yang perlu dicek.', en: 'No proofs to check.' },
   emptyConfirmed: { id: 'Belum ada booking lunas.', en: 'No paid bookings yet.' },
   emptyAll: { id: 'Belum ada booking.', en: 'No bookings yet.' },
   more: { id: 'Muat lagi', en: 'Load more' },
@@ -113,3 +114,48 @@ export const adminBookingLinkMessages = {
 
 // The next page of bookings did not load (the rows on screen stay).
 export const moreFailedCopy = { id: 'Booking berikutnya belum termuat. Periksa koneksi, lalu coba lagi.', en: 'The next bookings did not load. Check the connection, then try again.' }
+
+// Reviewing a member's proof of payment (03-03).
+export const proofReviewMessages = {
+  heading: { id: 'Bukti bayar', en: 'Proof of payment' },
+  sentAt: { id: 'Dikirim {time}', en: 'Sent {time}' },
+  expected: { id: 'Harus dibayar', en: 'Amount due' },
+  deadline: { id: 'Batas bayar', en: 'Payment deadline' },
+  deadlinePassed: { id: 'Batas bayar sudah lewat. Kalau ditolak, slotnya dilepas.', en: 'The payment deadline has passed. Rejecting it releases the slots.' },
+  open: { id: 'Buka {name}', en: 'Open {name}' },
+  approve: { id: 'Setujui', en: 'Approve' },
+  approving: { id: 'Menyetujui...', en: 'Approving...' },
+  reject: { id: 'Tolak', en: 'Reject' },
+  rejectTitle: { id: 'Tolak bukti ini?', en: 'Reject this proof?' },
+  rejectDescription: { id: 'Alasannya ditampilkan ke pemesan apa adanya.', en: 'The booker sees the reason exactly as chosen.' },
+  rejectBefore: { id: 'Pemesan bisa kirim bukti baru sebelum {time}. Batasnya nggak berubah.', en: 'The booker can send a new proof before {time}. The deadline does not change.' },
+  rejectAfter: { id: 'Batas bayar sudah lewat, jadi slotnya langsung dilepas.', en: 'The deadline has passed, so the slots are released right away.' },
+  reason: { id: 'Alasan', en: 'Reason' },
+  note: { id: 'Catatan untuk pemesan', en: 'Note for the booker' },
+  noteHint: { id: 'Wajib kalau alasannya Lainnya.', en: 'Required when the reason is Other.' },
+  confirmReject: { id: 'Tolak bukti', en: 'Reject proof' },
+  rejecting: { id: 'Menolak...', en: 'Rejecting...' },
+  cancel: { id: 'Batal', en: 'Cancel' },
+  approved: { id: 'Pembayaran {name} dikonfirmasi.', en: 'Payment from {name} confirmed.' },
+  rejected: { id: 'Bukti ditolak.', en: 'Proof rejected.' },
+  rejectedReleased: { id: 'Bukti ditolak, slot dilepas.', en: 'Proof rejected, slots released.' },
+  chat: { id: 'Kabari {name} di WhatsApp', en: 'Tell {name} on WhatsApp' },
+  waRejected: { id: 'Halo {name}, bukti bayar booking {session} belum bisa kami terima: {reason} Silakan kirim bukti baru di aplikasi sebelum {time} WIB. Terima kasih.', en: 'Hi {name}, we could not accept the payment proof for {session}: {reason} Please send a new proof in the app before {time} WIB. Thank you.' },
+  waReleased: { id: 'Halo {name}, bukti bayar booking {session} belum bisa kami terima: {reason} Batas bayarnya sudah lewat, jadi slotnya kami lepas. Balas pesan ini kalau ada pertanyaan.', en: 'Hi {name}, we could not accept the payment proof for {session}: {reason} The payment deadline has passed, so the slots were released. Reply here with any questions.' },
+  stale: { id: 'Booking ini baru berubah. Detail di atas sudah yang terbaru.', en: 'This booking just changed. The details above are the latest.' },
+  failed: { id: 'Belum tersimpan. Cek koneksi, lalu coba lagi.', en: 'Not saved. Check the connection, then try again.' },
+  history: { id: 'Bukti sebelumnya ({count})', en: 'Earlier proofs ({count})' },
+  statusApproved: { id: 'Disetujui', en: 'Approved' },
+  statusRejected: { id: 'Ditolak', en: 'Rejected' },
+  reviewedBy: { id: '{when} oleh {name}', en: '{when} by {name}' },
+  confirmedBy: { id: 'Dikonfirmasi {when}{by}', en: 'Confirmed {when}{by}' },
+  by: { id: ' oleh {name}', en: ' by {name}' },
+}
+
+// The reasons an admin can give (03-DECISIONS §4), as the admin reads them in the reject sheet.
+export const adminRejectionReasons = {
+  amount_mismatch: { id: 'Nominal tidak sesuai', en: 'Amount does not match' },
+  unreadable: { id: 'Bukti tidak terbaca', en: 'Proof cannot be read' },
+  not_received: { id: 'Pembayaran belum masuk', en: 'Payment not received' },
+  other: { id: 'Lainnya', en: 'Other' },
+}

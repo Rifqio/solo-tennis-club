@@ -1,0 +1,41 @@
+openapi: 3.1.0
+info:
+  title: STC admin proof review (03-03)
+  version: 1.0.0
+  description: Types in shared/api/admin-bookings.ts. Admin session, same origin and X-CSRF-Token as other admin writes.
+paths:
+  /api/admin/bookings:
+    get:
+      summary: Booking masuk; status=review lists proofs waiting for an admin, oldest proof first
+      parameters:
+        - { name: status, in: query, schema: { enum: [review, unpaid, confirmed, all], default: unpaid } }
+      responses:
+        '200': { description: 'AdminBookingListResponse, with unpaidCount and reviewCount' }
+  /api/admin/bookings/{id}:
+    get:
+      summary: Booking detail with proofs (newest first, with files), confirmed (at, by) and paymentNote
+  /api/admin/bookings/{id}/proofs/{proofId}/approve:
+    post:
+      requestBody: { content: { application/json: { schema: { type: object, required: [version], properties: { version: { type: integer } } } } } }
+      responses:
+        '200': { description: 'AdminProofReviewResponse, outcome confirmed' }
+        '409': { description: 'STALE_VERSION with latest detail; BOOKING_NOT_PAYABLE for a cancelled session' }
+  /api/admin/bookings/{id}/proofs/{proofId}/reject:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version, reason]
+              properties:
+                version: { type: integer }
+                reason: { enum: [amount_mismatch, unreadable, not_received, other] }
+                note: { type: string, maxLength: 300, description: required when reason is other }
+      responses:
+        '200': { description: 'AdminProofReviewResponse, outcome needs_correction (before the deadline) or expired (after it: places released)' }
+        '400': { description: 'VALIDATION_FAILED (note REQUIRED, reason INVALID_FORMAT)' }
+        '409': { description: STALE_VERSION with latest detail }
+  /api/admin/proofs/{proofId}/files/{fileId}:
+    get:
+      summary: A proof file for review (03-01); private, no-store, nosniff

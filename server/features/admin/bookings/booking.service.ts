@@ -4,7 +4,8 @@ import type { PrismaClient } from '../../../generated/prisma/client.ts'
 import { ApiError } from '../../../http/errors.ts'
 import { clubDateOf, clubTimeOf } from '../../../../shared/club-time.ts'
 import { effectiveBookingStatus } from '../../../../shared/booking-rules.ts'
-import type { AdminBookingDetailResponse, AdminBookingFilter, AdminBookingListResponse, AdminBookingSummary } from '../../../../shared/api/admin-bookings.ts'
+import type { AdminBookingDetailResponse, AdminBookingFilter, AdminBookingListResponse, AdminBookingSummary, AdminProof } from '../../../../shared/api/admin-bookings.ts'
+import type { ProofRejectionReason } from '../../../../shared/api/customer-payments.ts'
 import { createAdminBookingRepository } from './booking.repository.ts'
 import type { AdminBookingDetailRow, AdminBookingRow, Cursor } from './booking.repository.ts'
 
@@ -51,6 +52,19 @@ export async function listAdminBookings(database: PrismaClient, input: { filter:
   return inTransaction(database, async transaction => {
     const repository = createAdminBookingRepository(transaction)
     const after = input.cursor ? decodeCursor(input.cursor) : null
+    const counts = { unpaidCount: await repository.countUnpaid(now), reviewCount: await repository.countForReview() }
+    if (input.filter === 'review') {
+      const proofs = await repository.listForReview(input.limit + 1, after, input.search ?? null)
+      const page = proofs.slice(0, input.limit)
+      const last = page[page.length - 1]
+      return {
+        filter: input.filter,
+        items: page.map(proof => toSummary(proof.booking, now)),
+        nextCursor: proofs.length > input.limit && last ? encodeCursor(last.submittedAt, last.id) : null,
+        ...counts,
+        serverNow: now.toISOString(),
+      }
+    }
     const rows = input.filter === 'unpaid'
       ? await repository.listUnpaid(now, input.limit + 1, after, input.search ?? null)
       : await repository.listRecent(input.filter === 'confirmed' ? 'confirmed' : null, input.limit + 1, after, input.search ?? null)
@@ -60,7 +74,7 @@ export async function listAdminBookings(database: PrismaClient, input: { filter:
       filter: input.filter,
       items: page.map(row => toSummary(row, now)),
       nextCursor: rows.length > input.limit && last ? encodeCursor(input.filter === 'unpaid' ? last.originalDeadline : last.createdAt, last.id) : null,
-      unpaidCount: await repository.countUnpaid(now),
+      ...counts,
       serverNow: now.toISOString(),
     }
   })
@@ -82,6 +96,17 @@ function toDetail(row: AdminBookingDetailRow, now: Date): AdminBookingDetailResp
     linked: toLinked(row.ownershipEvents[0]),
     version: row.version,
     session: { ...summary.session, levelName: row.session.level.name, venueName: row.session.venue.name, endTime: clubTimeOf(endsAt) },
+    proofs: row.paymentProofs.map(proof => ({
+      id: proof.id,
+      submittedAt: proof.submittedAt.toISOString(),
+      status: proof.status as AdminProof['status'],
+      rejectionReason: proof.rejectionReason as ProofRejectionReason | null,
+      rejectionNote: proof.rejectionNote,
+      reviewed: proof.reviewedAt ? { at: proof.reviewedAt.toISOString(), by: proof.reviewedBy?.displayName ?? null } : null,
+      files: proof.files,
+    })),
+    confirmed: row.confirmedAt ? { at: row.confirmedAt.toISOString(), by: row.confirmedBy?.displayName ?? null } : null,
+    paymentNote: row.paymentNote,
   }
 }
 

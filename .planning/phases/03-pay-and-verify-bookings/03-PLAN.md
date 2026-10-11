@@ -1,6 +1,6 @@
 # Phase 3 execution plan: Pay and Verify Bookings
 
-Date: 2026-10-11. Status: 03-01 and 03-02 implemented; 03-03 next. Scope: 18 requirements (AUTH-05, PAY-01..08, OPER-05, OPER-08, OPER-12, OPER-13, UX-01, UX-02, UX-06, UX-08, UX-09). Decisions: [03-DECISIONS.md](03-DECISIONS.md), confirmed by the user. Architecture: [03-ARCHITECTURE.md](03-ARCHITECTURE.md). Boards: D8 `DeskPay` (pay screen), D7 `DeskAdminRecap` (Rekap); phone pay/review screens follow the phone boards' patterns where no board exists, as the desktop session editor did. Status and feedback: G1 (`.planning/G1-FEEDBACK-PLAN.md`).
+Date: 2026-10-11. Status: 03-01 to 03-03 implemented; 03-04 next. Scope: 18 requirements (AUTH-05, PAY-01..08, OPER-05, OPER-08, OPER-12, OPER-13, UX-01, UX-02, UX-06, UX-08, UX-09). Decisions: [03-DECISIONS.md](03-DECISIONS.md), confirmed by the user. Architecture: [03-ARCHITECTURE.md](03-ARCHITECTURE.md). Boards: D8 `DeskPay` (pay screen), D7 `DeskAdminRecap` (Rekap); phone pay/review screens follow the phone boards' patterns where no board exists, as the desktop session editor did. Status and feedback: G1 (`.planning/G1-FEEDBACK-PLAN.md`).
 
 ## Slices and order
 
@@ -15,7 +15,7 @@ Date: 2026-10-11. Status: 03-01 and 03-02 implemented; 03-03 next. Scope: 18 req
 
 - [x] 03-01 states, occupancy, expiry, private storage (see 03-01-SUMMARY.md)
 - [x] 03-02 member payment and proof upload (see 03-02-SUMMARY.md)
-- [ ] 03-03 admin review
+- [x] 03-03 admin review (see 03-03-SUMMARY.md)
 - [ ] 03-04 outside payments
 - [ ] 03-05 Rekap and export
 - [ ] 03-06 integrated acceptance (user manual checks)

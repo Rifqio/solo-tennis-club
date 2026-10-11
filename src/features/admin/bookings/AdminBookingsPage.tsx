@@ -66,11 +66,11 @@ function BookingsScreen() {
   const data = list.data
   const items = list.items
   const today = data ? clubDateOf(new Date(data.serverNow)) : clubDateOf(new Date())
-  const empty = filter === 'unpaid' ? messages.emptyUnpaid : filter === 'confirmed' ? messages.emptyConfirmed : messages.emptyAll
+  const empty = filter === 'review' ? messages.emptyReview : filter === 'unpaid' ? messages.emptyUnpaid : filter === 'confirmed' ? messages.emptyConfirmed : messages.emptyAll
 
   return <>
     <AdminBand title={t(messages.heading)}>
-      <BookingFilters filter={filter} unpaidCount={data?.unpaidCount ?? null} onChange={value => setParams(value === 'unpaid' ? {} : { status: value }, { replace: true })} />
+      <BookingFilters filter={filter} unpaidCount={data?.unpaidCount ?? null} reviewCount={data?.reviewCount ?? null} onChange={value => setParams(value === 'unpaid' ? {} : { status: value }, { replace: true })} />
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-4 py-4">
       {list.status === 'loading' ? (

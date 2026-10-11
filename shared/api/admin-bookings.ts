@@ -1,10 +1,12 @@
 import type { EffectiveBookingStatus } from '../booking-rules.ts'
 import type { BookingOptionsResponse } from './booking-admission.ts'
+import type { ProofFileSummary, ProofRejectionReason } from './customer-payments.ts'
 
-// GET /api/admin/bookings?status=unpaid|confirmed|all&q=&cursor=&limit= and GET /api/admin/bookings/:id.
+// GET /api/admin/bookings?status=review|unpaid|confirmed|all&q=&cursor=&limit= and GET /api/admin/bookings/:id.
 // q: part of the booker's name, or of their phone number.
-// unpaid: still holding places, nearest deadline first. confirmed and all: newest booking first.
-export type AdminBookingFilter = 'unpaid' | 'confirmed' | 'all'
+// review: a proof waits for an admin, oldest proof first. unpaid: still owes payment before its deadline, nearest
+// deadline first. confirmed and all: newest booking first.
+export type AdminBookingFilter = 'review' | 'unpaid' | 'confirmed' | 'all'
 
 export interface AdminBookingSummary {
   id: string
@@ -24,8 +26,9 @@ export interface AdminBookingListResponse {
   filter: AdminBookingFilter
   items: AdminBookingSummary[]
   nextCursor: string | null
-  // Bookings still waiting for payment, for the filter badge.
+  // Bookings still waiting for payment, and proofs waiting for an admin, for the filter badges.
   unpaidCount: number
+  reviewCount: number
   serverNow: string
 }
 
@@ -40,8 +43,33 @@ export interface AdminBookingDetailResponse {
     // Sent back with PUT /customer-link so a link never lands on a booking someone else just changed.
     version: number
     session: AdminBookingSummary['session'] & { levelName: string; venueName: string; endTime: string }
+    // Every proof sent for this booking, newest first, and when and by whom it was confirmed.
+    proofs: AdminProof[]
+    confirmed: { at: string; by: string | null } | null
+    paymentNote: string | null
   }
   serverNow: string
+}
+
+export interface AdminProof {
+  id: string
+  submittedAt: string
+  status: 'pending' | 'approved' | 'rejected'
+  rejectionReason: ProofRejectionReason | null
+  rejectionNote: string | null
+  reviewed: { at: string; by: string | null } | null
+  // Read through GET /api/admin/proofs/:proofId/files/:fileId.
+  files: ProofFileSummary[]
+}
+
+// POST /api/admin/bookings/:id/proofs/:proofId/approve and .../reject. `version` is the booking's, so a review never
+// lands on a booking that changed meanwhile. Reject needs a reason; 'other' needs a note.
+export interface AdminApproveProofRequest { version: number }
+export interface AdminRejectProofRequest { version: number; reason: ProofRejectionReason; note?: string }
+// What the review did: confirmed (approved), needs_correction (rejected before the deadline: the member can send a new
+// proof), or expired (rejected after the deadline: the places were released, PAY-08).
+export interface AdminProofReviewResponse extends AdminBookingDetailResponse {
+  outcome: 'confirmed' | 'needs_correction' | 'expired'
 }
 
 // GET /api/admin/booking-options/:sessionId: what the admin booking form needs about one session.

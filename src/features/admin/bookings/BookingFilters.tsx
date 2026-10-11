@@ -5,9 +5,10 @@ import { adminBookingsMessages as messages } from './bookings.messages'
 import { BOOKING_FILTERS } from './booking-facts'
 import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
 
-// The status filter on the band (boards 14, D6): white for the chosen one, with how many are still unpaid. The list
+// The status filter on the band (boards 14, D6): white for the chosen one, with how many proofs wait for review (lime)
+// and how many bookings are still unpaid (amber). The list
 // changes at once; the white marker slides to the chosen filter.
-export function BookingFilters({ filter, unpaidCount, onChange }: { filter: AdminBookingFilter; unpaidCount: number | null; onChange: (filter: AdminBookingFilter) => void }) {
+export function BookingFilters({ filter, unpaidCount, reviewCount, onChange }: { filter: AdminBookingFilter; unpaidCount: number | null; reviewCount: number | null; onChange: (filter: AdminBookingFilter) => void }) {
   const { t } = useI18n()
   return (
     <div role="group" aria-label={t(messages.filter)} className="isolate flex flex-wrap gap-2">
@@ -22,6 +23,9 @@ export function BookingFilters({ filter, unpaidCount, onChange }: { filter: Admi
             {t(messages[value])}
             {value === 'unpaid' && unpaidCount != null && unpaidCount > 0 && (
               <span className="-mr-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-warning-container px-2 font-bold tabular-nums text-warning">{unpaidCount}</span>
+            )}
+            {value === 'review' && reviewCount != null && reviewCount > 0 && (
+              <span className="-mr-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-accent px-2 font-bold tabular-nums text-on-accent">{reviewCount}</span>
             )}
           </button>
         )

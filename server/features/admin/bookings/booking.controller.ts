@@ -5,11 +5,12 @@ import { ApiError } from '../../../http/errors.ts'
 import { getAdminBooking, LIST_DEFAULT, LIST_MAX, listAdminBookings } from './booking.service.ts'
 import type { AdminBookingCreateService } from './booking-create.service.ts'
 import { findVerifiedCustomer, linkBookingToCustomer } from './booking-link.service.ts'
+import { reviewProof } from './proof-review.service.ts'
 
 const id = z.string().regex(/^[a-z0-9]{1,64}$/)
 
 const listQuery = z.object({
-  status: z.enum(['unpaid', 'confirmed', 'all']).default('unpaid'),
+  status: z.enum(['review', 'unpaid', 'confirmed', 'all']).default('unpaid'),
   cursor: z.string().max(200).optional(),
   q: z.string().max(80).optional(),
   limit: z.coerce.number().int().min(1).max(LIST_MAX).default(LIST_DEFAULT),
@@ -28,6 +29,14 @@ const createBody = z.strictObject({
 const lookupQuery = z.object({ phone: z.string().min(1).max(50) })
 
 const linkBody = z.strictObject({ customerId: id, version: z.number().int().positive().safe() })
+
+const approveBody = z.strictObject({ version: z.number().int().positive().safe() })
+// 'other' needs a note, so the member always reads a reason.
+const rejectBody = z.strictObject({
+  version: z.number().int().positive().safe(),
+  reason: z.enum(['amount_mismatch', 'unreadable', 'not_received', 'other']),
+  note: z.string().trim().max(300).optional(),
+}).refine(body => body.reason !== 'other' || Boolean(body.note), { path: ['note'] })
 
 function parse<T>(schema: z.ZodType<T>, value: unknown): T {
   const parsed = schema.safeParse(value)
@@ -66,5 +75,17 @@ export function createAdminBookingController(database: PrismaClient, creation: A
     const input = parse(linkBody, request.body)
     response.json(await linkBookingToCustomer(database, { bookingId: request.params.id, customerId: input.customerId, version: input.version, adminId: adminId(response) }))
   }
-  return { list, detail, options, create, lookupCustomer, linkCustomer }
+  const approveProof: RequestHandler<{ id: string; proofId: string }> = async (request, response) => {
+    if (!id.safeParse(request.params.id).success || !id.safeParse(request.params.proofId).success) throw new ApiError(404, 'NOT_FOUND')
+    const input = parse(approveBody, request.body)
+    response.json(await reviewProof(database, { bookingId: request.params.id, proofId: request.params.proofId, version: input.version, adminId: adminId(response), decision: { kind: 'approve' } }))
+  }
+  const rejectProof: RequestHandler<{ id: string; proofId: string }> = async (request, response) => {
+    if (!id.safeParse(request.params.id).success || !id.safeParse(request.params.proofId).success) throw new ApiError(404, 'NOT_FOUND')
+    const parsed = rejectBody.safeParse(request.body)
+    if (!parsed.success) throw new ApiError(400, 'VALIDATION_FAILED', { [String(parsed.error.issues[0]?.path[0] ?? 'body')]: parsed.error.issues[0]?.path[0] === 'note' ? 'REQUIRED' : 'INVALID_FORMAT' })
+    const { version, reason, note } = parsed.data
+    response.json(await reviewProof(database, { bookingId: request.params.id, proofId: request.params.proofId, version, adminId: adminId(response), decision: { kind: 'reject', reason, note: note || null } }))
+  }
+  return { list, detail, options, create, lookupCustomer, linkCustomer, approveProof, rejectProof }
 }

@@ -10,6 +10,7 @@ import { adminBookingLinkMessages, adminBookingsMessages as messages } from './b
 import { BookingLinkSection } from './BookingLinkSection'
 import { whatsappHref } from './booking-facts'
 import { useState } from 'react'
+import { ProofReviewSection } from './ProofReviewSection'
 
 // Everything under a booking's blue header: contact and chat, linking an admin-recorded booking to an account, the
 // players, session, total and when it was booked. `drawer` (desktop, board D6): one white panel with the players as a
@@ -44,6 +45,8 @@ export function BookingDetailBody({ data, onChanged, drawer = false }: {
         </a>
       )}
     </section>
+    {/* A proof waiting for review comes first after the contact: it is what the admin opened the booking for. */}
+    <ProofReviewSection data={data} onChanged={onChanged} />
     {!booking.customer && <BookingLinkSection booking={booking} onChanged={onChanged} onLinkedElsewhere={setNotice} />}
     {!drawer && <section aria-labelledby="players" className={cn('flex flex-col gap-2 p-4', card)}>
       <h2 id="players" className="font-bold">{t(messages.players)}</h2>

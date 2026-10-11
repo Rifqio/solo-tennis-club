@@ -20,4 +20,4 @@ export function whatsappHref(phone: string) {
   return digits ? `https://wa.me/${digits.startsWith('0') ? '62' + digits.slice(1) : digits}` : null
 }
 
-export const BOOKING_FILTERS: AdminBookingFilter[] = ['unpaid', 'confirmed', 'all']
+export const BOOKING_FILTERS: AdminBookingFilter[] = ['review', 'unpaid', 'confirmed', 'all']

@@ -22,6 +22,17 @@ const detailFields = {
   customer: { select: { displayName: true, phone: true, verifiedAt: true } },
   version: true,
   ownershipEvents: { select: { createdAt: true, admin: { select: { displayName: true } } }, orderBy: { createdAt: 'desc' }, take: 1 },
+  confirmedAt: true,
+  confirmedBy: { select: { displayName: true } },
+  paymentNote: true,
+  paymentProofs: {
+    select: {
+      id: true, submittedAt: true, status: true, rejectionReason: true, rejectionNote: true, reviewedAt: true,
+      reviewedBy: { select: { displayName: true } },
+      files: { select: { id: true, originalName: true, contentType: true, byteSize: true }, orderBy: { position: 'asc' } },
+    },
+    orderBy: [{ submittedAt: 'desc' }, { id: 'desc' }],
+  },
 } satisfies Prisma.BookingSelect
 
 export type AdminBookingRow = Prisma.BookingGetPayload<{ select: typeof summaryFields }>
@@ -71,6 +82,43 @@ export function createAdminBookingRepository(database: Database) {
     },
     countUnpaid(now: Date) {
       return database.booking.count({ where: awaitingPaymentWhere(now) })
+    },
+    // Proofs waiting for an admin: the oldest proof first, paged by (submittedAt, proof id). A booking has at most one
+    // pending proof, because sending one moves it out of the states that accept another.
+    listForReview(take: number, after: Cursor | null, search: string | null = null) {
+      return database.paymentProof.findMany({
+        where: {
+          status: 'pending',
+          booking: { status: 'awaiting_verification', ...searchWhere(search) },
+          ...(after ? { OR: [{ submittedAt: { gt: after.at } }, { submittedAt: after.at, id: { gt: after.id } }] } : {}),
+        },
+        select: { id: true, submittedAt: true, booking: { select: summaryFields } },
+        orderBy: [{ submittedAt: 'asc' }, { id: 'asc' }],
+        take,
+      })
+    },
+    countForReview() {
+      return database.booking.count({ where: { status: 'awaiting_verification' } })
+    },
+    // What a review needs to decide, inside its transaction.
+    findForReview(bookingId: string, proofId: string) {
+      return database.booking.findUnique({
+        where: { id: bookingId },
+        select: {
+          id: true, status: true, version: true, originalDeadline: true, session: { select: { status: true } },
+          paymentProofs: { where: { id: proofId }, select: { id: true, status: true } },
+        },
+      })
+    },
+    // Only at the version the admin saw and while still under review; zero rows means someone got there first.
+    settleReviewAtVersion(id: string, version: number, data: { status: 'confirmed' | 'needs_correction' | 'expired'; confirmedAt?: Date; confirmedById?: string }) {
+      return database.booking.updateMany({
+        where: { id, version, status: 'awaiting_verification' },
+        data: { ...data, version: { increment: 1 } },
+      })
+    },
+    markProofReviewed(proofId: string, data: { status: 'approved' | 'rejected'; reviewedAt: Date; reviewedById: string; rejectionReason?: string; rejectionNote?: string | null }) {
+      return database.paymentProof.updateMany({ where: { id: proofId, status: 'pending' }, data })
     },
     findDetail(id: string) {
       return database.booking.findUnique({ where: { id }, select: detailFields })

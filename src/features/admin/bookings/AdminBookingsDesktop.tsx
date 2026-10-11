@@ -66,7 +66,7 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
 
   return <>
     <AdminBand title={t(messages.heading)}
-      subtitle={<div className="mt-3"><BookingFilters filter={filter} unpaidCount={list.data?.unpaidCount ?? null}
+      subtitle={<div className="mt-3"><BookingFilters filter={filter} unpaidCount={list.data?.unpaidCount ?? null} reviewCount={list.data?.reviewCount ?? null}
         onChange={value => navigate(`/admin/bookings${openId ? `/${openId}` : ''}${urlFor(value, search)}`, { replace: true })} /></div>}
       action={<label className="flex h-12 w-[21.25rem] max-w-full items-center gap-2.5 rounded-full bg-surface-container-lowest px-4 text-on-surface-variant focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-white">
         <Search aria-hidden="true" className="size-5 shrink-0" />
@@ -82,7 +82,7 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
         ) : list.status === 'error' ? (
           <div className="p-6"><StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: list.retry }} /></div>
         ) : list.items.length === 0 ? (
-          <p className="p-6 text-on-surface-variant">{search ? t(copy.noMatch, { query: search }) : t(filter === 'unpaid' ? messages.emptyUnpaid : filter === 'confirmed' ? messages.emptyConfirmed : messages.emptyAll)}</p>
+          <p className="p-6 text-on-surface-variant">{search ? t(copy.noMatch, { query: search }) : t(filter === 'review' ? messages.emptyReview : filter === 'unpaid' ? messages.emptyUnpaid : filter === 'confirmed' ? messages.emptyConfirmed : messages.emptyAll)}</p>
         ) : <>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[40rem] border-collapse">

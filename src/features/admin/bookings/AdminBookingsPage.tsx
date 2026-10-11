@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
@@ -7,15 +6,15 @@ import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import type { Language, Message } from '@/i18n/types'
-import { cn } from '@/lib/utils'
-import type { AdminResult } from '@/lib/admin-api'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { addClubDays, clubDateOf } from '@shared/club-time'
-import type { AdminBookingFilter, AdminBookingListResponse, AdminBookingSummary } from '@shared/api/admin-bookings'
-import { useAdminAuth } from '../auth/use-admin-auth'
+import type { AdminBookingFilter, AdminBookingSummary } from '@shared/api/admin-bookings'
 import { AdminBand } from '../shell/AdminBand'
 import { adminBookingsMessages as messages } from './bookings.messages'
-
-const FILTERS: AdminBookingFilter[] = ['unpaid', 'confirmed', 'all']
+import { AdminBookingsDesktop } from './AdminBookingsDesktop'
+import { BookingFilters } from './BookingFilters'
+import { BOOKING_FILTERS } from './booking-facts'
+import { useAdminBookingList } from './use-admin-booking-list'
 
 function BookingRow({ booking, filter }: { booking: AdminBookingSummary; filter: AdminBookingFilter }) {
   const { language, t } = useI18n()
@@ -60,62 +59,31 @@ function groupBookings(items: AdminBookingSummary[], filter: AdminBookingFilter,
 }
 
 export function Component() {
-  const { get, state: auth } = useAdminAuth()
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
+  return isDesktop ? <AdminBookingsDesktop openId={null} /> : <BookingsScreen />
+}
+
+// Phones (board 14): unpaid bookings grouped by deadline day, the others by booking day.
+function BookingsScreen() {
   const { language, t } = useI18n()
   const [params, setParams] = useSearchParams()
-  const filter: AdminBookingFilter = FILTERS.includes(params.get('status') as AdminBookingFilter) ? params.get('status') as AdminBookingFilter : 'unpaid'
-  const [result, setResult] = useState<{ filter: AdminBookingFilter; response: AdminResult<AdminBookingListResponse> } | null>(null)
-  const [more, setMore] = useState<{ filter: AdminBookingFilter; items: AdminBookingSummary[]; nextCursor: string | null } | null>(null)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [attempt, setAttempt] = useState(0)
-  useEffect(() => {
-    if (auth.status !== 'signedIn') return
-    const controller = new AbortController()
-    void get<AdminBookingListResponse>(`/api/admin/bookings?status=${filter}`, controller.signal).then(response => {
-      if (!controller.signal.aborted) { setResult({ filter, response }); setMore(null) }
-    })
-    return () => controller.abort()
-  }, [get, filter, attempt, auth.status])
-  const response = result?.filter === filter ? result.response : null
-  const data = response?.kind === 'ok' ? response.data : null
-  const extra = more?.filter === filter ? more : null
-  const items = [...(data?.items ?? []), ...(extra?.items ?? [])]
-  const nextCursor = extra ? extra.nextCursor : data?.nextCursor ?? null
+  const filter: AdminBookingFilter = BOOKING_FILTERS.includes(params.get('status') as AdminBookingFilter) ? params.get('status') as AdminBookingFilter : 'unpaid'
+  const list = useAdminBookingList(filter)
+  const data = list.data
+  const items = list.items
   const today = data ? clubDateOf(new Date(data.serverNow)) : clubDateOf(new Date())
-  const loadMore = async () => {
-    if (!nextCursor || loadingMore) return
-    setLoadingMore(true)
-    try {
-      const page = await get<AdminBookingListResponse>(`/api/admin/bookings?status=${filter}&cursor=${encodeURIComponent(nextCursor)}`)
-      if (page.kind === 'ok') setMore({ filter, items: [...(extra?.items ?? []), ...page.data.items], nextCursor: page.data.nextCursor })
-    } finally { setLoadingMore(false) }
-  }
   const empty = filter === 'unpaid' ? messages.emptyUnpaid : filter === 'confirmed' ? messages.emptyConfirmed : messages.emptyAll
 
   return <>
     <AdminBand title={t(messages.heading)}>
-      <div role="group" aria-label={t(messages.filter)} className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-        {FILTERS.map(value => {
-          const on = value === filter
-          return (
-            <button key={value} type="button" aria-pressed={on} onClick={() => setParams(value === 'unpaid' ? {} : { status: value }, { replace: true })}
-              className={cn('state-layer pressable flex min-h-12 shrink-0 items-center gap-2 rounded-full px-3.5 text-label font-semibold',
-                on ? 'bg-surface-container-lowest text-on-surface' : 'bg-band-tile text-on-signboard')}>
-              {t(messages[value])}
-              {value === 'unpaid' && data && data.unpaidCount > 0 && (
-                <span className="-mr-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-warning-container px-2 font-bold tabular-nums text-warning">{data.unpaidCount}</span>
-              )}
-            </button>
-          )
-        })}
-      </div>
+      <BookingFilters filter={filter} unpaidCount={data?.unpaidCount ?? null} onChange={value => setParams(value === 'unpaid' ? {} : { status: value }, { replace: true })} />
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-4 py-4">
-      {!response ? (
+      {list.status === 'loading' ? (
         <div className="flex flex-col gap-2"><p role="status" className="sr-only">{t(messages.loading)}</p>
           {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-36 rounded-sm bg-surface-container" />)}</div>
-      ) : !data ? (
-        <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: () => { setResult(null); setAttempt(value => value + 1) } }} />
+      ) : list.status === 'error' || !data ? (
+        <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
       ) : items.length === 0 ? (
         <p className="rounded-sm bg-surface-container-lowest p-5">{t(empty)}</p>
       ) : <>
@@ -127,7 +95,7 @@ export function Component() {
             </ul>
           </section>
         ))}
-        {nextCursor && <Button variant="outlined" onClick={() => void loadMore()} pendingLabel={loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
+        {list.hasMore && <Button variant="outlined" onClick={() => void list.loadMore()} pendingLabel={list.loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
         {filter === 'unpaid' && <p className="text-center text-label text-on-surface-variant">{t(messages.footnote)}</p>}
       </>}
     </div>

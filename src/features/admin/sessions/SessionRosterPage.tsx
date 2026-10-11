@@ -36,7 +36,7 @@ const copy = {
   truncated: { id: 'Daftarnya panjang, jadi baru sebagian yang tampil.', en: 'The list is long, so only part of it is shown.' },
   cancelled: { id: 'Sesi ini dibatalkan.', en: 'This session is cancelled.' },
   edit: { id: 'Ubah sesi', en: 'Edit session' },
-  record: { id: 'Catat booking', en: 'Record a booking' },
+  record: { id: 'Catat booking dari WA', en: 'Record a WhatsApp booking' },
 }
 
 type Filter = 'all' | 'unpaid' | 'lapsed'

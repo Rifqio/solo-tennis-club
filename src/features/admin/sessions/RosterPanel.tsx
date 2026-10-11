@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { m, useReducedMotion } from 'motion/react'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
@@ -28,6 +30,7 @@ const copy = {
   truncated: { id: 'Daftarnya panjang, jadi baru sebagian yang tampil.', en: 'The list is long, so only part of it is shown.' },
   cancelled: { id: 'Sesi ini dibatalkan.', en: 'This session is cancelled.' },
   release: { id: 'Lewat batas bayar, slotnya lepas sendiri.', en: 'Past the payment deadline, places are released automatically.' },
+  record: { id: 'Catat booking dari WA', en: 'Record a WhatsApp booking' },
 }
 
 type Filter = 'all' | 'unpaid' | 'lapsed'
@@ -110,9 +113,15 @@ export function RosterPanel({ id }: { id: string }) {
           {shown.length === 0
             ? <p className="text-on-surface-variant">{t(copy.emptyFilter)}</p>
             : <ul className="flex flex-col gap-2.5">{shown.map(row => <li key={row.booking.id} className="rounded-sm border border-outline-variant"><BookingGroup {...row} /></li>)}</ul>}
-          <p className="text-label text-on-surface-variant">{t(copy.release)}</p>
         </>}
       </div>
+      {/* Board D5: the release rule beside the one thing to do next, recording a booking that came in on WhatsApp. */}
+      {session.status === 'scheduled' && <div className="flex flex-wrap items-center justify-between gap-3 px-6 pb-6">
+        <p className="text-label text-on-surface-variant">{t(copy.release)}</p>
+        <Button asChild variant="filled" className="px-6">
+          <Link to={`/admin/sessions/${encodeURIComponent(id)}/book`} viewTransition><Plus aria-hidden="true" className="size-5" />{t(copy.record)}</Link>
+        </Button>
+      </div>}
     </m.aside>
   )
 }

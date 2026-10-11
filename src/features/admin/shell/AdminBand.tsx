@@ -6,6 +6,7 @@ import { Wordmark } from '@/components/brand/ball-mark'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { clubContent } from '@/features/public/club/club-content'
 import { authMessages } from '../auth/auth.messages'
 import { shellMessages } from './shell.messages'
@@ -32,6 +33,8 @@ interface AdminBandProps {
 export function AdminBand({ title, back, subtitle, action, children, wideChildren = false }: AdminBandProps) {
   const { t } = useI18n()
   const { signOut, signingOut } = useAdminShell()
+  // The action renders once: beside the title on phones and tablets, in the right column from 1024px.
+  const wide = useMediaQuery('(min-width: 64rem)')
   return (
     <header className="relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white admin-column lg:mt-5 lg:rounded-lg lg:pt-0">
       <CourtLines className="pointer-events-none absolute -right-12 -top-4 -z-10 h-64 text-on-signboard/15 sm:right-8" />
@@ -60,12 +63,12 @@ export function AdminBand({ title, back, subtitle, action, children, wideChildre
           <div className="flex min-w-0 flex-col lg:flex-1">
             <div className={cn('flex min-h-12 items-center justify-between gap-3', back && 'pt-1')}>
               <h1 className="min-w-0 break-words text-headline font-bold leading-tight lg:text-display">{title}</h1>
-              {action && <div className="lg:hidden">{action}</div>}
+              {!wide && action}
             </div>
             {subtitle && <div className="mt-1 lg:mt-0.5">{subtitle}</div>}
           </div>
-          {(action || (children && !wideChildren)) && <div className={cn('flex min-w-0 flex-col gap-3 lg:mt-0 lg:items-end', !wideChildren && 'mt-3', wideChildren && 'max-lg:hidden')}>
-            {action && <div className="hidden lg:block">{action}</div>}
+          {((wide && action) || (children && !wideChildren)) && <div className={cn('flex min-w-0 flex-col gap-3 lg:mt-0 lg:items-end', !wideChildren && 'mt-3')}>
+            {wide && action}
             {!wideChildren && children}
           </div>}
         </div>

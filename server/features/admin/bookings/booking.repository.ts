@@ -28,14 +28,26 @@ export type AdminBookingRow = Prisma.BookingGetPayload<{ select: typeof summaryF
 export type AdminBookingDetailRow = Prisma.BookingGetPayload<{ select: typeof detailFields }>
 export type Cursor = { at: Date; id: string }
 
+// Name or phone: the typed text against the booker's name, and its digits (without a leading 0, so "0812" finds
+// "+62812...") against the stored phone.
+function searchWhere(search: string | null): Prisma.BookingWhereInput {
+  const text = search?.trim()
+  if (!text) return {}
+  const digits = text.replace(/\D/g, '').replace(/^0+/, '')
+  return { OR: [{ bookerName: { contains: text } }, ...(digits.length >= 3 ? [{ bookerPhone: { contains: digits } }] : [])] }
+}
+
 export function createAdminBookingRepository(database: Database) {
   return {
     // Still holding places: the deadline nearest now first, paged by (deadline, id).
-    listUnpaid(now: Date, take: number, after: Cursor | null) {
+    listUnpaid(now: Date, take: number, after: Cursor | null, search: string | null = null) {
       return database.booking.findMany({
         where: {
           ...activeBookingWhere(now),
-          ...(after ? { OR: [{ originalDeadline: { gt: after.at } }, { originalDeadline: after.at, id: { gt: after.id } }] } : {}),
+          AND: [
+            after ? { OR: [{ originalDeadline: { gt: after.at } }, { originalDeadline: after.at, id: { gt: after.id } }] } : {},
+            searchWhere(search),
+          ],
         },
         select: summaryFields,
         orderBy: [{ originalDeadline: 'asc' }, { id: 'asc' }],
@@ -43,11 +55,14 @@ export function createAdminBookingRepository(database: Database) {
       })
     },
     // Newest booking first, paged by (createdAt, id); optionally only one stored status.
-    listRecent(status: string | null, take: number, after: Cursor | null) {
+    listRecent(status: string | null, take: number, after: Cursor | null, search: string | null = null) {
       return database.booking.findMany({
         where: {
           ...(status ? { status } : {}),
-          ...(after ? { OR: [{ createdAt: { lt: after.at } }, { createdAt: after.at, id: { lt: after.id } }] } : {}),
+          AND: [
+            after ? { OR: [{ createdAt: { lt: after.at } }, { createdAt: after.at, id: { lt: after.id } }] } : {},
+            searchWhere(search),
+          ],
         },
         select: summaryFields,
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],

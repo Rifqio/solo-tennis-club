@@ -11,6 +11,7 @@ const id = z.string().regex(/^[a-z0-9]{1,64}$/)
 const listQuery = z.object({
   status: z.enum(['unpaid', 'confirmed', 'all']).default('unpaid'),
   cursor: z.string().max(200).optional(),
+  q: z.string().max(80).optional(),
   limit: z.coerce.number().int().min(1).max(LIST_MAX).default(LIST_DEFAULT),
 })
 
@@ -41,7 +42,7 @@ function adminId(response: Response) {
 export function createAdminBookingController(database: PrismaClient, creation: AdminBookingCreateService) {
   const list: RequestHandler = async (request, response) => {
     const query = parse(listQuery, request.query)
-    response.json(await listAdminBookings(database, { filter: query.status, cursor: query.cursor ?? null, limit: query.limit }))
+    response.json(await listAdminBookings(database, { filter: query.status, cursor: query.cursor ?? null, limit: query.limit, search: query.q ?? null }))
   }
   const detail: RequestHandler<{ id: string }> = async (request, response) => {
     response.json(await getAdminBooking(database, request.params.id))

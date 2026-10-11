@@ -47,13 +47,13 @@ function decodeCursor(cursor: string): Cursor {
   }
 }
 
-export async function listAdminBookings(database: PrismaClient, input: { filter: AdminBookingFilter; cursor: string | null; limit: number }, now = new Date()): Promise<AdminBookingListResponse> {
+export async function listAdminBookings(database: PrismaClient, input: { filter: AdminBookingFilter; cursor: string | null; limit: number; search?: string | null }, now = new Date()): Promise<AdminBookingListResponse> {
   return inTransaction(database, async transaction => {
     const repository = createAdminBookingRepository(transaction)
     const after = input.cursor ? decodeCursor(input.cursor) : null
     const rows = input.filter === 'unpaid'
-      ? await repository.listUnpaid(now, input.limit + 1, after)
-      : await repository.listRecent(input.filter === 'confirmed' ? 'confirmed' : null, input.limit + 1, after)
+      ? await repository.listUnpaid(now, input.limit + 1, after, input.search ?? null)
+      : await repository.listRecent(input.filter === 'confirmed' ? 'confirmed' : null, input.limit + 1, after, input.search ?? null)
     const page = rows.slice(0, input.limit)
     const last = page[page.length - 1]
     return {

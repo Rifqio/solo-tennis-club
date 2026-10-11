@@ -67,3 +67,19 @@ test('admins only: list and detail with players, account and no-store; unknown i
   expect((await adminFetch(server.baseUrl, auth, '/bookings/unknown123')).status).toBe(404)
   expect((await adminFetch(server.baseUrl, auth, '/bookings?status=everything')).status).toBe(400)
 })
+
+test('search finds bookings by part of the name or of the phone (typed with a leading 0), and pages within the results', async () => {
+  const session = await createSampleSession(db.prisma, { catalog, startsAt: new Date(Date.now() + 48 * HOUR) })
+  const tag = crypto.randomUUID().slice(0, 8)
+  const deadline = new Date(Date.now() + 3 * HOUR)
+  const named = await Promise.all([1, 2, 3].map(n => book(session.id, [`Cari ${tag} ${n}`], new Date(deadline.getTime() + n * 60_000))))
+  const phone = await db.prisma.booking.update({ where: { id: named[0]!.id }, data: { bookerPhone: '+6289977755511' } })
+  const first = await (await adminFetch(server.baseUrl, auth, `/bookings?status=unpaid&q=${encodeURIComponent(`cari ${tag}`)}&limit=2`)).json() as AdminBookingListResponse
+  expect(first.items.map(item => item.id)).toEqual([named[0]!.id, named[1]!.id])
+  const second = await (await adminFetch(server.baseUrl, auth, `/bookings?status=unpaid&q=${encodeURIComponent(`cari ${tag}`)}&limit=2&cursor=${encodeURIComponent(first.nextCursor!)}`)).json() as AdminBookingListResponse
+  expect(second.items.map(item => item.id)).toEqual([named[2]!.id])
+  const byPhone = await (await adminFetch(server.baseUrl, auth, '/bookings?status=all&q=0899-777')).json() as AdminBookingListResponse
+  expect(byPhone.items.map(item => item.id)).toEqual([phone.id])
+  const none = await (await adminFetch(server.baseUrl, auth, `/bookings?status=all&q=nobody-${tag}`)).json() as AdminBookingListResponse
+  expect(none.items).toEqual([])
+})

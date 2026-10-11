@@ -1,7 +1,8 @@
 import type { EffectiveBookingStatus } from '../booking-rules.ts'
 import type { BookingOptionsResponse } from './booking-admission.ts'
 
-// GET /api/admin/bookings?status=unpaid|confirmed|all&cursor=&limit= and GET /api/admin/bookings/:id.
+// GET /api/admin/bookings?status=unpaid|confirmed|all&q=&cursor=&limit= and GET /api/admin/bookings/:id.
+// q: part of the booker's name, or of their phone number.
 // unpaid: still holding places, nearest deadline first. confirmed and all: newest booking first.
 export type AdminBookingFilter = 'unpaid' | 'confirmed' | 'all'
 

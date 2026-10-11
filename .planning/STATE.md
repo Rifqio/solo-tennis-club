@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 
 Phase: 3 (Pay and Verify Bookings) - PLANNING; policy decisions precede plans (ROADMAP Phase 3 planning prerequisites).
 Phase 1: accepted 2026-10-09. Phase 2: all plans implemented and manually accepted by the user on 2026-10-11, including the desktop boards (Rekap D7 and QRIS D8 belong to Phase 3), the motion pass, the G1 status and feedback system and the desktop session editor.
-Open gates carried forward: the full browser e2e run with the updated specs; real OTP delivery and hosted deployment (release prerequisites); release cleanup (dev sign-in shortcut, ONBOARDING_ALWAYS, photo licences, lafu* identifiers).
+Open gates carried forward: the full browser e2e run with the updated specs; real OTP delivery and hosted deployment (release prerequisites; Vercel plan in [DEPLOYMENT-PLAN.md](DEPLOYMENT-PLAN.md), awaiting the user's option choice); release cleanup (dev sign-in shortcut, ONBOARDING_ALWAYS, photo licences, lafu* identifiers).
 
 Progress: 2 of 5 phases accepted (40%).
 

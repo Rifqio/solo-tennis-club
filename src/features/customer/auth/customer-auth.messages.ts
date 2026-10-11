@@ -34,7 +34,7 @@ export const customerAuthMessages = {
   signingOut: { id: 'Sedang keluar...', en: 'Signing out...' },
   back: { id: 'Jadwal', en: 'Schedule' },
   backLabel: { id: 'Kembali ke jadwal', en: 'Back to schedule' },
-  loading: { id: 'Memeriksa sesi Anda...', en: 'Checking your session...' },
+  loading: { id: 'Ngecek login kamu...', en: 'Checking your login...' },
   loadError: { id: 'Belum dapat memeriksa sesi. Coba lagi.', en: 'Could not check your session. Try again.' },
   network: { id: 'Permintaan belum selesai. Periksa koneksi lalu coba lagi.', en: 'The request did not finish. Check your connection and try again.' },
   retry: { id: 'Coba lagi', en: 'Try again' },

@@ -3,7 +3,7 @@ import type { Message } from './types'
 
 // Records keyed by the shared unions: adding a code on the server fails the build until it has copy here.
 export const apiErrorMessages: Record<ApiErrorCode, Message> = {
-  CUSTOMER_UNAUTHENTICATED: { id: 'Sesi Anda berakhir. Masuk lagi untuk melanjutkan.', en: 'Your session has ended. Sign in again to continue.' },
+  CUSTOMER_UNAUTHENTICATED: { id: 'Login kamu udah habis. Login lagi buat lanjut.', en: 'Your login has ended. Log in again to carry on.' },
   OTP_INVALID: { id: 'Kode tidak cocok. Periksa enam digit lalu coba lagi.', en: 'The code does not match. Check all six digits and try again.' },
   OTP_EXPIRED: { id: 'Kode sudah kedaluwarsa. Minta kode baru.', en: 'The code has expired. Request a new code.' },
   OTP_CONSUMED: { id: 'Kode sudah digunakan atau diganti. Minta kode baru.', en: 'This code was used or replaced. Request a new code.' },

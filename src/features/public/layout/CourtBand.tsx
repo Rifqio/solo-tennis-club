@@ -10,7 +10,7 @@ interface CourtBandProps {
   // The screen headline in white. Task screens (sign-in, booking) omit it and keep their own heading below.
   title?: string
   headingRef?: Ref<HTMLHeadingElement>
-  // Sits at the end of the headline row (the schedule's Today chip).
+  // Sits at the end of the headline row (the schedule's Today chip, the desktop booking tabs).
   action?: ReactNode
   children?: ReactNode
   className?: string

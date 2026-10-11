@@ -19,7 +19,7 @@ const copy = {
   upload: { id: 'Upload foto', en: 'Upload photo' },
   replace: { id: 'Ganti foto', en: 'Replace photo' },
   remove: { id: 'Hapus foto', en: 'Remove photo' },
-  uploading: { id: 'Mengunggah...', en: 'Uploading...' },
+  uploading: { id: 'Lagi upload...', en: 'Uploading...' },
   alt: { id: 'Foto {name}', en: 'Photo of {name}' },
   tooBig: { id: 'Foto lebih dari 5 MB. Pilih foto yang lebih kecil.', en: 'The photo is over 5 MB. Choose a smaller one.' },
   wrongType: { id: 'Pilih foto JPG, PNG, atau WebP.', en: 'Choose a JPG, PNG or WebP photo.' },

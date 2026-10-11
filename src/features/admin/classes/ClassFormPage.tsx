@@ -22,9 +22,17 @@ import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
 import { setNavMotion } from '@/lib/nav-motion'
 import { revealInvalid } from '@/lib/reveal-invalid'
+import { useToast } from '@/components/ui/use-toast'
+import { failureNeedsPanel } from '../forms/form-failure'
 const mapping = { levelId: 'defaultLevelId', venueId: 'defaultVenueId', durationMinutes: 'defaultDurationMinutes', priceIdr: 'defaultPriceIdr', minParticipants: 'defaultMinParticipants', maxParticipants: 'defaultMaxParticipants', coachIds: 'defaultCoachIds' } as const
 const fromRecord = (record: ClassRecord | null): DefaultValues => record ? { levelId: record.defaultLevelId, venueId: record.defaultVenueId, durationMinutes: String(record.defaultDurationMinutes), priceIdr: String(record.defaultPriceIdr), minParticipants: String(record.defaultMinParticipants), maxParticipants: String(record.defaultMaxParticipants), coachIds: record.defaultCoachIds } : emptyDefaults
 // Phones and tablets: one class's editor on its own screen (desktop shows it beside the list, classes-route).
+// Saving a class is confirmed by a toast (G1); the list then shows where the class is.
+const savedCopy = {
+  created: { id: 'Kelas ditambahkan.', en: 'Class added.' },
+  updated: { id: 'Perubahan kelas tersimpan.', en: 'Class changes saved.' },
+}
+
 export function ClassFormPage() {
   const { id } = useParams()
   const { t } = useI18n()
@@ -40,6 +48,7 @@ export function ClassForm({ initial, embedded = false }: { initial: ClassRecord 
   const { send } = useAdminAuth()
   const options = useAdminResource<SessionOptions>('/api/admin/session-options')
   const navigate = useNavigate()
+  const toast = useToast()
   const [baseline, setBaseline] = useState(initial)
   const [name, setName] = useState(initial?.name ?? '')
   const [values, setValues] = useState(() => fromRecord(initial))
@@ -65,8 +74,12 @@ export function ClassForm({ initial, embedded = false }: { initial: ClassRecord 
     sending.current = true; setPending(true); setFailure(null)
     try {
       const result = await send<ClassRecord>(initial ? 'PUT' : 'POST', `/api/admin/classes${initial ? `/${initial.id}` : ''}`, { ...input, ...(initial ? { version: baseline!.version } : { createRequestId: requestId }) })
-      if (result.kind === 'ok') { guard.allowNavigation(); setNavMotion('pop'); navigate('/admin/classes', { state: { savedId: result.data.id }, viewTransition: !embedded }); return }
-      if (result.kind === 'http') { setErrors(translateFields(result.fields ?? {})); setFailure(t(apiErrorMessages[result.code])); if (result.code === 'STALE_VERSION') setLatest(result.latest as ClassRecord); focusErrors() }
+      if (result.kind === 'ok') {
+        guard.allowNavigation()
+        toast({ message: t(initial ? savedCopy.updated : savedCopy.created) })
+        setNavMotion('pop'); navigate('/admin/classes', { state: { savedId: result.data.id }, viewTransition: !embedded }); return
+      }
+      if (result.kind === 'http') { setErrors(translateFields(result.fields ?? {})); setFailure(failureNeedsPanel(result.code, result.fields) ? t(apiErrorMessages[result.code]) : null); if (result.code === 'STALE_VERSION') setLatest(result.latest as ClassRecord); focusErrors() }
       else setFailure(t(messages.saveError))
     } finally { sending.current = false; setPending(false) }
   }

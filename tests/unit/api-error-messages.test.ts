@@ -12,7 +12,8 @@ describe('localized error catalog', () => {
 
   it('uses the UI-SPEC copy where the contract defines it', () => {
     expect(apiErrorMessages.SIGN_IN_FAILED).toEqual({ id: 'Email atau kata sandi tidak cocok. Periksa lalu coba lagi.', en: 'Email or password does not match. Check and try again.' })
-    expect(apiErrorMessages.STALE_VERSION.en).toBe('Another admin changed this session. Load the latest version and review your changes.')
+    // G1 (2026-10-11): one wording for every record kind, not only sessions.
+    expect(apiErrorMessages.STALE_VERSION.en).toBe('Another admin just changed this. Load the latest version, then review your changes.')
     expect(apiErrorMessages.SIGN_IN_THROTTLED.en).toContain('{minutes}')
     expect(apiErrorMessages.UNAUTHENTICATED.id).toBe('Sesi admin berakhir. Masuk lagi untuk melanjutkan.')
     expect(fieldErrorMessages.MIN_EXCEEDS_MAX.en).toBe('Minimum participants cannot exceed maximum capacity.')

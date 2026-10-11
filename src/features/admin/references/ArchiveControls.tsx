@@ -1,42 +1,34 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Archive } from 'lucide-react'
-import type { ReferenceKind, ReferenceRecord } from '@shared/api/admin-references'
+import type { ReferenceKind } from '@shared/api/admin-references'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { apiErrorMessages } from '@/i18n/api-error-messages'
+import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
-import { useAdminAuth } from '../auth/use-admin-auth'
-import { adminMessages as messages } from '../forms/admin.messages'
 import { referenceConfig } from './reference-config'
-import { SavedNote } from '@/components/ui/saved-note'
+import { archiveCopy, useRestore } from './use-archive-toast'
+import type { UndoFailure } from './use-archive-toast'
 
 const copy = {
-  archived: { id: '{name} diarsipkan', en: '{name} archived' },
-  archivedBody: { id: 'Kelas yang sudah memakainya tetap memakainya.', en: 'Classes that already use it keep it.' },
-  undo: { id: 'Urungkan', en: 'Undo' },
   showArchive: { id: 'Lihat arsip', en: 'View archive' },
   showActive: { id: 'Kembali ke daftar aktif', en: 'Back to the active list' },
   archiveTitle: { id: 'Arsip', en: 'Archive' },
 }
 
-// After archiving: what happened, and an undo that restores it against the version the archive returned.
-export function ArchivedNotice({ kind }: { kind: ReferenceKind }) {
+// An Urungkan that failed (the archive toast had gone): what did not happen, and a retry. Success is a toast.
+export function UndoFailedNotice({ kind }: { kind: ReferenceKind }) {
   const { t } = useI18n()
-  const { send } = useAdminAuth()
-  const navigate = useNavigate()
   const location = useLocation()
-  const [failure, setFailure] = useState<string | null>(null)
-  const archived = (location.state as { archived?: ReferenceRecord } | null)?.archived
-  if (!archived) return null
-  const undo = async () => {
-    const result = await send<ReferenceRecord>('POST', `/api/admin/${referenceConfig[kind].path}/${archived.id}/restore`, { version: archived.version })
-    if (result.kind === 'ok') navigate(`/admin/${referenceConfig[kind].path}/${archived.id}/edit`, { replace: true, state: { savedId: archived.id } })
-    else setFailure(t(result.kind === 'http' ? apiErrorMessages[result.code] ?? apiErrorMessages.INTERNAL : messages.saveError))
-  }
+  const restore = useRestore(kind)
+  const [retrying, setRetrying] = useState(false)
+  const failure = (location.state as { undoFailed?: UndoFailure } | null)?.undoFailed
+  if (!failure) return null
+  const retry = async () => { setRetrying(true); try { await restore(failure.record) } finally { setRetrying(false) } }
   return (
-    <SavedNote><StatusPanel tone={failure ? 'error' : 'success'} title={failure ?? t(copy.archived, { name: archived.name })} action={{ label: t(copy.undo), onAction: () => void undo() }}>
-      {!failure && <p>{t(copy.archivedBody)}</p>}
-    </StatusPanel></SavedNote>
+    <StatusPanel tone="error" title={t(archiveCopy.undoFailed, { name: failure.record.name })}
+      action={retrying ? undefined : { label: t(commonMessages.retry), onAction: () => void retry() }}>
+      <p>{failure.message}</p>
+    </StatusPanel>
   )
 }
 

@@ -13,6 +13,7 @@ import { adminBookingsMessages as messages } from './bookings.messages'
 import { BookingFilters } from './BookingFilters'
 import { BOOKING_FILTERS } from './booking-facts'
 import { useAdminBookingList } from './use-admin-booking-list'
+import { moreFailedCopy } from './bookings.messages'
 
 function BookingRow({ booking, filter }: { booking: AdminBookingSummary; filter: AdminBookingFilter }) {
   const { language, t } = useI18n()
@@ -91,7 +92,7 @@ function BookingsScreen() {
             </ul>
           </section>
         ))}
-        {list.hasMore && <Button variant="outlined" onClick={() => void list.loadMore()} pendingLabel={list.loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
+        {list.moreFailed ? <StatusPanel tone="error" title={t(moreFailedCopy)} action={{ label: t(commonMessages.retry), onAction: () => void list.loadMore() }} /> : list.hasMore && <Button variant="outlined" onClick={() => void list.loadMore()} pendingLabel={list.loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
         {filter === 'unpaid' && <p className="text-center text-label text-on-surface-variant">{t(messages.footnote)}</p>}
       </>}
     </div>

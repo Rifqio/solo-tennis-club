@@ -14,10 +14,10 @@ import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { CoachAvatar } from '../forms/CoachAvatar'
 import { AdminBand } from '../shell/AdminBand'
 import { archiveEmpty, referenceConfig, referenceKindOf, referenceSubline } from './reference-config'
-import { ArchivedNotice, ArchiveHeading, ArchiveToggle } from './ArchiveControls'
+import { ArchiveHeading, ArchiveToggle, UndoFailedNotice } from './ArchiveControls'
 import { ReferenceTabs } from './ReferenceTabs'
 import { adminMessages as messages } from '../forms/admin.messages'
-import { SavedNote } from '@/components/ui/saved-note'
+import { useRevealSaved } from '@/lib/use-reveal-saved'
 
 const copy = {
   heading: { id: 'Kelola', en: 'Manage' },
@@ -51,11 +51,12 @@ function ReferenceList({ kind }: { kind: ReferenceKind }) {
   const location = useLocation()
   const list = useAdminList<ReferenceRecord>(`/api/admin/${config.path}${archive ? '?archived=1' : ''}`, search, location.key)
   const savedId = (location.state as { savedId?: string } | null)?.savedId
+  useRevealSaved(savedId, list.status === 'ready')
   const venue = kind === 'venue'
   return (
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4">
       {archive && <h2 className="text-title font-bold"><ArchiveHeading kind={kind} /></h2>}
-      <ArchivedNotice kind={kind} />
+      <UndoFailedNotice kind={kind} />
       <ListSearch value={query} onChange={setQuery} label={t(config.search)} placeholder={t(config.search)} busy={list.searching} />
       {list.items.some(record => record.isSample) && <SampleDataNotice />}
       {list.status === 'loading' ? (
@@ -69,8 +70,7 @@ function ReferenceList({ kind }: { kind: ReferenceKind }) {
         <ul className="flex flex-col gap-2.5" aria-busy={list.searching}>
           <AnimatePresence initial={false} mode="popLayout">
           {list.items.map(row => (
-            <m.li key={row.id} {...listRowMotion} className="flex flex-col gap-2">
-              {savedId === row.id && <SavedNote><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
+            <m.li key={row.id} data-row-id={row.id} {...listRowMotion} className="flex flex-col gap-2">
               <Link to={`/admin/${config.path}/${row.id}/edit${archive ? '?view=archive' : ''}`} viewTransition
                 className="state-layer pressable flex items-center justify-between gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
                 {kind === 'coach' && <CoachAvatar name={row.name} photoUrl={row.photoUrl} />}
@@ -88,7 +88,7 @@ function ReferenceList({ kind }: { kind: ReferenceKind }) {
           </AnimatePresence>
         </ul>
       )}
-      <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={config.noun} />
+      <ListMore failed={list.moreFailed} shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={config.noun} />
       {venue && !archive && list.items.some(row => !row.mapUrl) && <p className="text-label text-on-surface-variant">{t(copy.pinNote)}</p>}
       {!archive && <Link to={`/admin/${config.path}/new`} viewTransition
         className="state-layer pressable mt-1 flex min-h-13 items-center justify-center gap-2 rounded-sm border border-primary font-semibold text-primary">

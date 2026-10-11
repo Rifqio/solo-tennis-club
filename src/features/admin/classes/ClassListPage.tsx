@@ -13,7 +13,7 @@ import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
 import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
-import { SavedNote } from '@/components/ui/saved-note'
+import { useRevealSaved } from '@/lib/use-reveal-saved'
 
 const copy = {
   heading: { id: 'Kelas', en: 'Classes' },
@@ -37,6 +37,7 @@ export function ClassListPage() {
   const list = useAdminList<ClassRecord>('/api/admin/classes', search)
   const location = useLocation()
   const savedId = (location.state as { savedId?: string } | null)?.savedId
+  useRevealSaved(savedId, list.status === 'ready')
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter desk-column mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4">
@@ -53,8 +54,7 @@ export function ClassListPage() {
         <ul className="grid gap-2.5 lg:grid-cols-2" aria-busy={list.searching}>
           <AnimatePresence initial={false} mode="popLayout">
           {list.items.map(row => (
-            <m.li key={row.id} {...listRowMotion} className="flex flex-col gap-2">
-              {savedId === row.id && <SavedNote><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
+            <m.li key={row.id} data-row-id={row.id} {...listRowMotion} className="flex flex-col gap-2">
               <Link to={`/admin/classes/${row.id}/edit`} viewTransition className="state-layer pressable flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest px-4 py-3.5">
                 <span className="flex items-start justify-between gap-3">
                   <span className="flex min-w-0 flex-col leading-snug">
@@ -75,7 +75,7 @@ export function ClassListPage() {
           </AnimatePresence>
         </ul>
       )}
-      <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={copy.noun} />
+      <ListMore failed={list.moreFailed} shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={copy.noun} />
       <Link to="/admin/classes/new" viewTransition className="state-layer pressable mt-1 flex min-h-13 items-center justify-center gap-2 rounded-sm border border-primary font-semibold text-primary lg:self-start lg:px-8">
         <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(copy.add)}
       </Link>

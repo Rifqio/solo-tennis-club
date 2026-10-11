@@ -21,7 +21,7 @@ import { sessionsMessages as messages } from './sessions.messages'
 import { RosterPanel } from './RosterPanel'
 import { m } from 'motion/react'
 import { selectionSpring } from '@/lib/motion'
-import { SavedNote } from '@/components/ui/saved-note'
+import { useRevealSaved } from '@/lib/use-reveal-saved'
 
 const UNPAID_FILL = 'repeating-linear-gradient(135deg, var(--color-band-tile) 0 3px, color-mix(in srgb, var(--color-band-tile) 32%, transparent) 3px 6px)'
 
@@ -51,7 +51,7 @@ function Legend() {
 
 // `onSelect` (desktop, board D5): the whole card chooses the session for the roster panel beside the list, which carries
 // "Ubah sesi"; a chosen card wears a blue ring. Phones (board 10) keep Peserta and Ubah on the card.
-function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSessionDetail; saved: boolean; selected?: boolean; onSelect?: () => void }) {
+function SessionCard({ row, selected = false, onSelect }: { row: AdminSessionDetail; selected?: boolean; onSelect?: () => void }) {
   const { t } = useI18n()
   const cancelled = row.status !== 'scheduled'
   const used = Math.max(0, row.maxParticipants - row.remainingPlaces)
@@ -77,7 +77,6 @@ function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSes
         </div>
   if (onSelect && !cancelled) return (
     <div className="flex flex-col gap-2">
-      {saved && <SavedNote><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
       <button type="button" aria-pressed={selected} onClick={onSelect}
         className="state-layer pressable relative flex w-full flex-col gap-3 rounded-[1rem] bg-surface-container-lowest px-[1.125rem] py-4 text-on-surface">
         {/* The roster beside the list swaps at once; only this outline glides to the session picked. */}
@@ -88,7 +87,6 @@ function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSes
   )
   return (
     <article className={cn('flex flex-col gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5 lg:rounded-[1rem] lg:px-[1.125rem] lg:py-4', cancelled && onSelect && 'opacity-70')}>
-      {saved && <SavedNote><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
       {heading}
       {!cancelled && <>
         {fill}
@@ -134,7 +132,9 @@ export function AdminSessionsPage() {
   const sessions = data?.sessions ?? []
   // Desktop (board D5): the day's sessions with the chosen one's players in a panel beside them.
   const isDesktop = useMediaQuery('(min-width: 64rem)')
-  const [pickedId, setPickedId] = useState<string | null>(null)
+  // After a save the saved session is the one shown (its roster on desktop, scrolled to on phones).
+  const [pickedId, setPickedId] = useState<string | null>(savedId ?? null)
+  useRevealSaved(savedId, data !== null)
   const strip = computeStripWindow({ selected, currentStart: stripStart, ...bounds })
   const panelId = isDesktop ? (sessions.find(row => row.id === pickedId && row.status === 'scheduled') ?? sessions.find(row => row.status === 'scheduled'))?.id ?? null : null
   return <>
@@ -166,7 +166,7 @@ export function AdminSessionsPage() {
         </StatusPanel>
       ) : (
         <ul className="grid gap-3" aria-label={t(messages.heading)}>
-          {sessions.map(row => <li key={row.id}><SessionCard row={row} saved={savedId === row.id} selected={row.id === panelId}
+          {sessions.map(row => <li key={row.id} data-row-id={row.id}><SessionCard row={row} selected={row.id === panelId}
             onSelect={isDesktop ? () => setPickedId(row.id) : undefined} /></li>)}
         </ul>
       )}

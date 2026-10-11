@@ -8,7 +8,7 @@ import { StepperField } from '@/components/ui/stepper-field'
 import { TextField } from '@/components/ui/text-field'
 import { apiErrorMessages, fieldErrorMessage } from '@/i18n/api-error-messages'
 import { commonMessages } from '@/i18n/common.messages'
-import { formatClubDateShort, formatIdr } from '@/i18n/format'
+import { formatClubDateShort, formatClubTime, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
 import { setNavMotion } from '@/lib/nav-motion'
@@ -20,14 +20,14 @@ import { useAdminAuth } from '../auth/use-admin-auth'
 import { useAdminResource } from '../forms/use-admin-resource'
 import { useUnsavedChangesGuard } from '../forms/use-unsaved-changes-guard'
 import { AdminBand } from '../shell/AdminBand'
-import { adminBookingFormMessages as messages } from './bookings.messages'
+import { adminBookingFormMessages as messages, adminBookingLinkMessages } from './bookings.messages'
 import { stepEnter, useStepDirection } from '@/lib/step-motion'
 import { revealInvalid } from '@/lib/reveal-invalid'
+import { useToast } from '@/components/ui/use-toast'
 
 type Step = 1 | 2 | 3
 type Errors = Partial<Record<'bookerName' | 'bookerPhone' | 'participantNames', FieldErrorCode>>
 
-export type CreatedBookingState = { created: { deadline: string; replayed: boolean } }
 
 export function Component() {
   const { id = '' } = useParams()
@@ -62,6 +62,7 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
   const navigate = useNavigate()
   const reduceMotion = useReducedMotion()
   const [options, setOptions] = useState(initial)
+  const toast = useToast()
   const [step, setStep] = useState<Step>(1)
   const direction = useStepDirection(step)
   const [bookerName, setBookerName] = useState('')
@@ -122,7 +123,7 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
   function goToReview() {
     const valid = count >= 1 && count <= options.remainingPlaces && names.length === count && names.every(name => normalizeCustomerName(name))
     setErrors(valid ? {} : { participantNames: names.some(name => !name.trim()) ? 'REQUIRED' : 'INVALID_FORMAT' })
-    if (!valid) return
+    if (!valid) { revealInvalid(); return }
     setNames(current => current.map(name => normalizeCustomerName(name)!))
     setStep(3)
   }
@@ -147,9 +148,9 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
       const result = await send<AdmittedBookingResponse>('POST', '/api/admin/bookings', payload())
       if (result.kind === 'ok') {
         guard.allowNavigation()
-        const state: CreatedBookingState = { created: { deadline: result.data.booking.originalDeadline, replayed: result.data.replayed } }
+        toast({ message: result.data.replayed ? t(adminBookingLinkMessages.replayed) : t(adminBookingLinkMessages.created, { time: formatClubTime(result.data.booking.originalDeadline) }) })
         setNavMotion('push')
-        navigate(`/admin/bookings/${result.data.booking.id}`, { replace: true, state, viewTransition: true })
+        navigate(`/admin/bookings/${result.data.booking.id}`, { replace: true, viewTransition: true })
         return
       }
       if (result.kind === 'network') { setFailure(t(messages.unsure)); return }
@@ -157,6 +158,8 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
       if (result.code === 'VALIDATION_FAILED' && result.fields) {
         setErrors(result.fields as Errors)
         setStep(result.fields.bookerName || result.fields.bookerPhone ? 1 : 2)
+        // After the step has changed, the field at fault takes focus (not the step heading).
+        window.setTimeout(() => revealInvalid(), 0)
         return
       }
       if (result.code === 'CAPACITY_UNAVAILABLE') {
@@ -170,7 +173,9 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
         setFailure(t(messages.changed))
         return
       }
-      if (result.code === 'BOOKING_CLOSED') await refreshOptions()
+      // Closed: the refreshed session replaces the form with why it can no longer be booked, the one message.
+      if (result.code === 'BOOKING_CLOSED') { await refreshOptions(); return }
+      if (result.code === 'UNAUTHENTICATED') return
       setFailure(t(apiErrorMessages[result.code]))
     } finally { setPending(false) }
   }

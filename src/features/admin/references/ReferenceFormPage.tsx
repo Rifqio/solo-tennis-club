@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Archive, ArchiveRestore, Check, ClipboardPaste, ExternalLink } from 'lucide-react'
+import { Archive, ArchiveRestore, ClipboardPaste, ExternalLink } from 'lucide-react'
 import type { MapLocationResponse, ReferenceKind, ReferenceRecord, ReferenceUsage as Usage } from '@shared/api/admin-references'
 import type { FieldErrorCode } from '@shared/api/errors'
 import { validateReferenceFields } from '@shared/reference-rules'
@@ -23,8 +23,11 @@ import { CoachPhotoField } from './CoachPhotoField'
 import { ReferenceUsage } from './ReferenceUsage'
 import { ArchiveDialog } from './ArchiveDialog'
 import { setNavMotion } from '@/lib/nav-motion'
-import { SavedNote } from '@/components/ui/saved-note'
 import { revealInvalid } from '@/lib/reveal-invalid'
+import { useToast } from '@/components/ui/use-toast'
+import { archiveCopy, useArchivedToast } from './use-archive-toast'
+import { failureNeedsPanel } from '../forms/form-failure'
+import { cn } from '@/lib/utils'
 
 const copy = {
   manage: { id: 'Kelola', en: 'Manage' },
@@ -43,7 +46,8 @@ const copy = {
   archivedTitle: { id: 'Diarsipkan', en: 'Archived' },
   archivedBody: { id: 'Tidak muncul di pilihan kelas dan sesi baru. Kelas yang sudah memakainya tetap memakainya.', en: 'Not offered for new classes and sessions. Classes that already use it keep it.' },
   saveFirst: { id: 'Simpan perubahan dulu sebelum mengarsipkan.', en: 'Save your changes before archiving.' },
-  savedShort: { id: 'Tersimpan', en: 'Saved' },
+  saved: { id: '{name} tersimpan.', en: '{name} saved.' },
+  added: { id: '{name} ditambahkan.', en: '{name} added.' },
 }
 
 type Pin = MapLocationResponse
@@ -51,15 +55,17 @@ type Pin = MapLocationResponse
 // Phones and tablets: one record's editor on its own screen (desktop shows it beside the list, references-route).
 export function Component() {
   const { id } = useParams()
-  const kind = referenceKindOf(useLocation().pathname)
+  const location = useLocation()
+  const kind = referenceKindOf(location.pathname)
   const config = referenceConfig[kind]
   const { t } = useI18n()
-  const resource = useAdminResource<ReferenceRecord>(id ? `/api/admin/${config.path}/${id}` : null)
+  // Refetched on every navigation: restoring reopens this same address with the record's new version.
+  const resource = useAdminResource<ReferenceRecord>(id ? `/api/admin/${config.path}/${id}` : null, location.key)
   if (id && !resource.data) return <>
     <AdminBand title={t(config.edit)} back={{ to: `/admin/${config.path}`, label: t(copy.manage) }} />
     <div className="page-gutter mx-auto max-w-[50rem] py-6"><StatusPanel tone={resource.response ? 'error' : 'info'} title={t(resource.response ? messages.loadError : messages.loading)} action={resource.response ? { label: t(commonMessages.retry), onAction: resource.retry } : undefined} /></div>
   </>
-  return <ReferenceForm key={`${kind}:${id ?? 'new'}`} kind={kind} initial={resource.data} />
+  return <ReferenceForm key={`${kind}:${id ?? 'new'}:${resource.data?.version ?? 0}`} kind={kind} initial={resource.data} />
 }
 
 function pinOf(record: ReferenceRecord | null): Pin | null {
@@ -68,8 +74,9 @@ function pinOf(record: ReferenceRecord | null): Pin | null {
 }
 
 // `embedded`: inside the desktop Kelola card (board D9b), without its own band and with the actions at the card's foot.
-// `justSaved`: the record was saved a moment ago, shown as a quiet note beside Simpan.
-export function ReferenceForm({ kind, initial, embedded = false, justSaved = false, onPhotoSaved }: { kind: ReferenceKind; initial: ReferenceRecord | null; embedded?: boolean; justSaved?: boolean; onPhotoSaved?: (dirty: boolean) => void }) {
+export function ReferenceForm({ kind, initial, embedded = false, onPhotoSaved }: { kind: ReferenceKind; initial: ReferenceRecord | null; embedded?: boolean; onPhotoSaved?: (dirty: boolean) => void }) {
+  const toast = useToast()
+  const archivedToast = useArchivedToast(kind)
   const config = referenceConfig[kind]
   const { t } = useI18n()
   const { send } = useAdminAuth()
@@ -143,8 +150,12 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
     try {
       const body = { name, ...(venue ? { address, ...mapFields } : {}), ...(initial ? { version: baseline!.version } : { createRequestId: requestId }) }
       const result = await send<ReferenceRecord>(initial ? 'PUT' : 'POST', `/api/admin/${config.path}${initial ? `/${initial.id}` : ''}`, body)
-      if (result.kind === 'ok') { guard.allowNavigation(); setNavMotion('pop'); navigate(`/admin/${config.path}${location.search}`, { state: { savedId: result.data.id }, viewTransition: !embedded }); return }
-      if (result.kind === 'http') { setErrors(result.fields ?? {}); setFailure(t(apiErrorMessages[result.code] ?? apiErrorMessages.INTERNAL)); if (result.code === 'STALE_VERSION') setLatest(result.latest as ReferenceRecord); focusErrors() }
+      if (result.kind === 'ok') {
+        guard.allowNavigation()
+        toast({ message: t(initial ? copy.saved : copy.added, { name: result.data.name }) })
+        setNavMotion('pop'); navigate(`/admin/${config.path}${location.search}`, { state: { savedId: result.data.id }, viewTransition: !embedded }); return
+      }
+      if (result.kind === 'http') { setErrors(result.fields ?? {}); setFailure(failureNeedsPanel(result.code, result.fields) ? t(apiErrorMessages[result.code] ?? apiErrorMessages.INTERNAL) : null); if (result.code === 'STALE_VERSION') setLatest(result.latest as ReferenceRecord); focusErrors() }
       else setFailure(t(messages.saveError))
     } finally { sending.current = false; setPending(false) }
   }
@@ -158,11 +169,11 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
       setConfirming(false)
       if (result.kind === 'ok') {
         guard.allowNavigation()
-        if (archived) { setNavMotion('pop'); navigate(`/admin/${config.path}${location.search}`, { state: { archived: result.data }, viewTransition: !embedded }) }
-        else navigate(`/admin/${config.path}/${result.data.id}/edit`, { state: { savedId: result.data.id } })
+        if (archived) { archivedToast(result.data); setNavMotion('pop'); navigate(`/admin/${config.path}${location.search}`, { viewTransition: !embedded }) }
+        else { toast({ message: t(archiveCopy.restored, { name: result.data.name }) }); navigate(`/admin/${config.path}/${result.data.id}/edit`, { replace: true, state: { savedId: result.data.id } }) }
         return
       }
-      if (result.kind === 'http') { setFailure(t(apiErrorMessages[result.code] ?? apiErrorMessages.INTERNAL)); if (result.code === 'STALE_VERSION') setLatest(result.latest as ReferenceRecord) }
+      if (result.kind === 'http') { setFailure(failureNeedsPanel(result.code) ? t(apiErrorMessages[result.code] ?? apiErrorMessages.INTERNAL) : null); if (result.code === 'STALE_VERSION') setLatest(result.latest as ReferenceRecord) }
       else setFailure(t(messages.saveError))
     } finally { sending.current = false; setArchiving(false) }
   }
@@ -173,11 +184,15 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
   }
 
   // Desktop: at the left of the card's foot. Phones: under the fields, so the pinned bar keeps one button.
-  const archiveAction = (className: string) => baseline && (baseline.archived
+  // Archiving waits for unsaved changes; the reason is visible text beside the button (touch has no tooltip).
+  const archiveAction = (className: string, wrap: string) => baseline && (baseline.archived
     ? <Button variant="outlined" className={className} disabled={pending} pendingLabel={archiving ? t(copy.restoring) : undefined} onClick={() => void setArchived(false)}>
         <ArchiveRestore aria-hidden="true" className="size-5" />{t(copy.restore)}</Button>
-    : <Button variant="outlined" className={className} disabled={pending || archiving || dirty} title={dirty ? t(copy.saveFirst) : undefined} onClick={() => setConfirming(true)}>
-        <Archive aria-hidden="true" className="size-5" />{t(copy.archive)}</Button>)
+    : <span className={cn('flex flex-col gap-1', wrap)}>
+        <Button variant="outlined" className={className} disabled={pending || archiving || dirty} onClick={() => setConfirming(true)}>
+          <Archive aria-hidden="true" className="size-5" />{t(copy.archive)}</Button>
+        {dirty && <span className="notice-in text-label text-on-surface-variant">{t(copy.saveFirst)}</span>}
+      </span>)
 
   const replaceWithLatest = () => {
     if (!latest) return
@@ -220,13 +235,12 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
           </section>}
         </div>}
         {initial && !venue && <ReferenceUsage usage={usage.data} />}
-        {!embedded && archiveAction('self-start px-4')}
+        {!embedded && archiveAction('self-start px-4', 'self-start items-start')}
         <FormFeedback failure={failure} latest={latest && <p>{latest.name}<br />{latest.address}</p>} yours={<p>{name}<br />{address}</p>} onReplace={replaceWithLatest} />
       </div>
       <div data-bottom-chrome={embedded ? undefined : ''} className={embedded ? 'mt-auto border-t border-outline-variant px-6 pb-6 pt-4' : 'sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3'}>
         <div className={embedded ? 'flex flex-wrap items-center justify-end gap-3' : 'page-gutter mx-auto w-full max-w-[50rem]'}>
-          {embedded && archiveAction('mr-auto px-4')}
-          {embedded && justSaved && !dirty && <SavedNote as="span"><span role="status" className="flex items-center gap-2 font-semibold text-primary"><Check aria-hidden="true" className="size-5" />{t(copy.savedShort)}</span></SavedNote>}
+          {embedded && archiveAction('px-4', 'mr-auto items-start')}
           <Button className={embedded ? 'px-8' : 'w-full'} variant="filled" type="submit" disabled={pending || reading || archiving || Boolean(latest)} pendingLabel={pending ? t(messages.saving) : undefined}>
             {t(embedded ? messages.save : config.save)}
           </Button>

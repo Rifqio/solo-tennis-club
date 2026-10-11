@@ -69,7 +69,7 @@ export function AdminDock() {
           className="group flex flex-col items-center gap-1 outline-none sm:order-first sm:mb-3 sm:mt-3">
           {/* The raise sits on the outer span so the press scale on the inner one does not fight it. */}
           <span className="flex -translate-y-6 sm:translate-y-0">
-            <m.span whileTap={{ scale: 0.94 }} transition={popSpring}
+            <m.span data-bottom-chrome whileTap={{ scale: 0.94 }} transition={popSpring}
               className="state-layer flex size-16 items-center justify-center rounded-full bg-accent text-on-accent shadow-fab group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-accent sm:size-14 sm:shadow-none">
               <Plus aria-hidden="true" className="size-7" strokeWidth={2.5} />
             </m.span>

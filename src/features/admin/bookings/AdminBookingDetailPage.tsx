@@ -1,4 +1,4 @@
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
@@ -7,7 +7,6 @@ import { adminBookingsMessages as messages } from './bookings.messages'
 import { BookingDetailBody } from './BookingDetailBody'
 import { bookingFacts } from './booking-facts'
 import { useAdminBooking } from './use-admin-booking'
-import type { CreatedBookingState } from './AdminBookingFormPage'
 
 // Phones (board 15): the booking on its own screen. Desktop (board D6) opens it in the drawer beside the table
 // (bookings-route).
@@ -17,7 +16,6 @@ export function Component() {
 }
 
 function BookingDetailScreen({ id }: { id: string }) {
-  const created = (useLocation().state as CreatedBookingState | null)?.created ?? null
   const { language, t } = useI18n()
   const { response, retry, replace } = useAdminBooking(id)
   const back = { to: '/admin/bookings', label: t(messages.back) }
@@ -45,7 +43,7 @@ function BookingDetailScreen({ id }: { id: string }) {
       </dl>
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-      <BookingDetailBody data={response.data} created={created} onChanged={replace} />
+      <BookingDetailBody data={response.data} onChanged={replace} />
     </div>
   </>
 }

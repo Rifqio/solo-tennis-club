@@ -20,6 +20,7 @@ export function useAdminList<T>(path: string | null, search: string, refresh?: u
   const [shown, setShown] = useState<Shown<T> | null>(null)
   const [attempt, setAttempt] = useState(0)
   const [loadingMore, setLoadingMore] = useState(false)
+  const [moreFailed, setMoreFailed] = useState(false)
   useEffect(() => {
     if (!path || auth.status !== 'signedIn') return
     const controller = new AbortController()
@@ -42,10 +43,11 @@ export function useAdminList<T>(path: string | null, search: string, refresh?: u
 
   const loadMore = async () => {
     if (!page?.nextCursor || loadingMore || searching) return
-    setLoadingMore(true)
+    setLoadingMore(true); setMoreFailed(false)
     try {
       const response = await get<PagedList<T>>(`${key}&cursor=${encodeURIComponent(page.nextCursor)}`)
       if (response.kind === 'ok') setState({ key, page: { items: [...page.items, ...response.data.items], nextCursor: response.data.nextCursor, total: response.data.total } })
+      else if (response.kind !== 'aborted') setMoreFailed(true)
     } finally { setLoadingMore(false) }
   }
 
@@ -55,6 +57,8 @@ export function useAdminList<T>(path: string | null, search: string, refresh?: u
     searching,
     items: page?.items ?? [], total: page?.total ?? 0, hasMore: Boolean(page?.nextCursor) && !searching,
     failure, loadMore, loadingMore,
+    // The next batch did not load; the rows on screen stay and the foot offers a retry.
+    moreFailed,
     retry: () => { setState(null); setAttempt(value => value + 1) },
   }
 }

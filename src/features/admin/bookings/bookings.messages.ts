@@ -103,7 +103,10 @@ export const adminBookingLinkMessages = {
   linkFailed: { id: 'Belum berhasil menghubungkan. Coba lagi.', en: 'Linking did not work. Try again.' },
   stale: { id: 'Booking ini baru berubah. Detail di atas sudah yang terbaru, cek lalu coba lagi.', en: 'This booking just changed. The details above are the latest; check them and try again.' },
   lostNumber: { id: 'Pemesan ganti atau kehilangan nomor? Booking nggak bisa dipindah ke nomor lain dari aplikasi. Bantu lewat pengurus klub.', en: 'Booker changed or lost their number? The booking cannot be moved to another number in the app. Handle it with the club organisers.' },
-  created: { id: 'Booking tercatat', en: 'Booking recorded' },
-  createdBody: { id: 'Slot ditahan sampai {time} WIB. Kirim info pembayaran ke pemesan lewat WA.', en: 'Slots are held until {time} WIB. Send the payment details to the booker on WhatsApp.' },
-  replayed: { id: 'Booking ini sudah tersimpan sebelumnya, jadi nggak dicatat dua kali.', en: 'This booking was already saved, so it was not recorded twice.' },
+  created: { id: 'Booking tercatat. Slot ditahan sampai {time} WIB.', en: 'Booking recorded. Slots are held until {time} WIB.' },
+  replayed: { id: 'Booking ini sudah tercatat sebelumnya.', en: 'This booking was already recorded.' },
+  linked: { id: 'Terhubung ke akun {name}.', en: 'Linked to {name}\'s account.' },
 }
+
+// The next page of bookings did not load (the rows on screen stay).
+export const moreFailedCopy = { id: 'Booking berikutnya belum termuat. Periksa koneksi, lalu coba lagi.', en: 'The next bookings did not load. Check the connection, then try again.' }

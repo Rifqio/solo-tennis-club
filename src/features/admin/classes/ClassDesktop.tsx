@@ -17,7 +17,6 @@ import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
 import { coachInitials } from '../forms/coach-initials'
 import { ClassForm } from './ClassFormPage'
-import { SavedNote } from '@/components/ui/saved-note'
 
 const copy = {
   heading: { id: 'Kelas', en: 'Classes' },
@@ -111,11 +110,10 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
             </AnimatePresence>
           </ul>
         )}
-        <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={copy.noun} />
+        <ListMore failed={list.moreFailed} shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={copy.noun} />
       </section>
       {/* The editor is taller than a screen, so it scrolls with the page rather than pinning (its save button stays reachable). */}
       <div className="min-w-0 flex-1 overflow-hidden rounded-lg bg-surface-container-lowest">
-        {savedId && savedId === currentId && <SavedNote className="px-6 pt-6"><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
         {currentId === null || (currentId !== 'new' && !record)
           ? <div className="p-6"><StatusPanel tone={single.response && !single.data ? 'error' : 'info'} title={t(single.response && !single.data ? messages.loadError : messages.loading)} /></div>
           : <ClassForm key={`${currentId}:${record?.version ?? 0}`} initial={record} embedded />}

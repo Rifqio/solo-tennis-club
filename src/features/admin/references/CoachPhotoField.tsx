@@ -8,8 +8,12 @@ import { useI18n } from '@/i18n/use-i18n'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { coachInitials } from '../forms/coach-initials'
 import { adminMessages as messages } from '../forms/admin.messages'
+import { useToast } from '@/components/ui/use-toast'
+import { FieldError } from '@/components/ui/field-error'
 
 const copy = {
+  photoSaved: { id: 'Foto tersimpan.', en: 'Photo saved.' },
+  photoRemoved: { id: 'Foto dihapus.', en: 'Photo removed.' },
   label: { id: 'Foto coach', en: 'Coach photo' },
   hint: { id: 'Foto setengah badan, tegak (3:4). JPG atau PNG, maks 5 MB.', en: 'Half-body, upright (3:4). JPG or PNG, up to 5 MB.' },
   upload: { id: 'Upload foto', en: 'Upload photo' },
@@ -28,16 +32,17 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp']
 export function CoachPhotoField({ record, name, onChange }: { record: ReferenceRecord | null; name: string; onChange: (record: ReferenceRecord) => void }) {
   const { t } = useI18n()
   const { send } = useAdminAuth()
+  const toast = useToast()
   const input = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const photoUrl = record?.photoUrl ?? null
 
-  const run = async (request: () => ReturnType<typeof send<ReferenceRecord>>) => {
+  const run = async (request: () => ReturnType<typeof send<ReferenceRecord>>, done: string) => {
     setBusy(true); setError(null)
     try {
       const result = await request()
-      if (result.kind === 'ok') onChange(result.data)
+      if (result.kind === 'ok') { onChange(result.data); toast({ message: done }) }
       else setError(t(result.kind === 'http' ? apiErrorMessages[result.code] ?? apiErrorMessages.INTERNAL : messages.saveError))
     } finally { setBusy(false) }
   }
@@ -45,7 +50,7 @@ export function CoachPhotoField({ record, name, onChange }: { record: ReferenceR
     if (!file || !record) return
     if (!TYPES.includes(file.type)) { setError(t(copy.wrongType)); return }
     if (file.size > COACH_PHOTO_MAX_BYTES) { setError(t(copy.tooBig)); return }
-    void run(() => send<ReferenceRecord>('PUT', `/api/admin/coaches/${record.id}/photo`, file))
+    void run(() => send<ReferenceRecord>('PUT', `/api/admin/coaches/${record.id}/photo`, file), t(copy.photoSaved))
   }
 
   return (
@@ -63,9 +68,9 @@ export function CoachPhotoField({ record, name, onChange }: { record: ReferenceR
           <Button variant="tonal" className="px-4" aria-describedby="coach-photo-hint" disabled={busy} pendingLabel={busy ? t(copy.uploading) : undefined} onClick={() => input.current?.click()}>
             <ImageUp aria-hidden="true" className="size-5" />{t(photoUrl ? copy.replace : copy.upload)}
           </Button>
-          {photoUrl && <Button variant="text" disabled={busy} onClick={() => void run(() => send<ReferenceRecord>('DELETE', `/api/admin/coaches/${record.id}/photo`, undefined))}>{t(copy.remove)}</Button>}
+          {photoUrl && <Button variant="text" disabled={busy} onClick={() => void run(() => send<ReferenceRecord>('DELETE', `/api/admin/coaches/${record.id}/photo`, undefined), t(copy.photoRemoved))}>{t(copy.remove)}</Button>}
         </span>}
-        {error && <p role="alert" className="text-label text-error">{error}</p>}
+        {error && <FieldError id="coach-photo-error">{error}</FieldError>}
       </div>
     </div>
   )

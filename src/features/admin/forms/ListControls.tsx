@@ -5,8 +5,11 @@ import { Button } from '@/components/ui/button'
 import { useI18n } from '@/i18n/use-i18n'
 import type { Message } from '@/i18n/types'
 import { LIST_PAGE_SIZE } from '@shared/api/admin-list'
+import { StatusPanel } from '@/components/ui/status-panel'
+import { commonMessages } from '@/i18n/common.messages'
 
 const copy = {
+  moreFailed: { id: 'Daftar {noun} berikutnya belum termuat. Periksa koneksi, lalu coba lagi.', en: 'The next {noun} did not load. Check the connection, then try again.' },
   clear: { id: 'Hapus pencarian', en: 'Clear search' },
   shown: { id: '{shown} dari {total} {noun}', en: '{shown} of {total} {noun}' },
   more: { id: 'Tampilkan {count} lagi', en: 'Show {count} more' },
@@ -35,13 +38,14 @@ export function ListSearch({ value, onChange, label, placeholder, busy = false }
 }
 
 // The foot of a paged list: how many are showing of how many, and the next batch on request.
-export function ListMore({ shown, total, hasMore, loading, onMore, noun }: { shown: number; total: number; hasMore: boolean; loading: boolean; onMore: () => void; noun: Message }) {
+// `failed`: the last request for the next batch failed; the rows stay and a notice offers the retry.
+export function ListMore({ shown, total, hasMore, loading, onMore, noun, failed = false }: { shown: number; total: number; hasMore: boolean; loading: boolean; onMore: () => void; noun: Message; failed?: boolean }) {
   const { t } = useI18n()
   if (total === 0) return null
   return (
     <div className="flex flex-col items-stretch gap-2 pt-1">
       <p className="text-center text-label text-on-surface-variant tabular-nums">{t(copy.shown, { shown, total, noun: t(noun) })}</p>
-      {hasMore && (
+      {failed && !loading ? <StatusPanel tone="error" title={t(copy.moreFailed, { noun: t(noun) })} action={{ label: t(commonMessages.retry), onAction: onMore }} /> : hasMore && (
         <Button variant="outlined" onClick={onMore} pendingLabel={loading ? t(copy.loading) : undefined}>
           {t(copy.more, { count: Math.min(LIST_PAGE_SIZE, total - shown) })}
         </Button>

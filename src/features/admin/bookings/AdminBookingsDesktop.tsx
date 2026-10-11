@@ -19,7 +19,7 @@ import { BookingFilters } from './BookingFilters'
 import { BOOKING_FILTERS, bookingFacts } from './booking-facts'
 import { useAdminBooking } from './use-admin-booking'
 import { useAdminBookingList } from './use-admin-booking-list'
-import type { CreatedBookingState } from './AdminBookingFormPage'
+import { moreFailedCopy } from './bookings.messages'
 
 const copy = {
   search: { id: 'Cari nama atau nomor HP', en: 'Search by name or phone' },
@@ -64,7 +64,6 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
   const search = useSettledSearch(query)
   const list = useAdminBookingList(filter, search)
   const detail = useAdminBooking(openId)
-  const created = (location.state as CreatedBookingState | null)?.created ?? null
   const suffix = urlFor(filter, search)
   useEffect(() => {
     if (search.trim() !== urlSearch) navigate(`${location.pathname}${urlFor(filter, search)}`, { replace: true, state: location.state })
@@ -139,7 +138,7 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
               </tbody>
             </table>
           </div>
-          {list.hasMore && <div className="border-t border-outline-variant p-4"><Button variant="outlined" className="w-full" onClick={() => void list.loadMore()} pendingLabel={list.loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button></div>}
+          {list.moreFailed ? <div className="border-t border-outline-variant p-4"><StatusPanel tone="error" title={t(moreFailedCopy)} action={{ label: t(commonMessages.retry), onAction: () => void list.loadMore() }} /></div> : list.hasMore && <div className="border-t border-outline-variant p-4"><Button variant="outlined" className="w-full" onClick={() => void list.loadMore()} pendingLabel={list.loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button></div>}
           {filter === 'unpaid' && <p className="border-t border-outline-variant px-6 py-4 text-label text-on-surface-variant">{t(messages.footnote)}</p>}
         </>}
       </section>
@@ -168,7 +167,7 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
                     </dl>
                   </div>
                   <div className="flex flex-col gap-4 px-6 pb-6 pt-5">
-                    <BookingDetailBody data={detail.held.data} created={created} onChanged={detail.replace} drawer />
+                    <BookingDetailBody data={detail.held.data} onChanged={detail.replace} drawer />
                   </div>
                 </>
               })() : (

@@ -9,17 +9,17 @@ import type { AdminBookingDetailResponse } from '@shared/api/admin-bookings'
 import { adminBookingLinkMessages, adminBookingsMessages as messages } from './bookings.messages'
 import { BookingLinkSection } from './BookingLinkSection'
 import { whatsappHref } from './booking-facts'
-import type { CreatedBookingState } from './AdminBookingFormPage'
-import { SavedNote } from '@/components/ui/saved-note'
-import { AnimatePresence } from 'motion/react'
+import { useState } from 'react'
 
 // Everything under a booking's blue header: contact and chat, linking an admin-recorded booking to an account, the
 // players, session, total and when it was booked. `drawer` (desktop, board D6): one white panel with the players as a
 // row of the list; phones (board 15) keep separate cards.
-export function BookingDetailBody({ data, created, onChanged, drawer = false }: {
-  data: AdminBookingDetailResponse; created: CreatedBookingState['created'] | null; onChanged: (detail: AdminBookingDetailResponse) => void; drawer?: boolean
+export function BookingDetailBody({ data, onChanged, drawer = false }: {
+  data: AdminBookingDetailResponse; onChanged: (detail: AdminBookingDetailResponse) => void; drawer?: boolean
 }) {
   const { language, t } = useI18n()
+  // Set when another admin linked this booking first: the link section is gone, so the reason shows here.
+  const [notice, setNotice] = useState<string | null>(null)
   const { booking } = data
   const { session } = booking
   const phone = booking.customer?.phone ?? booking.bookerPhone
@@ -28,23 +28,14 @@ export function BookingDetailBody({ data, created, onChanged, drawer = false }: 
   const card = drawer ? '' : 'rounded-sm bg-surface-container-lowest'
   const players = <ul className={cn('flex flex-wrap gap-1.5', drawer && 'justify-end')}>{booking.participants.map((name, index) => <li key={index} className="rounded-full bg-surface-container px-2.5 py-0.5 text-label">{name}</li>)}</ul>
   return <>
-    {created && (
-      <SavedNote><StatusPanel tone="success" title={t(adminBookingLinkMessages.created)}>
-        <p>{created.replayed ? t(adminBookingLinkMessages.replayed) : t(adminBookingLinkMessages.createdBody, { time: formatClubTime(created.deadline) })}</p>
-      </StatusPanel></SavedNote>
-    )}
-    <section aria-label={t(booking.customer ? messages.phoneVerified : messages.phoneRecorded)} className={cn('flex items-center justify-between gap-3', !drawer && 'px-4 py-3.5', card)}>
+    {notice && <StatusPanel tone="info" title={notice} />}
+    <section id="booking-phone" tabIndex={-1} aria-label={t(booking.customer ? messages.phoneVerified : messages.phoneRecorded)} className={cn('outline-none', 'flex items-center justify-between gap-3', !drawer && 'px-4 py-3.5', card)}>
       <span className="flex min-w-0 flex-col leading-snug">
         <span className="text-label text-on-surface-variant">{t(booking.customer ? messages.phoneVerified : messages.phoneRecorded)}</span>
         <span className="break-all font-bold tabular-nums">{phone}</span>
-        {/* Rises in when the admin links the booking here; already in place when it was linked before. */}
-        <AnimatePresence initial={false}>
-          {booking.linked && linkedAt && (
-            <SavedNote key="linked" as="span" className="block text-label text-on-surface-variant">
-              {t(adminBookingLinkMessages.linkedAt, { date: linkedAt, by: booking.linked.by ? t(adminBookingLinkMessages.linkedBy, { name: booking.linked.by }) : '' })}
-            </SavedNote>
-          )}
-        </AnimatePresence>
+        {booking.linked && linkedAt && (
+          <span className="text-label text-on-surface-variant">{t(adminBookingLinkMessages.linkedAt, { date: linkedAt, by: booking.linked.by ? t(adminBookingLinkMessages.linkedBy, { name: booking.linked.by }) : '' })}</span>
+        )}
       </span>
       {href && (
         <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t(messages.chatLabel, { name: booking.bookerName })}
@@ -53,7 +44,7 @@ export function BookingDetailBody({ data, created, onChanged, drawer = false }: 
         </a>
       )}
     </section>
-    {!booking.customer && <BookingLinkSection booking={booking} onChanged={onChanged} />}
+    {!booking.customer && <BookingLinkSection booking={booking} onChanged={onChanged} onLinkedElsewhere={setNotice} />}
     {!drawer && <section aria-labelledby="players" className={cn('flex flex-col gap-2 p-4', card)}>
       <h2 id="players" className="font-bold">{t(messages.players)}</h2>
       {players}

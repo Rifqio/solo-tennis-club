@@ -10,12 +10,14 @@ import type { AdminResult } from '@/lib/admin-api'
 import type { AdminBookingDetailResponse, VerifiedCustomerLookupResponse } from '@shared/api/admin-bookings'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { adminBookingLinkMessages as messages } from './bookings.messages'
+import { useToast } from '@/components/ui/use-toast'
 
 type Booking = AdminBookingDetailResponse['booking']
 
 // For a booking an admin recorded: look up the verified account with the exact same number and, on the admin's
 // explicit confirmation, give the booking to it. Nothing is matched or moved automatically.
-export function BookingLinkSection({ booking, onChanged }: { booking: Booking; onChanged: (detail: AdminBookingDetailResponse) => void }) {
+export function BookingLinkSection({ booking, onChanged, onLinkedElsewhere }: { booking: Booking; onChanged: (detail: AdminBookingDetailResponse) => void; onLinkedElsewhere: (notice: string) => void }) {
+  const toast = useToast()
   const { t } = useI18n()
   const { get, send } = useAdminAuth()
   const [lookup, setLookup] = useState<{ phone: string; response: AdminResult<VerifiedCustomerLookupResponse> } | null>(null)
@@ -41,13 +43,23 @@ export function BookingLinkSection({ booking, onChanged }: { booking: Booking; o
     setPending(true); setFailure(null)
     try {
       const result = await send<AdminBookingDetailResponse>('PUT', `/api/admin/bookings/${encodeURIComponent(booking.id)}/customer-link`, { customerId: customer.id, version: booking.version })
-      if (result.kind === 'ok') { setConfirming(false); onChanged(result.data); return }
+      if (result.kind === 'ok') {
+        setConfirming(false)
+        toast({ message: t(messages.linked, { name: customer.displayName }) })
+        onChanged(result.data)
+        requestAnimationFrame(() => document.getElementById('booking-phone')?.focus())
+        return
+      }
       setConfirming(false)
       if (result.kind === 'network') { setFailure(t(messages.linkFailed)); return }
       if (result.kind !== 'http') return
       if (result.code === 'STALE_VERSION' || result.code === 'BOOKING_ALREADY_LINKED') {
-        if (result.latest) onChanged(result.latest as AdminBookingDetailResponse)
-        setFailure(t(result.code === 'STALE_VERSION' ? messages.stale : apiErrorMessages.BOOKING_ALREADY_LINKED))
+        const latest = result.latest as AdminBookingDetailResponse | undefined
+        const message = t(result.code === 'STALE_VERSION' ? messages.stale : apiErrorMessages.BOOKING_ALREADY_LINKED)
+        // Linked by someone else meanwhile: this section disappears with the update, so the reason shows above it.
+        if (latest?.booking.customer) onLinkedElsewhere(message)
+        else setFailure(message)
+        if (latest) onChanged(latest)
         return
       }
       if (result.code === 'NOT_FOUND' || result.code === 'CUSTOMER_MISMATCH') recheck()

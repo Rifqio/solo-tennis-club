@@ -21,7 +21,7 @@ export const apiErrorMessages: Record<ApiErrorCode, Message> = {
   SIGN_IN_FAILED: { id: 'Email atau kata sandi tidak cocok. Periksa lalu coba lagi.', en: 'Email or password does not match. Check and try again.' },
   SIGN_IN_THROTTLED: { id: 'Terlalu banyak percobaan masuk. Coba lagi dalam {minutes} menit.', en: 'Too many sign-in attempts. Try again in {minutes} minutes.' },
   VALIDATION_FAILED: { id: 'Periksa isian yang ditandai, lalu coba lagi.', en: 'Check the highlighted entries and try again.' },
-  STALE_VERSION: { id: 'Sesi ini telah diubah oleh admin lain. Muat versi terbaru lalu periksa perubahan Anda.', en: 'Another admin changed this session. Load the latest version and review your changes.' },
+  STALE_VERSION: { id: 'Admin lain baru mengubah data ini. Muat versi terbaru, lalu periksa perubahan Anda.', en: 'Another admin just changed this. Load the latest version, then review your changes.' },
   DUPLICATE_NAME: { id: 'Nama ini sudah digunakan. Gunakan nama lain.', en: 'This name is already in use. Use a different name.' },
   CAPACITY_UNAVAILABLE: { id: 'Slot yang tersisa berubah. Kurangi jumlah peserta lalu coba lagi.', en: 'Availability changed. Reduce the group size and try again.' },
   BOOKING_CLOSED: { id: 'Pemesanan untuk sesi ini sudah ditutup.', en: 'Reservations for this session are closed.' },

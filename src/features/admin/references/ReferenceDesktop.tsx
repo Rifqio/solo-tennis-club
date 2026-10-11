@@ -18,7 +18,7 @@ import { AdminBand } from '../shell/AdminBand'
 import { archiveEmpty, referenceConfig, referenceSubline } from './reference-config'
 import { ReferenceForm } from './ReferenceFormPage'
 import { ReferenceTabs } from './ReferenceTabs'
-import { ArchivedNotice, ArchiveHeading, ArchiveToggle } from './ArchiveControls'
+import { ArchiveHeading, ArchiveToggle, UndoFailedNotice } from './ArchiveControls'
 
 const copy = {
   heading: { id: 'Kelola', en: 'Manage' },
@@ -75,13 +75,13 @@ function ReferenceSplit({ kind, selected }: { kind: ReferenceKind; selected: str
         <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-5">
           <h2 className="text-title font-bold">{archive ? <ArchiveHeading kind={kind} /> : t(config.label)}</h2>
           {!archive && <Link to={`/admin/${config.path}/new`} aria-current={currentId === 'new' ? 'page' : undefined}
-            className={cn('state-layer pressable flex min-h-11 shrink-0 items-center gap-1.5 rounded-sm px-4 font-semibold',
+            className={cn('state-layer pressable flex min-h-12 shrink-0 items-center gap-1.5 rounded-sm px-4 font-semibold',
               currentId === 'new' ? 'bg-primary text-on-primary' : 'border border-primary text-primary')}>
             <Plus aria-hidden="true" className="size-5" strokeWidth={2.5} />{t(config.add)}
           </Link>}
         </div>
         <div className="flex flex-1 flex-col gap-3 px-3 pb-3">
-          <ArchivedNotice kind={kind} />
+          <UndoFailedNotice kind={kind} />
           <div className="px-2"><ListSearch value={query} onChange={setQuery} label={t(config.search)} placeholder={t(config.search)} busy={list.searching} /></div>
           {list.items.some(row => row.isSample) && <div className="px-2"><SampleDataNotice /></div>}
           {list.status === 'loading' ? (
@@ -122,7 +122,7 @@ function ReferenceSplit({ kind, selected }: { kind: ReferenceKind; selected: str
               </AnimatePresence>
             </ul>
           )}
-          <ListMore shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={config.noun} />
+          <ListMore failed={list.moreFailed} shown={list.items.length} total={list.total} hasMore={list.hasMore} loading={list.loadingMore} onMore={() => void list.loadMore()} noun={config.noun} />
           <div className="mt-auto flex flex-col gap-3">
             {venue && !archive && list.items.some(row => !row.mapUrl) && <p className="mx-2 rounded-sm bg-surface-container-low px-3.5 py-3 text-label text-on-surface-variant">{t(copy.pinNote)}</p>}
             <ArchiveToggle kind={kind} archive={archive} />
@@ -135,7 +135,7 @@ function ReferenceSplit({ kind, selected }: { kind: ReferenceKind; selected: str
           ? <div className="p-6">{archive && list.status === 'ready' && list.total === 0 && !search
             ? <p className="text-on-surface-variant">{t(archiveEmpty)}</p>
             : <StatusPanel tone={single.response && !single.data ? 'error' : 'info'} title={t(single.response && !single.data ? messages.loadError : messages.loading)} />}</div>
-          : <ReferenceForm key={`${kind}:${currentId}:${record?.version ?? 0}`} kind={kind} initial={record} embedded justSaved={savedId === currentId}
+          : <ReferenceForm key={`${kind}:${currentId}:${record?.version ?? 0}`} kind={kind} initial={record} embedded
             // A new photo refreshes the list (its avatar) unless the admin is mid-edit.
             onPhotoSaved={dirty => { if (!dirty) navigate(location.pathname + location.search, { replace: true }) }} />}
       </div>

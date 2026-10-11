@@ -30,6 +30,9 @@ import type { SessionDraft } from './session-draft'
 import { SessionReview } from './SessionReview'
 import { stepEnter, useStepDirection } from '@/lib/step-motion'
 import { revealInvalid } from '@/lib/reveal-invalid'
+import { useToast } from '@/components/ui/use-toast'
+import { sessionsMessages as sessionMessages } from './sessions.messages'
+import { failureNeedsPanel } from '../forms/form-failure'
 const stepNames = [{ id: 'Kelas dan waktu', en: 'Class and time' }, { id: 'Level, lokasi, dan coach', en: 'Level, venue, and coaches' }, { id: 'Harga dan batas peserta', en: 'Price and participant limits' }, { id: 'Periksa sesi', en: 'Review session' }]
 const stepFields = [['classId', 'date', 'startTime', 'durationMinutes'], ['levelId', 'venueId', 'coachIds'], ['priceIdr', 'minParticipants', 'maxParticipants']]
 export function SessionEditorPage() {
@@ -40,6 +43,7 @@ export function SessionEditorPage() {
   return <SessionEditor key={id ?? 'new'} initial={resource.data} />
 }
 function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
+  const toast = useToast()
   const { t, language } = useI18n()
   const { identity, send } = useAdminAuth()
   const owner = identity ?? ''
@@ -96,10 +100,11 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
         const session = 'session' in result.data ? result.data.session : result.data
         try { clearDraft(sessionStorage) } catch { /* Storage is optional. */ }
         guard.allowNavigation()
+        toast({ message: t(sessionMessages.saved) })
         setNavMotion('pop'); navigate(`/admin/sessions?date=${session.date}`, { state: { savedId: session.id }, viewTransition: true }); return
       }
       if (result.kind === 'http') {
-        setErrors(result.fields ?? {}); setFailure(t(apiErrorMessages[result.code]))
+        setErrors(result.fields ?? {}); setFailure(failureNeedsPanel(result.code, result.fields) ? t(apiErrorMessages[result.code]) : null)
         if (result.code === 'STALE_VERSION') setLatest(result.latest as AdminSessionDetail)
         if (result.fields) { const index = stepFields.findIndex(fields => fields.some(field => result.fields?.[field])); if (index >= 0) goToStep(index + 1); focusError() }
       } else setFailure(t(messages.saveError))

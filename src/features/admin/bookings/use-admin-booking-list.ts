@@ -16,6 +16,7 @@ export function useAdminBookingList(filter: AdminBookingFilter, search = '', ref
   const [shown, setShown] = useState<AdminBookingListResponse | null>(() => lastPages.get(key) ?? null)
   const [more, setMore] = useState<{ key: string; items: AdminBookingSummary[]; nextCursor: string | null } | null>(null)
   const [loadingMore, setLoadingMore] = useState(false)
+  const [moreFailed, setMoreFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
   useEffect(() => {
     if (auth.status !== 'signedIn') return
@@ -36,10 +37,11 @@ export function useAdminBookingList(filter: AdminBookingFilter, search = '', ref
   const nextCursor = extra ? extra.nextCursor : fresh?.nextCursor ?? null
   const loadMore = async () => {
     if (!nextCursor || loadingMore) return
-    setLoadingMore(true)
+    setLoadingMore(true); setMoreFailed(false)
     try {
       const page = await get<AdminBookingListResponse>(`${key}&cursor=${encodeURIComponent(nextCursor)}`)
       if (page.kind === 'ok') setMore({ key, items: [...(extra?.items ?? []), ...page.data.items], nextCursor: page.data.nextCursor })
+      else if (page.kind !== 'aborted') setMoreFailed(true)
     } finally { setLoadingMore(false) }
   }
   return {
@@ -48,6 +50,8 @@ export function useAdminBookingList(filter: AdminBookingFilter, search = '', ref
     data,
     items: [...(data?.items ?? []), ...(extra?.items ?? [])],
     hasMore: Boolean(nextCursor), loadMore, loadingMore,
+    // The next page did not load; the rows stay and a notice offers the retry.
+    moreFailed: moreFailed && !loadingMore,
     retry: () => { setResult(null); setAttempt(value => value + 1) },
   }
 }

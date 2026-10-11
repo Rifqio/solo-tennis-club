@@ -60,6 +60,7 @@ function BookButton({ onOpen }: { onOpen: () => void }) {
     <m.button
       type="button"
       onClick={() => { selectionHaptic(); onOpen() }}
+      data-bottom-chrome
       whileTap={{ scale: 0.94 }}
       transition={popSpring}
       aria-haspopup="dialog"

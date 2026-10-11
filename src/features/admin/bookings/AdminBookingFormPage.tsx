@@ -11,6 +11,7 @@ import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
+import { setNavMotion } from '@/lib/nav-motion'
 import type { AdminBookingOptionsResponse, AdminCreateBookingRequest } from '@shared/api/admin-bookings'
 import type { AdmittedBookingResponse } from '@shared/api/booking-admission'
 import type { FieldErrorCode } from '@shared/api/errors'
@@ -144,7 +145,8 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
       if (result.kind === 'ok') {
         guard.allowNavigation()
         const state: CreatedBookingState = { created: { deadline: result.data.booking.originalDeadline, replayed: result.data.replayed } }
-        navigate(`/admin/bookings/${result.data.booking.id}`, { replace: true, state })
+        setNavMotion('push')
+        navigate(`/admin/bookings/${result.data.booking.id}`, { replace: true, state, viewTransition: true })
         return
       }
       if (result.kind === 'network') { setFailure(t(messages.unsure)); return }

@@ -193,14 +193,14 @@ export function Component() {
         <section className="flex flex-col items-start gap-3 rounded-sm bg-surface-container-lowest p-5">
           <h2 className="text-title font-bold">{t(messages.signInTitle)}</h2>
           <p className="text-on-surface-variant">{t(messages.signInBody)}</p>
-          <Button asChild variant="filled"><Link to={`/customer/sign-in?returnTo=${encodeURIComponent('/bookings')}`}>{t(messages.signIn)}</Link></Button>
+          <Button asChild variant="filled"><Link to={`/customer/sign-in?returnTo=${encodeURIComponent('/bookings')}`} viewTransition data-nav="push">{t(messages.signIn)}</Link></Button>
         </section>
       ) : loaded.status !== 'ready' ? (
         <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />
       ) : shown.length === 0 ? (
         <section className="flex flex-col items-start gap-3 rounded-sm bg-surface-container-lowest p-5">
           <p>{t(view === 'history' ? messages.emptyHistory : messages.emptyActive)}</p>
-          {view === 'upcoming' && <Button asChild variant="filled"><Link to="/schedule">{t(messages.findSession)}</Link></Button>}
+          {view === 'upcoming' && <Button asChild variant="filled"><Link to="/schedule" viewTransition data-nav="tab">{t(messages.findSession)}</Link></Button>}
         </section>
       ) : view === 'upcoming' ? (
         <ul className="flex flex-col gap-3">{shown.map(booking => <li key={booking.id}><ActiveCard booking={booking} now={now} /></li>)}</ul>

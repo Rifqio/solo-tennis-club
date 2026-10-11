@@ -31,7 +31,7 @@ export function Players({ session, known }: { session: PublicSessionSummary; kno
   if (players.status === 'signedOut') {
     const returnTo = `/schedule?${new URLSearchParams({ date: session.date, session: session.id })}`
     return (
-      <Link to={`/customer/sign-in?returnTo=${encodeURIComponent(returnTo)}`} className="state-layer pressable flex min-h-12 items-center rounded-sm bg-surface px-3 text-label font-semibold text-primary">
+      <Link to={`/customer/sign-in?returnTo=${encodeURIComponent(returnTo)}`} viewTransition data-nav="push" className="state-layer pressable flex min-h-12 items-center rounded-sm bg-surface px-3 text-label font-semibold text-primary">
         {t(messages.signInToSee)}
       </Link>
     )

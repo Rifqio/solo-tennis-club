@@ -89,7 +89,7 @@ export function RosterPanel({ id }: { id: string }) {
             <span className="text-label">{t(copy.taken)}</span>
             <span className="text-title font-bold tabular-nums">{data.occupiedPlaces} / {session.maxParticipants}</span>
           </span>
-          <Link to={`/admin/sessions/${encodeURIComponent(id)}/edit`} className="state-layer pressable flex min-h-12 items-center rounded-sm border border-outline-variant px-4 font-semibold">{t(copy.edit)}</Link>
+          <Link to={`/admin/sessions/${encodeURIComponent(id)}/edit`} viewTransition data-nav="push" className="state-layer pressable flex min-h-12 items-center rounded-sm border border-outline-variant px-4 font-semibold">{t(copy.edit)}</Link>
         </div>
       </div>
       <div className="flex flex-col gap-3 p-6">
@@ -119,7 +119,7 @@ export function RosterPanel({ id }: { id: string }) {
       {session.status === 'scheduled' && <div className="flex flex-wrap items-center justify-between gap-3 px-6 pb-6">
         <p className="text-label text-on-surface-variant">{t(copy.release)}</p>
         <Button asChild variant="filled" className="px-6">
-          <Link to={`/admin/sessions/${encodeURIComponent(id)}/book`} viewTransition><Plus aria-hidden="true" className="size-5" />{t(copy.record)}</Link>
+          <Link to={`/admin/sessions/${encodeURIComponent(id)}/book`} viewTransition data-nav="push"><Plus aria-hidden="true" className="size-5" />{t(copy.record)}</Link>
         </Button>
       </div>}
     </m.aside>

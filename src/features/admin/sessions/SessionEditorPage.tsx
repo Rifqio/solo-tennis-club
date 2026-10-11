@@ -22,6 +22,7 @@ import { useUnsavedChangesGuard } from '../forms/use-unsaved-changes-guard'
 import { SessionFields } from '../forms/SessionFields'
 import { AdminBand } from '../shell/AdminBand'
 import { cn } from '@/lib/utils'
+import { setNavMotion } from '@/lib/nav-motion'
 import { FormFeedback } from '../forms/FormFeedback'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { newSessionDraft, draftFromSession, applyClassDefaults, hasOverrides, loadDraft, saveDraft, clearDraft } from './session-draft'
@@ -93,7 +94,7 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
         const session = 'session' in result.data ? result.data.session : result.data
         try { clearDraft(sessionStorage) } catch { /* Storage is optional. */ }
         guard.allowNavigation()
-        navigate(`/admin/sessions?date=${session.date}`, { state: { savedId: session.id } }); return
+        setNavMotion('pop'); navigate(`/admin/sessions?date=${session.date}`, { state: { savedId: session.id }, viewTransition: true }); return
       }
       if (result.kind === 'http') {
         setErrors(result.fields ?? {}); setFailure(t(apiErrorMessages[result.code]))

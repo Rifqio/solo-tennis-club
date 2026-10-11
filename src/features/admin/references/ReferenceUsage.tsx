@@ -31,7 +31,7 @@ export function ReferenceUsage({ usage }: { usage: Usage | null }) {
           const day = row.nextSessionAt ? clubDateOf(row.nextSessionAt) : null
           return (
             <li key={row.id} className="border-b border-outline-variant">
-              <Link to={`/admin/classes/${row.id}/edit`} className="state-layer grid min-h-16 grid-cols-[minmax(0,1fr)_auto_1.125rem] items-center gap-3 px-1 py-2.5">
+              <Link to={`/admin/classes/${row.id}/edit`} viewTransition className="state-layer pressable grid min-h-16 grid-cols-[minmax(0,1fr)_auto_1.125rem] items-center gap-3 px-1 py-2.5">
                 <span className="flex min-w-0 flex-col leading-snug">
                   <span title={row.name} className="truncate font-bold">{row.name}</span>
                   <span className="text-label text-on-surface-variant">{row.levelName} · {row.venueName} · {t(copy.minutes, { count: row.durationMinutes })}</span>

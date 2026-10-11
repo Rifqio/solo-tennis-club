@@ -17,6 +17,8 @@ function UpcomingRow({ session, onChoose }: { session: PublicSessionSummary; onC
     <li>
       <Link
         to={`/book/${encodeURIComponent(session.id)}`}
+        viewTransition
+        data-nav="push"
         onClick={onChoose}
         className="state-layer pressable flex min-h-18 items-center gap-3 rounded-sm bg-surface-container-lowest p-2 pr-3"
       >
@@ -56,7 +58,7 @@ export function BookSheet({ open, onClose }: { open: boolean; onClose: () => voi
         <div role="status" className="flex flex-col items-start gap-3">
           <p className="text-title font-semibold text-on-surface">{t(publicMessages.bookSheetEmpty)}</p>
           <p className="text-on-surface-variant">{t(publicMessages.bookSheetEmptyBody)}</p>
-          <Button asChild variant="outlined"><Link to="/schedule" onClick={onClose}>{t(publicMessages.seeSchedule)}</Link></Button>
+          <Button asChild variant="outlined"><Link to="/schedule" viewTransition data-nav="tab" onClick={onClose}>{t(publicMessages.seeSchedule)}</Link></Button>
         </div>
       ) : (
         <>

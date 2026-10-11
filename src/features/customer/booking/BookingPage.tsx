@@ -11,6 +11,7 @@ import { useI18n } from '@/i18n/use-i18n'
 import { formatClubDateLong, formatClubDateMedium, formatClubTime, formatIdr } from '@/i18n/format'
 import { apiErrorMessages } from '@/i18n/api-error-messages'
 import { cn } from '@/lib/utils'
+import { setNavMotion } from '@/lib/nav-motion'
 import type { PublicSessionDetail } from '@shared/api/public'
 import { normalizeCustomerName } from '@shared/customer-rules'
 import { CustomerApiError, customerRequest } from '@/lib/customer-api'
@@ -73,13 +74,13 @@ function TaskBand({ title, step, steps, stepLabel, backTo, onBack, backLabel, he
 }) {
   const backClass = 'state-layer pressable flex size-12 shrink-0 items-center justify-center rounded-full bg-band-tile'
   return (
-    <header className="rounded-b-lg bg-band pb-4 pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white desk-column lg:mt-5 lg:rounded-lg lg:py-4">
+    <header className="rounded-b-lg bg-band pb-4 pt-[env(safe-area-inset-top)] text-on-signboard [view-transition-name:app-bar] [&_:focus-visible]:outline-white desk-column lg:mt-5 lg:rounded-lg lg:py-4">
       {/* Desktop: one compact row, back and title on the left, the three steps on the right. */}
       <div className="page-gutter mx-auto flex w-full max-w-3xl flex-col gap-4 pt-4 lg:max-w-none lg:flex-row lg:items-center lg:justify-between lg:px-5 lg:pt-0">
         <div className="flex items-center gap-3">
           {onBack
             ? <button type="button" onClick={onBack} aria-label={backLabel} className={backClass}><ChevronLeft aria-hidden="true" className="size-6" /></button>
-            : <Link to={backTo ?? '/schedule'} aria-label={backLabel} className={backClass}><ChevronLeft aria-hidden="true" className="size-6" /></Link>}
+            : <Link to={backTo ?? '/schedule'} viewTransition data-nav="pop" aria-label={backLabel} className={backClass}><ChevronLeft aria-hidden="true" className="size-6" /></Link>}
           <h1 ref={heading} tabIndex={-1} className="min-w-0 text-headline font-bold focus:outline-none">{title}</h1>
         </div>
         <ol aria-label={stepLabel} className="grid grid-cols-3 gap-1.5 lg:flex">
@@ -241,7 +242,8 @@ export function Component() {
 
   function startNames() {
     if (access.state.stage !== 'complete' || !activeSession) {
-      navigate(`/customer/sign-in?returnTo=${encodeURIComponent(returnTo)}`)
+      setNavMotion('push')
+      navigate(`/customer/sign-in?returnTo=${encodeURIComponent(returnTo)}`, { viewTransition: true })
       return
     }
     // Default names follow BOOK-02: the booker, then "Andy 2", "Andy 3"; a saved draft for the same count wins.
@@ -317,8 +319,8 @@ export function Component() {
               </div>
               <p className="max-w-[32rem] rounded-sm bg-band-tile px-4 py-3 text-label"><span className="font-semibold">{text.payTitle}. </span>{text.payBody}</p>
               <div className="flex flex-wrap gap-3">
-                <Button asChild variant="filled" className="min-h-14 px-7"><Link to={`/bookings/${result.booking.id}`}>{text.seeBooking}</Link></Button>
-                <Button asChild variant="tonal" className="min-h-14 bg-surface-container-lowest px-7 text-primary"><Link to={schedulePath}>{text.backToSchedule}</Link></Button>
+                <Button asChild variant="filled" className="min-h-14 px-7"><Link to={`/bookings/${result.booking.id}`} viewTransition data-nav="push">{text.seeBooking}</Link></Button>
+                <Button asChild variant="tonal" className="min-h-14 bg-surface-container-lowest px-7 text-primary"><Link to={schedulePath} viewTransition data-nav="pop">{text.backToSchedule}</Link></Button>
               </div>
             </div>
             <section aria-label={session.className} className="flex min-w-0 max-w-[26rem] flex-[1_1_20rem] flex-col gap-3.5 rounded-md bg-surface-container-lowest p-6 text-on-surface">
@@ -361,8 +363,8 @@ export function Component() {
             <p className="mt-0.5">{text.payBody}</p>
           </m.section>
           <div className="mt-auto flex flex-col gap-2">
-            <Button asChild variant="filled" className="min-h-14"><Link to={`/bookings/${result.booking.id}`}>{text.seeBooking}</Link></Button>
-            <Button asChild variant="text" className="text-on-signboard"><Link to={schedulePath}>{text.backToSchedule}</Link></Button>
+            <Button asChild variant="filled" className="min-h-14"><Link to={`/bookings/${result.booking.id}`} viewTransition data-nav="push">{text.seeBooking}</Link></Button>
+            <Button asChild variant="text" className="text-on-signboard"><Link to={schedulePath} viewTransition data-nav="pop">{text.backToSchedule}</Link></Button>
           </div>
         </div>
       </div>
@@ -479,7 +481,7 @@ export function Component() {
           <div className="flex flex-col gap-1 px-5 pb-1 pt-4">
             <div className="flex items-start justify-between gap-3">
               <h2 className="break-words text-title font-bold">{session.className}</h2>
-              <Link to={schedulePath} className="flex min-h-12 shrink-0 items-center text-label font-semibold text-primary">{text.changeSession}</Link>
+              <Link to={schedulePath} viewTransition data-nav="pop" className="flex min-h-12 shrink-0 items-center text-label font-semibold text-primary">{text.changeSession}</Link>
             </div>
             <p className="text-on-surface-variant">{formatClubDateMedium(session.date, language)} · {session.startTime}-{session.endTime} · {session.venueName}</p>
           </div>

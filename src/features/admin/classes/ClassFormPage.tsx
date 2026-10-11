@@ -12,7 +12,6 @@ import { parseInteger, emptyDefaults } from '../forms/form-values'
 import { apiErrorMessages, fieldErrorMessage } from '@/i18n/api-error-messages'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
-import { useMediaQuery } from '@/lib/use-media-query'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { useAdminResource } from '../forms/use-admin-resource'
 import { useUnsavedChangesGuard } from '../forms/use-unsaved-changes-guard'
@@ -21,16 +20,14 @@ import type { DefaultValues } from '../forms/form-values'
 import { FormFeedback } from '../forms/FormFeedback'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
-import { ClassDesktop } from './ClassDesktop'
+import { setNavMotion } from '@/lib/nav-motion'
 const mapping = { levelId: 'defaultLevelId', venueId: 'defaultVenueId', durationMinutes: 'defaultDurationMinutes', priceIdr: 'defaultPriceIdr', minParticipants: 'defaultMinParticipants', maxParticipants: 'defaultMaxParticipants', coachIds: 'defaultCoachIds' } as const
 const fromRecord = (record: ClassRecord | null): DefaultValues => record ? { levelId: record.defaultLevelId, venueId: record.defaultVenueId, durationMinutes: String(record.defaultDurationMinutes), priceIdr: String(record.defaultPriceIdr), minParticipants: String(record.defaultMinParticipants), maxParticipants: String(record.defaultMaxParticipants), coachIds: record.defaultCoachIds } : emptyDefaults
+// Phones and tablets: one class's editor on its own screen (desktop shows it beside the list, classes-route).
 export function ClassFormPage() {
   const { id } = useParams()
   const { t } = useI18n()
-  const isDesktop = useMediaQuery('(min-width: 64rem)')
-  const resource = useAdminResource<ClassRecord>(id && !isDesktop ? `/api/admin/classes/${id}` : null)
-  // Desktop shows the class list and this form side by side.
-  if (isDesktop) return <ClassDesktop selected={id ?? 'new'} />
+  const resource = useAdminResource<ClassRecord>(id ? `/api/admin/classes/${id}` : null)
   if (id && !resource.data) return <><AdminBand title={t({ id: 'Ubah kelas', en: 'Edit class' })} back={{ to: '/admin/classes', label: t(messages.classes) }} /><div className="page-gutter mx-auto max-w-[50rem] py-6"><StatusPanel tone={resource.response ? 'error' : 'info'} title={t(resource.response ? messages.loadError : messages.loading)} action={resource.response ? { label: t(commonMessages.retry), onAction: resource.retry } : undefined} /></div></>
   return <ClassForm key={id ?? 'new'} initial={resource.data} />
 }
@@ -67,7 +64,7 @@ export function ClassForm({ initial, embedded = false }: { initial: ClassRecord 
     sending.current = true; setPending(true); setFailure(null)
     try {
       const result = await send<ClassRecord>(initial ? 'PUT' : 'POST', `/api/admin/classes${initial ? `/${initial.id}` : ''}`, { ...input, ...(initial ? { version: baseline!.version } : { createRequestId: requestId }) })
-      if (result.kind === 'ok') { guard.allowNavigation(); navigate('/admin/classes', { state: { savedId: result.data.id } }); return }
+      if (result.kind === 'ok') { guard.allowNavigation(); setNavMotion('pop'); navigate('/admin/classes', { state: { savedId: result.data.id }, viewTransition: !embedded }); return }
       if (result.kind === 'http') { setErrors(translateFields(result.fields ?? {})); setFailure(t(apiErrorMessages[result.code])); if (result.code === 'STALE_VERSION') setLatest(result.latest as ClassRecord); focusErrors() }
       else setFailure(t(messages.saveError))
     } finally { sending.current = false; setPending(false) }

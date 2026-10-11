@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ChevronLeft, ExternalLink, MessageCircle } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatIdr } from '@/i18n/format'
@@ -11,13 +11,14 @@ import { clubContent } from '@/features/public/club/club-content'
 import { useNow } from '@/features/public/schedule/use-now'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBooking } from './use-customer-bookings'
+import { setNavMotion } from '@/lib/nav-motion'
 
 function Band({ title, children }: { title: string; children?: ReactNode }) {
   const { t } = useI18n()
   return (
-    <header className="rounded-b-lg bg-band pb-5 pt-[env(safe-area-inset-top)] text-on-signboard [&_:focus-visible]:outline-white">
+    <header className="rounded-b-lg bg-band pb-5 pt-[env(safe-area-inset-top)] text-on-signboard [view-transition-name:app-bar] [&_:focus-visible]:outline-white">
       <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2">
-        <Link to="/bookings" viewTransition className="pressable -ml-1 mt-2 flex min-h-12 items-center gap-3 self-start rounded-full pr-3 text-label">
+        <Link to="/bookings" viewTransition data-nav="pop" className="pressable -ml-1 mt-2 flex min-h-12 items-center gap-3 self-start rounded-full pr-3 text-label">
           <span className="flex size-12 items-center justify-center rounded-full bg-band-tile"><ChevronLeft aria-hidden="true" className="size-6" /></span>
           {t(messages.back)}
         </Link>
@@ -39,6 +40,7 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
 
 export function Component() {
   const { id = '' } = useParams()
+  const navigate = useNavigate()
   const { language, t } = useI18n()
   const { loaded, retry } = useCustomerBooking(id)
   const localNow = useNow(1_000)
@@ -49,7 +51,7 @@ export function Component() {
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
         {loaded.status === 'loading' ? <p role="status">{t(messages.loading)}</p>
           : loaded.status === 'missing' ? <StatusPanel tone="info" title={t(messages.missing)} />
-          : loaded.status === 'signedOut' ? <StatusPanel tone="info" title={t(messages.signInTitle)} action={{ label: t(messages.signIn), onAction: () => { window.location.href = `/customer/sign-in?returnTo=${encodeURIComponent(`/bookings/${id}`)}` } }} />
+          : loaded.status === 'signedOut' ? <StatusPanel tone="info" title={t(messages.signInTitle)} action={{ label: t(messages.signIn), onAction: () => { setNavMotion('push'); navigate(`/customer/sign-in?returnTo=${encodeURIComponent(`/bookings/${id}`)}`, { viewTransition: true }) } }} />
           : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
       </div>
     </>

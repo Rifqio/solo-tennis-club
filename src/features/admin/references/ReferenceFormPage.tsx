@@ -11,7 +11,6 @@ import { StatusPanel } from '@/components/ui/status-panel'
 import { apiErrorMessages, fieldErrorMessage } from '@/i18n/api-error-messages'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
-import { useMediaQuery } from '@/lib/use-media-query'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { useAdminResource } from '../forms/use-admin-resource'
 import { useUnsavedChangesGuard } from '../forms/use-unsaved-changes-guard'
@@ -19,11 +18,11 @@ import { FormFeedback } from '../forms/FormFeedback'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
 import { MapPreview } from './MapPreview'
-import { ReferenceDesktop } from './ReferenceDesktop'
-import { referenceConfig } from './reference-config'
+import { referenceConfig, referenceKindOf } from './reference-config'
 import { CoachPhotoField } from './CoachPhotoField'
 import { ReferenceUsage } from './ReferenceUsage'
 import { ArchiveDialog } from './ArchiveDialog'
+import { setNavMotion } from '@/lib/nav-motion'
 
 const copy = {
   manage: { id: 'Kelola', en: 'Manage' },
@@ -47,14 +46,13 @@ const copy = {
 
 type Pin = MapLocationResponse
 
-export function ReferenceFormPage({ kind }: { kind: ReferenceKind }) {
+// Phones and tablets: one record's editor on its own screen (desktop shows it beside the list, references-route).
+export function Component() {
   const { id } = useParams()
+  const kind = referenceKindOf(useLocation().pathname)
   const config = referenceConfig[kind]
   const { t } = useI18n()
-  const isDesktop = useMediaQuery('(min-width: 64rem)')
-  const resource = useAdminResource<ReferenceRecord>(id && !isDesktop ? `/api/admin/${config.path}/${id}` : null)
-  // Desktop shows the list and this form side by side.
-  if (isDesktop) return <ReferenceDesktop kind={kind} selected={id ?? 'new'} />
+  const resource = useAdminResource<ReferenceRecord>(id ? `/api/admin/${config.path}/${id}` : null)
   if (id && !resource.data) return <>
     <AdminBand title={t(config.edit)} back={{ to: `/admin/${config.path}`, label: t(copy.manage) }} />
     <div className="page-gutter mx-auto max-w-[50rem] py-6"><StatusPanel tone={resource.response ? 'error' : 'info'} title={t(resource.response ? messages.loadError : messages.loading)} action={resource.response ? { label: t(commonMessages.retry), onAction: resource.retry } : undefined} /></div>
@@ -143,7 +141,7 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
     try {
       const body = { name, ...(venue ? { address, ...mapFields } : {}), ...(initial ? { version: baseline!.version } : { createRequestId: requestId }) }
       const result = await send<ReferenceRecord>(initial ? 'PUT' : 'POST', `/api/admin/${config.path}${initial ? `/${initial.id}` : ''}`, body)
-      if (result.kind === 'ok') { guard.allowNavigation(); navigate(`/admin/${config.path}${location.search}`, { state: { savedId: result.data.id } }); return }
+      if (result.kind === 'ok') { guard.allowNavigation(); setNavMotion('pop'); navigate(`/admin/${config.path}${location.search}`, { state: { savedId: result.data.id }, viewTransition: !embedded }); return }
       if (result.kind === 'http') { setErrors(result.fields ?? {}); setFailure(t(apiErrorMessages[result.code] ?? apiErrorMessages.INTERNAL)); if (result.code === 'STALE_VERSION') setLatest(result.latest as ReferenceRecord); focusErrors() }
       else setFailure(t(messages.saveError))
     } finally { sending.current = false; setPending(false) }
@@ -158,7 +156,7 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
       setConfirming(false)
       if (result.kind === 'ok') {
         guard.allowNavigation()
-        if (archived) navigate(`/admin/${config.path}${location.search}`, { state: { archived: result.data } })
+        if (archived) { setNavMotion('pop'); navigate(`/admin/${config.path}${location.search}`, { state: { archived: result.data }, viewTransition: !embedded }) }
         else navigate(`/admin/${config.path}/${result.data.id}/edit`, { state: { savedId: result.data.id } })
         return
       }

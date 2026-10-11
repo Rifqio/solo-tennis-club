@@ -7,7 +7,8 @@ export const adminNavLeading = [
 ]
 export const adminNavTrailing = [
   { to: '/admin/classes', label: { id: 'Kelas', en: 'Classes' }, Icon: ListChecks, also: [] },
-  { to: '/admin/manage', label: { id: 'Kelola', en: 'Manage' }, Icon: SlidersHorizontal, also: ['/admin/coaches', '/admin/venues', '/admin/levels'] },
+  // Straight to the first list: going through the /admin/manage redirect would show an empty step mid-transition.
+  { to: '/admin/coaches', label: { id: 'Kelola', en: 'Manage' }, Icon: SlidersHorizontal, also: ['/admin/manage', '/admin/venues', '/admin/levels'] },
 ]
 
 // The dock shows on the tab screens and their lists; forms, the roster and booking details are focused tasks with

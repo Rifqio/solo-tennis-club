@@ -96,7 +96,7 @@ export function BookingDetailPanel({ id }: { id: string }) {
         </div>
       </dl>
       {unpaid && <p className="text-label text-on-surface-variant">{t(messages.changeNote)}</p>}
-      <Link to={`/bookings/${booking.id}`} className="self-start text-label font-semibold text-primary underline-offset-4 hover:underline">{t(messages.openDetail)}</Link>
+      <Link to={`/bookings/${booking.id}`} viewTransition data-nav="push" className="self-start text-label font-semibold text-primary underline-offset-4 hover:underline">{t(messages.openDetail)}</Link>
     </m.aside>
   )
 }

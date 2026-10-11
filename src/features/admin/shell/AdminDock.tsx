@@ -8,12 +8,14 @@ import { LanguageMenu } from '@/components/ui/language-switch'
 import { useI18n } from '@/i18n/use-i18n'
 import type { Message } from '@/i18n/types'
 import { selectionHaptic } from '@/lib/haptics'
-import { selectionSpring } from '@/lib/motion'
+import { popSpring, selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { adminNavLeading, adminNavTrailing } from './admin-nav'
 import { authMessages } from '../auth/auth.messages'
 import { shellMessages } from './shell.messages'
 import { useAdminShell } from './admin-shell-context'
+
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 interface Destination { to: string; label: Message; Icon: LucideIcon; also: string[] }
 
@@ -24,7 +26,13 @@ function Tab({ to, label, Icon, also }: Destination) {
   const active = pathname === to || pathname.startsWith(to + '/')
     || also.some(path => pathname === path || (path !== '/admin' && pathname.startsWith(path + '/')))
   return (
-    <Link to={to} viewTransition aria-current={active ? 'page' : undefined} onClick={() => { if (!active) selectionHaptic() }}
+    // Always a section switch (a short crossfade), whatever the depth of the screen it leaves. The open screen itself
+    // does not reload: tapping it scrolls back to the top.
+    <Link to={to} viewTransition data-nav="tab" aria-current={active ? 'page' : undefined}
+      onClick={event => {
+        if (pathname === to) { event.preventDefault(); window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' }); return }
+        if (!active) selectionHaptic()
+      }}
       className="pressable relative isolate flex min-h-16 flex-col items-center justify-center gap-0.5 sm:w-[4.5rem] lg:w-20">
       {/* Rail (from 640px, board D9b): the open screen sits on a raised ink tile that glides between items. */}
       {active && <m.span layoutId="admin-rail-tile" transition={selectionSpring} aria-hidden="true" className="absolute inset-0 -z-10 hidden rounded-[1rem] bg-ink-raised sm:block" />}
@@ -59,8 +67,12 @@ export function AdminDock() {
         {adminNavLeading.map(item => <Tab key={item.to} {...item} />)}
         <NavLink to={`/admin/sessions/new${date ? `?date=${date}` : ''}`} viewTransition onClick={() => selectionHaptic()}
           className="group flex flex-col items-center gap-1 outline-none sm:order-first sm:mb-3 sm:mt-3">
-          <span className="state-layer flex size-16 -translate-y-6 items-center justify-center rounded-full bg-accent text-on-accent shadow-fab group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-accent sm:size-14 sm:translate-y-0 sm:shadow-none">
-            <Plus aria-hidden="true" className="size-7" strokeWidth={2.5} />
+          {/* The raise sits on the outer span so the press scale on the inner one does not fight it. */}
+          <span className="flex -translate-y-6 sm:translate-y-0">
+            <m.span whileTap={{ scale: 0.94 }} transition={popSpring}
+              className="state-layer flex size-16 items-center justify-center rounded-full bg-accent text-on-accent shadow-fab group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-accent sm:size-14 sm:shadow-none">
+              <Plus aria-hidden="true" className="size-7" strokeWidth={2.5} />
+            </m.span>
           </span>
           <span className="-mt-6 text-center text-label font-semibold leading-tight text-on-ink sm:mt-0 sm:max-w-18">{t(shellMessages.addSession)}</span>
         </NavLink>

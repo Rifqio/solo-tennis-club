@@ -2,7 +2,6 @@ import { createBrowserRouter, Navigate, RouterProvider, useLocation } from 'reac
 import { ClubPage } from './features/public/club/ClubPage'
 import { PublicLayout } from './features/public/layout/PublicLayout'
 import { SchedulePage } from './features/public/schedule/SchedulePage'
-import type { ReferenceKind } from '@shared/api/admin-references'
 
 const router = createBrowserRouter([
   {
@@ -18,16 +17,21 @@ const router = createBrowserRouter([
           { path: 'sessions/:id/edit', lazy: () => import('./features/admin/sessions/SessionEditorPage') },
           { path: 'sessions/:id/roster', lazy: () => import('./features/admin/sessions/SessionRosterPage') },
           { path: 'sessions/:id/book', lazy: () => import('./features/admin/bookings/AdminBookingFormPage') },
-          { path: 'bookings', lazy: () => import('./features/admin/bookings/AdminBookingsPage') },
-          { path: 'bookings/:id', lazy: () => import('./features/admin/bookings/AdminBookingDetailPage') },
+          { lazy: () => import('./features/admin/bookings/bookings-route'), children: [
+            { path: 'bookings', lazy: () => import('./features/admin/bookings/AdminBookingsPage') },
+            { path: 'bookings/:id', lazy: () => import('./features/admin/bookings/AdminBookingDetailPage') },
+          ] },
           { path: 'manage', lazy: () => import('./features/admin/manage/ManagePage') },
-          { path: 'classes', lazy: () => import('./features/admin/classes/ClassListPage') },
-          { path: 'classes/new', lazy: () => import('./features/admin/classes/ClassFormPage') },
-          { path: 'classes/:id/edit', lazy: () => import('./features/admin/classes/ClassFormPage') },
-          ...([['coaches', 'coach'], ['venues', 'venue'], ['levels', 'level']] as const).flatMap(([path, kind]) => [
-            { path, lazy: async () => { const { ReferenceListPage } = await import('./features/admin/references/ReferenceListPage'); return { Component: () => <ReferenceListPage kind={kind as ReferenceKind} /> } } },
-            ...['new', ':id/edit'].map(suffix => ({ path: `${path}/${suffix}`, lazy: async () => { const { ReferenceFormPage } = await import('./features/admin/references/ReferenceFormPage'); return { Component: () => <ReferenceFormPage kind={kind as ReferenceKind} /> } } })),
-          ]),
+          { lazy: () => import('./features/admin/classes/classes-route'), children: [
+            { path: 'classes', lazy: () => import('./features/admin/classes/ClassListPage') },
+            { path: 'classes/new', lazy: () => import('./features/admin/classes/ClassFormPage') },
+            { path: 'classes/:id/edit', lazy: () => import('./features/admin/classes/ClassFormPage') },
+          ] },
+          { lazy: () => import('./features/admin/references/references-route'), children: ['coaches', 'venues', 'levels'].flatMap(path => [
+            { path, lazy: () => import('./features/admin/references/ReferenceListPage') },
+            { path: `${path}/new`, lazy: () => import('./features/admin/references/ReferenceFormPage') },
+            { path: `${path}/:id/edit`, lazy: () => import('./features/admin/references/ReferenceFormPage') },
+          ]) },
           { path: '*', lazy: () => import('./features/admin/shell/not-found-route') },
         ] },
       ] },

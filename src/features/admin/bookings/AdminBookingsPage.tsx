@@ -6,12 +6,10 @@ import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import type { Language, Message } from '@/i18n/types'
-import { useMediaQuery } from '@/lib/use-media-query'
 import { addClubDays, clubDateOf } from '@shared/club-time'
 import type { AdminBookingFilter, AdminBookingSummary } from '@shared/api/admin-bookings'
 import { AdminBand } from '../shell/AdminBand'
 import { adminBookingsMessages as messages } from './bookings.messages'
-import { AdminBookingsDesktop } from './AdminBookingsDesktop'
 import { BookingFilters } from './BookingFilters'
 import { BOOKING_FILTERS } from './booking-facts'
 import { useAdminBookingList } from './use-admin-booking-list'
@@ -58,10 +56,8 @@ function groupBookings(items: AdminBookingSummary[], filter: AdminBookingFilter,
   return groups
 }
 
-export function Component() {
-  const isDesktop = useMediaQuery('(min-width: 64rem)')
-  return isDesktop ? <AdminBookingsDesktop openId={null} /> : <BookingsScreen />
-}
+// Desktop renders the table and drawer from bookings-route.
+export function Component() { return <BookingsScreen /> }
 
 // Phones (board 14): unpaid bookings grouped by deadline day, the others by booking day.
 function BookingsScreen() {

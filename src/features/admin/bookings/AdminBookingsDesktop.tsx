@@ -9,7 +9,7 @@ import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
-import { contentSpring } from '@/lib/motion'
+import { contentSpring, selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { useSettledSearch } from '../forms/use-admin-list'
 import { AdminBand } from '../shell/AdminBand'
@@ -86,7 +86,7 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
       <section aria-label={t(messages.heading)} aria-busy={list.searching} className="min-w-0 flex-1 overflow-hidden rounded-lg bg-surface-container-lowest">
         {list.status === 'loading' ? (
           <div className="flex flex-col gap-2 p-6"><p role="status" className="sr-only">{t(messages.loading)}</p>
-            {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="h-14 rounded-sm bg-surface-container" />)}</div>
+            {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="appear-late h-14 rounded-sm bg-surface-container" />)}</div>
         ) : list.status === 'error' ? (
           <div className="p-6"><StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: list.retry }} /></div>
         ) : list.items.length === 0 ? (
@@ -111,7 +111,9 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
                     // The name is the row's button for keyboards and screen readers; a click anywhere on the row opens it too.
                     <tr key={booking.id} onClick={() => open(booking.id)}
                       className={cn('cursor-pointer border-t border-outline-variant transition-colors duration-150', on ? 'bg-primary-container' : 'hover:bg-surface-container-low')}>
-                      <td className="py-3.5 pl-6 pr-3">
+                      <td className="relative py-3.5 pl-6 pr-3">
+                        {/* The open booking's marker glides to the next row picked; the row tint changes at once. */}
+                        {on && <m.span layoutId="booking-row-marker" transition={selectionSpring} aria-hidden="true" className="absolute inset-y-2 left-0 w-1 rounded-r-full bg-primary" />}
                         <button type="button" aria-pressed={on} aria-label={t(copy.open, { name: booking.bookerName })} onClick={event => { event.stopPropagation(); open(booking.id) }}
                           className="flex min-h-11 flex-col justify-center text-left">
                           <span className="flex flex-wrap items-center gap-2">
@@ -141,15 +143,16 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
           {filter === 'unpaid' && <p className="border-t border-outline-variant px-6 py-4 text-label text-on-surface-variant">{t(messages.footnote)}</p>}
         </>}
       </section>
-      {/* The drawer's width opens from 0, so the table eases narrower as it slides in. */}
+      {/* The drawer's width opens from 0, so the table eases narrower as it slides in. It opens once: switching bookings
+          keeps the last one on screen until the next has loaded, and closing keeps it while the drawer folds away. */}
       <AnimatePresence initial={false}>
         {openId && (
           <m.div key="drawer" initial={{ width: 0, opacity: 0 }} animate={{ width: 'auto', opacity: 1 }} exit={{ width: 0, opacity: 0 }} transition={contentSpring}
             className="sticky top-5 shrink-0 overflow-hidden">
-            <aside aria-label={t(messages.heading)} className="ml-5 w-[26rem] overflow-hidden rounded-lg bg-surface-container-lowest xl:w-[28rem]">
-              {detail.response?.kind === 'ok' ? (() => {
-                const { booking } = detail.response.data
-                const { status, deadline } = bookingFacts(detail.response.data, language)
+            <aside aria-label={t(messages.heading)} aria-busy={detail.stale} inert={detail.stale} className="ml-5 w-[26rem] overflow-hidden rounded-lg bg-surface-container-lowest xl:w-[28rem]">
+              {detail.held?.kind === 'ok' ? (() => {
+                const { booking } = detail.held.data
+                const { status, deadline } = bookingFacts(detail.held.data, language)
                 return <>
                   <div className="flex flex-col gap-3.5 bg-band p-6 text-on-signboard [&_:focus-visible]:outline-white">
                     <div className="flex items-start justify-between gap-3">
@@ -165,13 +168,13 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
                     </dl>
                   </div>
                   <div className="flex flex-col gap-4 px-6 pb-6 pt-5">
-                    <BookingDetailBody data={detail.response.data} created={created} onChanged={detail.replace} drawer />
+                    <BookingDetailBody data={detail.held.data} created={created} onChanged={detail.replace} drawer />
                   </div>
                 </>
               })() : (
                 <div className="flex flex-col gap-3 p-6">
                   <div className="flex justify-end"><IconButton label={t(copy.close)} onClick={close}><X aria-hidden="true" className="size-5" /></IconButton></div>
-                  {!detail.response ? <p role="status">{t(messages.loading)}</p>
+                  {!detail.response ? <p role="status" className="appear-late">{t(messages.loading)}</p>
                     : detail.response.kind === 'http' && detail.response.status === 404 ? <StatusPanel tone="info" title={t(messages.missing)} />
                     : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: detail.retry }} />}
                 </div>

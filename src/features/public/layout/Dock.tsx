@@ -28,9 +28,14 @@ function Destination({ to, end, label, Icon, className }: DockDestination) {
       to={to}
       end={end}
       viewTransition
+      // Always a section switch (a short crossfade), whatever the URL depth of either screen.
+      data-nav="tab"
       onClick={event => {
         // Native habit: tapping the tab you are already on returns to the top of it.
-        if (event.currentTarget.getAttribute('aria-current') === 'page') { event.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+        if (event.currentTarget.getAttribute('aria-current') === 'page') {
+          event.preventDefault()
+          window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+        }
         else selectionHaptic()
       }}
       className={cn('pressable flex min-h-16 flex-col items-center justify-center gap-0.5 sm:w-full sm:flex-none', className)}

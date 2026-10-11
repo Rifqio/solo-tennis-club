@@ -33,7 +33,19 @@ const copy = {
 // "Tambah" link to the routes phones use, so saving and the unsaved-changes guard work unchanged. `selected` is a record
 // id, 'new' for the blank form, or null on the list route (the saved record, else the first one). `?view=archive` lists
 // archived records instead.
+// The band stays mounted across tabs and records (references-route), so only the switch's pill moves; the split below
+// starts fresh for each kind.
 export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; selected: string | null }) {
+  const { t } = useI18n()
+  return <>
+    <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>}>
+      <div className="lg:min-w-[28rem]"><ReferenceTabs current={kind} /></div>
+    </AdminBand>
+    <ReferenceSplit key={kind} kind={kind} selected={selected} />
+  </>
+}
+
+function ReferenceSplit({ kind, selected }: { kind: ReferenceKind; selected: string | null }) {
   const { t } = useI18n()
   const config = referenceConfig[kind]
   const location = useLocation()
@@ -57,10 +69,7 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
   const record = currentId === 'new' ? null : listed ?? single.data
   const venue = kind === 'venue'
   const rowLink = (id: string) => `/admin/${config.path}/${id}/edit${archive ? '?view=archive' : ''}`
-  return <>
-    <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>}>
-      <div className="lg:min-w-[28rem]"><ReferenceTabs current={kind} /></div>
-    </AdminBand>
+  return (
     <div className="desk-column flex items-start gap-5 py-5">
       <section aria-label={t(config.label)} className="flex min-h-[36rem] w-[24rem] shrink-0 flex-col rounded-lg bg-surface-container-lowest xl:w-[28.75rem]">
         <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-5">
@@ -131,5 +140,5 @@ export function ReferenceDesktop({ kind, selected }: { kind: ReferenceKind; sele
             onPhotoSaved={dirty => { if (!dirty) navigate(location.pathname + location.search, { replace: true }) }} />}
       </div>
     </div>
-  </>
+  )
 }

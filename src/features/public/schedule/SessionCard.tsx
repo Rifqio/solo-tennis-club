@@ -111,7 +111,7 @@ export function SessionCard({ session, timing, now, marked = false, players, onO
         </div>
         {bookable && (
           <Button asChild variant="filled" className="px-6">
-            <Link to={`/book/${encodeURIComponent(session.id)}?date=${session.date}`} aria-label={t(scheduleMessages.bookSession, { name, time: session.startTime })}>
+            <Link to={`/book/${encodeURIComponent(session.id)}?date=${session.date}`} viewTransition data-nav="push" aria-label={t(scheduleMessages.bookSession, { name, time: session.startTime })}>
               {t(scheduleMessages.book)}
             </Link>
           </Button>

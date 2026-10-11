@@ -14,3 +14,9 @@ export function referenceSubline(kind: ReferenceKind, row: ReferenceRecord) {
     ? { id: `Dipakai di ${row.classCount} kelas`, en: `Used in ${row.classCount} ${row.classCount === 1 ? 'class' : 'classes'}` }
     : { id: 'Belum dipakai di kelas', en: 'Not used by a class yet' }
 }
+
+// Which list a Kelola URL belongs to (/admin/coaches/…, /admin/venues/…, /admin/levels/…).
+export function referenceKindOf(pathname: string): ReferenceKind {
+  const path = pathname.split('/')[2]
+  return (Object.keys(referenceConfig) as ReferenceKind[]).find(kind => referenceConfig[kind].path === path) ?? 'coach'
+}

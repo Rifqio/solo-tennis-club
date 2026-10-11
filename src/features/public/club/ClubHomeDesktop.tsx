@@ -52,15 +52,15 @@ export function ClubHomeDesktop({ venues }: ClubHomeDesktopProps) {
           <span className="text-title font-bold uppercase tracking-[0.16em] text-on-surface">{clubContent.shortName}</span>
         </Link>
         <nav aria-label={t(messages.pagesNav)} className="flex items-center gap-1">
-          <Link to="/schedule" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-medium xl:px-4">{t(messages.navSchedule)}</Link>
+          <Link to="/schedule" viewTransition data-nav="tab" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-medium xl:px-4">{t(messages.navSchedule)}</Link>
           <a href="#steps" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-medium xl:px-4">{t(messages.navSteps)}</a>
           <a href="#courts" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-medium xl:px-4">{t(messages.navCourts)}</a>
           <a href="#contact" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-medium xl:px-4">{t(messages.navContact)}</a>
         </nav>
         <div className="flex items-center gap-2 justify-self-end">
           <LanguageMenu className="border border-outline-variant bg-surface-container-lowest text-on-surface" />
-          <Link to="/customer/sign-in" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-semibold xl:px-4">{t(messages.account)}</Link>
-          <Link to="/schedule" className="state-layer pressable flex min-h-12 items-center whitespace-nowrap rounded-full bg-cta px-5 font-semibold text-on-cta xl:px-6">{t(messages.seeSchedule)}</Link>
+          <Link to="/customer/sign-in" viewTransition data-nav="push" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-semibold xl:px-4">{t(messages.account)}</Link>
+          <Link to="/schedule" viewTransition data-nav="tab" className="state-layer pressable flex min-h-12 items-center whitespace-nowrap rounded-full bg-cta px-5 font-semibold text-on-cta xl:px-6">{t(messages.seeSchedule)}</Link>
         </div>
       </header>
 
@@ -90,7 +90,7 @@ export function ClubHomeDesktop({ venues }: ClubHomeDesktopProps) {
           <div className="club-reveal flex flex-wrap items-end justify-between gap-6">
             <h2 className={cn(statement, 'max-w-[14ch]')}>{t(messages.closing)}</h2>
             <div className="flex flex-wrap gap-3">
-              <Link to="/schedule" className="state-layer pressable flex min-h-14 items-center rounded-full bg-cta px-7 text-title font-semibold text-on-cta">{t(messages.seeSchedule)}</Link>
+              <Link to="/schedule" viewTransition data-nav="tab" className="state-layer pressable flex min-h-14 items-center rounded-full bg-cta px-7 text-title font-semibold text-on-cta">{t(messages.seeSchedule)}</Link>
               {whatsappHref && <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="state-layer pressable flex min-h-14 items-center rounded-full bg-surface-container-lowest px-7 text-title font-semibold text-primary">{t(messages.chatAdmin)}</a>}
             </div>
           </div>
@@ -104,7 +104,7 @@ export function ClubHomeDesktop({ venues }: ClubHomeDesktopProps) {
               <dd className="font-bold">{clubContent.instagram ? <a href={`https://instagram.com/${clubContent.instagram}`} target="_blank" rel="noopener noreferrer" className="text-on-signboard underline underline-offset-4">@{clubContent.instagram}</a> : t(commonMessages.unavailable)}</dd>
             </dl>
             <nav aria-label={t(messages.moreNav)} className="flex flex-col items-start">
-              <Link to="/bookings" className="flex min-h-12 items-center font-semibold text-on-signboard underline-offset-4 hover:underline">{t(messages.myBookings)}</Link>
+              <Link to="/bookings" viewTransition data-nav="tab" className="flex min-h-12 items-center font-semibold text-on-signboard underline-offset-4 hover:underline">{t(messages.myBookings)}</Link>
               <Link to="/admin/sign-in" className="flex min-h-12 items-center font-semibold text-on-signboard underline-offset-4 hover:underline">{t(clubMessages.adminSignIn)}</Link>
             </nav>
           </div>
@@ -141,7 +141,7 @@ function Hero({ whatsappHref }: { whatsappHref: string | null }) {
           </h1>
           <p className="club-in max-w-[34rem] text-title font-normal [animation-delay:650ms]">{t(messages.heroLine)}</p>
           <div className="club-in flex flex-wrap justify-center gap-3 [animation-delay:780ms]">
-            <Link to="/schedule" className="state-layer pressable flex min-h-14 items-center gap-4 rounded-full bg-cta py-2 pl-7 pr-2 text-title font-semibold text-on-cta">
+            <Link to="/schedule" viewTransition data-nav="tab" className="state-layer pressable flex min-h-14 items-center gap-4 rounded-full bg-cta py-2 pl-7 pr-2 text-title font-semibold text-on-cta">
               {t(messages.seeSchedule)}
               <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-full bg-surface-container-lowest"><ArrowRight className="size-5" strokeWidth={2.25} /></span>
             </Link>
@@ -199,7 +199,7 @@ function Steps() {
           {messages.steps.map((step, index) => (
             <li key={index} className="club-reveal border-b border-outline-variant">
               {/* Hover or focus fills the row Deep Court and slides a photo in beside the go label. */}
-              <Link to="/schedule" className="group relative grid grid-cols-[4rem_minmax(0,1fr)_auto] items-center gap-6 rounded-sm px-6 py-7 transition-colors duration-300 hover:bg-primary hover:text-on-primary focus-visible:bg-primary focus-visible:text-on-primary">
+              <Link to="/schedule" viewTransition data-nav="tab" className="group relative grid grid-cols-[4rem_minmax(0,1fr)_auto] items-center gap-6 rounded-sm px-6 py-7 transition-colors duration-300 hover:bg-primary hover:text-on-primary focus-visible:bg-primary focus-visible:text-on-primary">
                 <span className="text-label font-semibold tabular-nums">{String(index + 1).padStart(2, '0')}</span>
                 <span className="flex flex-col gap-1 pr-56">
                   <span className="text-display font-bold">{t(step.title)}</span>
@@ -232,7 +232,7 @@ function NextSessions() {
     <section aria-labelledby="next-title" className={cn(wrap, 'flex flex-col gap-8 pt-[clamp(4.5rem,9vw,7.5rem)]')}>
       <div className="club-reveal flex flex-wrap items-end justify-between gap-4">
         <h2 id="next-title" className={statement}>{t(messages.nextTitle)}</h2>
-        <Link to="/schedule" className="flex min-h-12 items-center gap-1.5 font-semibold text-primary">{t(messages.allSchedule)}<ArrowRight aria-hidden="true" className="size-4" strokeWidth={2.25} /></Link>
+        <Link to="/schedule" viewTransition data-nav="tab" className="flex min-h-12 items-center gap-1.5 font-semibold text-primary">{t(messages.allSchedule)}<ArrowRight aria-hidden="true" className="size-4" strokeWidth={2.25} /></Link>
       </div>
       {upcoming.status === 'loading' ? (
         <ul aria-hidden="true" className="appear-late grid grid-cols-3 gap-6">{[0, 1, 2].map(key => <li key={key} className="h-40 rounded-lg bg-surface-container" />)}</ul>
@@ -247,7 +247,7 @@ function NextSessions() {
             const closed = session.availability === 'full' || session.availability === 'cancelled'
             return (
               <li key={session.id} className="club-reveal">
-                <Link to={`/schedule?${new URLSearchParams({ date: session.date, session: session.id })}`}
+                <Link to={`/schedule?${new URLSearchParams({ date: session.date, session: session.id })}`} viewTransition data-nav="tab"
                   className="flex flex-col gap-5 rounded-lg bg-surface-container-lowest p-6 transition-transform duration-300 hover:-translate-y-1">
                   <span className="flex items-center justify-between gap-3 text-label font-semibold">
                     <span className="text-on-surface-variant">{formatClubDateShort(session.date, language)}</span>

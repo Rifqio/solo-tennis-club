@@ -110,7 +110,7 @@ export function useSessionDetailContent({ id, seed = null, knownPlayers, onLeave
           <span className="text-label text-on-surface-variant">{t(scheduleMessages.perPlace)}</span>
         </p>
         <Button asChild variant="filled" className="px-7">
-          <Link to={`/book/${encodeURIComponent(view.id)}?date=${encodeURIComponent(view.date)}`} onClick={onLeave}>{t(messages.choosePlaces)}</Link>
+          <Link to={`/book/${encodeURIComponent(view.id)}?date=${encodeURIComponent(view.date)}`} viewTransition data-nav="push" onClick={onLeave}>{t(messages.choosePlaces)}</Link>
         </Button>
       </div>
     ) : (

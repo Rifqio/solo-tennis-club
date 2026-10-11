@@ -4,7 +4,6 @@ import { AnimatePresence, m } from 'motion/react'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ClassRecord } from '@shared/api/admin-classes'
 import { useI18n } from '@/i18n/use-i18n'
-import { useMediaQuery } from '@/lib/use-media-query'
 import { listRowMotion } from '@/lib/motion'
 import { formatIdr } from '@/i18n/format'
 import { commonMessages } from '@/i18n/common.messages'
@@ -14,7 +13,6 @@ import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
 import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
-import { ClassDesktop } from './ClassDesktop'
 
 const copy = {
   heading: { id: 'Kelas', en: 'Classes' },
@@ -33,13 +31,11 @@ const copy = {
 // Phones and tablets: the class cards on their own screen, 20 at a time with a server-side search.
 export function ClassListPage() {
   const { t, language } = useI18n()
-  const isDesktop = useMediaQuery('(min-width: 64rem)')
   const [query, setQuery] = useState('')
   const search = useSettledSearch(query)
-  const list = useAdminList<ClassRecord>(isDesktop ? null : '/api/admin/classes', search)
+  const list = useAdminList<ClassRecord>('/api/admin/classes', search)
   const location = useLocation()
   const savedId = (location.state as { savedId?: string } | null)?.savedId
-  if (isDesktop) return <ClassDesktop selected={null} />
   return <>
     <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>} />
     <div className="page-gutter desk-column mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4">

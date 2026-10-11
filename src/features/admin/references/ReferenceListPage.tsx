@@ -8,16 +8,14 @@ import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
 import { listRowMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-import { useMediaQuery } from '@/lib/use-media-query'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
 import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { CoachAvatar } from '../forms/CoachAvatar'
 import { AdminBand } from '../shell/AdminBand'
-import { archiveEmpty, referenceConfig, referenceSubline } from './reference-config'
+import { archiveEmpty, referenceConfig, referenceKindOf, referenceSubline } from './reference-config'
 import { ArchivedNotice, ArchiveHeading, ArchiveToggle } from './ArchiveControls'
 import { ReferenceTabs } from './ReferenceTabs'
-import { ReferenceDesktop } from './ReferenceDesktop'
 import { adminMessages as messages } from '../forms/admin.messages'
 
 const copy = {
@@ -29,23 +27,31 @@ const copy = {
 }
 
 // Phones and tablets: the list on its own screen, 20 at a time with a server-side search; each row opens the editor.
-export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
+// One component for all three lists, so the band and its switch stay put when the admin changes tab; the list below
+// starts fresh for each kind (its own search).
+export function Component() {
+  const { t } = useI18n()
+  const kind = referenceKindOf(useLocation().pathname)
+  return <>
+    <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>}>
+      <ReferenceTabs current={kind} />
+    </AdminBand>
+    <ReferenceList key={kind} kind={kind} />
+  </>
+}
+
+function ReferenceList({ kind }: { kind: ReferenceKind }) {
   const { t } = useI18n()
   const config = referenceConfig[kind]
-  const isDesktop = useMediaQuery('(min-width: 64rem)')
   const [query, setQuery] = useState('')
   const search = useSettledSearch(query)
   const [params] = useSearchParams()
   const archive = params.get('view') === 'archive'
   const location = useLocation()
-  const list = useAdminList<ReferenceRecord>(isDesktop ? null : `/api/admin/${config.path}${archive ? '?archived=1' : ''}`, search, location.key)
+  const list = useAdminList<ReferenceRecord>(`/api/admin/${config.path}${archive ? '?archived=1' : ''}`, search, location.key)
   const savedId = (location.state as { savedId?: string } | null)?.savedId
   const venue = kind === 'venue'
-  if (isDesktop) return <ReferenceDesktop kind={kind} selected={null} />
-  return <>
-    <AdminBand title={t(copy.heading)} subtitle={<p>{t(copy.subtitle)}</p>}>
-      <ReferenceTabs current={kind} />
-    </AdminBand>
+  return (
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2.5 py-4">
       {archive && <h2 className="text-title font-bold"><ArchiveHeading kind={kind} /></h2>}
       <ArchivedNotice kind={kind} />
@@ -89,5 +95,5 @@ export function ReferenceListPage({ kind }: { kind: ReferenceKind }) {
       </Link>}
       <ArchiveToggle kind={kind} archive={archive} />
     </div>
-  </>
+  )
 }

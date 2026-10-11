@@ -2,20 +2,18 @@ import { useLocation, useParams } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
-import { useMediaQuery } from '@/lib/use-media-query'
 import { AdminBand } from '../shell/AdminBand'
 import { adminBookingsMessages as messages } from './bookings.messages'
 import { BookingDetailBody } from './BookingDetailBody'
-import { AdminBookingsDesktop } from './AdminBookingsDesktop'
 import { bookingFacts } from './booking-facts'
 import { useAdminBooking } from './use-admin-booking'
 import type { CreatedBookingState } from './AdminBookingFormPage'
 
-// Phones (board 15): the booking on its own screen. Desktop (board D6) opens it in the drawer beside the table.
+// Phones (board 15): the booking on its own screen. Desktop (board D6) opens it in the drawer beside the table
+// (bookings-route).
 export function Component() {
   const { id = '' } = useParams()
-  const isDesktop = useMediaQuery('(min-width: 64rem)')
-  return isDesktop ? <AdminBookingsDesktop openId={id} /> : <BookingDetailScreen id={id} />
+  return <BookingDetailScreen id={id} />
 }
 
 function BookingDetailScreen({ id }: { id: string }) {

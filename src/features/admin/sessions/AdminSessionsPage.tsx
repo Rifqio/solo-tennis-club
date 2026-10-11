@@ -92,7 +92,7 @@ function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSes
           <Button asChild variant="outlined"><Link to={`/admin/sessions/${row.id}/edit`} viewTransition>{t(messages.edit)}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>
         </div>
       </>}
-      {cancelled && <Button asChild variant="text" className="-ml-3 self-start"><Link to={`/admin/sessions/${row.id}/edit`}>{t(messages.edit)}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>}
+      {cancelled && <Button asChild variant="text" className="-ml-3 self-start"><Link to={`/admin/sessions/${row.id}/edit`} viewTransition>{t(messages.edit)}<span className="sr-only">: {row.className}, {row.startTime}</span></Link></Button>}
     </article>
   )
 }

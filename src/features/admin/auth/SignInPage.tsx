@@ -24,7 +24,7 @@ const areaHints = {
   '/admin/sessions': authMessages.areaSessions,
   '/admin/bookings': authMessages.areaBookings,
   '/admin/classes': authMessages.areaClasses,
-  '/admin/manage': authMessages.areaManage,
+  '/admin/coaches': authMessages.areaManage,
 } as const
 
 function formatWait(milliseconds: number) {

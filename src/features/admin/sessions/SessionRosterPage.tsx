@@ -138,7 +138,7 @@ export function Component() {
       {/* Bookings from WhatsApp or the desk go in from the session they are for; the form explains a closed or full session. */}
       {session.status === 'scheduled' && (
         <Button asChild variant="filled" className="self-stretch sm:self-start sm:px-6">
-          <Link to={`/admin/sessions/${encodeURIComponent(id)}/book`} viewTransition><Plus aria-hidden="true" className="size-5" />{t(copy.record)}</Link>
+          <Link to={`/admin/sessions/${encodeURIComponent(id)}/book`} viewTransition data-nav="push"><Plus aria-hidden="true" className="size-5" />{t(copy.record)}</Link>
         </Button>
       )}
       {data.bookings.length === 0 ? <StatusPanel tone="info" title={t(copy.empty)} /> : <>
@@ -161,7 +161,7 @@ export function Component() {
           ? <p className="text-on-surface-variant">{t(copy.emptyFilter)}</p>
           : <ul className="flex flex-col gap-2.5">{shown.map(row => <li key={row.booking.id}><BookingGroup {...row} /></li>)}</ul>}
       </>}
-      <Button asChild variant="text" className="-ml-3 self-start"><Link to={`/admin/sessions/${id}/edit`}>{t(copy.edit)}</Link></Button>
+      <Button asChild variant="text" className="-ml-3 self-start"><Link to={`/admin/sessions/${id}/edit`} viewTransition data-nav="push">{t(copy.edit)}</Link></Button>
     </div>
   </>
 }

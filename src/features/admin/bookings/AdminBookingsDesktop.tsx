@@ -55,7 +55,9 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
   const urlSearch = params.get('q') ?? ''
   const [query, setQuery] = useState(urlSearch)
   const search = useSettledSearch(query)
-  const list = useAdminBookingList(filter, search)
+  // A change made in the drawer (a review, a recorded payment) refreshes the table, so the row moves to its new filter.
+  const [changes, setChanges] = useState(0)
+  const list = useAdminBookingList(filter, search, changes)
   const detail = useAdminBooking(openId)
   const suffix = urlFor(filter, search)
   useEffect(() => {
@@ -160,7 +162,7 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
                     </dl>
                   </div>
                   <div className="flex flex-col gap-4 px-6 pb-6 pt-5">
-                    <BookingDetailBody data={detail.held.data} onChanged={detail.replace} drawer />
+                    <BookingDetailBody data={detail.held.data} onChanged={next => { detail.replace(next); setChanges(value => value + 1) }} drawer />
                   </div>
                 </>
               })() : (

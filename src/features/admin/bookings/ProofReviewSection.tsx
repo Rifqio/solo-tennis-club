@@ -104,12 +104,14 @@ export function ProofReviewSection({ data, onChanged }: { data: AdminBookingDeta
     reason: `${t(rejectionReasonMessages[followUp.reason])}${followUp.note ? ` ${followUp.note}` : ''}`,
   }))}` : null
 
-  if (!pending && earlier.length === 0 && !booking.confirmed && !followUp && !notice) return null
+  // Only about proofs: a booking paid outside the app shows its payment in the Pembayaran section instead.
+  if (booking.proofs.length === 0 && !followUp && !notice) return null
+  const approvedProof = booking.proofs.some(proof => proof.status === 'approved')
   return (
     <section aria-labelledby="proof-heading" className="flex flex-col gap-3 rounded-sm bg-surface-container-lowest p-4">
       <h2 id="proof-heading" className="font-bold">{t(messages.heading)}</h2>
       {notice && <StatusPanel tone="info" title={notice} />}
-      {booking.confirmed && (
+      {booking.confirmed && approvedProof && (
         <p className="text-label text-on-surface-variant">{t(messages.confirmedBy, { when: time(booking.confirmed.at), by: booking.confirmed.by ? t(messages.by, { name: booking.confirmed.by }) : '' })}</p>
       )}
       {followUpHref && (

@@ -33,6 +33,10 @@ const detailFields = {
     },
     orderBy: [{ submittedAt: 'desc' }, { id: 'desc' }],
   },
+  paymentRecords: {
+    select: { id: true, method: true, amountIdr: true, paidOn: true, note: true, recordedAt: true, recordedBy: { select: { displayName: true } } },
+    orderBy: [{ recordedAt: 'desc' }, { id: 'desc' }],
+  },
 } satisfies Prisma.BookingSelect
 
 export type AdminBookingRow = Prisma.BookingGetPayload<{ select: typeof summaryFields }>
@@ -116,6 +120,26 @@ export function createAdminBookingRepository(database: Database) {
         where: { id, version, status: 'awaiting_verification' },
         data: { ...data, version: { increment: 1 } },
       })
+    },
+    findForPayment(id: string) {
+      return database.booking.findUnique({
+        where: { id },
+        select: {
+          id: true, status: true, version: true, quantity: true, originalDeadline: true, sessionId: true,
+          session: { select: { status: true, maxParticipants: true } },
+          paymentProofs: { where: { status: 'pending' }, select: { id: true } },
+        },
+      })
+    },
+    findPaymentRecord(requestId: string) {
+      return database.paymentRecord.findUnique({ where: { requestId }, select: { bookingId: true, method: true, amountIdr: true, paidOn: true } })
+    },
+    // Confirms at the version the admin saw from any state that is not yet paid; zero rows means someone changed it.
+    confirmAtVersion(id: string, version: number, data: { confirmedAt: Date; confirmedById: string; paymentNote: string | null }) {
+      return database.booking.updateMany({ where: { id, version, status: { not: 'confirmed' } }, data: { ...data, status: 'confirmed', version: { increment: 1 } } })
+    },
+    createPaymentRecord(data: { bookingId: string; method: string; amountIdr: number; paidOn: string; note: string | null; requestId: string; recordedById: string; recordedAt: Date }) {
+      return database.paymentRecord.create({ data })
     },
     markProofReviewed(proofId: string, data: { status: 'approved' | 'rejected'; reviewedAt: Date; reviewedById: string; rejectionReason?: string; rejectionNote?: string | null }) {
       return database.paymentProof.updateMany({ where: { id: proofId, status: 'pending' }, data })

@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  title: STC admin outside payments (03-04)
+  version: 1.0.0
+  description: Types in shared/api/admin-bookings.ts. Admin session, same origin and X-CSRF-Token as other admin writes.
+paths:
+  /api/admin/bookings/{id}/payments:
+    post:
+      summary: Record a payment received outside the app (cash, or a transfer or QRIS payment sent without proof); confirms the booking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version, requestId, method, amountIdr, paidOn]
+              properties:
+                version: { type: integer }
+                requestId: { type: string, format: uuid, description: the same id sent again returns the first result }
+                method: { enum: [cash, transfer, qris] }
+                amountIdr: { type: integer, minimum: 1 }
+                paidOn: { type: string, format: date, description: club date the money arrived; not in the future }
+                note: { type: string, maxLength: 300 }
+      responses:
+        '201': { description: 'AdminRecordPaymentResponse (detail with payments, replayed false)' }
+        '200': { description: 'AdminRecordPaymentResponse, replayed true (same requestId and same payment)' }
+        '400': { description: 'VALIDATION_FAILED (paidOn DATE_TOO_FAR, method, amount)' }
+        '404': { description: NOT_FOUND }
+        '409': { description: 'STALE_VERSION with latest detail; BOOKING_NOT_PAYABLE (already confirmed, or the session is cancelled); CAPACITY_UNAVAILABLE (past its deadline and the places are gone); IDEMPOTENCY_CONFLICT (requestId reused for a different payment)' }
+  /api/admin/bookings/{id}:
+    get:
+      summary: Booking detail now carries payments (method, amountIdr, paidOn, note, recorded at/by), newest first

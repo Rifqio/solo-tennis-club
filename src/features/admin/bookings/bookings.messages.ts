@@ -159,3 +159,30 @@ export const adminRejectionReasons = {
   not_received: { id: 'Pembayaran belum masuk', en: 'Payment not received' },
   other: { id: 'Lainnya', en: 'Other' },
 }
+
+// Recording a payment received outside the app (03-04, OPER-08).
+export const paymentRecordMessages = {
+  heading: { id: 'Pembayaran', en: 'Payments' },
+  record: { id: 'Catat pembayaran', en: 'Record a payment' },
+  sheetTitle: { id: 'Catat pembayaran', en: 'Record a payment' },
+  sheetDescription: { id: 'Untuk uang yang masuk di luar aplikasi: tunai di lapangan, atau transfer dan QRIS tanpa bukti di sini. Booking jadi Lunas.', en: 'For money received outside the app: cash at the court, or a transfer or QRIS payment without proof here. The booking becomes Paid.' },
+  revive: { id: 'Batas bayarnya sudah lewat. Booking ini bisa aktif lagi kalau slotnya masih kosong.', en: 'The payment deadline has passed. This booking comes back only if its slots are still free.' },
+  method: { id: 'Cara bayar', en: 'Method' },
+  cash: { id: 'Tunai', en: 'Cash' },
+  transfer: { id: 'Transfer', en: 'Transfer' },
+  qris: { id: 'QRIS', en: 'QRIS' },
+  amount: { id: 'Jumlah (Rp)', en: 'Amount (Rp)' },
+  amountRequired: { id: 'Isi jumlah yang dibayar.', en: 'Enter the amount paid.' },
+  short: { id: 'Kurang {amount} dari total {total}.', en: '{amount} short of the total {total}.' },
+  over: { id: 'Lebih {amount} dari total {total}. Catat di catatan kalau perlu dikembalikan.', en: '{amount} over the total {total}. Say in the note if it should be refunded.' },
+  paidOn: { id: 'Tanggal bayar (WIB)', en: 'Date paid (WIB)' },
+  note: { id: 'Catatan (opsional)', en: 'Note (optional)' },
+  save: { id: 'Simpan pembayaran', en: 'Save payment' },
+  saving: { id: 'Menyimpan...', en: 'Saving...' },
+  cancel: { id: 'Batal', en: 'Cancel' },
+  saved: { id: 'Pembayaran tercatat.', en: 'Payment recorded.' },
+  full: { id: 'Slotnya sudah terisi orang lain, jadi booking ini nggak bisa aktif lagi. Buat booking baru kalau masih ada tempat.', en: 'Its slots have been taken, so this booking cannot come back. Make a new booking if there is room.' },
+  stale: { id: 'Booking ini baru berubah. Cek detail terbaru, lalu catat lagi kalau masih perlu.', en: 'This booking just changed. Check the latest details, then record again if still needed.' },
+  failed: { id: 'Belum tersimpan. Cek koneksi, lalu coba lagi; nggak bakal tercatat dua kali.', en: 'Not saved. Check the connection, then try again; it will not be recorded twice.' },
+  recordedBy: { id: '{date} · dicatat {by}', en: '{date} · recorded by {by}' },
+}

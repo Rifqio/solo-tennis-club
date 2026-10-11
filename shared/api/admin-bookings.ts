@@ -47,6 +47,8 @@ export interface AdminBookingDetailResponse {
     proofs: AdminProof[]
     confirmed: { at: string; by: string | null } | null
     paymentNote: string | null
+    // Payments an admin recorded by hand (cash, or a transfer or QRIS payment sent without proof), newest first.
+    payments: AdminPaymentRecord[]
   }
   serverNow: string
 }
@@ -61,6 +63,30 @@ export interface AdminProof {
   // Read through GET /api/admin/proofs/:proofId/files/:fileId.
   files: ProofFileSummary[]
 }
+
+export type PaymentMethod = 'cash' | 'transfer' | 'qris'
+
+export interface AdminPaymentRecord {
+  id: string
+  method: PaymentMethod
+  amountIdr: number
+  // The club date the money arrived (YYYY-MM-DD).
+  paidOn: string
+  note: string | null
+  recorded: { at: string; by: string | null }
+}
+
+// POST /api/admin/bookings/:id/payments (OPER-08): a payment received outside the app. It confirms the booking. A
+// booking whose deadline passed is revived only if its places are still free. requestId makes a retry safe.
+export interface AdminRecordPaymentRequest {
+  version: number
+  requestId: string
+  method: PaymentMethod
+  amountIdr: number
+  paidOn: string
+  note?: string
+}
+export interface AdminRecordPaymentResponse extends AdminBookingDetailResponse { replayed: boolean }
 
 // POST /api/admin/bookings/:id/proofs/:proofId/approve and .../reject. `version` is the booking's, so a review never
 // lands on a booking that changed meanwhile. Reject needs a reason; 'other' needs a note.

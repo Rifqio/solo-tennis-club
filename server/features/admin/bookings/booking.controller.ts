@@ -6,6 +6,8 @@ import { getAdminBooking, LIST_DEFAULT, LIST_MAX, listAdminBookings } from './bo
 import type { AdminBookingCreateService } from './booking-create.service.ts'
 import { findVerifiedCustomer, linkBookingToCustomer } from './booking-link.service.ts'
 import { reviewProof } from './proof-review.service.ts'
+import { recordPayment as recordOutsidePayment } from './payment-record.service.ts'
+import { isClubDate } from '../../../../shared/club-time.ts'
 
 const id = z.string().regex(/^[a-z0-9]{1,64}$/)
 
@@ -31,6 +33,14 @@ const lookupQuery = z.object({ phone: z.string().min(1).max(50) })
 const linkBody = z.strictObject({ customerId: id, version: z.number().int().positive().safe() })
 
 const approveBody = z.strictObject({ version: z.number().int().positive().safe() })
+const paymentBody = z.strictObject({
+  version: z.number().int().positive().safe(),
+  requestId: z.uuid(),
+  method: z.enum(['cash', 'transfer', 'qris']),
+  amountIdr: z.number().int().positive().max(1_000_000_000),
+  paidOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  note: z.string().trim().max(300).optional(),
+})
 // 'other' needs a note, so the member always reads a reason.
 const rejectBody = z.strictObject({
   version: z.number().int().positive().safe(),
@@ -87,5 +97,12 @@ export function createAdminBookingController(database: PrismaClient, creation: A
     const { version, reason, note } = parsed.data
     response.json(await reviewProof(database, { bookingId: request.params.id, proofId: request.params.proofId, version, adminId: adminId(response), decision: { kind: 'reject', reason, note: note || null } }))
   }
-  return { list, detail, options, create, lookupCustomer, linkCustomer, approveProof, rejectProof }
+  const recordPayment: RequestHandler<{ id: string }> = async (request, response) => {
+    if (!id.safeParse(request.params.id).success) throw new ApiError(404, 'NOT_FOUND')
+    const input = parse(paymentBody, request.body)
+    if (!isClubDate(input.paidOn)) throw new ApiError(400, 'VALIDATION_FAILED', { paidOn: 'INVALID_FORMAT' })
+    const result = await recordOutsidePayment(database, { ...input, bookingId: request.params.id, adminId: adminId(response) })
+    response.status(result.replayed ? 200 : 201).json(result)
+  }
+  return { list, detail, options, create, lookupCustomer, linkCustomer, approveProof, rejectProof, recordPayment }
 }

@@ -12,6 +12,7 @@ export function createAdminBookingsRouter(database: PrismaClient) {
   router.put('/bookings/:id/customer-link', controller.linkCustomer)
   router.post('/bookings/:id/proofs/:proofId/approve', controller.approveProof)
   router.post('/bookings/:id/proofs/:proofId/reject', controller.rejectProof)
+  router.post('/bookings/:id/payments', controller.recordPayment)
   router.get('/booking-options/:sessionId', controller.options)
   router.get('/verified-customers', controller.lookupCustomer)
   return router

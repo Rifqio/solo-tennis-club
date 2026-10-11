@@ -4,7 +4,7 @@ import type { PrismaClient } from '../../../generated/prisma/client.ts'
 import { ApiError } from '../../../http/errors.ts'
 import { clubDateOf, clubTimeOf } from '../../../../shared/club-time.ts'
 import { effectiveBookingStatus } from '../../../../shared/booking-rules.ts'
-import type { AdminBookingDetailResponse, AdminBookingFilter, AdminBookingListResponse, AdminBookingSummary, AdminProof } from '../../../../shared/api/admin-bookings.ts'
+import type { AdminBookingDetailResponse, AdminBookingFilter, AdminBookingListResponse, AdminBookingSummary, AdminPaymentRecord, AdminProof } from '../../../../shared/api/admin-bookings.ts'
 import type { ProofRejectionReason } from '../../../../shared/api/customer-payments.ts'
 import { createAdminBookingRepository } from './booking.repository.ts'
 import type { AdminBookingDetailRow, AdminBookingRow, Cursor } from './booking.repository.ts'
@@ -107,6 +107,14 @@ function toDetail(row: AdminBookingDetailRow, now: Date): AdminBookingDetailResp
     })),
     confirmed: row.confirmedAt ? { at: row.confirmedAt.toISOString(), by: row.confirmedBy?.displayName ?? null } : null,
     paymentNote: row.paymentNote,
+    payments: row.paymentRecords.map(record => ({
+      id: record.id,
+      method: record.method as AdminPaymentRecord['method'],
+      amountIdr: record.amountIdr,
+      paidOn: record.paidOn,
+      note: record.note,
+      recorded: { at: record.recordedAt.toISOString(), by: record.recordedBy?.displayName ?? null },
+    })),
   }
 }
 

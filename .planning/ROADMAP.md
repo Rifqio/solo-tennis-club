@@ -112,7 +112,8 @@ Plans:
 **Goal:** Customers can pay and submit private proof, and administrators can confirm or reject payment with accurate reservation consequences.
 **Mode:** mvp
 **Depends on:** Phase 2
-**Requirements:** AUTH-05, PAY-01, PAY-02, PAY-03, PAY-04, PAY-05, PAY-06, PAY-07, PAY-08, OPER-05, OPER-08, UX-01, UX-02, UX-06, UX-08, UX-09
+**Requirements:** AUTH-05, PAY-01, PAY-02, PAY-03, PAY-04, PAY-05, PAY-06, PAY-07, PAY-08, OPER-05, OPER-08, OPER-12, OPER-13, UX-01, UX-02, UX-06, UX-08, UX-09
+**Decisions:** confirmed 2026-10-11 in [03-DECISIONS](phases/03-pay-and-verify-bookings/03-DECISIONS.md); Rekap (board D7) and its Excel export added by the user.
 **Success Criteria** (what must be TRUE):
 
 1. A customer can use static QRIS instructions on the same phone or access bank-transfer details and the exact amount due, upload proof, and receive a truthful submission result.

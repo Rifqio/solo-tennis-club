@@ -1,7 +1,7 @@
 # Requirements: Lafu — Lawu Fun Tennis Club
 
 **Defined:** 2026-10-07
-**Status:** All 67 first-release requirements and their five-phase roadmap approved by the user on 2026-10-08; Phase 1 accepted by the user after manual workflow testing on 2026-10-09; Phase 2 policy decisions and six plans recorded; backend foundation verified, customer/booking implementation pending. Requirement checkboxes track acceptance.
+**Status:** All 69 first-release requirements (67 approved 2026-10-08; OPER-12 recap and OPER-13 recap export added 2026-10-11) and their five-phase roadmap approved by the user on 2026-10-08; Phase 1 accepted by the user after manual workflow testing on 2026-10-09; Phase 2 accepted by the user on 2026-10-11; Phase 3 decisions confirmed 2026-10-11. Requirement checkboxes track acceptance.
 **Core Value:** Customers can book tennis classes from their phones with clear, reliable availability, while club admins can manage those bookings and payments without spreadsheets.
 
 ## v1 Requirements
@@ -62,6 +62,8 @@ All requirements below belong to the initial release. Delivery in separate phase
 - [ ] **OPER-09**: Administrator can edit customer booking information.
 - [ ] **OPER-10**: Administrator can move a customer booking to another session without exceeding the destination capacity.
 - [ ] **OPER-11**: Administrator can cancel a customer booking and release its places.
+- [ ] **OPER-12**: Administrator can see a monthly recap of revenue counted only from paid (Lunas) bookings, payments still pending, places filled, sessions held, the last six months' revenue and a per-class breakdown (board D7). Added by the user on 2026-10-11.
+- [ ] **OPER-13**: Administrator can export the monthly recap to an Excel file. Added by the user on 2026-10-11 as an approved exception to the v2 note on exports.
 
 ### Classes and scheduling management
 
@@ -101,7 +103,7 @@ All requirements below belong to the initial release. Delivery in separate phase
 
 ## v2 Requirements
 
-No additional features have been approved for a later release. Waitlists, attendance check-in, exports, saved guests, memberships, and leagues are research candidates only, not committed requirements. Adding them requires a separate scope decision.
+No additional features have been approved for a later release (the recap export, OPER-13, was approved into Phase 3 on 2026-10-11). Waitlists, attendance check-in, other exports, saved guests, memberships, and leagues are research candidates only, not committed requirements. Adding them requires a separate scope decision.
 
 ## Out of Scope
 
@@ -176,6 +178,8 @@ Requirements and roadmap were confirmed on 2026-10-08. Each maps to one acceptan
 | OPER-09 | Phase 4 | Pending |
 | OPER-10 | Phase 4 | Pending |
 | OPER-11 | Phase 4 | Pending |
+| OPER-12 | Phase 3 | Pending |
+| OPER-13 | Phase 3 | Pending |
 | SCHED-01 | Phase 1 | Accepted by user 2026-10-09 |
 | SCHED-02 | Phase 1 | Accepted by user 2026-10-09 |
 | SCHED-03 | Phase 5 | Pending |
@@ -205,8 +209,8 @@ Requirements and roadmap were confirmed on 2026-10-08. Each maps to one acceptan
 | UX-09 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 67 total
-- Mapped to phases: 67
+- v1 requirements: 69 total (OPER-12 and OPER-13 added 2026-10-11)
+- Mapped to phases: 69
 - Unmapped: 0
 - Duplicate phase assignments: 0
 

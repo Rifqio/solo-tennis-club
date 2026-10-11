@@ -1,0 +1,53 @@
+openapi: 3.1.0
+info:
+  title: STC member payment (03-02)
+  version: 1.0.0
+  description: >
+    The signed-in member pays for their own booking and sends proof. Times are ISO instants. Another member's booking
+    answers 404, never 403. Types are in shared/api/customer-payments.ts.
+paths:
+  /api/customer/bookings/{id}/payment:
+    get:
+      summary: What to pay and the proof so far
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200':
+          description: CustomerPaymentResponse (booking, latestProof, canSubmit, serverNow)
+        '401': { description: CUSTOMER_UNAUTHENTICATED }
+        '404': { description: NOT_FOUND (missing, or not this member's) }
+  /api/customer/bookings/{id}/proofs:
+    post:
+      summary: Send proof of payment
+      description: >
+        multipart/form-data, at most 3 × 5 MB plus form overhead (checked from Content-Length before reading). Files are
+        recognised by their bytes (JPEG, PNG, PDF). The proof counts if the server holds every file before the original
+        deadline; the booking then becomes awaiting_verification and holds its places until reviewed. A repeat of the
+        same submissionId returns the first result with replayed true. Requires the same origin and X-CSRF-Token.
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [submissionId, files]
+              properties:
+                submissionId: { type: string, format: uuid }
+                files: { type: array, maxItems: 3, items: { type: string, format: binary } }
+      responses:
+        '201': { description: ProofSubmissionResponse (booking, proof, replayed false) }
+        '200': { description: ProofSubmissionResponse for a repeated submissionId (replayed true) }
+        '400': { description: 'VALIDATION_FAILED, fields: files REQUIRED | TOO_LONG, fileN INVALID_FORMAT | TOO_LONG, submissionId INVALID_FORMAT' }
+        '401': { description: CUSTOMER_UNAUTHENTICATED }
+        '403': { description: CSRF_FAILED or ORIGIN_REJECTED }
+        '404': { description: NOT_FOUND }
+        '409': { description: PAYMENT_DEADLINE_PASSED (places released) or BOOKING_NOT_PAYABLE (under review, paid, or session cancelled) }
+        '413': { description: PAYLOAD_TOO_LARGE }
+        '415': { description: UNSUPPORTED_MEDIA_TYPE }
+  /api/customer/bookings/{id}/proofs/{proofId}/files/{fileId}:
+    get:
+      summary: One of the member's own proof files (03-01)
+      responses:
+        '200': { description: 'The file; Cache-Control private, no-store; nosniff; images inline, PDF as attachment' }
+        '401': { description: CUSTOMER_UNAUTHENTICATED }
+        '404': { description: NOT_FOUND }

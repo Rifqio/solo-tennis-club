@@ -41,7 +41,7 @@ const messages = {
     holdTitle: 'Bayar dalam 5 jam', holdBody: 'Lewat dari itu, slot kamu dilepas.',
     confirm: 'Konfirmasi booking', working: 'Menyimpan booking…', closed: 'Booking sudah ditutup atau slotnya penuh.',
     safe: '{count} slot kamu aman sampai batas bayar.', timeLeft: 'Sisa waktu bayar {h} jam {m} menit', hours: 'jam', minutes: 'menit',
-    payBy: 'Bayar sebelum', payTitle: 'Cara bayar (QRIS atau transfer)', payBody: 'Info pembayaran akan muncul di sini. Sementara itu, hubungi admin klub.',
+    payBy: 'Bayar sebelum', payTitle: 'Cara bayar (QRIS atau transfer)', payBody: 'Bayar, lalu kirim buktinya. Bisa sekarang, atau nanti dari Booking kamu.', payNow: 'Bayar sekarang',
     seeBooking: 'Lihat booking', backToSchedule: 'Kembali ke jadwal', back: 'Kembali', backToScheduleLabel: 'Kembali ke jadwal',
     unpaid: 'Belum bayar', people: 'orang', quickPick: 'Pilih cepat', summary: 'Ringkasan', changeSession: 'Ganti sesi', priceTimes: '{price} × {count} orang',
     seatsLabel: '{taken} udah diambil, {mine} buat kamu, {open} masih kosong, dari {max} slot', taken: '{count} udah diambil', mine: '{count} buat kamu', open: '{count} masih kosong',
@@ -63,7 +63,7 @@ const messages = {
     holdTitle: 'Pay within 5 hours', holdBody: 'After that, your slots are released.',
     confirm: 'Confirm booking', working: 'Saving booking…', closed: 'Booking has closed or the session is full.',
     safe: 'Your {count} slots are held until the payment deadline.', timeLeft: '{h} hours {m} minutes left to pay', hours: 'hours', minutes: 'min',
-    payBy: 'Pay by', payTitle: 'How to pay (QRIS or transfer)', payBody: 'Payment details will appear here. For now, contact the club admin.',
+    payBy: 'Pay by', payTitle: 'How to pay (QRIS or transfer)', payBody: 'Pay, then send the proof. Now, or later from Your bookings.', payNow: 'Pay now',
     seeBooking: 'See booking', backToSchedule: 'Back to schedule', back: 'Back', backToScheduleLabel: 'Back to schedule',
     unpaid: 'Not paid yet', people: 'people', quickPick: 'Quick pick', summary: 'Summary', changeSession: 'Change session', priceTimes: '{price} × {count} people',
     seatsLabel: '{taken} taken, {mine} for you, {open} still open, of {max} places', taken: '{count} taken', mine: '{count} for you', open: '{count} still open',
@@ -358,8 +358,9 @@ export function Component() {
               </div>
               <p className="max-w-[32rem] rounded-sm bg-band-tile px-4 py-3 text-label"><span className="font-semibold">{text.payTitle}. </span>{text.payBody}</p>
               <div className="flex flex-wrap gap-3">
-                <Button asChild variant="filled" className="min-h-14 px-7"><Link to={`/bookings/${result.booking.id}`} viewTransition data-nav="push">{text.seeBooking}</Link></Button>
-                <Button asChild variant="tonal" className="min-h-14 bg-surface-container-lowest px-7 text-primary"><Link to={schedulePath} viewTransition data-nav="pop">{text.backToSchedule}</Link></Button>
+                <Button asChild variant="filled" className="min-h-14 px-7"><Link to={`/bookings/${result.booking.id}/pay`} viewTransition data-nav="push">{text.payNow}</Link></Button>
+                <Button asChild variant="tonal" className="min-h-14 bg-surface-container-lowest px-7 text-primary"><Link to={`/bookings/${result.booking.id}`} viewTransition data-nav="push">{text.seeBooking}</Link></Button>
+                <Button asChild variant="text" className="min-h-14 text-on-signboard"><Link to={schedulePath} viewTransition data-nav="pop">{text.backToSchedule}</Link></Button>
               </div>
             </div>
             <section aria-label={session.className} className="flex min-w-0 max-w-[26rem] flex-[1_1_20rem] flex-col gap-3.5 rounded-md bg-surface-container-lowest p-6 text-on-surface">
@@ -403,7 +404,8 @@ export function Component() {
             <p className="mt-0.5">{text.payBody}</p>
           </section>
           <div className="mt-auto flex flex-col gap-2">
-            <Button asChild variant="filled" className="min-h-14"><Link to={`/bookings/${result.booking.id}`} viewTransition data-nav="push">{text.seeBooking}</Link></Button>
+            <Button asChild variant="filled" className="min-h-14"><Link to={`/bookings/${result.booking.id}/pay`} viewTransition data-nav="push">{text.payNow}</Link></Button>
+            <Button asChild variant="tonal" className="min-h-14 bg-surface-container-lowest text-primary"><Link to={`/bookings/${result.booking.id}`} viewTransition data-nav="push">{text.seeBooking}</Link></Button>
             <Button asChild variant="text" className="text-on-signboard"><Link to={schedulePath} viewTransition data-nav="pop">{text.backToSchedule}</Link></Button>
           </div>
         </div>

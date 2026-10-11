@@ -1,6 +1,5 @@
 import { ExternalLink, MessageCircle } from 'lucide-react'
 import { m, useReducedMotion } from 'motion/react'
-import { Link } from 'react-router-dom'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatIdr } from '@/i18n/format'
@@ -13,9 +12,10 @@ import { useNow } from '@/features/public/schedule/use-now'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBooking } from './use-customer-bookings'
 import { panelEnter } from '@/lib/motion'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { setNavMotion } from '@/lib/nav-motion'
 import { memberStatus, memberStatusLabel } from './member-status'
+import { effectiveBookingStatus } from '@shared/booking-rules'
 
 // Desktop: the chosen booking beside the list, one question per block: what, when to pay, who and where.
 export function BookingDetailPanel({ id }: { id: string }) {
@@ -47,9 +47,9 @@ export function BookingDetailPanel({ id }: { id: string }) {
   const deadline = Date.parse(booking.originalDeadline)
   // A cancelled session outranks the hold: no countdown, no payment, one notice (G1: one feedback per state). The
   // booking keeps its own status (a paid booking still reads Lunas).
-  const bookingStatus = booking.status === 'awaiting_payment' && deadline <= now ? 'expired' : booking.status
+  const bookingStatus = effectiveBookingStatus(booking.status, new Date(deadline), new Date(now))
   const status = session.cancelled && bookingStatus !== 'confirmed' ? 'cancelled' as const : bookingStatus
-  const unpaid = status === 'awaiting_payment'
+  const unpaid = status === 'awaiting_payment' || status === 'needs_correction'
   const left = Math.max(0, deadline - now)
   const hours = Math.floor(left / 3_600_000)
   const minutes = Math.floor((left % 3_600_000) / 60_000)
@@ -68,6 +68,7 @@ export function BookingDetailPanel({ id }: { id: string }) {
 
       {session.cancelled && <StatusPanel tone="info" title={t(messages.cancelledSession)}><p>{t(messages.cancelledBody)}</p></StatusPanel>}
       {status === 'expired' && <StatusPanel tone="info" title={t(messages.lapsedTitle)}><p>{t(messages.lapsedBody, { when })}</p></StatusPanel>}
+      {status === 'awaiting_verification' && <StatusPanel tone="info" title={t(messages.reviewTitle)}><p>{t(messages.reviewBody)}</p></StatusPanel>}
       {unpaid && (
         <section aria-label={t(messages.timeLeft)} className="flex flex-col gap-3.5 rounded-md bg-primary p-5 text-on-primary">
           <span className="flex flex-col leading-tight">
@@ -75,9 +76,12 @@ export function BookingDetailPanel({ id }: { id: string }) {
             <span role="timer" aria-label={t(messages.timeLeftLabel, { hours, minutes })} className="text-display font-bold tabular-nums">{String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}</span>
             <span className="text-label">{t(messages.deadline, { when })}</span>
           </span>
-          <p className="text-label">{t(whatsapp ? messages.payBody : messages.payBodyNoContact)}</p>
+          <p className="text-label">{t(status === 'needs_correction' ? messages.correctionNote : messages.payBody)}</p>
+          <Link to={`/bookings/${booking.id}/pay`} viewTransition data-nav="push" className="state-layer pressable flex min-h-13 items-center justify-center gap-2 rounded-sm bg-cta font-semibold text-on-cta">
+            {t(status === 'needs_correction' ? messages.sendNewProof : messages.payNow)}
+          </Link>
           {whatsapp && (
-            <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="state-layer pressable flex min-h-13 items-center justify-center gap-2 rounded-sm bg-cta font-semibold text-on-cta">
+            <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="state-layer pressable flex min-h-12 items-center justify-center gap-2 rounded-sm font-semibold text-on-primary underline-offset-4 hover:underline">
               <MessageCircle aria-hidden="true" className="size-5" />{t(messages.chatAdmin)}
             </a>
           )}

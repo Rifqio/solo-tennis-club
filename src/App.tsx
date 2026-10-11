@@ -47,6 +47,7 @@ const router = createBrowserRouter([
       { path: '/book/:sessionId', lazy: () => import('./features/customer/booking/BookingPage') },
       { path: '/bookings', lazy: () => import('./features/customer/my-bookings/MyBookingsPage') },
       { path: '/bookings/:id', lazy: () => import('./features/customer/my-bookings/MyBookingDetailPage') },
+      { path: '/bookings/:id/pay', lazy: () => import('./features/customer/payments/PayPage') },
     ],
   },
 ])

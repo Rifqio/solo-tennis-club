@@ -5,8 +5,7 @@ import { basename, resolve, sep } from 'node:path'
 // Payment proof files: private, never served by express.static. They live under
 // <privateDir>/proofs/<bookingId>/<random>.<ext> beside the database, so a backup carries them (03-ARCHITECTURE §4).
 
-export const PROOF_FILE_MAX_BYTES = 5 * 1024 * 1024
-export const PROOF_FILES_MAX = 3
+export { PROOF_FILE_MAX_BYTES, PROOF_FILES_MAX } from '../../../shared/api/customer-payments.ts'
 
 export type EvidenceKind = { extension: 'jpg' | 'png' | 'pdf'; contentType: 'image/jpeg' | 'image/png' | 'application/pdf' }
 

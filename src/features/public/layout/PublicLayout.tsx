@@ -16,9 +16,9 @@ export function PublicLayout() {
   const [bookOpen, setBookOpen] = useState(false)
   // Decided once, from the address the visit started on.
   const [onboarding, setOnboarding] = useState(() => shouldShowOnboarding(location.pathname, location.search))
-  // Booking, and signing in on the way to something (returnTo), are focused tasks: their own pinned action bar
+  // Booking, paying, and signing in on the way to something (returnTo), are focused tasks: their own pinned action bar
   // takes the bottom of the screen, so the dock steps aside until the task is done (P2-11).
-  const focusedTask = location.pathname.startsWith('/book/')
+  const focusedTask = location.pathname.startsWith('/book/') || /^\/bookings\/[^/]+\/pay$/.test(location.pathname)
     || (location.pathname === '/customer/sign-in' && new URLSearchParams(location.search).has('returnTo'))
   // The desktop home page is the club's front page: it carries its own top nav instead of the app rail.
   const isDesktop = useMediaQuery('(min-width: 64rem)')

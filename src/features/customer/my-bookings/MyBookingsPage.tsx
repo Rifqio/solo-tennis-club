@@ -72,7 +72,7 @@ function ActiveCard({ booking, now }: { booking: CustomerBookingItem; now: numbe
               <MessageCircle aria-hidden="true" className="size-5" />
             </a>
           )}
-          <Button asChild variant="filled" className="min-h-12 px-4"><Link to={`/bookings/${booking.id}`} viewTransition>{t(messages.howToPay)}</Link></Button>
+          <Button asChild variant="filled" className="min-h-12 px-4"><Link to={`/bookings/${booking.id}/pay`} viewTransition data-nav="push">{t(state === 'correction' ? messages.sendNewProof : messages.payNow)}</Link></Button>
         </div>
       )}
     </article>

@@ -30,6 +30,8 @@ export const apiErrorMessages: Record<ApiErrorCode, Message> = {
   MAP_LINK_UNREADABLE: { id: 'Link ini nggak kebaca. Salin ulang dari tombol Bagikan di Google Maps.', en: "We couldn't read this link. Copy it again from Share in Google Maps." },
   BOOKING_ALREADY_LINKED: { id: 'Booking ini sudah terhubung ke akun lain. Kepemilikannya nggak bisa dipindah dari sini.', en: 'This booking is already linked to another account. Ownership cannot be moved from here.' },
   CUSTOMER_MISMATCH: { id: 'Nomor akun ini beda dengan nomor di booking. Booking hanya bisa dihubungkan ke nomor yang sama persis.', en: "This account's number differs from the booking's number. A booking can only be linked to the exact same number." },
+  PAYMENT_DEADLINE_PASSED: { id: 'Batas bayarnya sudah lewat, jadi slotnya dilepas. Chat admin kalau kamu sudah bayar.', en: 'The payment deadline has passed, so the slots were released. Chat with the admin if you already paid.' },
+  BOOKING_NOT_PAYABLE: { id: 'Booking ini nggak lagi menunggu pembayaran. Buka lagi booking kamu untuk lihat statusnya.', en: 'This booking is no longer waiting for payment. Open your booking again to see its status.' },
 }
 
 export const fieldErrorMessages: Record<FieldErrorCode, Message> = {

@@ -9,7 +9,7 @@ import { createMockOtpAdapter } from './otp.adapter.ts'
 import { createCustomerBookingRouter } from '../booking/booking.router.ts'
 import { createCustomerPlayersRouter } from '../players/players.router.ts'
 import { createMyBookingsRouter } from '../my-bookings/my-bookings.router.ts'
-import { createCustomerEvidenceRouter } from '../../payments/evidence.router.ts'
+import { createCustomerEvidenceRouter, createCustomerProofUploadRouter } from '../../payments/evidence.router.ts'
 
 export function createCustomerAuthRouter(database: PrismaClient, config: RuntimeConfig, privateDir: string) {
   const router = Router()
@@ -23,6 +23,7 @@ export function createCustomerAuthRouter(database: PrismaClient, config: Runtime
   }
   const service = createCustomerAuthService(database, createMockOtpAdapter())
   const controller = createCustomerAuthController(database, service, config)
+  router.use(createCustomerProofUploadRouter(database, config, privateDir))
   router.use(requireSameOrigin(config), requireJson, json({ limit: '8kb' }))
   router.post('/auth/otp-challenges', controller.requestCode)
   router.get('/auth/otp-challenges/current', controller.readChallenge)

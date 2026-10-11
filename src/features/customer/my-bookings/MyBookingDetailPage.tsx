@@ -13,6 +13,8 @@ import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBooking } from './use-customer-bookings'
 import { setNavMotion } from '@/lib/nav-motion'
 import { ConnectionBanner } from '@/components/ui/connection-banner'
+import { Button } from '@/components/ui/button'
+import { effectiveBookingStatus } from '@shared/booking-rules'
 
 function Band({ title, children }: { title: string; children?: ReactNode }) {
   const { t } = useI18n()
@@ -66,8 +68,10 @@ export function Component() {
   // Past the deadline the booking is over even if the response said otherwise a moment ago.
   // A cancelled session outranks the hold: no countdown, no payment, one notice (G1: one feedback per state). The
   // booking keeps its own status (a paid booking still reads Lunas).
-  const bookingStatus = booking.status === 'awaiting_payment' && deadline <= now ? 'expired' : booking.status
+  const bookingStatus = effectiveBookingStatus(booking.status, new Date(deadline), new Date(now))
   const status = session.cancelled && bookingStatus !== 'confirmed' ? 'cancelled' as const : bookingStatus
+  // Still something to pay or fix before the deadline.
+  const owes = status === 'awaiting_payment' || status === 'needs_correction'
   const left = Math.max(0, deadline - now)
   const hours = Math.floor(left / 3_600_000)
   const minutes = Math.floor((left % 3_600_000) / 60_000)
@@ -79,7 +83,7 @@ export function Component() {
   return <>
     <Band title={session.className}>
       <p className="tabular-nums">{formatClubDateShort(session.date, language)} · {session.startTime}-{session.endTime} WIB</p>
-      {status === 'awaiting_payment' && (
+      {owes && (
         <section aria-label={t(messages.timeLeft)} className="mt-2 flex flex-col items-center gap-2 rounded-sm bg-band-tile p-4">
           <span className="text-label font-semibold">{t(messages.timeLeft)}</span>
           <div role="timer" aria-label={t(messages.timeLeftLabel, { hours, minutes })} className="flex items-center gap-2">
@@ -96,16 +100,22 @@ export function Component() {
       {status === 'expired' && (
         <StatusPanel tone="info" title={t(messages.lapsedTitle)}><p>{t(messages.lapsedBody, { when })}</p></StatusPanel>
       )}
-      {status === 'awaiting_payment' && (
+      {owes && (
         <section aria-labelledby="pay" className="flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest p-4">
           <h2 id="pay" className="font-bold">{t(messages.howToPay)}</h2>
-          <p className="text-on-surface-variant">{t(whatsapp ? messages.payBody : messages.payBodyNoContact)}</p>
+          <p className="text-on-surface-variant">{t(status === 'needs_correction' ? messages.correctionNote : messages.payBody)}</p>
+          <Button asChild variant="filled" className="min-h-13"><Link to={`/bookings/${booking.id}/pay`} viewTransition data-nav="push">{t(status === 'needs_correction' ? messages.sendNewProof : messages.payNow)}</Link></Button>
           {whatsapp && (
-            <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="pressable flex min-h-12 items-center justify-center gap-2 rounded-sm bg-band font-semibold text-on-signboard">
+            <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="state-layer pressable flex min-h-12 items-center justify-center gap-2 rounded-sm font-semibold text-primary">
               <MessageCircle aria-hidden="true" className="size-5" />{t(messages.chatAdmin)}
             </a>
           )}
         </section>
+      )}
+      {status === 'awaiting_verification' && (
+        <StatusPanel tone="info" title={t(messages.reviewTitle)} action={{ label: t(messages.seeProof), onAction: () => navigate(`/bookings/${booking.id}/pay`, { viewTransition: true }) }}>
+          <p>{t(messages.reviewBody)}</p>
+        </StatusPanel>
       )}
       <section aria-labelledby="players" className="flex flex-col gap-2 rounded-sm bg-surface-container-lowest p-4">
         <h2 id="players" className="flex items-center gap-2 font-bold">{t(messages.players)}
@@ -126,7 +136,7 @@ export function Component() {
         <Fact label={t(messages.total)}><span className="font-bold tabular-nums">{formatIdr(booking.totalPriceIdr, language)}</span></Fact>
         <Fact label={t(messages.booked)}><span className="tabular-nums">{formatClubDateShort(clubDateOf(new Date(booking.createdAt)), language)}, {formatClubTime(booking.createdAt)} WIB</span></Fact>
       </dl>
-      {status === 'awaiting_payment' && <p className="text-label text-on-surface-variant">{t(messages.changeNote)}</p>}
+      {owes && <p className="text-label text-on-surface-variant">{t(messages.changeNote)}</p>}
     </div>
   </>
 }

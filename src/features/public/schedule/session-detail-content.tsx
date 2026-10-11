@@ -63,7 +63,8 @@ export function useSessionDetailContent({ id, seed = null, knownPlayers, onLeave
 
   const settled = result?.id === id ? result : null
   const data = settled?.data ?? null
-  const valid = data && data.coaches && Number.isSafeInteger(data.priceIdr) && Number.isSafeInteger(data.maxParticipants)
+  // A detail missing any fact the sheet shows is treated as incomplete: the card's summary stays and a retry is offered.
+  const valid = data && data.coaches && data.venueName && Number.isSafeInteger(data.remainingPlaces) && Number.isSafeInteger(data.priceIdr) && Number.isSafeInteger(data.maxParticipants)
     && Number.isSafeInteger(data.minParticipants) && Number.isSafeInteger(data.durationMinutes)
     && Number.isFinite(Date.parse(data.startsAt)) && Number.isFinite(Date.parse(data.endsAt))
   const detail = valid ? data : null
@@ -83,7 +84,7 @@ export function useSessionDetailContent({ id, seed = null, knownPlayers, onLeave
   // Four facts in a 2 x 2 grid of Deep Court tiles: small label, large value, room to breathe.
   const open = view !== null && (view.availability === 'available' || view.availability === 'nearly_full')
   const slotValue = view === null ? '' : ended ? t(scheduleMessages.ended)
-    : open ? t(messages.slotsLeft, { count: view.remainingPlaces }) : t(scheduleMessages.status[view.availability])
+    : open && Number.isSafeInteger(view.remainingPlaces) ? t(messages.slotsLeft, { count: view.remainingPlaces }) : t(scheduleMessages.status[view.availability])
   const tiles = view ? [
     { label: t(messages.date), value: formatClubDateShort(view.date, language) },
     { label: t(messages.time), value: `${view.startTime}-${view.endTime}` },

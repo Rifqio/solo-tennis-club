@@ -64,7 +64,10 @@ export function Component() {
   const now = serverClock(loaded.serverNow, loaded.receivedAt, localNow)
   const deadline = Date.parse(booking.originalDeadline)
   // Past the deadline the booking is over even if the response said otherwise a moment ago.
-  const status = booking.status === 'awaiting_payment' && deadline <= now ? 'expired' : booking.status
+  // A cancelled session outranks the hold: no countdown, no payment, one notice (G1: one feedback per state). The
+  // booking keeps its own status (a paid booking still reads Lunas).
+  const bookingStatus = booking.status === 'awaiting_payment' && deadline <= now ? 'expired' : booking.status
+  const status = session.cancelled && bookingStatus !== 'confirmed' ? 'cancelled' as const : bookingStatus
   const left = Math.max(0, deadline - now)
   const hours = Math.floor(left / 3_600_000)
   const minutes = Math.floor((left % 3_600_000) / 60_000)
@@ -89,7 +92,7 @@ export function Component() {
       )}
     </Band>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4">
-      {session.cancelled && <StatusPanel tone="info" title={t(messages.cancelledSession)} />}
+      {session.cancelled && <StatusPanel tone="info" title={t(messages.cancelledSession)}><p>{t(messages.cancelledBody)}</p></StatusPanel>}
       {status === 'expired' && (
         <StatusPanel tone="info" title={t(messages.lapsedTitle)}><p>{t(messages.lapsedBody, { when })}</p></StatusPanel>
       )}

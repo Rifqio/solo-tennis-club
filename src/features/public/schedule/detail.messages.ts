@@ -2,7 +2,7 @@ export const detailMessages = {
   title: { id: 'Detail sesi', en: 'Session details' }, close: { id: 'Tutup detail sesi', en: 'Close session details' },
   description: { id: 'Informasi lengkap sesi tenis.', en: 'Complete tennis session information.' },
   loading: { id: 'Memuat detail sesi...', en: 'Loading session details...' }, error: { id: 'Detail sesi belum dapat dimuat.', en: 'Session details could not be loaded.' },
-  missing: { id: 'Sesi ini tidak tersedia.', en: 'This session is unavailable.' }, incomplete: { id: 'Informasi sesi belum lengkap. Coba muat ulang.', en: 'Session information is incomplete. Try loading it again.' },
+  missing: { id: 'Sesi ini tidak tersedia.', en: 'This session is unavailable.' }, partial: { id: 'Sebagian info sesi belum termuat. Cek koneksi kamu, lalu coba lagi.', en: 'Some session details did not load. Check your connection, then try again.' }, incomplete: { id: 'Informasi sesi belum lengkap. Coba muat ulang.', en: 'Session information is incomplete. Try loading it again.' },
   level: { id: 'Level', en: 'Level' }, date: { id: 'Tanggal', en: 'Date' }, venue: { id: 'Lokasi', en: 'Venue' },
   coaches: { id: 'Coach', en: 'Coaches' }, price: { id: 'Harga per slot', en: 'Price per slot' }, remaining: { id: 'Slot tersisa', en: 'Slots left' },
   min: { id: 'Minimum peserta', en: 'Minimum participants' }, max: { id: 'Kapasitas maksimum', en: 'Maximum capacity' }, duration: { id: 'Durasi', en: 'Duration' },

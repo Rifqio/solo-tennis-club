@@ -76,7 +76,8 @@ export function useSessionDetailContent({ id, seed = null, knownPlayers, onLeave
 
   // Why there is no Pesan button, in the order a member would want to know it.
   const blocked = view === null || bookable ? null
-    : view.availability === 'cancelled' ? messages.cancelled
+    // Cancelled: the status line already says it, so the foot says what to do instead.
+    : view.availability === 'cancelled' ? scheduleMessages.cancelledExplanation
     : ended ? messages.ended
     : view.availability === 'full' ? messages.full
     : messages.closedReason
@@ -148,7 +149,6 @@ export function useSessionDetailContent({ id, seed = null, knownPlayers, onLeave
           </> : <Pending className="w-20" />}
         </p>
       </div>
-      {view.availability === 'cancelled' && <p className="text-on-surface-variant">{t(scheduleMessages.cancelledExplanation)}</p>}
       {view.availability !== 'cancelled' && <Players session={view} known={knownPlayers?.date === view.date ? knownPlayers.state : undefined} />}
       <dl className="-mt-2 flex flex-col">
         <Fact label={t(messages.level)}>{view.levelName}</Fact>
@@ -166,7 +166,9 @@ export function useSessionDetailContent({ id, seed = null, knownPlayers, onLeave
         </Fact>
         {!bookable && <Fact label={t(messages.price)}>{formatIdr(view.priceIdr, language)}</Fact>}
       </dl>
-      {failed && <StatusPanel tone="error" title={t(data ? messages.incomplete : messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
+      {/* The card's own facts are on screen and still true; only the extra details are missing, so this informs
+          rather than alarms, and booking stays possible. */}
+      {failed && <StatusPanel tone="info" title={t(messages.partial)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
     </>
   }
 

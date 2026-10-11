@@ -22,6 +22,7 @@ import { CourtLines } from '@/components/brand/court-lines'
 import { BookedArt, BookedBadge } from './BookedArt'
 import { stepEnter, useStepDirection } from '@/lib/step-motion'
 import { ConnectionBanner } from '@/components/ui/connection-banner'
+import { revealInvalid } from '@/lib/reveal-invalid'
 
 type Options = { sessionVersion: number; unitPriceIdr: number; remainingPlaces: number; bookingClosesAt: string; serverNow: string; canReserve: boolean }
 type CreatedBooking = { booking: { id: string; quantity: number; totalPriceIdr: number; originalDeadline: string; participants: { id: string; position: number; name: string }[] }; replayed: boolean; serverNow: string }
@@ -44,6 +45,11 @@ const messages = {
     seeBooking: 'Lihat booking', backToSchedule: 'Kembali ke jadwal', back: 'Kembali', backToScheduleLabel: 'Kembali ke jadwal',
     unpaid: 'Belum bayar', people: 'orang', quickPick: 'Pilih cepat', summary: 'Ringkasan', changeSession: 'Ganti sesi', priceTimes: '{price} × {count} orang',
     seatsLabel: '{taken} udah diambil, {mine} buat kamu, {open} masih kosong, dari {max} slot', taken: '{count} udah diambil', mine: '{count} buat kamu', open: '{count} masih kosong',
+    loadFailed: 'Sesinya belum kebuka. Cek koneksi kamu, lalu coba lagi.', optionsFailed: 'Info slot belum termuat. Cek koneksi kamu, lalu coba lagi.',
+    nameMissing: 'Isi nama pemain ini dulu.', changeCount: 'Ubah jumlah', signInAgain: 'Login lagi', pickAnother: 'Pilih sesi lain',
+    capacity: 'Sisa slotnya tinggal {count}. Kurangi jumlah pemain, lalu konfirmasi lagi.', capacityNone: 'Slotnya udah penuh. Pilih sesi lain, ya.',
+    bookingClosed: 'Booking sesi ini udah ditutup. Pilih sesi lain, ya.', sessionChanged: 'Detail sesi barusan berubah. Cek lagi, lalu konfirmasi.',
+    signedOut: 'Login kamu udah habis. Login lagi buat lanjut, pilihanmu tetap di sini.', offline: 'Koneksi putus, jadi booking belum pasti terkirim. Coba lagi aman, nggak bakal dobel.',
   },
   en: {
     title: 'Book slots', names: "Who's playing?", review: 'Check it over', success: 'Booked!',
@@ -61,6 +67,11 @@ const messages = {
     seeBooking: 'See booking', backToSchedule: 'Back to schedule', back: 'Back', backToScheduleLabel: 'Back to schedule',
     unpaid: 'Not paid yet', people: 'people', quickPick: 'Quick pick', summary: 'Summary', changeSession: 'Change session', priceTimes: '{price} × {count} people',
     seatsLabel: '{taken} taken, {mine} for you, {open} still open, of {max} places', taken: '{count} taken', mine: '{count} for you', open: '{count} still open',
+    loadFailed: 'The session did not load. Check your connection, then try again.', optionsFailed: 'Slot details did not load. Check your connection, then try again.',
+    nameMissing: "Fill in this player's name first.", changeCount: 'Change the number', signInAgain: 'Log in again', pickAnother: 'Pick another session',
+    capacity: 'Only {count} slots are left. Lower the number of players, then confirm again.', capacityNone: 'The session is full now. Pick another session.',
+    bookingClosed: 'Booking for this session has closed. Pick another session.', sessionChanged: 'The session details just changed. Check them, then confirm.',
+    signedOut: 'Your login has ended. Log in again to carry on; your choices stay here.', offline: 'The connection dropped, so the booking may not have gone through. Trying again is safe and will not book twice.',
   },
 }
 
@@ -180,7 +191,7 @@ export function Component() {
   const isDesktop = useMediaQuery('(min-width: 64rem)')
   const [session, setSession] = useState<PublicSessionDetail | null>(null)
   const [options, setOptions] = useState<Options | null>(null)
-  const [loadError, setLoadError] = useState(false)
+  const [loadError, setLoadError] = useState<'missing' | 'failed' | null>(null)
   const [quantity, setQuantity] = useState(() => Math.max(1, Number(query.get('quantity')) || 1))
   const [names, setNames] = useState<string[]>([])
   const [step, setStep] = useState(1)
@@ -188,6 +199,10 @@ export function Component() {
   const [page, setPage] = useState(0)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // The slot details for this member (price, places left, version). They load once signed in; a failure offers a retry.
+  const [optionsFailed, setOptionsFailed] = useState(false)
+  const [optionsAttempt, setOptionsAttempt] = useState(0)
+  const [missingNames, setMissingNames] = useState<number[]>([])
   const [result, setResult] = useState<CreatedBooking | null>(null)
   const [requestId, setRequestId] = useState(() => crypto.randomUUID())
   const heading = useRef<HTMLHeadingElement>(null)
@@ -197,9 +212,13 @@ export function Component() {
   useEffect(() => {
     const controller = new AbortController()
     void fetch(`/api/public/sessions/${encodeURIComponent(sessionId)}`, { cache: 'no-store', signal: controller.signal })
-      .then(async response => { if (!response.ok) throw new Error('session unavailable'); return response.json() as Promise<PublicSessionDetail> })
-      .then(value => { if (!controller.signal.aborted) setSession(value) })
-      .catch(() => { if (!controller.signal.aborted) setLoadError(true) })
+      .then(async response => {
+        if (response.status === 404) { if (!controller.signal.aborted) setLoadError('missing'); return null }
+        if (!response.ok) throw new Error('session unavailable')
+        return response.json() as Promise<PublicSessionDetail>
+      })
+      .then(value => { if (value && !controller.signal.aborted) setSession(value) })
+      .catch(() => { if (!controller.signal.aborted) setLoadError('failed') })
     return () => controller.abort()
   }, [sessionId])
 
@@ -207,17 +226,17 @@ export function Component() {
     if (!activeSession) return
     const controller = new AbortController()
     void customerRequest<Options>(`/api/customer/booking-options/${encodeURIComponent(sessionId)}`, { signal: controller.signal })
-      .then(value => { if (!controller.signal.aborted) setOptions(value) })
+      .then(value => { if (!controller.signal.aborted) { setOptions(value); setOptionsFailed(false) } })
       .catch(value => {
         if (controller.signal.aborted) return
         if (value instanceof CustomerApiError && value.status === 401) {
           navigate(`/customer/sign-in?returnTo=${encodeURIComponent(returnTo)}`, { replace: true })
           return
         }
-        if (value instanceof CustomerApiError) setError(value.detail.code)
+        setOptionsFailed(true)
       })
     return () => controller.abort()
-  }, [activeSession, sessionId, navigate, returnTo])
+  }, [activeSession, sessionId, navigate, returnTo, optionsAttempt])
 
   useEffect(() => { heading.current?.focus({ preventScroll: true }) }, [step, result])
 
@@ -226,6 +245,8 @@ export function Component() {
   const maximum = Math.max(1, currentOptions?.remainingPlaces ?? session?.remainingPlaces ?? 1)
   const pageCount = Math.max(1, Math.ceil(names.length / 10))
   const visibleNames = names.slice(page * 10, page * 10 + 10)
+
+  function goToStep(next: number) { setError(null); setStep(next) }
 
   function changeQuantity(value: number) {
     if (!Number.isSafeInteger(value) || value < 1) return
@@ -238,6 +259,7 @@ export function Component() {
 
   function updateName(index: number, value: string) {
     setNames(previous => previous.map((name, position) => position === index ? value : name))
+    setMissingNames(previous => previous.filter(position => position !== index))
     setRequestId(crypto.randomUUID())
     if (activeSession) {
       try { sessionStorage.setItem(reservationKey(activeSession.customer.id, sessionId), JSON.stringify(names.map((name, position) => position === index ? value : name))) } catch { /* Draft remains in this page if storage is unavailable. */ }
@@ -257,18 +279,21 @@ export function Component() {
       const parsed = saved ? JSON.parse(saved) as unknown : null
       setNames(Array.isArray(parsed) && parsed.length === quantity && parsed.every(name => typeof name === 'string') ? parsed as string[] : defaultNames)
     } catch { setNames(defaultNames) }
-    setStep(2)
+    goToStep(2)
   }
 
   function reviewNames() {
     const normalized = names.map(normalizeCustomerName)
-    if (normalized.some(name => !name)) return
+    // Empty names are marked on their fields (G1: the field is the cause), on the page that holds the first one.
+    const missing = normalized.flatMap((name, index) => name ? [] : [index])
+    setMissingNames(missing)
+    if (missing.length) { setPage(Math.floor(missing[0]! / 10)); revealInvalid(); return }
     const confirmedNames = normalized as string[]
     setNames(confirmedNames)
     if (activeSession) {
       try { sessionStorage.setItem(reservationKey(activeSession.customer.id, sessionId), JSON.stringify(confirmedNames)) } catch { /* Draft remains in this page if storage is unavailable. */ }
     }
-    setStep(3)
+    goToStep(3)
   }
 
   async function confirm() {
@@ -282,14 +307,28 @@ export function Component() {
       setResult(created)
       try { sessionStorage.removeItem(reservationKey(access.state.session.customer.id, sessionId)) } catch { /* No persisted draft to clear. */ }
     } catch (failure) {
-      setError(failure instanceof CustomerApiError ? failure.detail.code : 'INTERNAL')
+      setError(failure instanceof CustomerApiError ? failure.detail.code : 'OFFLINE')
       if (failure instanceof CustomerApiError && ['CAPACITY_UNAVAILABLE', 'SESSION_CHANGED'].includes(failure.detail.code)) {
         try { setOptions(await customerRequest<Options>(`/api/customer/booking-options/${encodeURIComponent(sessionId)}`)) } catch { /* Keep entered names visible. */ }
       }
     } finally { setPending(false) }
   }
 
-  const errorMessage = error && error in apiErrorMessages ? apiErrorMessages[error as keyof typeof apiErrorMessages][language] : null
+  const errorNotice = (): { title: string; action?: { label: string; onAction: () => void } } | null => {
+    if (!error) return null
+    if (error === 'OFFLINE') return { title: text.offline }
+    if (error === 'CAPACITY_UNAVAILABLE') {
+      const left = options?.remainingPlaces ?? 0
+      return left > 0 ? { title: fill(text.capacity, { count: left }), action: { label: text.changeCount, onAction: () => goToStep(1) } }
+        : { title: text.capacityNone, action: { label: text.pickAnother, onAction: () => navigate(schedulePath) } }
+    }
+    if (error === 'BOOKING_CLOSED') return { title: text.bookingClosed, action: { label: text.pickAnother, onAction: () => navigate(schedulePath) } }
+    if (error === 'SESSION_CHANGED') return { title: text.sessionChanged }
+    if (error === 'CUSTOMER_UNAUTHENTICATED') return { title: text.signedOut, action: { label: text.signInAgain, onAction: () => { setNavMotion('push'); navigate(`/customer/sign-in?returnTo=${encodeURIComponent(returnTo)}`, { viewTransition: true }) } } }
+    return { title: error in apiErrorMessages ? apiErrorMessages[error as keyof typeof apiErrorMessages][language] : apiErrorMessages.INTERNAL[language] }
+  }
+  const notice = errorNotice()
+  const optionsNotice = optionsFailed && <StatusPanel tone="error" title={text.optionsFailed} action={{ label: text.retry, onAction: () => setOptionsAttempt(value => value + 1) }} />
   const stepMotion = stepEnter(direction, reduceMotion)
 
   if (result && session) {
@@ -375,7 +414,7 @@ export function Component() {
   // Desktop keeps "Pesan slot" in the band; the step's question heads its card instead.
   const title = step === 1 || isDesktop ? text.title : step === 2 ? text.names : text.review
   const band = <TaskBand title={title} step={step} steps={text.steps} stepLabel={fill(text.stepLabel, { step })} heading={heading} backLabel={step === 1 ? text.backToScheduleLabel : text.back}
-    backTo={step === 1 ? schedulePath : undefined} onBack={step === 1 ? undefined : () => setStep(step - 1)} />
+    backTo={step === 1 ? schedulePath : undefined} onBack={step === 1 ? undefined : () => goToStep(step - 1)} />
 
   if (loadError || !session) {
     return (
@@ -383,7 +422,8 @@ export function Component() {
         {band}
         <div className="page-gutter mx-auto w-full max-w-3xl pt-4">
           {loadError
-            ? <StatusPanel tone="error" title={text.unavailable} action={{ label: text.retry, onAction: () => { setLoadError(false); setSession(null); window.location.reload() } }} />
+            ? loadError === 'missing' ? <StatusPanel tone="info" title={text.unavailable} action={{ label: text.pickAnother, onAction: () => navigate(schedulePath) }} />
+              : <StatusPanel tone="error" title={text.loadFailed} action={{ label: text.retry, onAction: () => window.location.reload() }} />
             : <p role="status">{text.loading}</p>}
         </div>
       </div>
@@ -393,8 +433,8 @@ export function Component() {
   const canContinue = Boolean(currentOptions?.canReserve) && quantity <= (currentOptions?.remainingPlaces ?? 0)
   const amount = formatIdr(total, language)
   const action = step === 1 ? <Button variant="filled" className="px-8 lg:min-h-14 lg:w-full" disabled={!canContinue} onClick={startNames}>{activeSession ? text.continue : text.signIn}</Button>
-    : step === 2 ? <Button variant="filled" className="px-8 lg:min-h-14 lg:w-full" onClick={reviewNames} disabled={names.length !== quantity || names.some(name => !normalizeCustomerName(name))}>{text.continue}</Button>
-    : <Button variant="filled" className="px-5 lg:min-h-14 lg:w-full" disabled={pending || !options?.canReserve || !options} pendingLabel={pending ? text.working : undefined} onClick={() => void confirm()}>{text.confirm}</Button>
+    : step === 2 ? <Button variant="filled" className="px-8 lg:min-h-14 lg:w-full" onClick={reviewNames} disabled={names.length !== quantity}>{text.continue}</Button>
+    : <Button variant="filled" className="px-5 lg:min-h-14 lg:w-full" disabled={pending || !options?.canReserve || !options || error === 'BOOKING_CLOSED'} pendingLabel={pending ? text.working : undefined} onClick={() => void confirm()}>{text.confirm}</Button>
   const unitPrice = currentOptions?.unitPriceIdr ?? session.priceIdr
   const remaining = currentOptions?.remainingPlaces ?? session.remainingPlaces
 
@@ -432,7 +472,7 @@ export function Component() {
             <div className="flex justify-between gap-3 py-2.5"><dt className="text-on-surface-variant">{fill(text.slots, { count: quantity })}</dt><dd className="font-semibold tabular-nums">{amount}</dd></div>
           </dl>
           {!currentOptions?.canReserve && <StatusPanel tone="info" title={text.closed} />}
-          {errorMessage && <StatusPanel tone="error" title={errorMessage} />}
+          {optionsNotice}
         </>}
 
         {step === 2 && <>
@@ -442,7 +482,7 @@ export function Component() {
             const index = page * 10 + localIndex
             return <TextField key={index} name={`participant-${index}`} label={`${fill(text.player, { n: index + 1 })}${index === 0 ? ' ' + text.you : ''}`}
               autoComplete={index === 0 ? 'name' : 'off'} maxLength={120} value={name} leading={<UserRound className="size-5" />}
-              onChange={event => updateName(index, event.target.value)} required />
+              onChange={event => updateName(index, event.target.value)} required error={missingNames.includes(index) ? text.nameMissing : undefined} />
           })}</div>
           {pageCount > 1 && <nav aria-label={text.names} className="flex items-center justify-between gap-3">
             <Button variant="outlined" disabled={page === 0} onClick={() => setPage(value => value - 1)}>{text.previous}</Button>
@@ -464,13 +504,14 @@ export function Component() {
               <div className="flex justify-between gap-4 py-2.5"><dt className="text-label text-on-surface-variant">{fill(text.players, { count: names.length })}</dt>
                 <dd className="min-w-0 text-right"><ol className="flex flex-col">{names.map((name, index) => <li key={index} className="break-words">{name}</li>)}</ol></dd></div>
             </dl>
-            <Button variant="text" className="-ml-3" onClick={() => setStep(2)}>{text.editPlayers}</Button>
+            <Button variant="text" className="-ml-3" onClick={() => goToStep(2)}>{text.editPlayers}</Button>
           </section>
           <section aria-label={text.holdTitle} className="flex gap-3 rounded-sm bg-primary-container p-3.5 text-on-primary-container">
             <Clock aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-primary" />
             <p className="text-label"><span className="block text-body font-semibold text-primary">{text.holdTitle}</span>{text.holdBody}</p>
           </section>
-          {errorMessage && <StatusPanel tone="error" title={errorMessage} />}
+          {optionsNotice}
+          {notice && <StatusPanel tone="error" title={notice.title} action={notice.action} />}
         </>}
       </m.div>
       {isDesktop && (

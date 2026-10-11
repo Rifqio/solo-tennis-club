@@ -189,7 +189,7 @@ export function Component() {
               </ul>
             </div>
           ))}
-          {view === 'history' && loaded.status === 'ready' && loaded.nextCursor && <Button variant="outlined" className="self-start" onClick={() => void loadMore()} pendingLabel={loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
+          {bookings.moreFailed ? <StatusPanel tone="error" title={t(messages.moreFailed)} action={{ label: t(commonMessages.retry), onAction: () => void loadMore() }} /> : view === 'history' && loaded.status === 'ready' && loaded.nextCursor && <Button variant="outlined" className="self-start" onClick={() => void loadMore()} pendingLabel={loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
         </section>
         {panelId && <div className="w-[24rem] shrink-0 xl:w-[26rem]"><BookingDetailPanel id={panelId} /></div>}
       </> : loaded.status === 'loading' ? (
@@ -219,7 +219,7 @@ export function Component() {
             </ul>
           </section>
         ))}
-        {loaded.nextCursor && <Button variant="outlined" onClick={() => void loadMore()} pendingLabel={loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
+        {bookings.moreFailed ? <StatusPanel tone="error" title={t(messages.moreFailed)} action={{ label: t(commonMessages.retry), onAction: () => void loadMore() }} /> : loaded.nextCursor && <Button variant="outlined" onClick={() => void loadMore()} pendingLabel={loadingMore ? t(messages.loading) : undefined}>{t(messages.more)}</Button>}
       </>}
     </div>
   </>

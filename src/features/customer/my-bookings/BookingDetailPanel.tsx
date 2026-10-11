@@ -13,10 +13,13 @@ import { useNow } from '@/features/public/schedule/use-now'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBooking } from './use-customer-bookings'
 import { panelEnter } from '@/lib/motion'
+import { useNavigate } from 'react-router-dom'
+import { setNavMotion } from '@/lib/nav-motion'
 
 // Desktop: the chosen booking beside the list, one question per block: what, when to pay, who and where.
 export function BookingDetailPanel({ id }: { id: string }) {
   const { language, t } = useI18n()
+  const navigate = useNavigate()
   const reduceMotion = useReducedMotion()
   const { loaded: current, previous, retry } = useCustomerBooking(id)
   // While the next booking loads, the previous one stays in place instead of flashing a loading state.
@@ -31,6 +34,7 @@ export function BookingDetailPanel({ id }: { id: string }) {
           <div className="h-6 w-24 rounded-full bg-surface-container-high" /><div className="h-8 w-2/3 rounded-xs bg-surface-container-high" /><div className="h-24 rounded-md bg-surface-container" />
         </div>
           : loaded.status === 'missing' ? <StatusPanel tone="info" title={t(messages.missing)} />
+          : loaded.status === 'signedOut' ? <StatusPanel tone="info" title={t(messages.signInTitle)} action={{ label: t(messages.signIn), onAction: () => { setNavMotion('push'); navigate(`/customer/sign-in?returnTo=${encodeURIComponent('/bookings')}`, { viewTransition: true }) } }} />
           : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
       </m.aside>
     )
@@ -40,25 +44,28 @@ export function BookingDetailPanel({ id }: { id: string }) {
   const { session } = booking
   const now = serverClock(loaded.serverNow, loaded.receivedAt, localNow)
   const deadline = Date.parse(booking.originalDeadline)
-  const status = booking.status === 'awaiting_payment' && deadline <= now ? 'expired' : booking.status
+  // A cancelled session outranks the hold: no countdown, no payment, one notice (G1: one feedback per state). The
+  // booking keeps its own status (a paid booking still reads Lunas).
+  const bookingStatus = booking.status === 'awaiting_payment' && deadline <= now ? 'expired' : booking.status
+  const status = session.cancelled && bookingStatus !== 'confirmed' ? 'cancelled' as const : bookingStatus
   const unpaid = status === 'awaiting_payment'
   const left = Math.max(0, deadline - now)
   const hours = Math.floor(left / 3_600_000)
   const minutes = Math.floor((left % 3_600_000) / 60_000)
   const when = `${formatClubDateShort(clubDateOf(new Date(deadline)), language)}, ${formatClubTime(booking.originalDeadline)}`
   const whatsapp = clubContent.whatsapp ? `https://wa.me/${clubContent.whatsapp}` : null
-  const chip = unpaid ? messages.unpaid : status === 'expired' ? messages.lapsed : messages.paid
+  const chip = status === 'cancelled' ? messages.cancelledSession : unpaid ? messages.unpaid : status === 'expired' ? messages.lapsed : messages.paid
 
   return (
     <m.aside aria-label={t(messages.heading)} {...panelEnter(reduceMotion)} className={frame}>
       <div className="flex flex-col gap-1.5">
         <span className={cn('self-start rounded-full px-3 py-0.5 text-label font-semibold',
-          unpaid ? 'bg-warning-container text-warning' : status === 'expired' ? 'bg-surface-container-high text-on-surface-variant' : 'bg-primary-container text-primary')}>{t(chip)}</span>
+          unpaid ? 'bg-warning-container text-warning' : status === 'expired' || status === 'cancelled' ? 'bg-surface-container-high text-on-surface-variant' : 'bg-primary-container text-primary')}>{t(chip)}</span>
         <h2 className="break-words text-headline font-bold">{session.className}</h2>
         <p className="tabular-nums text-on-surface-variant">{formatClubDateShort(session.date, language)} · {session.startTime}-{session.endTime} WIB</p>
       </div>
 
-      {session.cancelled && <StatusPanel tone="info" title={t(messages.cancelledSession)} />}
+      {session.cancelled && <StatusPanel tone="info" title={t(messages.cancelledSession)}><p>{t(messages.cancelledBody)}</p></StatusPanel>}
       {status === 'expired' && <StatusPanel tone="info" title={t(messages.lapsedTitle)}><p>{t(messages.lapsedBody, { when })}</p></StatusPanel>}
       {unpaid && (
         <section aria-label={t(messages.timeLeft)} className="flex flex-col gap-3.5 rounded-md bg-primary p-5 text-on-primary">

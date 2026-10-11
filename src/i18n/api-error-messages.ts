@@ -7,7 +7,7 @@ export const apiErrorMessages: Record<ApiErrorCode, Message> = {
   OTP_INVALID: { id: 'Kode tidak cocok. Periksa enam digit lalu coba lagi.', en: 'The code does not match. Check all six digits and try again.' },
   OTP_EXPIRED: { id: 'Kode sudah kedaluwarsa. Minta kode baru.', en: 'The code has expired. Request a new code.' },
   OTP_CONSUMED: { id: 'Kode sudah digunakan atau diganti. Minta kode baru.', en: 'This code was used or replaced. Request a new code.' },
-  OTP_THROTTLED: { id: 'Terlalu banyak percobaan. Tunggu {seconds} detik lalu coba lagi.', en: 'Too many attempts. Wait {seconds} seconds and try again.' },
+  OTP_THROTTLED: { id: 'Terlalu banyak percobaan. Tunggu sebentar, lalu coba lagi.', en: 'Too many attempts. Wait a moment, then try again.' },
   TEMPORARILY_UNAVAILABLE: { id: 'Layanan belum tersedia. Coba lagi nanti atau hubungi klub.', en: 'This service is unavailable. Try again later or contact the club.' },
   NOT_FOUND: { id: 'Data tidak ditemukan. Muat ulang halaman.', en: 'This item could not be found. Reload the page.' },
   INTERNAL: { id: 'Terjadi kendala di server. Coba lagi.', en: 'Something went wrong on the server. Try again.' },

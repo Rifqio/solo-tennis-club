@@ -16,6 +16,7 @@ export function useCustomerBookings(view: CustomerBookingView) {
   const [state, setState] = useState<{ view: CustomerBookingView; loaded: Loaded<{ items: CustomerBookingItem[]; nextCursor: string | null; serverNow: string }> } | null>(null)
   const [attempt, setAttempt] = useState(0)
   const [loadingMore, setLoadingMore] = useState(false)
+  const [moreFailed, setMoreFailed] = useState(false)
   useEffect(() => {
     const controller = new AbortController()
     customerRequest<CustomerBookingListResponse>(`/api/customer/bookings?view=${view}`, { signal: controller.signal })
@@ -26,14 +27,18 @@ export function useCustomerBookings(view: CustomerBookingView) {
   const loaded = state?.view === view ? state.loaded : { status: 'loading' as const }
   const loadMore = async () => {
     if (loaded.status !== 'ready' || !loaded.nextCursor || loadingMore) return
-    setLoadingMore(true)
+    setLoadingMore(true); setMoreFailed(false)
     try {
       const data = await customerRequest<CustomerBookingListResponse>(`/api/customer/bookings?view=${view}&cursor=${encodeURIComponent(loaded.nextCursor)}`)
       setState({ view, loaded: { ...loaded, items: [...loaded.items, ...data.items], nextCursor: data.nextCursor } })
-    } catch (error) { setState({ view, loaded: failureOf(error) }) } finally { setLoadingMore(false) }
+    } catch (error) {
+      // Signed out shows the sign-in card; anything else keeps the list and offers a retry at its foot.
+      if (failureOf(error).status === 'signedOut') setState({ view, loaded: failureOf(error) })
+      else setMoreFailed(true)
+    } finally { setLoadingMore(false) }
   }
   const held = loaded.status === 'loading' && state?.loaded.status === 'ready' ? state : null
-  return { loaded, held, loadMore, loadingMore, retry: () => { setState(null); setAttempt(value => value + 1) } }
+  return { loaded, held, loadMore, loadingMore, moreFailed: moreFailed && !loadingMore, retry: () => { setState(null); setAttempt(value => value + 1) } }
 }
 
 export function useCustomerBooking(id: string) {

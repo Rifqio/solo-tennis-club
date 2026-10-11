@@ -21,6 +21,7 @@ import { AuthHero } from './AuthHero'
 import { stepEnter, useStepDirection } from '@/lib/step-motion'
 import { ConnectionBanner } from '@/components/ui/connection-banner'
 import { revealInvalid } from '@/lib/reveal-invalid'
+import { useToast } from '@/components/ui/use-toast'
 
 const stagePosition: Record<string, number | null> = { loading: null, loadError: null, phone: 1, code: 2, name: 3, complete: 4 }
 
@@ -40,6 +41,7 @@ export function Component() {
   const [now, setNow] = useState(Date.now)
   const heading = useRef<HTMLHeadingElement>(null)
   const form = useRef<HTMLFormElement>(null)
+  const toast = useToast()
   const reduceMotion = useReducedMotion()
   // Phone, code, then name: the form slides the way the visitor is going; the first form after loading just appears.
   const direction = useStepDirection(stagePosition[state.stage])
@@ -56,7 +58,8 @@ export function Component() {
   const serverNow = state.stage === 'code' ? now + Date.parse(state.challenge.serverNow) - state.receivedAt : now
   const resendAt = state.stage === 'code' ? Date.parse(state.challenge.resendAt) : 0
   const resendSeconds = Math.max(retrySeconds, Math.max(0, Math.ceil((resendAt - serverNow) / 1000)))
-  const codeExpired = state.stage === 'code' && Date.parse(state.challenge.expiresAt) <= serverNow
+  const codeExpired = state.stage === 'code' && (Date.parse(state.challenge.expiresAt) <= serverNow
+    || (access.failure !== 'network' && access.failure?.code === 'OTP_EXPIRED'))
   const title = state.stage === 'code' ? messages.codeHeading
     : state.stage === 'name' ? messages.nameHeading
     : state.stage === 'complete' ? messages.account : messages.heading
@@ -64,7 +67,13 @@ export function Component() {
   const codeRejected = state.stage === 'code' && access.failure !== 'network' && access.failure?.code === 'OTP_INVALID'
   const wrongCode = codeRejected && !codeEdited
   const errorText = access.failure === 'network' ? t(messages.network)
-    : access.failure && !codeRejected ? t(apiErrorMessages[access.failure.code], { seconds: retrySeconds }) : null
+    : access.failure && !codeRejected && !(codeExpired && access.failure.code === 'OTP_EXPIRED') ? t(apiErrorMessages[access.failure.code], { seconds: retrySeconds }) : null
+  // A lock is a wait, not a failure (G1 warning).
+  const errorTone = access.failure !== 'network' && access.failure?.code === 'OTP_THROTTLED' ? 'warning' as const : 'error' as const
+  // A sign-in lock counts down on the button that waits, nowhere else.
+  const waitLabel = retrySeconds >= 3600 ? t(messages.waitHours, { hours: Math.ceil(retrySeconds / 3600) })
+    : t(messages.waitMinutes, { time: `${Math.floor(retrySeconds / 60)}:${String(retrySeconds % 60).padStart(2, '0')}` })
+  const resend = async () => { setCode(''); if (await access.resendCode()) toast({ message: t(messages.resent) }) }
 
   if (state.stage === 'complete' && params.has('returnTo')) return <Navigate to={returnPath} replace />
 
@@ -109,12 +118,11 @@ export function Component() {
     return <>
       <CourtBand title={t(title)} headingRef={heading} />
       <section className="page-gutter mx-auto flex w-full max-w-lg min-w-0 flex-col gap-5 py-6">
-        <StatusPanel tone="success" title={t(messages.signedIn)} />
         <dl className="flex min-w-0 flex-col rounded-sm bg-surface-container-lowest px-4 break-words">
           <div className="flex justify-between gap-4 border-b border-outline-variant py-3"><dt className="text-label text-on-surface-variant">{t(messages.name)}</dt><dd className="text-right font-semibold">{state.session.customer.displayName}</dd></div>
           <div className="flex justify-between gap-4 py-3"><dt className="text-label text-on-surface-variant">{t(messages.phone)}</dt><dd className="text-right tabular-nums">{state.session.customer.phone}</dd></div>
         </dl>
-        {errorText && <StatusPanel tone="error" title={errorText} />}
+        {errorText && <StatusPanel tone={errorTone} title={errorText} />}
         <Button variant="outlined" disabled={pending || retrySeconds > 0} pendingLabel={pending ? t(messages.signingOut) : undefined}
           onClick={() => { setPhone(''); setCode(''); setName(''); void access.signOut() }}>{t(messages.signOut)}</Button>
         <p className="text-label text-on-surface-variant">{t(messages.recovery)}</p>
@@ -152,14 +160,15 @@ export function Component() {
               onChange={event => { setName(event.target.value); setInvalid(null) }} error={invalid === 'name' ? t(messages.nameError) : undefined} maxLength={120} required />}
             {state.stage === 'code' && <div className="flex flex-wrap items-center justify-between gap-2">
               <Button type="button" variant="text" className="-ml-3" onClick={editPhone} disabled={pending}>{t(messages.editPhone)}</Button>
-              <Button type="button" variant="text" className="-mr-3" disabled={pending || resendSeconds > 0} onClick={() => { setCode(''); void access.resendCode() }}>
-                {resendSeconds > 0 ? t(messages.resendWait, { seconds: resendSeconds }) : t(messages.resend)}
+              <Button type="button" variant="text" className="-mr-3" disabled={pending || resendSeconds > 0} onClick={() => void resend()}>
+                {resendSeconds > 0 && retrySeconds === 0 ? t(messages.resendWait, { seconds: resendSeconds }) : t(messages.resend)}
               </Button>
             </div>}
-            {errorText && <StatusPanel tone="error" title={errorText} />}
-            {codeExpired && <StatusPanel tone="info" title={t(apiErrorMessages.OTP_EXPIRED)} />}
+            {errorText && <StatusPanel tone={errorTone} title={errorText} />}
+            {codeExpired && <StatusPanel tone="warning" title={t(apiErrorMessages.OTP_EXPIRED)}
+              action={resendSeconds === 0 && !pending ? { label: t(messages.resend), onAction: () => void resend() } : undefined} />}
             <Button type="submit" variant="filled" className="min-h-14 w-full" disabled={pending || retrySeconds > 0 || codeExpired}
-              pendingLabel={pending ? t(pendingLabel) : undefined}>{t(submitLabel)}</Button>
+              pendingLabel={pending ? t(pendingLabel) : undefined}>{retrySeconds > 0 ? waitLabel : t(submitLabel)}</Button>
             {state.stage === 'name' && <Button type="button" variant="text" onClick={editPhone} disabled={pending}>{t(messages.restart)}</Button>}
           </form>
           <div className="mt-auto flex flex-col gap-3 pt-2">

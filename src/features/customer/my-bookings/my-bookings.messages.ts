@@ -16,6 +16,8 @@ export const myBookingsMessages = {
   unpaid: { id: 'Belum bayar', en: 'Not paid yet' },
   paid: { id: 'Lunas', en: 'Paid' },
   cancelledSession: { id: 'Sesi dibatalkan', en: 'Session cancelled' },
+  cancelledBody: { id: 'Booking ini nggak jalan. Chat admin kalau ada pertanyaan.', en: 'This booking will not go ahead. Chat with the admin if you have questions.' },
+  moreFailed: { id: 'Booking berikutnya belum termuat. Cek koneksi kamu, lalu coba lagi.', en: 'The next bookings did not load. Check your connection, then try again.' },
   due: { id: 'Batas {time}', en: 'Due {time}' },
   howToPay: { id: 'Cara bayar', en: 'How to pay' },
   chatAdmin: { id: 'Chat admin', en: 'Chat the admin' },

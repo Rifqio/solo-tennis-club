@@ -4,7 +4,7 @@
 
 Lafu's first release replaces schedule spreadsheets and WhatsApp booking records with public session browsing, capacity-safe reservations, manual payment verification, and phone-complete club operations. Five vertical MVP slices deliver usable workflows from session publication through recurring schedules and optional minimum-participant cancellation. All 67 approved requirements remain first-release scope.
 
-**Status:** Phase 1 accepted by the user on 2026-10-09 after all listed manual workflow checks. Phase 2 has six plans: 02-00 backend layers and 02-01 development customer access source are verified. Customer access manual UI acceptance is pending; 02-02 reservations is next. See [customer access evidence](phases/02-reserve-places-and-see-daily-rosters/02-01-SUMMARY.md).
+**Status:** Phase 1 accepted by the user on 2026-10-09. Phase 2 accepted by the user on 2026-10-11 after manual checks of reservations, rosters, admin bookings and the desktop boards. Phase 3 planning starts with its prerequisites below.
 **Granularity:** standard
 **Project mode:** mvp
 
@@ -91,7 +91,7 @@ Plans:
 4. A customer can open upcoming booking details with the original five-hour deadline; an unpaid reservation without submitted proof expires at that deadline and its places become available again.
 5. On a phone, an administrator can open today's/upcoming sessions, group-aware rosters and pending/confirmed states, participant-place availability, incoming booking details, and customer information, and create a booking for a WhatsApp or in-person customer.
 
-**Plans:** 3/6 source implementations verified; 02-01 and 02-02 manual acceptance pending. No Phase 2 product requirements are accepted yet. See [execution plan](phases/02-reserve-places-and-see-daily-rosters/02-PLAN.md).
+**Plans:** 6/6 implemented and accepted by the user on 2026-10-11. See [execution plan](phases/02-reserve-places-and-see-daily-rosters/02-PLAN.md).
 
 - [x] 02-00 — Readable controller/service/repository backend; build/lint and 137 tests pass.
 - [x] 02-01 — Customer access and development API OTP source; build/lint and 161 tests pass.

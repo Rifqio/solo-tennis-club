@@ -1,4 +1,7 @@
-import { Check, Languages } from 'lucide-react'
+import { Check } from 'lucide-react'
+// Round flat flags (circle-flags, MIT): circles like the club's ball mark and the app's round buttons.
+import flagId from 'circle-flags/flags/id.svg'
+import flagGb from 'circle-flags/flags/gb.svg'
 import { DropdownMenu } from 'radix-ui'
 import { useState } from 'react'
 import { Drawer } from 'vaul'
@@ -10,20 +13,20 @@ import { selectionHaptic } from '@/lib/haptics'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { cn } from '@/lib/utils'
 
-const options: { language: Language; code: string; name: string }[] = [
-  { language: 'id', code: 'ID', name: commonMessages.languageIndonesian.id },
-  { language: 'en', code: 'EN', name: commonMessages.languageEnglish.en },
+const options: { language: Language; code: string; name: string; flag: string }[] = [
+  { language: 'id', code: 'ID', name: commonMessages.languageIndonesian.id, flag: flagId },
+  { language: 'en', code: 'EN', name: commonMessages.languageEnglish.en, flag: flagGb },
 ]
+
+function Flag({ src, className }: { src: string; className?: string }) {
+  return <img src={src} alt="" aria-hidden="true" width={24} height={24} className={cn('size-6 shrink-0 rounded-full', className)} />
+}
 
 const triggerClass = 'state-layer pressable inline-flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-full px-3 text-label font-bold text-on-signboard'
 
-function TriggerContent({ code }: { code: string }) {
-  return (
-    <>
-      <Languages aria-hidden="true" className="size-5" />
-      <span aria-hidden="true">{code}</span>
-    </>
-  )
+// The flag of the current language; its name is in the trigger's label.
+function TriggerContent({ flag }: { flag: string }) {
+  return <Flag src={flag} />
 }
 
 // App-bar language action. Phones get a bottom sheet you can drag away (thumb-reachable, like a native action sheet);
@@ -43,7 +46,7 @@ export function LanguageMenu({ className }: { className?: string }) {
     return (
       <Drawer.Root open={sheetOpen} onOpenChange={setSheetOpen}>
         <Drawer.Trigger className={cn(triggerClass, className)} aria-label={label}>
-          <TriggerContent code={current.code} />
+          <TriggerContent flag={current.flag} />
         </Drawer.Trigger>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 z-40 bg-scrim" />
@@ -67,6 +70,7 @@ export function LanguageMenu({ className }: { className?: string }) {
                       <span className="flex size-6 items-center justify-center">
                         {selected && <Check aria-hidden="true" className="size-6 text-primary" />}
                       </span>
+                      <Flag src={option.flag} />
                       <span className={selected ? 'font-bold' : undefined}>{option.name}</span>
                     </button>
                   </li>
@@ -82,7 +86,7 @@ export function LanguageMenu({ className }: { className?: string }) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className={cn(triggerClass, className)} aria-label={label}>
-        <TriggerContent code={current.code} />
+        <TriggerContent flag={current.flag} />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content align="end" sideOffset={4} className="z-50 min-w-52 origin-[var(--radix-dropdown-menu-content-transform-origin)] rounded-sm bg-surface-container py-2 text-on-surface shadow-menu data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
@@ -98,6 +102,7 @@ export function LanguageMenu({ className }: { className?: string }) {
                 <span className="flex size-5 items-center justify-center">
                   <DropdownMenu.ItemIndicator><Check aria-hidden="true" className="size-5 text-primary" /></DropdownMenu.ItemIndicator>
                 </span>
+                <Flag src={option.flag} className="size-5" />
                 {option.name}
               </DropdownMenu.RadioItem>
             ))}

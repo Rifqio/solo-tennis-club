@@ -27,11 +27,11 @@ Free-tier limits to watch:
 
 ## 3. Demo mode (`LAFU_DEMO=1`)
 
-A visitor, recruiter or interviewer should be able to try every role in a minute without a real phone number or money:
-- **Banner** (G1 banner: a lasting page state): "Ini demo portofolio. Kode OTP, QR dan pembayaran hanya contoh." / "This is a portfolio demo. OTP codes, QR and payments are samples."
-- **Member sign-in:** the mock OTP stays on, and the code is shown on screen, labelled as a demo.
+A visitor, recruiter or interviewer should be able to try every role in a minute without a real phone number or money. The app stays immersive: **no site-wide demo banner** (the user's choice, 2026-10-11). The demo only shows where a visitor needs it to carry on:
+- **Member sign-in:** the mock OTP stays on. The code appears quietly on the code step, like the development hint today, so a visitor can continue.
 - **Admin sign-in:** a "Masuk sebagai admin demo" button signs in a seeded demo admin. This replaces the dev-only empty-form shortcut, which is removed.
-- **Payments:** the sample QR and placeholder bank details stay. Proofs can be uploaded and reviewed as normal.
+- **Payments:** the sample QR (already captioned "Contoh QR") and placeholder bank details stay. Proofs can be uploaded and reviewed as normal.
+- **Context lives outside the app:** the GitHub README and the portfolio page explain that STC is a mock client with sample data.
 - **Nightly reset:** the daily cron also restores the sample club data. Members' and visitors' bookings, proofs and photos are cleared, so the demo always starts clean and Blob stays under its limit.
 - **Production safety:** the server refuses the mock OTP driver unless `LAFU_DEMO=1`, so demo behaviour can never switch on silently.
 
@@ -73,7 +73,7 @@ A free `*.vercel.app` address costs nothing. A custom domain is optional.
 3. **Merge to `main`** (the working branch carries Phases 1-3). Vercel deploys every push, and every pull request gets a preview link.
 
 ## 7. Go-live checklist
-1. The demo banner shows. Member sign-in with the on-screen code works. "Masuk sebagai admin demo" works.
+1. No demo banner anywhere. Member sign-in with the on-screen code works. "Masuk sebagai admin demo" works.
 2. Booking, pay, and uploading 5 proof files work, and admin review works. Sessions survive a reload.
 3. A coach photo uploads and shows. A proof opens only for its owner and admins (others get 404).
 4. The daily cron runs: lapsed bookings are tidied and demo data resets.

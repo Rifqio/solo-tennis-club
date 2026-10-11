@@ -31,7 +31,7 @@ export function VenueList({ name, label, options, value, onChange, error, status
     <fieldset data-field={name} tabIndex={-1} aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-error` : undefined} className="flex min-w-0 flex-col gap-2.5 outline-none">
       <legend className="mb-2 text-label font-medium text-on-surface">{label} <span className="font-normal text-on-surface-variant">{t(copy.pick)}</span></legend>
       {status}
-      {options.length > 4 && <label className="flex h-12 items-center gap-2.5 rounded-full border border-outline px-3.5 text-on-surface-variant focus-within:outline-2 focus-within:outline-primary">
+      {options.length > 0 && <label className="flex h-12 items-center gap-2.5 rounded-full border border-outline px-3.5 text-on-surface-variant focus-within:outline-2 focus-within:outline-primary">
         <Search aria-hidden="true" className="size-5 shrink-0" />
         <span className="sr-only">{t(copy.search)}</span>
         <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={t(copy.search)}

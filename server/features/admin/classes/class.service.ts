@@ -26,7 +26,7 @@ export function toClassRecord(row: ClassRow): ClassRecord {
     defaultCoachIds: row.defaultCoaches.map(link => link.coachId),
     levelName: row.defaultLevel.name,
     venueName: row.defaultVenue.name,
-    coaches: row.defaultCoaches.map(link => ({ id: link.coach.id, name: link.coach.name })),
+    coaches: row.defaultCoaches.map(link => ({ id: link.coach.id, name: link.coach.name, photoUrl: link.coach.photoUrl ?? null })),
   }
 }
 

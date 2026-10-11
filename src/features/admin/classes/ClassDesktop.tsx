@@ -15,6 +15,7 @@ import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
 import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
+import { coachInitials } from '../forms/coach-initials'
 import { ClassForm } from './ClassFormPage'
 
 const copy = {
@@ -27,6 +28,7 @@ const copy = {
   minutes: { id: '{count} mnt', en: '{count} min' },
   perSlot: { id: '{price} / slot', en: '{price} / slot' },
   limits: { id: 'Min {min} · Max {max}', en: 'Min {min} · Max {max}' },
+  noCoach: { id: 'Belum ada coach', en: 'No coach yet' },
 }
 
 // Desktop Kelas (board D10): the class cards on the left, 20 at a time with a server-side search, scrolling with the
@@ -86,11 +88,21 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
                         <span key={fact} className={cn('rounded-full px-2.5 py-0.5 text-label tabular-nums', active ? 'bg-on-primary/15' : 'bg-surface-container')}>{fact}</span>
                       ))}
                     </span>
-                    {row.coaches.length > 0 && (
-                      <span className="flex flex-wrap gap-1.5">
-                        {row.coaches.map(coach => <span key={coach.id} title={coach.name} className={cn('max-w-[12rem] truncate rounded-full border px-2.5 py-0.5 text-label', active ? 'border-on-primary/40' : 'border-outline-variant')}>{coach.name}</span>)}
+                    <span className="flex min-w-0 items-center gap-2.5">
+                      {row.coaches.length > 0 && (
+                        <span aria-hidden="true" className="flex shrink-0">
+                          {row.coaches.slice(0, 4).map(coach => (
+                            <span key={coach.id} className={cn('-mr-2 flex size-8 items-center justify-center overflow-hidden rounded-full border-2 bg-primary-container text-label font-bold text-primary last:mr-0',
+                              active ? 'border-primary' : 'border-surface-container-lowest')}>
+                              {coach.photoUrl ? <img src={coach.photoUrl} alt="" loading="lazy" className="size-full object-cover" /> : coachInitials(coach.name)}
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                      <span title={row.coaches.map(coach => coach.name).join(', ')} className={cn('min-w-0 truncate text-label', active ? 'text-on-primary' : 'text-on-surface-variant')}>
+                        {row.coaches.length ? row.coaches.map(coach => coach.name).join(', ') : t(copy.noCoach)}
                       </span>
-                    )}
+                    </span>
                   </Link>
                 </m.li>
               )

@@ -19,6 +19,7 @@ const copy = {
   noClasses: { id: 'Belum ada kelas', en: 'No classes yet' },
   seeAll: { id: 'Lihat semua coach', en: 'See all coaches' },
   more: { id: '+{count} lainnya', en: '+{count} more' },
+  searchAll: { id: 'Cari dan saring', en: 'Search and filter' },
   dialogTitle: { id: 'Pilih coach', en: 'Pick coaches' },
   dialogDescription: { id: 'Semua coach, dengan pencarian dan saringan.', en: 'Every coach, with search and filters.' },
   close: { id: 'Tutup', en: 'Close' },
@@ -80,7 +81,7 @@ function CoachCard({ option, on, name, error, onToggle }: { option: Option; on: 
 }
 
 // Coaches after the game agent-select on board D10: five portrait cards inline (picked first, then the busiest), and a
-// sixth card opening every coach with search, an "only without classes" filter and a shortcut to add a coach.
+// sixth card, always there, opening every coach with search, an "only without classes" filter and a shortcut to add a coach.
 export function CoachPicker({ name, label, hint, error, options, value, onChange, status }: CoachPickerProps) {
   const { t } = useI18n()
   const id = useId()
@@ -95,7 +96,7 @@ export function CoachPicker({ name, label, hint, error, options, value, onChange
   const [ranked, setRanked] = useState(value)
   const ordered = useMemo(() => [...options].sort((a, b) =>
     Number(ranked.includes(b.id)) - Number(ranked.includes(a.id)) || countOf(b) - countOf(a)), [options, ranked])
-  const inline = ordered.length > INLINE + 1 ? ordered.slice(0, INLINE) : ordered
+  const inline = ordered.slice(0, INLINE)
   const rest = ordered.slice(inline.length)
   const needle = query.trim().toLowerCase()
   const listed = options.filter(option => (!needle || option.name.toLowerCase().includes(needle)) && (!onlyFree || countOf(option) === 0))
@@ -111,21 +112,19 @@ export function CoachPicker({ name, label, hint, error, options, value, onChange
       {options.length > 0 && (
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
           {inline.map(option => <CoachCard key={option.id} option={option} on={value.includes(option.id)} name={name} error={Boolean(error)} onToggle={() => toggle(option.id)} />)}
-          {rest.length > 0 && (
-            <button ref={seeAll} type="button" onClick={() => setOpen(true)}
-              className="state-layer pressable flex min-h-40 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary bg-surface-container-lowest p-2 text-center text-label font-bold text-primary">
-              <span aria-hidden="true" className="flex">
-                {rest.slice(0, 3).map((option, index) => (
-                  <span key={option.id} className={cn('-ml-2 flex size-8 items-center justify-center overflow-hidden rounded-full border-2 border-surface-container-lowest text-label font-bold text-on-primary first:ml-0',
-                    ['bg-band-tile', 'bg-band', 'bg-primary'][index])}>
-                    {photoOf(option) ? <img src={photoOf(option)!} alt="" className="size-full object-cover" /> : coachInitials(option.name)}
-                  </span>
-                ))}
-              </span>
-              {t(copy.seeAll)}
-              <span className="font-medium text-on-surface-variant">{t(copy.more, { count: rest.length })}</span>
-            </button>
-          )}
+          <button ref={seeAll} type="button" onClick={() => setOpen(true)}
+            className="state-layer pressable flex min-h-40 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary bg-surface-container-lowest p-2 text-center text-label font-bold text-primary">
+            <span aria-hidden="true" className="flex">
+              {(rest.length ? rest : ordered).slice(0, 3).map((option, index) => (
+                <span key={option.id} className={cn('-ml-2 flex size-8 items-center justify-center overflow-hidden rounded-full border-2 border-surface-container-lowest text-label font-bold text-on-primary first:ml-0',
+                  ['bg-band-tile', 'bg-band', 'bg-primary'][index])}>
+                  {photoOf(option) ? <img src={photoOf(option)!} alt="" className="size-full object-cover" /> : coachInitials(option.name)}
+                </span>
+              ))}
+            </span>
+            {t(copy.seeAll)}
+            <span className="font-medium text-on-surface-variant">{rest.length ? t(copy.more, { count: rest.length }) : t(copy.searchAll)}</span>
+          </button>
         </div>
       )}
       {hint && <p id={`${id}-hint`} className="text-label text-on-surface-variant">{hint}</p>}

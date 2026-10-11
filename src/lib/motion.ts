@@ -19,3 +19,10 @@ export const listRowMotion = {
   exit: { opacity: 0, transition: { duration: 0.12 } },
   transition: contentSpring,
 }
+
+// A desktop side panel (roster, session, booking) the first time it appears: it comes in from the right on the content
+// spring. Spread it on the panel's root and keep that root the same element through loading, error and content, so
+// picking another row swaps the content in place and never slides the panel again.
+export function panelEnter(reduceMotion: boolean | null) {
+  return { initial: reduceMotion ? false : { opacity: 0, x: SHARED_AXIS_OFFSET }, animate: { opacity: 1, x: 0 }, transition: contentSpring } as const
+}

@@ -4,6 +4,7 @@ import type { PublicSessionSummary } from '@shared/api/public'
 import { detailMessages as messages } from './detail.messages'
 import { useSessionDetailContent } from './session-detail-content'
 import type { SessionPlayers } from './use-session-players'
+import { panelEnter } from '@/lib/motion'
 
 interface SessionDetailPanelProps {
   id: string
@@ -18,8 +19,7 @@ export function SessionDetailPanel({ id, seed, knownPlayers }: SessionDetailPane
   const reduceMotion = useReducedMotion()
   const { title, band, body, footer } = useSessionDetailContent({ id, seed, knownPlayers, hideSampleNotice: true })
   return (
-    <m.aside aria-label={t(messages.title)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }}
+    <m.aside aria-label={t(messages.title)} {...panelEnter(reduceMotion)}
       className="sticky top-5 flex w-full flex-col overflow-hidden rounded-lg bg-surface-container-lowest">
       <div className="flex flex-col gap-4 bg-band p-6 text-on-signboard">
         <h2 className="break-words text-headline font-bold">{title}</h2>

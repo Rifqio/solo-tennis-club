@@ -14,6 +14,7 @@ import type { AdminResult } from '@/lib/admin-api'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { BookingGroup } from './SessionRosterPage'
 import { isActive } from './roster-status'
+import { panelEnter } from '@/lib/motion'
 
 const copy = {
   label: { id: 'Peserta', en: 'Players' },
@@ -54,14 +55,17 @@ export function RosterPanel({ id }: { id: string }) {
   const response = result?.response ?? null
   const data = response?.kind === 'ok' ? response.data : null
   const frame = 'sticky top-5 flex w-full flex-col overflow-hidden rounded-lg bg-surface-container-lowest'
+  // The panel slides in once, when it first appears. Both branches render the same m.aside, so moving between loading,
+  // error and the roster (or to another session) never runs it again.
+  const enter = panelEnter(reduceMotion)
 
   if (!data) {
     return (
-      <aside aria-label={t(copy.label)} className={cn(frame, 'p-6')}>
+      <m.aside aria-label={t(copy.label)} {...enter} className={cn(frame, 'p-6')}>
         {!response
           ? <><p role="status" className="sr-only">{t(copy.loading)}</p><div aria-hidden="true" className="appear-late flex flex-col gap-3">{[0, 1, 2].map(key => <div key={key} className="h-20 rounded-sm bg-surface-container" />)}</div></>
           : <StatusPanel tone="error" title={t(copy.error)} action={{ label: t(commonMessages.retry), onAction: () => { setResult(null); setAttempt(value => value + 1) } }} />}
-      </aside>
+      </m.aside>
     )
   }
 
@@ -76,8 +80,7 @@ export function RosterPanel({ id }: { id: string }) {
   const { session } = data
 
   return (
-    <m.aside aria-label={t(copy.label)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }} className={frame}>
+    <m.aside aria-label={t(copy.label)} {...enter} className={frame}>
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-outline-variant p-6">
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="text-label font-semibold text-on-surface-variant">{t(copy.label)}</p>

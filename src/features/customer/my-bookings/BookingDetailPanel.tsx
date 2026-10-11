@@ -12,6 +12,7 @@ import { clubContent } from '@/features/public/club/club-content'
 import { useNow } from '@/features/public/schedule/use-now'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBooking } from './use-customer-bookings'
+import { panelEnter } from '@/lib/motion'
 
 // Desktop: the chosen booking beside the list, one question per block: what, when to pay, who and where.
 export function BookingDetailPanel({ id }: { id: string }) {
@@ -25,13 +26,13 @@ export function BookingDetailPanel({ id }: { id: string }) {
 
   if (loaded.status !== 'ready') {
     return (
-      <aside aria-label={t(messages.heading)} className={frame}>
+      <m.aside aria-label={t(messages.heading)} {...panelEnter(reduceMotion)} className={frame}>
         {loaded.status === 'loading' ? <div aria-hidden="true" className="appear-late flex flex-col gap-3">
           <div className="h-6 w-24 rounded-full bg-surface-container-high" /><div className="h-8 w-2/3 rounded-xs bg-surface-container-high" /><div className="h-24 rounded-md bg-surface-container" />
         </div>
           : loaded.status === 'missing' ? <StatusPanel tone="info" title={t(messages.missing)} />
           : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
-      </aside>
+      </m.aside>
     )
   }
 
@@ -49,8 +50,7 @@ export function BookingDetailPanel({ id }: { id: string }) {
   const chip = unpaid ? messages.unpaid : status === 'expired' ? messages.lapsed : messages.paid
 
   return (
-    <m.aside aria-label={t(messages.heading)} initial={reduceMotion ? false : { opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }} className={frame}>
+    <m.aside aria-label={t(messages.heading)} {...panelEnter(reduceMotion)} className={frame}>
       <div className="flex flex-col gap-1.5">
         <span className={cn('self-start rounded-full px-3 py-0.5 text-label font-semibold',
           unpaid ? 'bg-warning-container text-warning' : status === 'expired' ? 'bg-surface-container-high text-on-surface-variant' : 'bg-primary-container text-primary')}>{t(chip)}</span>

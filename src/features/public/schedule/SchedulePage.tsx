@@ -1,4 +1,4 @@
-import { AnimatePresence, m } from 'motion/react'
+import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 import type { PanInfo } from 'motion/react'
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -103,8 +103,12 @@ export function SchedulePage() {
   const hiddenCount = levelSessions.length - visibleSessions.length
   const openCount = daySessions.filter(session => !isUnavailable(session, timings?.get(session.id))).length
   // The panel follows the member's choice; until they choose, it shows the first session still open, else the first.
-  const panelSession = visibleSessions.find(session => session.id === pickedId)
+  const livePanel = visibleSessions.find(session => session.id === pickedId)
     ?? visibleSessions.find(session => !isUnavailable(session, timings?.get(session.id))) ?? visibleSessions[0] ?? null
+  // While another day loads, the panel keeps the session it showed, so it neither blanks nor slides in again.
+  const [heldPanel, setHeldPanel] = useState(livePanel)
+  if (schedule.status === 'ready' && heldPanel !== livePanel) setHeldPanel(livePanel)
+  const panelSession = schedule.status === 'ready' ? livePanel : heldPanel
 
   const markSession = (id: string) => {
     setMarkedId(id)
@@ -143,7 +147,8 @@ export function SchedulePage() {
           </>
         )}
 
-        <div ref={resultsRef} className="relative" style={{ minHeight: schedule.status === 'ready' ? undefined : heldHeight ?? undefined }}>
+        {/* The day's slide stays inside its column; the clip margin keeps focus rings at the edges visible. */}
+        <div ref={resultsRef} className="relative overflow-x-clip [overflow-clip-margin:0.25rem]" style={{ minHeight: schedule.status === 'ready' ? undefined : heldHeight ?? undefined }}>
         <AnimatePresence mode="popLayout" initial={false} custom={direction}>
           <m.div
             key={selected}
@@ -208,7 +213,10 @@ export function SchedulePage() {
                     <Button variant="outlined" onClick={() => { setLevel(ALL_LEVELS); setAvailableOnly(false) }}>{t(scheduleMessages.showAll)}</Button>
                   </div>
                 ) : isDesktop ? (
-                  <SessionRows sessions={visibleSessions} timings={timings} selectedId={panelSession?.id ?? null} onSelect={id => { setPickedId(id); selectionHaptic() }} />
+                  // Each day has its own highlight, so the new day's does not fly in from the old day's row.
+                  <LayoutGroup id={selected}>
+                    <SessionRows sessions={visibleSessions} timings={timings} selectedId={panelSession?.id ?? null} onSelect={id => { setPickedId(id); selectionHaptic() }} />
+                  </LayoutGroup>
                 ) : (
                   <ScheduleList sessions={visibleSessions} timings={timings} now={now} markedId={markedId} players={players.status === 'ready' ? players.sessions : undefined} onOpen={(id, trigger) => detailSheet.current?.open(id, trigger, visibleSessions.find(session => session.id === id))} />
                 )}

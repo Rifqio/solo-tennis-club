@@ -141,8 +141,12 @@ function byMonth(items: CustomerBookingItem[], language: Language) {
 export function Component() {
   const { language, t } = useI18n()
   const [params, setParams] = useSearchParams()
-  const view: CustomerBookingView = params.get('view') === 'history' ? 'history' : 'upcoming'
-  const { loaded, loadMore, loadingMore, retry } = useCustomerBookings(view)
+  const chosenView: CustomerBookingView = params.get('view') === 'history' ? 'history' : 'upcoming'
+  const bookings = useCustomerBookings(chosenView)
+  const { loadMore, loadingMore, retry } = bookings
+  // The switch moves at once; the list below keeps the last view until the chosen one has loaded (no blank, and the
+  // desktop panel does not slide in again).
+  const { view, loaded } = bookings.held ?? { view: chosenView, loaded: bookings.loaded }
   const localNow = useNow(30_000)
   const now = loaded.status === 'ready' ? serverClock(loaded.serverNow, loaded.receivedAt, localNow) : localNow
   const items = loaded.status === 'ready' ? loaded.items : []
@@ -159,10 +163,11 @@ export function Component() {
       {loaded.status !== 'signedOut' && (
         <nav aria-label={t(messages.tabs)} className="mb-4 grid grid-cols-2 gap-1 rounded-sm bg-band-tile p-1 lg:w-[22rem]">
           {(['upcoming', 'history'] as const).map(value => (
-            <Link key={value} to={value === 'history' ? '/bookings?view=history' : '/bookings'} replace aria-current={view === value ? 'page' : undefined}
+            <Link key={value} to={value === 'history' ? '/bookings?view=history' : '/bookings'} replace aria-current={chosenView === value ? 'page' : undefined}
               onClick={event => { event.preventDefault(); setPickedId(null); setParams(value === 'history' ? { view: 'history' } : {}, { replace: true }) }}
-              className={cn('pressable flex min-h-12 items-center justify-center gap-2 rounded-xs text-label font-semibold',
-                view === value ? 'bg-surface-container-lowest text-on-surface' : 'text-on-signboard')}>
+              className={cn('pressable relative isolate flex min-h-12 items-center justify-center gap-2 rounded-xs text-label font-semibold',
+                chosenView === value ? 'text-on-surface' : 'text-on-signboard')}>
+              {chosenView === value && <m.span layoutId="bookings-view-pill" transition={selectionSpring} aria-hidden="true" className="absolute inset-0 -z-10 rounded-xs bg-surface-container-lowest" />}
               {t(value === 'history' ? messages.history : messages.active)}
               {value === 'upcoming' && view === 'upcoming' && shown.length > 0 && (
                 <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-band-tile px-1.5 text-on-signboard tabular-nums">{shown.length}</span>
@@ -172,7 +177,7 @@ export function Component() {
         </nav>
       )}
     </CourtBand>
-    <div className={cn('page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4', desktopList && 'desk-column flex-row items-start gap-6 pt-6')}>
+    <div aria-busy={Boolean(bookings.held)} className={cn('page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4', desktopList && 'desk-column flex-row items-start gap-6 pt-6')}>
       {desktopList ? <>
         <section aria-label={t(view === 'history' ? messages.history : messages.active)} className="flex min-w-0 flex-1 flex-col gap-5">
           {(view === 'history' ? byMonth(shown, language) : [{ label: t(messages.active), items: shown }]).map(group => (
@@ -188,7 +193,7 @@ export function Component() {
         {panelId && <div className="w-[24rem] shrink-0 xl:w-[26rem]"><BookingDetailPanel id={panelId} /></div>}
       </> : loaded.status === 'loading' ? (
         <div className="flex flex-col gap-3"><p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-28 rounded-sm bg-surface-container" />)}</div>
+          {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-28 rounded-sm bg-surface-container" />)}</div>
       ) : loaded.status === 'signedOut' ? (
         <section className="flex flex-col items-start gap-3 rounded-sm bg-surface-container-lowest p-5">
           <h2 className="text-title font-bold">{t(messages.signInTitle)}</h2>

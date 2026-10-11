@@ -19,6 +19,8 @@ import { useAdminAuth } from '../auth/use-admin-auth'
 import { AdminBand } from '../shell/AdminBand'
 import { sessionsMessages as messages } from './sessions.messages'
 import { RosterPanel } from './RosterPanel'
+import { m } from 'motion/react'
+import { selectionSpring } from '@/lib/motion'
 
 const UNPAID_FILL = 'repeating-linear-gradient(135deg, var(--color-band-tile) 0 3px, color-mix(in srgb, var(--color-band-tile) 32%, transparent) 3px 6px)'
 
@@ -76,7 +78,9 @@ function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSes
     <div className="flex flex-col gap-2">
       {saved && <StatusPanel tone="success" title={t(messages.saved)} />}
       <button type="button" aria-pressed={selected} onClick={onSelect}
-        className={cn('state-layer flex w-full flex-col gap-3 rounded-[1rem] bg-surface-container-lowest px-[1.125rem] py-4 text-on-surface transition-shadow duration-200', selected && 'ring-2 ring-primary')}>
+        className="state-layer pressable relative flex w-full flex-col gap-3 rounded-[1rem] bg-surface-container-lowest px-[1.125rem] py-4 text-on-surface">
+        {/* The roster beside the list swaps at once; only this outline glides to the session picked. */}
+        {selected && <m.span layoutId="session-card-selection" transition={selectionSpring} aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[1rem] ring-2 ring-primary" />}
         {heading}{fill}
       </button>
     </div>
@@ -149,7 +153,7 @@ export function AdminSessionsPage() {
       {!response || (response.kind === 'http' && response.status === 401) ? (
         <div className="flex flex-col gap-3">
           <p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1].map(key => <div key={key} aria-hidden="true" className="h-44 rounded-sm bg-surface-container" />)}
+          {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-44 rounded-sm bg-surface-container" />)}
         </div>
       ) : response.kind !== 'ok' ? (
         <StatusPanel tone="error" title={response.kind === 'http' ? t(apiErrorMessages[response.code] ?? apiErrorMessages.INTERNAL) : t(messages.error)}

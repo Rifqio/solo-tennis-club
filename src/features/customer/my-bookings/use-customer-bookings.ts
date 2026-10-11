@@ -10,7 +10,8 @@ function failureOf(error: unknown): Loaded<never> {
   return { status: 'error' }
 }
 
-// One view of the customer's bookings. History pages on with loadMore; upcoming comes in one piece.
+// One view of the customer's bookings. History pages on with loadMore; upcoming comes in one piece. `held`: while a
+// newly chosen view loads, the last view that loaded, so the screen keeps it instead of blanking.
 export function useCustomerBookings(view: CustomerBookingView) {
   const [state, setState] = useState<{ view: CustomerBookingView; loaded: Loaded<{ items: CustomerBookingItem[]; nextCursor: string | null; serverNow: string }> } | null>(null)
   const [attempt, setAttempt] = useState(0)
@@ -31,7 +32,8 @@ export function useCustomerBookings(view: CustomerBookingView) {
       setState({ view, loaded: { ...loaded, items: [...loaded.items, ...data.items], nextCursor: data.nextCursor } })
     } catch (error) { setState({ view, loaded: failureOf(error) }) } finally { setLoadingMore(false) }
   }
-  return { loaded, loadMore, loadingMore, retry: () => { setState(null); setAttempt(value => value + 1) } }
+  const held = loaded.status === 'loading' && state?.loaded.status === 'ready' ? state : null
+  return { loaded, held, loadMore, loadingMore, retry: () => { setState(null); setAttempt(value => value + 1) } }
 }
 
 export function useCustomerBooking(id: string) {

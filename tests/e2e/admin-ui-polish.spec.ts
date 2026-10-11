@@ -37,7 +37,9 @@ for (const width of [320, 640, 1024]) {
     const next = actions.getByRole('button', { name: 'Lanjut', exact: true })
     const backBox = await back.boundingBox(); const nextBox = await next.boundingBox()
     expect(backBox).not.toBeNull(); expect(nextBox).not.toBeNull()
-    expect(Math.abs(backBox!.y - nextBox!.y)).toBeLessThan(2)
+    // Side by side under the form on phones and tablets; stacked at the foot of the summary card on desktop.
+    if (width >= 1024) expect(Math.abs(backBox!.x - nextBox!.x)).toBeLessThan(2)
+    else expect(Math.abs(backBox!.y - nextBox!.y)).toBeLessThan(2)
     await expect(actions.getByRole('link')).toHaveCount(0)
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await back.click()

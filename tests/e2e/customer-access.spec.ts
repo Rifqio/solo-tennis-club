@@ -38,7 +38,9 @@ test('phone, code and new name support keyboard entry, ID/EN, narrow layouts and
   await expectNoHorizontalScroll(page)
   await expectTouchTargets(page)
   await page.getByRole('button', { name: 'Save name', exact: true }).click()
-  await expect(page.getByText("You're logged in", { exact: true })).toBeVisible()
+  // Saving the name lands on the account itself (G1: no separate signed-in notice).
+  await expect(page.getByRole('heading', { name: 'Account', exact: true })).toBeVisible()
+  await expect(page.getByText('Contoh Pelanggan', { exact: true })).toBeVisible()
   await page.route('**/api/customer/auth/sign-out', route => route.abort())
   await page.getByRole('button', { name: 'Sign out', exact: true }).click()
   await expect(page.getByText('Contoh Pelanggan', { exact: true })).toBeVisible()

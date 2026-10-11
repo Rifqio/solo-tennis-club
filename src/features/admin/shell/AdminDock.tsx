@@ -37,11 +37,11 @@ function Tab({ to, label, Icon, also, railOnly = false, phoneAlso = [] }: Destin
         if (!active) selectionHaptic()
       }}
       className={cn('pressable relative isolate min-h-16 flex-col items-center justify-center gap-0.5 sm:w-[4.5rem] lg:w-20', railOnly ? 'hidden sm:flex' : 'flex')}>
-      {/* Rail (from 640px, board D9b): the open screen sits on a raised ink tile that glides between items. */}
-      {active && <m.span layoutId="admin-rail-tile" transition={selectionSpring} aria-hidden="true" className="absolute inset-0 -z-10 hidden rounded-[1rem] bg-ink-raised sm:block" />}
-      <Icon aria-hidden="true" className={cn('size-6 transition-colors duration-200', active ? 'text-accent sm:text-on-ink' : 'text-on-ink-variant')} strokeWidth={active ? 2.25 : 2} />
+      {/* The member dock's active state on the dock and the rail alike: a lime icon, a bold label and a lime dot that
+          springs to the open screen. */}
+      <Icon aria-hidden="true" className={cn('size-6 transition-colors duration-200', active ? 'text-accent' : 'text-on-ink-variant')} strokeWidth={active ? 2.25 : 2} />
       <span className={cn('text-label transition-colors duration-200', active ? 'font-semibold text-on-ink' : 'text-on-ink-variant')}>{t(label)}</span>
-      <span className="flex h-1 w-1 items-center justify-center sm:hidden">
+      <span className="flex h-1 w-1 items-center justify-center">
         {active && <m.span layoutId="admin-dock-dot" transition={selectionSpring} className="size-1 rounded-full bg-accent" />}
       </span>
     </Link>

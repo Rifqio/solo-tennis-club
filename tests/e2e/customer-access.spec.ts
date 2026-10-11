@@ -37,18 +37,21 @@ test('phone, code and new name support keyboard entry, ID/EN, narrow layouts and
   await expect(page.getByRole('textbox', { name: 'Name', exact: true })).toHaveValue('Contoh Pelanggan')
   await expectNoHorizontalScroll(page)
   await expectTouchTargets(page)
+  await page.route('**/api/customer/account', route => route.fulfill({ json: {
+    csrfToken: 'test-only-csrf', customer: { displayName: 'Contoh Pelanggan', phone: '+6281234567890', verifiedAt: new Date().toISOString() },
+    stats: { sessionsPlayed: 0, activeBookings: 0 },
+  } }))
   await page.getByRole('button', { name: 'Save name', exact: true }).click()
-  // Saving the name lands on the account itself (G1: no separate signed-in notice).
-  await expect(page.getByRole('heading', { name: 'Account', exact: true })).toBeVisible()
-  await expect(page.getByText('Contoh Pelanggan', { exact: true })).toBeVisible()
+  // Saving the name lands on Akun itself (G1: no separate signed-in notice).
+  await expect(page).toHaveURL(/\/account$/)
+  await expect(page.getByRole('heading', { name: 'Contoh Pelanggan', exact: true })).toBeVisible()
   await page.route('**/api/customer/auth/sign-out', route => route.abort())
   await page.getByRole('button', { name: 'Sign out', exact: true }).click()
-  await expect(page.getByText('Contoh Pelanggan', { exact: true })).toBeVisible()
-  await expect(page.getByRole('alert')).toContainText('The request did not finish')
+  await expect(page.getByText('Could not sign out. Try again.')).toBeVisible()
   await page.unroute('**/api/customer/auth/sign-out')
   await page.route('**/api/customer/auth/sign-out', route => route.fulfill({ status: 204 }))
   await page.getByRole('button', { name: 'Sign out', exact: true }).click()
-  await expect(page.getByText('Contoh Pelanggan', { exact: true })).not.toBeVisible()
+  await expect(page).toHaveURL(/\/$/)
 })
 
 test('reload resumes a challenge, verification stays explicit and return intent is constrained', async ({ page }) => {

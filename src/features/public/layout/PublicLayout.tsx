@@ -23,7 +23,8 @@ export function PublicLayout() {
   // The desktop home page is the club's front page: it carries its own top nav instead of the app rail.
   const isDesktop = useMediaQuery('(min-width: 64rem)')
   const frontPage = isDesktop && location.pathname === '/'
-  const bare = focusedTask || frontPage
+  // Desktop sign-in (board D0m) is a full-screen split of its own.
+  const bare = focusedTask || frontPage || (isDesktop && location.pathname === '/customer/sign-in')
   const finishOnboarding = useCallback(() => {
     markOnboarded()
     setOnboarding(false)

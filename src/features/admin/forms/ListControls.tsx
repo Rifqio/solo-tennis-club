@@ -26,7 +26,7 @@ export function ListSearch({ value, onChange, label, placeholder, busy = false }
         className="min-w-0 flex-1 bg-transparent text-body text-on-surface outline-none placeholder:text-on-surface-variant [&::-webkit-search-cancel-button]:hidden" />
       {value && (
         <button type="button" onClick={() => onChange('')} aria-label={t(copy.clear)}
-          className="state-layer flex size-10 shrink-0 items-center justify-center rounded-full"><X aria-hidden="true" className="size-4" /></button>
+          className="state-layer pressable flex size-10 shrink-0 items-center justify-center rounded-full"><X aria-hidden="true" className="size-4" /></button>
       )}
     </label>
     <span role="status" className="sr-only">{busy ? t(copy.searching) : ''}</span>

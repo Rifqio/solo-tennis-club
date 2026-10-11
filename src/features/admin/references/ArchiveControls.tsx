@@ -8,6 +8,7 @@ import { useI18n } from '@/i18n/use-i18n'
 import { useAdminAuth } from '../auth/use-admin-auth'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { referenceConfig } from './reference-config'
+import { SavedNote } from '@/components/ui/saved-note'
 
 const copy = {
   archived: { id: '{name} diarsipkan', en: '{name} archived' },
@@ -33,9 +34,9 @@ export function ArchivedNotice({ kind }: { kind: ReferenceKind }) {
     else setFailure(t(result.kind === 'http' ? apiErrorMessages[result.code] ?? apiErrorMessages.INTERNAL : messages.saveError))
   }
   return (
-    <StatusPanel tone={failure ? 'error' : 'success'} title={failure ?? t(copy.archived, { name: archived.name })} action={{ label: t(copy.undo), onAction: () => void undo() }}>
+    <SavedNote><StatusPanel tone={failure ? 'error' : 'success'} title={failure ?? t(copy.archived, { name: archived.name })} action={{ label: t(copy.undo), onAction: () => void undo() }}>
       {!failure && <p>{t(copy.archivedBody)}</p>}
-    </StatusPanel>
+    </StatusPanel></SavedNote>
   )
 }
 
@@ -45,7 +46,7 @@ export function ArchiveToggle({ kind, archive }: { kind: ReferenceKind; archive:
   const path = `/admin/${referenceConfig[kind].path}`
   return (
     <Link to={archive ? path : `${path}?view=archive`} replace
-      className="state-layer flex min-h-12 items-center justify-center gap-2 self-center rounded-sm px-3 text-label font-semibold text-primary">
+      className="state-layer pressable flex min-h-12 items-center justify-center gap-2 self-center rounded-sm px-3 text-label font-semibold text-primary">
       <Archive aria-hidden="true" className="size-4" />{t(archive ? copy.showActive : copy.showArchive)}
     </Link>
   )

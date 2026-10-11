@@ -65,7 +65,7 @@ export function BookingGroup({ booking, active }: { booking: AdminRosterBooking;
           </p>
           {href
             ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t(copy.chat, { name: booking.bookerName })}
-                className="inline-flex min-h-12 max-w-full items-center gap-1.5 self-start break-all text-label font-semibold text-primary tabular-nums">
+                className="pressable inline-flex min-h-12 max-w-full items-center gap-1.5 self-start break-all text-label font-semibold text-primary tabular-nums">
                 <MessageCircle aria-hidden="true" className="size-4" />{booking.bookerPhone}
               </a>
             : <span className="text-label tabular-nums text-on-surface-variant">{booking.bookerPhone}</span>}

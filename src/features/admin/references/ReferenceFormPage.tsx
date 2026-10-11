@@ -23,6 +23,7 @@ import { CoachPhotoField } from './CoachPhotoField'
 import { ReferenceUsage } from './ReferenceUsage'
 import { ArchiveDialog } from './ArchiveDialog'
 import { setNavMotion } from '@/lib/nav-motion'
+import { SavedNote } from '@/components/ui/saved-note'
 
 const copy = {
   manage: { id: 'Kelola', en: 'Manage' },
@@ -224,7 +225,7 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
       <div className={embedded ? 'mt-auto border-t border-outline-variant px-6 pb-6 pt-4' : 'sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3'}>
         <div className={embedded ? 'flex flex-wrap items-center justify-end gap-3' : 'page-gutter mx-auto w-full max-w-[50rem]'}>
           {embedded && archiveAction('mr-auto px-4')}
-          {embedded && justSaved && !dirty && <span role="status" className="flex items-center gap-2 font-semibold text-primary"><Check aria-hidden="true" className="size-5" />{t(copy.savedShort)}</span>}
+          {embedded && justSaved && !dirty && <SavedNote as="span"><span role="status" className="flex items-center gap-2 font-semibold text-primary"><Check aria-hidden="true" className="size-5" />{t(copy.savedShort)}</span></SavedNote>}
           <Button className={embedded ? 'px-8' : 'w-full'} variant="filled" type="submit" disabled={pending || reading || archiving || Boolean(latest)} pendingLabel={pending ? t(messages.saving) : undefined}>
             {t(embedded ? messages.save : config.save)}
           </Button>

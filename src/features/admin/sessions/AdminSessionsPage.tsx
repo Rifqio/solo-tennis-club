@@ -21,6 +21,7 @@ import { sessionsMessages as messages } from './sessions.messages'
 import { RosterPanel } from './RosterPanel'
 import { m } from 'motion/react'
 import { selectionSpring } from '@/lib/motion'
+import { SavedNote } from '@/components/ui/saved-note'
 
 const UNPAID_FILL = 'repeating-linear-gradient(135deg, var(--color-band-tile) 0 3px, color-mix(in srgb, var(--color-band-tile) 32%, transparent) 3px 6px)'
 
@@ -76,7 +77,7 @@ function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSes
         </div>
   if (onSelect && !cancelled) return (
     <div className="flex flex-col gap-2">
-      {saved && <StatusPanel tone="success" title={t(messages.saved)} />}
+      {saved && <SavedNote><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
       <button type="button" aria-pressed={selected} onClick={onSelect}
         className="state-layer pressable relative flex w-full flex-col gap-3 rounded-[1rem] bg-surface-container-lowest px-[1.125rem] py-4 text-on-surface">
         {/* The roster beside the list swaps at once; only this outline glides to the session picked. */}
@@ -87,7 +88,7 @@ function SessionCard({ row, saved, selected = false, onSelect }: { row: AdminSes
   )
   return (
     <article className={cn('flex flex-col gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5 lg:rounded-[1rem] lg:px-[1.125rem] lg:py-4', cancelled && onSelect && 'opacity-70')}>
-      {saved && <StatusPanel tone="success" title={t(messages.saved)} />}
+      {saved && <SavedNote><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
       {heading}
       {!cancelled && <>
         {fill}

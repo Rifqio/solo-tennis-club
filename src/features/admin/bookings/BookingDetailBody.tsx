@@ -10,6 +10,8 @@ import { adminBookingLinkMessages, adminBookingsMessages as messages } from './b
 import { BookingLinkSection } from './BookingLinkSection'
 import { whatsappHref } from './booking-facts'
 import type { CreatedBookingState } from './AdminBookingFormPage'
+import { SavedNote } from '@/components/ui/saved-note'
+import { AnimatePresence } from 'motion/react'
 
 // Everything under a booking's blue header: contact and chat, linking an admin-recorded booking to an account, the
 // players, session, total and when it was booked. `drawer` (desktop, board D6): one white panel with the players as a
@@ -27,17 +29,22 @@ export function BookingDetailBody({ data, created, onChanged, drawer = false }: 
   const players = <ul className={cn('flex flex-wrap gap-1.5', drawer && 'justify-end')}>{booking.participants.map((name, index) => <li key={index} className="rounded-full bg-surface-container px-2.5 py-0.5 text-label">{name}</li>)}</ul>
   return <>
     {created && (
-      <StatusPanel tone="success" title={t(adminBookingLinkMessages.created)}>
+      <SavedNote><StatusPanel tone="success" title={t(adminBookingLinkMessages.created)}>
         <p>{created.replayed ? t(adminBookingLinkMessages.replayed) : t(adminBookingLinkMessages.createdBody, { time: formatClubTime(created.deadline) })}</p>
-      </StatusPanel>
+      </StatusPanel></SavedNote>
     )}
     <section aria-label={t(booking.customer ? messages.phoneVerified : messages.phoneRecorded)} className={cn('flex items-center justify-between gap-3', !drawer && 'px-4 py-3.5', card)}>
       <span className="flex min-w-0 flex-col leading-snug">
         <span className="text-label text-on-surface-variant">{t(booking.customer ? messages.phoneVerified : messages.phoneRecorded)}</span>
         <span className="break-all font-bold tabular-nums">{phone}</span>
-        {booking.linked && linkedAt && (
-          <span className="text-label text-on-surface-variant">{t(adminBookingLinkMessages.linkedAt, { date: linkedAt, by: booking.linked.by ? t(adminBookingLinkMessages.linkedBy, { name: booking.linked.by }) : '' })}</span>
-        )}
+        {/* Rises in when the admin links the booking here; already in place when it was linked before. */}
+        <AnimatePresence initial={false}>
+          {booking.linked && linkedAt && (
+            <SavedNote key="linked" as="span" className="block text-label text-on-surface-variant">
+              {t(adminBookingLinkMessages.linkedAt, { date: linkedAt, by: booking.linked.by ? t(adminBookingLinkMessages.linkedBy, { name: booking.linked.by }) : '' })}
+            </SavedNote>
+          )}
+        </AnimatePresence>
       </span>
       {href && (
         <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t(messages.chatLabel, { name: booking.bookerName })}

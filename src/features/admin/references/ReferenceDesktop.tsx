@@ -99,7 +99,7 @@ function ReferenceSplit({ kind, selected }: { kind: ReferenceKind; selected: str
                 return (
                   <m.li key={row.id} {...listRowMotion}>
                     <Link to={rowLink(row.id)} aria-current={active ? 'page' : undefined}
-                      className={cn('state-layer relative isolate grid min-h-16 grid-cols-[minmax(0,1fr)_auto_1.125rem] items-center gap-3 rounded-md px-3.5 py-2.5 transition-colors duration-200',
+                      className={cn('state-layer pressable relative isolate grid min-h-16 grid-cols-[minmax(0,1fr)_auto_1.125rem] items-center gap-3 rounded-md px-3.5 py-2.5 transition-colors duration-200',
                         active ? 'text-on-primary' : 'text-on-surface')}>
                       {/* Picking another row is instant; only the highlight glides to it. */}
                       {active && <m.span layoutId={`reference-row-${kind}`} transition={selectionSpring} className="absolute inset-0 -z-10 rounded-md bg-primary" />}

@@ -17,6 +17,7 @@ import { archiveEmpty, referenceConfig, referenceKindOf, referenceSubline } from
 import { ArchivedNotice, ArchiveHeading, ArchiveToggle } from './ArchiveControls'
 import { ReferenceTabs } from './ReferenceTabs'
 import { adminMessages as messages } from '../forms/admin.messages'
+import { SavedNote } from '@/components/ui/saved-note'
 
 const copy = {
   heading: { id: 'Kelola', en: 'Manage' },
@@ -69,9 +70,9 @@ function ReferenceList({ kind }: { kind: ReferenceKind }) {
           <AnimatePresence initial={false} mode="popLayout">
           {list.items.map(row => (
             <m.li key={row.id} {...listRowMotion} className="flex flex-col gap-2">
-              {savedId === row.id && <StatusPanel tone="success" title={t(messages.saved)} />}
+              {savedId === row.id && <SavedNote><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
               <Link to={`/admin/${config.path}/${row.id}/edit${archive ? '?view=archive' : ''}`} viewTransition
-                className="state-layer flex items-center justify-between gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
+                className="state-layer pressable flex items-center justify-between gap-3 rounded-sm bg-surface-container-lowest px-4 py-3.5">
                 {kind === 'coach' && <CoachAvatar name={row.name} photoUrl={row.photoUrl} />}
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <h2 title={row.name} className="truncate font-semibold">{row.name}</h2>

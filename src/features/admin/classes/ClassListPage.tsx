@@ -13,6 +13,7 @@ import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
 import { ListMore, ListNoMatch, ListSearch } from '../forms/ListControls'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
+import { SavedNote } from '@/components/ui/saved-note'
 
 const copy = {
   heading: { id: 'Kelas', en: 'Classes' },
@@ -53,8 +54,8 @@ export function ClassListPage() {
           <AnimatePresence initial={false} mode="popLayout">
           {list.items.map(row => (
             <m.li key={row.id} {...listRowMotion} className="flex flex-col gap-2">
-              {savedId === row.id && <StatusPanel tone="success" title={t(messages.saved)} />}
-              <Link to={`/admin/classes/${row.id}/edit`} viewTransition className="state-layer flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest px-4 py-3.5">
+              {savedId === row.id && <SavedNote><StatusPanel tone="success" title={t(messages.saved)} /></SavedNote>}
+              <Link to={`/admin/classes/${row.id}/edit`} viewTransition className="state-layer pressable flex flex-col gap-2.5 rounded-sm bg-surface-container-lowest px-4 py-3.5">
                 <span className="flex items-start justify-between gap-3">
                   <span className="flex min-w-0 flex-col leading-snug">
                     <h2 className="break-words font-bold">{row.name}</h2><span className="sr-only">{t(copy.edit)}</span>

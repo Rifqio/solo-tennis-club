@@ -41,8 +41,9 @@ export function Sheet({ open, onClose, title, description, closeLabel, closeIcon
   return <Dialog.Root open={open} onOpenChange={value => { if (!value) onClose() }}><Dialog.Portal>
     <Dialog.Overlay className="fixed inset-0 z-40 bg-scrim duration-180 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-120" />
     <Dialog.Content ref={content}
-      // Focus moves in once the sheet has risen, so it never forces a layout in the middle of the tap.
-      onOpenAutoFocus={event => { event.preventDefault(); window.setTimeout(() => content.current?.focus({ preventScroll: true }), 360) }}
+      // Focus moves in on the next frame: after the tap's work (so it forces no layout in the middle of it), but long
+      // before a key press, so Tab can never reach the page behind while the sheet is still rising.
+      onOpenAutoFocus={event => { event.preventDefault(); requestAnimationFrame(() => content.current?.focus({ preventScroll: true })) }}
       onCloseAutoFocus={event => {
       const target = returnFocus?.current?.isConnected ? returnFocus.current : document.querySelector<HTMLElement>('[data-schedule-heading]')
       if (target) { event.preventDefault(); target.focus() }

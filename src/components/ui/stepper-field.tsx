@@ -1,6 +1,7 @@
 import { useId } from 'react'
 import { Minus, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { FieldError } from '@/components/ui/field-error'
 
 interface StepperFieldProps {
   name: string
@@ -28,7 +29,7 @@ export function StepperField({ name, label, value, onChange, min = 0, max = 999,
   const describedBy = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined
   const button = 'state-layer pressable flex size-12 shrink-0 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface disabled:opacity-40'
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-2">
+    <div data-field-group className="flex min-w-0 flex-1 flex-col gap-2">
       <label htmlFor={id} className="text-label font-medium text-on-surface">{label}</label>
       <div className={cn('flex items-center justify-between gap-1 rounded-sm border bg-surface-container-lowest p-1 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-1 has-[input:focus-visible]:outline-primary', error ? 'border-error' : 'border-outline-variant')}>
         <button type="button" aria-label={decreaseLabel} aria-controls={id} disabled={current !== null && current <= min} onClick={() => nudge(-1)} className={button}><Minus aria-hidden="true" className="size-4" strokeWidth={2.5} /></button>
@@ -38,7 +39,7 @@ export function StepperField({ name, label, value, onChange, min = 0, max = 999,
         <button type="button" aria-label={increaseLabel} aria-controls={id} disabled={current !== null && current >= max} onClick={() => nudge(1)} className={button}><Plus aria-hidden="true" className="size-4" strokeWidth={2.5} /></button>
       </div>
       {hint && <p id={`${id}-hint`} className="text-label text-on-surface-variant">{hint}</p>}
-      {error && <p id={`${id}-error`} role="alert" className="text-label text-error">{error}</p>}
+      {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
     </div>
   )
 }

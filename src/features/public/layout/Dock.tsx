@@ -80,7 +80,7 @@ export function Dock({ onBook }: { onBook: () => void }) {
   return (
     <nav
       aria-label={t(publicMessages.navLabel)}
-      className="fixed inset-x-0 bottom-0 z-30 pb-[env(safe-area-inset-bottom)] [view-transition-name:nav-bar] [&_:focus-visible]:outline-accent sm:inset-x-auto sm:inset-y-0 sm:left-0 sm:w-20 sm:pb-0"
+      data-bottom-chrome className="fixed inset-x-0 bottom-0 z-30 pb-[env(safe-area-inset-bottom)] [view-transition-name:nav-bar] [&_:focus-visible]:outline-accent sm:inset-x-auto sm:inset-y-0 sm:left-0 sm:w-20 sm:pb-0"
     >
       <div aria-hidden="true" className="dock-notch absolute inset-0 rounded-t-lg bg-dock sm:rounded-none" />
       <div className="relative grid h-18 grid-cols-[1fr_1fr_5.5rem_1fr_1fr] sm:flex sm:h-auto sm:flex-col sm:items-center sm:gap-2 sm:pt-[calc(1rem+env(safe-area-inset-top))]">

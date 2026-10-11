@@ -306,6 +306,18 @@
   &:active::after { opacity: 0.12; }
 }
 
+/* Status and feedback (G1): a notice or field message fades in where it belongs; a dialog scales up from 0.96 over a
+   backdrop that fades in, and leaves faster than it came. Reduced motion removes these with every other animation. */
+@utility notice-in { animation: g1-fade 150ms var(--ease-standard) both; }
+.dialog-scrim[data-state="open"] { animation: g1-fade 200ms var(--ease-standard) both; }
+.dialog-scrim[data-state="closed"] { animation: g1-fade-out 160ms var(--ease-standard) both; }
+.dialog-panel[data-state="open"] { animation: g1-dialog-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.dialog-panel[data-state="closed"] { animation: g1-dialog-out 160ms var(--ease-standard) both; }
+@keyframes g1-fade { from { opacity: 0; } }
+@keyframes g1-fade-out { to { opacity: 0; } }
+@keyframes g1-dialog-in { from { opacity: 0; transform: scale(0.96); } }
+@keyframes g1-dialog-out { to { opacity: 0; transform: scale(0.96); } }
+
 /* Press feedback: tappable things give a little under the finger within 100ms and spring back on release. */
 @utility pressable {
   transition: transform 160ms var(--ease-emphasized);

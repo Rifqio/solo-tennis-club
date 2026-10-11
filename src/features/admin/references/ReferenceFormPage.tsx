@@ -24,6 +24,7 @@ import { ReferenceUsage } from './ReferenceUsage'
 import { ArchiveDialog } from './ArchiveDialog'
 import { setNavMotion } from '@/lib/nav-motion'
 import { SavedNote } from '@/components/ui/saved-note'
+import { revealInvalid } from '@/lib/reveal-invalid'
 
 const copy = {
   manage: { id: 'Kelola', en: 'Manage' },
@@ -97,7 +98,7 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
   const dirty = name !== (baseline?.name ?? '') || address !== (baseline?.address ?? '') || mapText.trim() !== (baseline?.mapUrl ?? '')
   const guard = useUnsavedChangesGuard(dirty, undefined, pending)
   const errorFor = (field: string) => errors[field] ? t(fieldErrorMessage(field, errors[field]), { field: t(field === 'name' ? messages.name : messages.address) }) : undefined
-  const focusErrors = () => requestAnimationFrame(() => form.current?.querySelector<HTMLElement>('[aria-invalid=true]')?.focus())
+  const focusErrors = () => revealInvalid(form.current)
 
   // Reads the pasted link on the server (short share links have to be followed there) and shows where it points.
   const readLink = async (text: string) => {
@@ -222,7 +223,7 @@ export function ReferenceForm({ kind, initial, embedded = false, justSaved = fal
         {!embedded && archiveAction('self-start px-4')}
         <FormFeedback failure={failure} latest={latest && <p>{latest.name}<br />{latest.address}</p>} yours={<p>{name}<br />{address}</p>} onReplace={replaceWithLatest} />
       </div>
-      <div className={embedded ? 'mt-auto border-t border-outline-variant px-6 pb-6 pt-4' : 'sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3'}>
+      <div data-bottom-chrome={embedded ? undefined : ''} className={embedded ? 'mt-auto border-t border-outline-variant px-6 pb-6 pt-4' : 'sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3'}>
         <div className={embedded ? 'flex flex-wrap items-center justify-end gap-3' : 'page-gutter mx-auto w-full max-w-[50rem]'}>
           {embedded && archiveAction('mr-auto px-4')}
           {embedded && justSaved && !dirty && <SavedNote as="span"><span role="status" className="flex items-center gap-2 font-semibold text-primary"><Check aria-hidden="true" className="size-5" />{t(copy.savedShort)}</span></SavedNote>}

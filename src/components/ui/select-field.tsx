@@ -3,13 +3,14 @@ import { Check, ChevronDown } from 'lucide-react'
 import { useId } from 'react'
 import { useI18n } from '@/i18n/use-i18n'
 import { commonMessages } from '@/i18n/common.messages'
+import { FieldError } from '@/components/ui/field-error'
 export function SelectField({ name, label, value, onChange, options, hint, error, placeholder }: {
   name: string; label: string; value: string; onChange: (value: string) => void; options: { id: string; name: string }[]; hint?: string; error?: string; placeholder: string
 }) {
   const id = useId()
   const { t } = useI18n()
   const missing = value && !options.some(option => option.id === value)
-  return <div className="flex min-w-0 flex-col gap-2">
+  return <div data-field-group className="flex min-w-0 flex-col gap-2">
     <label htmlFor={id} className="text-label font-bold">{label}</label>
     <Select.Root name={name} value={value} onValueChange={onChange}>
       <Select.Trigger id={id} data-field={name} aria-invalid={Boolean(error)} aria-describedby={[hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined}
@@ -26,6 +27,6 @@ export function SelectField({ name, label, value, onChange, options, hint, error
       </Select.Content></Select.Portal>
     </Select.Root>
     {hint && <p id={`${id}-hint`} className="text-label text-on-surface-variant">{hint}</p>}
-    {error && <p id={`${id}-error`} role="alert" className="text-label text-error">{error}</p>}
+    {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
   </div>
 }

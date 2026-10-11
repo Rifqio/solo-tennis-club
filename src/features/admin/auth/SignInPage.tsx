@@ -18,6 +18,7 @@ import { authMessages } from './auth.messages'
 import { useAdminAuth } from './use-admin-auth'
 import type { ApiErrorCode } from '@shared/api/errors'
 import { safeAdminReturnPath } from './return-path'
+import { revealInvalid } from '@/lib/reveal-invalid'
 
 // What each admin destination is for, shown beside the form on wide screens so a new admin knows what is inside.
 const areaHints = {
@@ -67,7 +68,7 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
     const invalid = { email: !shortcut && !email.trim(), password: !shortcut && !password }
     setMissing(invalid)
     if (invalid.email || invalid.password) {
-      form.current?.querySelector<HTMLInputElement>(invalid.email ? '[name=email]' : '[name=password]')?.focus()
+      revealInvalid(form.current)
       return
     }
     sending.current = true

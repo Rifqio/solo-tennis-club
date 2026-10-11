@@ -22,6 +22,7 @@ import { useUnsavedChangesGuard } from '../forms/use-unsaved-changes-guard'
 import { AdminBand } from '../shell/AdminBand'
 import { adminBookingFormMessages as messages } from './bookings.messages'
 import { stepEnter, useStepDirection } from '@/lib/step-motion'
+import { revealInvalid } from '@/lib/reveal-invalid'
 
 type Step = 1 | 2 | 3
 type Errors = Partial<Record<'bookerName' | 'bookerPhone' | 'participantNames', FieldErrorCode>>
@@ -93,7 +94,7 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
     else if (!normalizeCustomerPhone(bookerPhone)) next.bookerPhone = 'INVALID_FORMAT'
     setErrors(next)
     if (next.bookerName || next.bookerPhone) {
-      requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-invalid=true]')?.focus())
+      revealInvalid()
       return false
     }
     return true
@@ -233,7 +234,7 @@ function BookingForm({ initial, back }: { initial: AdminBookingOptionsResponse; 
       {failure && <StatusPanel tone="error" title={failure} />}
     </div>
     {!unavailable && (
-      <div className="sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
+      <div data-bottom-chrome className="sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
         <div className="page-gutter mx-auto grid max-w-[50rem] grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-center gap-2">
           {step > 1 && <Button className="min-w-0 px-3" variant="text" disabled={pending} onClick={() => setStep((step - 1) as Step)}>{t(messages.previous)}</Button>}
           {step === 1 && <Button className="col-start-2 min-w-0 px-3" variant="filled" onClick={goToPlayers}>{t(messages.next)}</Button>}

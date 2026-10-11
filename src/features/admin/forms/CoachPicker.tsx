@@ -12,6 +12,7 @@ import type { CoachOption } from '@shared/api/admin-sessions'
 import { coachInitials } from './coach-initials'
 import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
 import { PopIn } from '@/components/ui/pop-in'
+import { FieldError } from '@/components/ui/field-error'
 
 const copy = {
   pickHint: { id: '(pilih satu atau lebih)', en: '(pick one or more)' },
@@ -129,7 +130,7 @@ export function CoachPicker({ name, label, hint, error, options, value, onChange
         </div>
       )}
       {hint && <p id={`${id}-hint`} className="text-label text-on-surface-variant">{hint}</p>}
-      {error && <p id={`${id}-error`} role="alert" className="text-label text-error">{error}</p>}
+      {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
 
       <Sheet open={open} onClose={close} wide closeIcon returnFocus={seeAll} title={t(copy.dialogTitle)} description={t(copy.dialogDescription)} closeLabel={t(copy.close)}
         band={<p className="text-label text-on-surface-variant">{value.length ? t(copy.picked, { count: value.length }) : t(copy.none)}</p>}

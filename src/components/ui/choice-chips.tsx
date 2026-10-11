@@ -4,6 +4,7 @@ import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
 import { PopIn } from '@/components/ui/pop-in'
+import { FieldError } from '@/components/ui/field-error'
 
 interface ChoiceChipsProps {
   name: string
@@ -54,7 +55,7 @@ export function ChoiceChips({ name, label, options, value, onChange, hint, error
         </div>
       )}
       {hint && <p id={`${id}-hint`} className="text-label text-on-surface-variant">{hint}</p>}
-      {error && <p id={`${id}-error`} role="alert" className="text-label text-error">{error}</p>}
+      {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
     </fieldset>
   )
 }

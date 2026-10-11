@@ -7,7 +7,7 @@ import { popSpring } from '@/lib/motion'
 export function PopIn({ show, className, children }: { show: boolean; className?: string; children?: ReactNode }) {
   return (
     <AnimatePresence initial={false}>
-      {show && <m.span key="pop" aria-hidden="true" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+      {show && <m.span key="pop" aria-hidden="true" initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.6, opacity: 0, transition: { duration: 0.1 } }} transition={popSpring} className={className}>{children}</m.span>}
     </AnimatePresence>
   )

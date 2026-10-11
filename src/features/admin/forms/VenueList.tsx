@@ -7,6 +7,7 @@ import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
 import { SelectionMark } from '@/components/ui/selection-mark'
 import { PopIn } from '@/components/ui/pop-in'
+import { FieldError } from '@/components/ui/field-error'
 
 const copy = {
   pick: { id: '(pilih satu)', en: '(choose one)' },
@@ -63,8 +64,8 @@ export function VenueList({ name, label, options, value, onChange, error, status
         })}
         {shown.length === 0 && <p role="status" className="p-3.5 text-on-surface-variant">{t(copy.noMatch, { query: query.trim() })} <Link to="/admin/venues" className="font-semibold text-primary underline underline-offset-4">{t(copy.addInManage)}</Link></p>}
       </div>}
-      <Link to="/admin/venues/new" className="flex min-h-11 items-center self-start text-label font-semibold text-primary">{t(copy.newVenue)}</Link>
-      {error && <p id={`${id}-error`} role="alert" className="text-label text-error">{error}</p>}
+      <Link to="/admin/venues/new" className="flex min-h-12 items-center self-start text-label font-semibold text-primary">{t(copy.newVenue)}</Link>
+      {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
     </fieldset>
   )
 }

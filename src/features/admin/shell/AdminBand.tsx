@@ -11,6 +11,7 @@ import { clubContent } from '@/features/public/club/club-content'
 import { authMessages } from '../auth/auth.messages'
 import { shellMessages } from './shell.messages'
 import { useAdminShell } from './admin-shell-context'
+import { ConnectionBanner } from '@/components/ui/connection-banner'
 
 interface AdminBandProps {
   title: string
@@ -37,7 +38,7 @@ export function AdminBand({ title, back, subtitle, action, children, wideChildre
   const { signOut, signingOut } = useAdminShell()
   // The action renders once: beside the title on phones and tablets, in the right column from 1024px.
   const wide = useMediaQuery('(min-width: 64rem)')
-  return (
+  return <>
     <header className="relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] [view-transition-name:app-bar] text-on-signboard [&_:focus-visible]:outline-white desk-column lg:mt-5 lg:rounded-lg lg:pt-0">
       <CourtLines className="pointer-events-none absolute -right-12 -top-4 -z-10 h-64 text-on-signboard/15 sm:right-8" />
       <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col pb-4 sm:pt-4 lg:max-w-none lg:px-8 lg:py-5">
@@ -77,5 +78,7 @@ export function AdminBand({ title, back, subtitle, action, children, wideChildre
         {wideChildren && children && <div className="mt-3 lg:mt-5">{children}</div>}
       </div>
     </header>
-  )
+    {/* Under the band: a lasting state such as being offline (G1 banner). */}
+    <ConnectionBanner voice="admin" className="page-gutter mx-auto w-full max-w-[50rem] lg:max-w-none desk-column" />
+  </>
 }

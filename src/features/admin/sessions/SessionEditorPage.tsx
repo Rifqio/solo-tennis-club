@@ -29,6 +29,7 @@ import { newSessionDraft, draftFromSession, applyClassDefaults, hasOverrides, lo
 import type { SessionDraft } from './session-draft'
 import { SessionReview } from './SessionReview'
 import { stepEnter, useStepDirection } from '@/lib/step-motion'
+import { revealInvalid } from '@/lib/reveal-invalid'
 const stepNames = [{ id: 'Kelas dan waktu', en: 'Class and time' }, { id: 'Level, lokasi, dan coach', en: 'Level, venue, and coaches' }, { id: 'Harga dan batas peserta', en: 'Price and participant limits' }, { id: 'Periksa sesi', en: 'Review session' }]
 const stepFields = [['classId', 'date', 'startTime', 'durationMinutes'], ['levelId', 'venueId', 'coachIds'], ['priceIdr', 'minParticipants', 'maxParticipants']]
 export function SessionEditorPage() {
@@ -71,7 +72,7 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
   const errorFor = (field: string, label: string) => errors[field] ? t(fieldErrorMessage(field, errors[field]), { field: label }) : undefined
   const payload = () => ({ classId: draft.classId, date: draft.date, startTime: draft.startTime, levelId: draft.levelId, venueId: draft.venueId, coachIds: draft.coachIds,
     ...Object.fromEntries(['durationMinutes', 'priceIdr', 'minParticipants', 'maxParticipants'].map(field => [field, parseInteger(draft[field as keyof SessionDraft] as string)])) })
-  const focusError = () => requestAnimationFrame(() => editor.current?.querySelector<HTMLElement>('[aria-invalid=true]')?.focus())
+  const focusError = () => revealInvalid(editor.current)
   const validate = (onlyStep?: number) => {
     const fields = validateSessionFields(payload(), { today: clubToday(), now: new Date() }) as Record<string, FieldErrorCode>
     if (baseline && draft.date === baseline.date && draft.startTime === baseline.startTime) { delete fields.date; delete fields.startTime }
@@ -146,7 +147,7 @@ function SessionEditor({ initial }: { initial: AdminSessionDetail | null }) {
     </m.div>
     <FormFeedback failure={failure} latest={latest && <SessionReview draft={draftFromSession(owner, latest)} options={conflictOptions} />} yours={<SessionReview draft={draft} options={availableOptions} />} onReplace={() => { if (latest) { setBaseline(latest); setDraft(draftFromSession(owner, latest)); setLatest(null); setFailure(null); setErrors({}) } }} />
   </div>
-  <div className="sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
+  <div data-bottom-chrome className="sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
     <div data-session-actions className="page-gutter mx-auto grid max-w-[50rem] grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-stretch gap-2 sm:flex sm:justify-end">
       {draft.step > 1 && <Button className="min-w-0 px-3" variant="text" disabled={pending} onClick={() => goToStep(draft.step - 1)}>{t(messages.cancel)}</Button>}
       {draft.step < 4 ? <Button className="col-start-2 min-w-0 px-3 sm:min-w-40" variant="filled" disabled={!complete || pending} onClick={() => { if (validate(draft.step)) goToStep(draft.step + 1) }}>{t({ id: 'Lanjut', en: 'Continue' })}</Button> : <Button className="min-w-0 px-3 sm:min-w-56" variant="filled" disabled={!complete || pending || Boolean(latest)} pendingLabel={pending ? t({ id: 'Menyimpan sesi...', en: 'Saving session...' }) : undefined} onClick={() => void save()}>{t(initial ? { id: 'Simpan perubahan sesi', en: 'Save session changes' } : { id: 'Simpan dan tampilkan sesi', en: 'Save and publish session' })}</Button>}

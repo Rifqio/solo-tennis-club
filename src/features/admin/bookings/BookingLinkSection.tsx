@@ -83,8 +83,8 @@ export function BookingLinkSection({ booking, onChanged }: { booking: Booking; o
       <p className="border-t border-outline-variant pt-3 text-label text-on-surface-variant">{t(messages.lostNumber)}</p>
 
       <AlertDialog.Root open={confirming && Boolean(customer)} onOpenChange={open => { if (!open && !pending) setConfirming(false) }}><AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-40 bg-scrim duration-180 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
-        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-xl bg-surface-container p-5 text-on-surface shadow-sheet duration-180 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
+        <AlertDialog.Overlay className="fixed inset-0 z-40 bg-scrim dialog-scrim" />
+        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-xl bg-surface-container p-5 text-on-surface shadow-sheet dialog-panel">
           <AlertDialog.Title className="text-title font-bold">{t(messages.confirmTitle, { name: customer?.displayName ?? '' })}</AlertDialog.Title>
           <AlertDialog.Description>{t(messages.foundBody, { name: customer?.displayName ?? '' })} {t(messages.confirmBody)}</AlertDialog.Description>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">

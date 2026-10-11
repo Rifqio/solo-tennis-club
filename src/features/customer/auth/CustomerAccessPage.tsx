@@ -19,6 +19,8 @@ import { useCustomerAccess } from './use-customer-access'
 import { safeCustomerReturnPath } from './customer-return-path'
 import { AuthHero } from './AuthHero'
 import { stepEnter, useStepDirection } from '@/lib/step-motion'
+import { ConnectionBanner } from '@/components/ui/connection-banner'
+import { revealInvalid } from '@/lib/reveal-invalid'
 
 const stagePosition: Record<string, number | null> = { loading: null, loadError: null, phone: 1, code: 2, name: 3, complete: 4 }
 
@@ -68,7 +70,9 @@ export function Component() {
 
   function showInvalid(field: string) {
     setInvalid(field)
-    form.current?.querySelector<HTMLInputElement>(`[name="${field}"]`)?.focus()
+    // The code boxes shake on their own; other fields shake here, once, on submit.
+    if (field === 'code') form.current?.querySelector<HTMLInputElement>(`[name="${field}"]`)?.focus()
+    else revealInvalid(form.current)
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -120,6 +124,7 @@ export function Component() {
 
   return <div className="flex min-h-dvh flex-col">
     <AuthHero backTo={schedulePath} backLabel={t(messages.backLabel)} compact={state.stage !== 'phone' && state.stage !== 'loading'} />
+    <ConnectionBanner voice="member" className="page-gutter mx-auto w-full max-w-lg" />
     <m.section key={state.stage} {...stepEnter(direction, reduceMotion)}
       className="page-gutter mx-auto flex w-full max-w-lg min-w-0 flex-1 flex-col gap-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6">
       <div className="flex flex-col gap-1.5 text-center">

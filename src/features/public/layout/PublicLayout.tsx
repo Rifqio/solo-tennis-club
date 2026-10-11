@@ -4,6 +4,7 @@ import { useMediaQuery } from '@/lib/use-media-query'
 import { markOnboarded, shouldShowOnboarding } from '../onboarding/onboarding-state'
 import { BookSheet } from './BookSheet'
 import { Dock } from './Dock'
+import { ToastProvider } from '@/components/ui/toast'
 
 // Loaded only on a first visit; returning visitors never download it.
 const Onboarding = lazy(() => import('../onboarding/Onboarding'))
@@ -31,6 +32,7 @@ export function PublicLayout() {
   }, [])
 
   return (
+    <ToastProvider inset={bare ? undefined : 'sm:left-20'}>
     <div className="min-h-dvh bg-surface">
       {/* While onboarding covers the screen, the app behind it is inert: no focus, no screen reader access. */}
       <div inert={onboarding}>
@@ -49,5 +51,6 @@ export function PublicLayout() {
         </Suspense>
       )}
     </div>
+    </ToastProvider>
   )
 }

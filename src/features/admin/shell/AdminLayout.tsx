@@ -10,6 +10,7 @@ import { requestSignOut } from '../forms/navigation-events'
 import { AdminDock } from './AdminDock'
 import { AdminShellContext } from './admin-shell-context'
 import { isAdminTabScreen } from './admin-nav'
+import { ToastProvider } from '@/components/ui/toast'
 
 // Each admin screen draws its own band (AdminBand). The layout owns sign-out and the dock (bottom bar on phones, left
 // rail from 640px).
@@ -42,6 +43,8 @@ export function AdminLayout() {
   }, [signOut, navigate, t, pending])
 
   return <AdminShellContext.Provider value={shell}>
+    {/* Toasts live above the routes, so one shown before navigating stays up on the next screen; clear of the rail. */}
+    <ToastProvider inset={showDock ? 'sm:left-20 lg:left-24' : undefined}>
     <div className="min-h-dvh bg-surface text-on-surface">
       <main className={showDock ? 'overflow-x-clip pb-[calc(7rem+env(safe-area-inset-bottom))] sm:pb-12 sm:pl-20 lg:pl-24' : 'overflow-x-clip'}>
         {failure && <div className="page-gutter mx-auto max-w-[50rem] pt-4"><StatusPanel tone="error" title={failure} action={{ label: t(authMessages.signOut), onAction: shell.signOut }} /></div>}
@@ -50,5 +53,6 @@ export function AdminLayout() {
       </main>
       {showDock && <AdminDock />}
     </div>
+    </ToastProvider>
   </AdminShellContext.Provider>
 }

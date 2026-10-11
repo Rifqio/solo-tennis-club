@@ -12,10 +12,11 @@ import { useNow } from '@/features/public/schedule/use-now'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBooking } from './use-customer-bookings'
 import { setNavMotion } from '@/lib/nav-motion'
+import { ConnectionBanner } from '@/components/ui/connection-banner'
 
 function Band({ title, children }: { title: string; children?: ReactNode }) {
   const { t } = useI18n()
-  return (
+  return <>
     <header className="rounded-b-lg bg-band pb-5 pt-[env(safe-area-inset-top)] text-on-signboard [view-transition-name:app-bar] [&_:focus-visible]:outline-white">
       <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-2">
         <Link to="/bookings" viewTransition data-nav="pop" className="pressable -ml-1 mt-2 flex min-h-12 items-center gap-3 self-start rounded-full pr-3 text-label">
@@ -26,7 +27,8 @@ function Band({ title, children }: { title: string; children?: ReactNode }) {
         {children}
       </div>
     </header>
-  )
+    <ConnectionBanner voice="member" className="page-gutter mx-auto w-full max-w-[50rem]" />
+  </>
 }
 
 function Fact({ label, children }: { label: string; children: ReactNode }) {

@@ -21,6 +21,7 @@ import { useCustomerAccess } from '../auth/use-customer-access'
 import { CourtLines } from '@/components/brand/court-lines'
 import { BookedArt, BookedBadge } from './BookedArt'
 import { stepEnter, useStepDirection } from '@/lib/step-motion'
+import { ConnectionBanner } from '@/components/ui/connection-banner'
 
 type Options = { sessionVersion: number; unitPriceIdr: number; remainingPlaces: number; bookingClosesAt: string; serverNow: string; canReserve: boolean }
 type CreatedBooking = { booking: { id: string; quantity: number; totalPriceIdr: number; originalDeadline: string; participants: { id: string; position: number; name: string }[] }; replayed: boolean; serverNow: string }
@@ -74,7 +75,7 @@ function TaskBand({ title, step, steps, stepLabel, backTo, onBack, backLabel, he
   title: string; step: number; steps: string[]; stepLabel: string; backTo?: string; onBack?: () => void; backLabel: string; heading: React.Ref<HTMLHeadingElement>
 }) {
   const backClass = 'state-layer pressable flex size-12 shrink-0 items-center justify-center rounded-full bg-band-tile'
-  return (
+  return <>
     <header className="rounded-b-lg bg-band pb-4 pt-[env(safe-area-inset-top)] text-on-signboard [view-transition-name:app-bar] [&_:focus-visible]:outline-white desk-column lg:mt-5 lg:rounded-lg lg:py-4">
       {/* Desktop: one compact row, back and title on the left, the three steps on the right. */}
       <div className="page-gutter mx-auto flex w-full max-w-3xl flex-col gap-4 pt-4 lg:max-w-none lg:flex-row lg:items-center lg:justify-between lg:px-5 lg:pt-0">
@@ -100,13 +101,14 @@ function TaskBand({ title, step, steps, stepLabel, backTo, onBack, backLabel, he
         </ol>
       </div>
     </header>
-  )
+    <ConnectionBanner voice="member" className="page-gutter mx-auto w-full max-w-[50rem] lg:max-w-none desk-column" />
+  </>
 }
 
 // Pinned to the bottom while booking: what it costs and the one action that moves the booking forward.
 function ActionBar({ caption, amount, children }: { caption: string; amount: string; children: ReactNode }) {
   return (
-    <div className="sticky bottom-0 z-20 mt-auto rounded-t-lg border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 shadow-bar">
+    <div data-bottom-chrome className="sticky bottom-0 z-20 mt-auto rounded-t-lg border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 shadow-bar">
       <div className="page-gutter mx-auto flex w-full max-w-3xl items-center justify-between gap-3">
         <p className="flex min-w-0 flex-col leading-tight">
           <span className="text-label text-on-surface-variant">{caption}</span>

@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { useAnimate, useReducedMotion } from 'motion/react'
 import type { ComponentProps } from 'react'
 import { cn } from '@/lib/utils'
+import { FieldError } from '@/components/ui/field-error'
 
 interface CodeBoxesProps extends Omit<ComponentProps<'input'>, 'value' | 'onChange' | 'maxLength'> {
   label: string
@@ -66,7 +67,7 @@ export function CodeBoxes({ label, value, length = 6, hint, error, onValueChange
         />
       </div>
       {hint && <p id={`${id}-hint`} className="text-label text-on-surface-variant">{hint}</p>}
-      {error && <p id={`${id}-error`} role="alert" className="text-label text-error">{error}</p>}
+      {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
     </div>
   )
 }

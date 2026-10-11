@@ -4,6 +4,7 @@ import { Wordmark } from '@/components/brand/ball-mark'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { cn } from '@/lib/utils'
 import { clubContent } from '../club/club-content'
+import { ConnectionBanner } from '@/components/ui/connection-banner'
 
 interface CourtBandProps {
   // The screen headline in white. Task screens (sign-in, booking) omit it and keep their own heading below.
@@ -19,7 +20,7 @@ interface CourtBandProps {
 // the screen keeps on blue (the schedule's month and date tiles). Only large white text sits directly on Court Blue;
 // small text goes on Deep Court tiles. Focus turns white here because the blue outline would vanish.
 export function CourtBand({ title, headingRef, action, children, className }: CourtBandProps) {
-  return (
+  return <>
     <header className={cn(
       'relative isolate overflow-hidden rounded-b-lg bg-band pt-[env(safe-area-inset-top)] text-on-signboard [view-transition-name:app-bar] [&_:focus-visible]:outline-white',
       // Desktop: an inset card in the shared column (desk-column), aligned with the content below it.
@@ -43,5 +44,7 @@ export function CourtBand({ title, headingRef, action, children, className }: Co
         {!title && !children && <div className="h-2" />}
       </div>
     </header>
-  )
+    {/* Under the band: a lasting state such as being offline (G1 banner). */}
+    <ConnectionBanner voice="member" className="page-gutter mx-auto w-full max-w-[50rem] lg:max-w-none desk-column" />
+  </>
 }

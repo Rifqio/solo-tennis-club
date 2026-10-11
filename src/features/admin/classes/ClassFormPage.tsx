@@ -21,6 +21,7 @@ import { FormFeedback } from '../forms/FormFeedback'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { AdminBand } from '../shell/AdminBand'
 import { setNavMotion } from '@/lib/nav-motion'
+import { revealInvalid } from '@/lib/reveal-invalid'
 const mapping = { levelId: 'defaultLevelId', venueId: 'defaultVenueId', durationMinutes: 'defaultDurationMinutes', priceIdr: 'defaultPriceIdr', minParticipants: 'defaultMinParticipants', maxParticipants: 'defaultMaxParticipants', coachIds: 'defaultCoachIds' } as const
 const fromRecord = (record: ClassRecord | null): DefaultValues => record ? { levelId: record.defaultLevelId, venueId: record.defaultVenueId, durationMinutes: String(record.defaultDurationMinutes), priceIdr: String(record.defaultPriceIdr), minParticipants: String(record.defaultMinParticipants), maxParticipants: String(record.defaultMaxParticipants), coachIds: record.defaultCoachIds } : emptyDefaults
 // Phones and tablets: one class's editor on its own screen (desktop shows it beside the list, classes-route).
@@ -52,7 +53,7 @@ export function ClassForm({ initial, embedded = false }: { initial: ClassRecord 
   const guard = useUnsavedChangesGuard(name !== (baseline?.name ?? '') || JSON.stringify(values) !== JSON.stringify(fromRecord(baseline)), undefined, pending)
   const setField = (field: keyof DefaultValues, value: string | string[]) => setValues(current => ({ ...current, [field]: value }))
   const payload = () => Object.fromEntries(Object.entries(mapping).map(([field, target]) => [target, ['durationMinutes', 'priceIdr', 'minParticipants', 'maxParticipants'].includes(field) ? parseInteger(values[field as keyof DefaultValues] as string) : values[field as keyof DefaultValues]]))
-  const focusErrors = () => requestAnimationFrame(() => form.current?.querySelector<HTMLElement>('[aria-invalid=true]')?.focus())
+  const focusErrors = () => revealInvalid(form.current)
   const submit = async (event: FormEvent) => {
     event.preventDefault()
     if (sending.current || !options.data) return
@@ -93,7 +94,7 @@ export function ClassForm({ initial, embedded = false }: { initial: ClassRecord 
         {field('level')}{field('place')}{field('duration')}{field('limits')}{field('coaches')}
       </>}
       <FormFeedback failure={failure} latest={latest && preview(latest)} yours={<p>{name}<br />{options.data?.levels.find(row => row.id === values.levelId)?.name} · {options.data?.venues.find(row => row.id === values.venueId)?.name}<br />{values.durationMinutes} / Rp {values.priceIdr}<br />{values.minParticipants} – {values.maxParticipants}<br />{values.coachIds.map(id => options.data?.coaches.find(row => row.id === id)?.name ?? id).join(', ')}</p>} onReplace={() => { if (latest) { setBaseline(latest); setName(latest.name); setValues(fromRecord(latest)); setLatest(null); setFailure(null); setErrors({}) } }} />
-      <div className={embedded ? '-mx-6 flex justify-end border-t border-outline-variant px-6 py-4' : 'sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 [margin-inline:calc(50%-50vw)] [padding-inline:max(1rem,calc(50vw-50%))]'}>
+      <div data-bottom-chrome={embedded ? undefined : ''} className={embedded ? '-mx-6 flex justify-end border-t border-outline-variant px-6 py-4' : 'sticky bottom-0 z-10 border-t border-outline-variant bg-surface-container-lowest pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 [margin-inline:calc(50%-50vw)] [padding-inline:max(1rem,calc(50vw-50%))]'}>
         <Button className={embedded ? 'px-10' : 'w-full'} type="submit" variant="filled" disabled={pending || !options.data || Boolean(latest)} pendingLabel={pending ? t(messages.saving) : undefined}>{t({ id: 'Simpan kelas', en: 'Save class' })}</Button>
       </div>
     </form>{guard.dialog}

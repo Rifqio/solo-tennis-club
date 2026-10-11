@@ -82,3 +82,8 @@ The Rekap board covers monthly revenue (Lunas only), pending payments, fill rate
 | Where | A new **"Perlu dicek"** filter, first in Booking masuk, with a count badge on the rail and dock Booking tab (which counts unpaid today). |
 | What a proof row shows | Booker, participants, expected total, submission time, original deadline, state and the proof image. Desktop opens it in the drawer beside the table; phones get a full screen with the image zoomable. |
 | Actions | Setujui (approve) · Tolak (reject, choose a reason) · Chat (WhatsApp). |
+
+## Rekap (03-05), confirmed by the user 2026-10-11
+- **Month basis:** a booking counts in the month of its session date. Revenue counts paid (Lunas) bookings only.
+- **Phone design:** board 19 "Admin: Rekap (HP)". It shows one large revenue number with the change from last month, "Menunggu pembayaran" as the one tappable row (it opens Booking masuk on Belum bayar), slot fill and sessions held side by side, a six-month bar chart where tapping a bar switches month, a per-class list instead of a table, and Ekspor ke Excel at the end. Desktop follows D7.
+- **Phone dock:** Sesi, Booking, (+), Rekap, Kelola. Kelas moves into Kelola as a tab beside Coach, Lokasi and Level. The desktop rail keeps all five (Sesi, Booking, Rekap, Kelas, Kelola), as in D7.

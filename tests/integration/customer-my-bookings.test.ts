@@ -110,3 +110,18 @@ test('history pages by booking time with an opaque cursor', async () => {
   expect(third.nextCursor).toBeNull()
   expect((await get('/bookings?view=history&cursor=not-a-cursor', customer.cookie)).status).toBe(400)
 })
+
+test('a booking carries the reason on its latest rejected proof, and none before any rejection', async () => {
+  const customer = await registerCustomer(server.baseUrl, phone())
+  const session = await createSampleSession(db.prisma, { catalog, startsAt: new Date(Date.now() + 48 * HOUR) })
+  const booking = await book(customer.customerId, session.id, ['A'], new Date(Date.now() + HOUR))
+  expect((await getMyBooking(db.prisma, customer.customerId, booking.id)).rejection).toBeNull()
+
+  const reviewed = (minutes: number, reason: string, note: string | null) => db.prisma.paymentProof.create({ data: {
+    bookingId: booking.id, customerId: customer.customerId, submissionId: crypto.randomUUID(), status: 'rejected',
+    reviewedAt: new Date(Date.now() - minutes * 60_000), rejectionReason: reason, rejectionNote: note,
+  } })
+  await reviewed(30, 'unreadable', null)
+  await reviewed(5, 'amount_mismatch', 'Kurang Rp 20.000.')
+  expect((await getMyBooking(db.prisma, customer.customerId, booking.id)).rejection).toEqual({ reason: 'amount_mismatch', note: 'Kurang Rp 20.000.' })
+})

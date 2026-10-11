@@ -1,3 +1,4 @@
+import { ResultScreen } from '../feedback/ResultScreen'
 import { ErrorPage } from '@/features/errors/ErrorPage'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
@@ -300,6 +301,14 @@ export function Component() {
     </StatusPanel>
   )
   const sender = <ProofSender data={data} csrfToken={csrfToken} onSignInNeeded={signIn} onSent={() => setSent(true)} deadlineLeftMs={leftMs} />
+
+  // Phones and tablets: once the proof is in, the whole screen becomes the result (board 9g): the serve lands on the
+  // admin's side. Desktop keeps the quiet confirmation in the upload card.
+  if (sent && !isDesktop) {
+    return <ResultScreen kind="sent" back={{ to: '/bookings', label: t(messages.backToBookings) }}
+      session={<p className="font-semibold">{line}</p>} heading={t(messages.sentTitle)} message={t(messages.sentShort)}
+      actions={<Link to="/bookings" viewTransition data-nav="tab" className="state-layer pressable flex min-h-14 items-center justify-center rounded-sm bg-cta font-semibold text-on-cta">{t(messages.toBookings)}</Link>} />
+  }
 
   return <>
     <PayBand line={line} due={due} />

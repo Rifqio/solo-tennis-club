@@ -4,6 +4,7 @@ import { clubDateOf, clubTimeOf } from '../../../../shared/club-time.ts'
 import { effectiveBookingStatus } from '../../../../shared/booking-rules.ts'
 import type { CustomerBookingDetailResponse, CustomerBookingItem, CustomerBookingListResponse, CustomerBookingView } from '../../../../shared/api/customer-bookings.ts'
 import { createMyBookingsRepository } from './my-bookings.repository.ts'
+import type { ProofRejectionReason } from '../../../../shared/api/customer-payments.ts'
 import type { CustomerBookingRow } from './my-bookings.repository.ts'
 
 export const UPCOMING_LIMIT = 50
@@ -76,5 +77,7 @@ export async function getMyBooking(database: Database, customerId: string, id: s
   if (!/^[a-z0-9]{1,64}$/.test(id)) throw new ApiError(404, 'NOT_FOUND')
   const row = await createMyBookingsRepository(database).findOwn(customerId, id)
   if (!row) throw new ApiError(404, 'NOT_FOUND')
-  return { booking: toItem(row, now), serverNow: now.toISOString() }
+  const rejected = row.paymentProofs[0]
+  const rejection = rejected?.rejectionReason ? { reason: rejected.rejectionReason as ProofRejectionReason, note: rejected.rejectionNote } : null
+  return { booking: toItem(row, now), rejection, serverNow: now.toISOString() }
 }

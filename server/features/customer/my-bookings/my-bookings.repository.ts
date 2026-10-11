@@ -26,6 +26,12 @@ const bookingFields = {
 
 export type CustomerBookingRow = Prisma.BookingGetPayload<{ select: typeof bookingFields }>
 
+// One booking also carries the latest rejected proof's reason, which the member reads on the booking (9h).
+const detailFields = {
+  ...bookingFields,
+  paymentProofs: { where: { status: 'rejected' }, orderBy: { reviewedAt: 'desc' }, take: 1, select: { rejectionReason: true, rejectionNote: true } },
+} satisfies Prisma.BookingSelect
+
 // Over by status: expired in storage, or past its deadline while unpaid or awaiting a corrected proof, though the
 // worker has not written it yet. A proof awaiting review is never over by time.
 function overWhere(now: Date) {
@@ -57,7 +63,7 @@ export function createMyBookingsRepository(database: Database) {
       })
     },
     findOwn(customerId: string, id: string) {
-      return database.booking.findFirst({ where: { id, customerId }, select: bookingFields })
+      return database.booking.findFirst({ where: { id, customerId }, select: detailFields })
     },
   }
 }

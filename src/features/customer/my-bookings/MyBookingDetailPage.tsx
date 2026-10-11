@@ -15,6 +15,9 @@ import { serverClock, useCustomerBooking } from './use-customer-bookings'
 import { ConnectionBanner } from '@/components/ui/connection-banner'
 import { Button } from '@/components/ui/button'
 import { effectiveBookingStatus } from '@shared/booking-rules'
+import { useMediaQuery } from '@/lib/use-media-query'
+import { ResultScreen } from '../feedback/ResultScreen'
+import { rejectionReasonMessages } from '../payments/payments.messages'
 
 function Band({ title, children }: { title: string; children?: ReactNode }) {
   const { t } = useI18n()
@@ -48,6 +51,8 @@ export function Component() {
   const { language, t } = useI18n()
   const { loaded, retry } = useCustomerBooking(id)
   const localNow = useNow(1_000)
+  // Phones and tablets turn the outcome into a result screen (boards 9h-9j); desktop keeps the quiet panel.
+  const isDesktop = useMediaQuery('(min-width: 64rem)')
 
   // A booking that does not exist or is not yours, or no sign-in: the whole page cannot be shown (G1, error page).
   if (loaded.status === 'missing') return <ErrorPage code={404} fill={false} />
@@ -80,6 +85,46 @@ export function Component() {
   const when = `${formatClubDateShort(deadlineDate, language)}, ${formatClubTime(booking.originalDeadline)}`
   const whatsapp = clubContent.whatsapp ? `https://wa.me/${clubContent.whatsapp}` : null
   const cell = 'flex size-16 items-center justify-center rounded-xs bg-band text-headline font-bold tabular-nums'
+
+  const back = { to: '/bookings', label: t(messages.back) }
+  const sessionLine = <>
+    <p className="font-semibold">{session.className}</p>
+    <p className="tabular-nums">{t(messages.sessionLine, { date: formatClubDateShort(session.date, language), time: session.startTime, count: booking.quantity })}</p>
+  </>
+  const primary = 'state-layer pressable flex min-h-14 items-center justify-center gap-2 rounded-sm bg-cta font-semibold text-on-cta'
+  const secondary = 'state-layer pressable flex min-h-13 items-center justify-center gap-2 rounded-sm border border-outline-variant font-semibold'
+  const chat = (label: string, className: string) => whatsapp && (
+    <a href={whatsapp} target="_blank" rel="noopener noreferrer" className={className}><MessageCircle aria-hidden="true" className="size-5" />{label}</a>
+  )
+  if (!isDesktop && session.cancelled) {
+    const paid = bookingStatus === 'confirmed'
+    return <ResultScreen kind="rain" aboveDock back={back} session={sessionLine} heading={t(messages.cancelledHeading)} message={t(messages.cancelledMessage)}
+      pill={paid ? t(messages.moneySafe, { amount: formatIdr(booking.totalPriceIdr, language) }) : t(messages.cancelledUnpaid)}
+      hint={paid && whatsapp ? t(messages.refundHint) : undefined}
+      actions={<>
+        {paid && chat(t(messages.replyAdmin), primary)}
+        <Link to="/schedule" viewTransition data-nav="tab" className={paid && whatsapp ? secondary : primary}>{t(messages.otherSessions)}</Link>
+      </>} />
+  }
+  if (!isDesktop && status === 'needs_correction' && loaded.rejection) {
+    const { reason, note } = loaded.rejection
+    return <ResultScreen kind="let" aboveDock back={back} session={sessionLine} heading={t(messages.rejectedHeading)}
+      message={note || t(rejectionReasonMessages[reason])}
+      pill={t(messages.resendBefore, { when, left: `${hours}:${String(minutes).padStart(2, '0')}` })}
+      actions={<>
+        <Link to={`/bookings/${booking.id}/pay`} viewTransition data-nav="push" className={primary}>{t(messages.resend)}</Link>
+        {chat(t(messages.askAdmin), secondary)}
+      </>} />
+  }
+  if (!isDesktop && status === 'expired') {
+    const canBookAgain = Date.parse(session.startsAt) > now
+    return <ResultScreen kind="out" aboveDock back={back} session={sessionLine} heading={t(messages.lapsedHeading)} message={t(messages.lapsedMessage, { when })}
+      actions={<>
+        {canBookAgain && <Link to={`/book/${session.id}`} viewTransition data-nav="push" className={primary}>{t(messages.bookAgain)}</Link>}
+        {chat(t(messages.paidChat), canBookAgain ? secondary : primary)}
+        {!canBookAgain && !whatsapp && <Link to="/schedule" viewTransition data-nav="tab" className={primary}>{t(messages.otherSessions)}</Link>}
+      </>} />
+  }
 
   return <>
     <Band title={session.className}>

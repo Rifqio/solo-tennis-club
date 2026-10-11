@@ -41,5 +41,7 @@ export interface CustomerBookingListResponse {
 
 export interface CustomerBookingDetailResponse {
   booking: CustomerBookingItem
+  // The admin's reason on the latest rejected proof, if any (the member reads it on the booking, 9h).
+  rejection: { reason: 'amount_mismatch' | 'unreadable' | 'not_received' | 'other'; note: string | null } | null
   serverNow: string
 }

@@ -1,3 +1,15 @@
 {
-  "buildPath": "code"
+  "buildPath": "code",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "bounce-easing",
+        "value": "cs-wobble",
+        "createdAt": "2026-10-11T13:40:30.036Z",
+        "reason": "Literal motion: the net physically shakes when the ball clips the tape (board G2, approved by the user); not a UI easing"
+      }
+    ]
+  }
 }

@@ -49,6 +49,7 @@ const messages = {
     loadFailed: 'Sesinya belum kebuka. Cek koneksi kamu, lalu coba lagi.', optionsFailed: 'Info slot belum termuat. Cek koneksi kamu, lalu coba lagi.',
     nameMissing: 'Isi nama pemain ini dulu.', changeCount: 'Ubah jumlah', signInAgain: 'Login lagi', pickAnother: 'Pilih sesi lain',
     capacity: 'Sisa slotnya tinggal {count}. Kurangi jumlah pemain, lalu konfirmasi lagi.', capacityNone: 'Slotnya udah penuh. Pilih sesi lain, ya.',
+    takenTitle: 'Slotnya keburu diambil', takenSub: 'Tinggal {left} slot. Kamu pesan {count}.', fullTitle: 'Sesinya udah penuh', fullSub: 'Ada yang pesan duluan barusan.', keepOnly: 'Pesan {count} slot aja',
     bookingClosed: 'Booking sesi ini udah ditutup. Pilih sesi lain, ya.', sessionChanged: 'Detail sesi barusan berubah. Cek lagi, lalu konfirmasi.',
     signedOut: 'Login kamu udah habis. Login lagi buat lanjut, pilihanmu tetap di sini.', offline: 'Koneksi putus, jadi booking belum pasti terkirim. Coba lagi aman, nggak bakal dobel.',
   },
@@ -71,6 +72,7 @@ const messages = {
     loadFailed: 'The session did not load. Check your connection, then try again.', optionsFailed: 'Slot details did not load. Check your connection, then try again.',
     nameMissing: "Fill in this player's name first.", changeCount: 'Change the number', signInAgain: 'Log in again', pickAnother: 'Pick another session',
     capacity: 'Only {count} slots are left. Lower the number of players, then confirm again.', capacityNone: 'The session is full now. Pick another session.',
+    takenTitle: 'Someone took the slot first', takenSub: 'Only {left} left. You asked for {count}.', fullTitle: 'The session just filled up', fullSub: 'Someone booked just before you.', keepOnly: 'Book just {count}',
     bookingClosed: 'Booking for this session has closed. Pick another session.', sessionChanged: 'The session details just changed. Check them, then confirm.',
     signedOut: 'Your login has ended. Log in again to carry on; your choices stay here.', offline: 'The connection dropped, so the booking may not have gone through. Trying again is safe and will not book twice.',
   },
@@ -155,6 +157,33 @@ function QuickPick({ quantity, maximum, label, onPick }: { quantity: number; max
           className={cn('state-layer pressable size-12 rounded-full text-title font-bold tabular-nums', value === quantity ? 'bg-primary text-on-primary' : 'border border-outline-variant text-on-surface')}>{value}</button>
       ))}
     </div>
+  )
+}
+
+// Desktop, board D3b: the slot went while the names were typed. Seats as in step 1: the ones now taken, the ones still
+// yours, and the ones lost, which turn grey once after the card appears (the one movement on this screen).
+function TakenCard({ max, left, asked, text, schedulePath }: { max: number; left: number; asked: number; text: typeof messages.id; schedulePath: string }) {
+  const lost = Math.max(0, Math.min(asked - left, max - left))
+  const others = Math.max(0, max - left - lost)
+  return (
+    <section aria-labelledby="taken-title" className="flex flex-1 flex-col items-center justify-center gap-7 text-center">
+      <div className="flex flex-col gap-1.5">
+        <h2 id="taken-title" className="text-headline font-bold">{left > 0 ? text.takenTitle : text.fullTitle}</h2>
+        <p className="text-title font-normal text-on-surface-variant">{left > 0 ? fill(text.takenSub, { left, count: asked }) : text.fullSub}</p>
+      </div>
+      <div className="flex flex-col items-center gap-3">
+        <div role="img" aria-label={fill(text.seatsLabel, { taken: max - left, mine: left, open: 0, max })} className="flex flex-wrap justify-center gap-2">
+          {Array.from({ length: others }, (_, index) => <span key={`o${index}`} className="h-10 w-8 rounded-xs bg-outline-variant" />)}
+          {Array.from({ length: left }, (_, index) => <span key={`m${index}`} className="h-10 w-8 -translate-y-1 rounded-xs bg-primary" />)}
+          {Array.from({ length: lost }, (_, index) => <span key={`l${index}`} className="seat-lost h-10 w-8 rounded-xs bg-outline-variant" />)}
+        </div>
+        <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-label text-on-surface-variant">
+          <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-3 rounded-[3px] bg-outline-variant" />{fill(text.taken, { count: max - left })}</li>
+          {left > 0 && <li className="flex items-center gap-1.5 font-semibold text-on-surface"><span aria-hidden="true" className="size-3 rounded-[3px] bg-primary" />{fill(text.mine, { count: left })}</li>}
+        </ul>
+      </div>
+      {left > 0 && <Link to={schedulePath} viewTransition data-nav="pop" className="flex min-h-12 items-center font-semibold text-primary">{text.pickAnother}</Link>}
+    </section>
   )
 }
 
@@ -297,13 +326,14 @@ export function Component() {
     goToStep(3)
   }
 
-  async function confirm() {
+  // `keep`: book fewer places than asked, after the session filled up meanwhile (board D3b, "Pesan 1 slot aja").
+  async function confirm(keep?: { quantity: number; names: string[]; requestId: string }) {
     if (access.state.stage !== 'complete' || !options || pending) return
     setPending(true); setError(null)
     try {
       const created = await customerRequest<CreatedBooking>('/api/customer/bookings', {
         csrfToken: access.state.session.csrfToken,
-        body: { sessionId, quantity, participantNames: names, expectedSessionVersion: options.sessionVersion, createRequestId: requestId },
+        body: { sessionId, quantity: keep?.quantity ?? quantity, participantNames: keep?.names ?? names, expectedSessionVersion: options.sessionVersion, createRequestId: keep?.requestId ?? requestId },
       })
       setResult(created)
       try { sessionStorage.removeItem(reservationKey(access.state.session.customer.id, sessionId)) } catch { /* No persisted draft to clear. */ }
@@ -313,6 +343,15 @@ export function Component() {
         try { setOptions(await customerRequest<Options>(`/api/customer/booking-options/${encodeURIComponent(sessionId)}`)) } catch { /* Keep entered names visible. */ }
       }
     } finally { setPending(false) }
+  }
+
+  // Keep the first places (the booker first) and book them straight away.
+  function keepOnly(count: number) {
+    const kept = names.slice(0, count)
+    const id = crypto.randomUUID()
+    setQuantity(count); setNames(kept); setRequestId(id)
+    query.set('quantity', String(count)); setQuery(query, { replace: true })
+    void confirm({ quantity: count, names: kept, requestId: id })
   }
 
   const errorNotice = (): { title: string; action?: { label: string; onAction: () => void } } | null => {
@@ -435,9 +474,15 @@ export function Component() {
   }
 
   const canContinue = Boolean(currentOptions?.canReserve) && quantity <= (currentOptions?.remainingPlaces ?? 0)
+  // Desktop (board D3b): the session filled while the names were typed. The step card itself says so, with the seats.
+  const takenOnDesktop = isDesktop && step === 3 && error === 'CAPACITY_UNAVAILABLE'
+  const spaceLeft = Math.max(0, Math.min(quantity, options?.remainingPlaces ?? 0))
   const amount = formatIdr(total, language)
   const action = step === 1 ? <Button variant="filled" className="px-8 lg:min-h-14 lg:w-full" disabled={!canContinue} onClick={startNames}>{activeSession ? text.continue : text.signIn}</Button>
     : step === 2 ? <Button variant="filled" className="px-8 lg:min-h-14 lg:w-full" onClick={reviewNames} disabled={names.length !== quantity}>{text.continue}</Button>
+    : takenOnDesktop ? (spaceLeft > 0
+      ? <Button variant="filled" className="lg:min-h-14 lg:w-full" disabled={pending} pendingLabel={pending ? text.working : undefined} onClick={() => keepOnly(spaceLeft)}>{fill(text.keepOnly, { count: spaceLeft })}</Button>
+      : <Button asChild variant="filled" className="lg:min-h-14 lg:w-full"><Link to={schedulePath} viewTransition data-nav="pop">{text.pickAnother}</Link></Button>)
     : <Button variant="filled" className="px-5 lg:min-h-14 lg:w-full" disabled={pending || !options?.canReserve || !options || error === 'BOOKING_CLOSED'} pendingLabel={pending ? text.working : undefined} onClick={() => void confirm()}>{text.confirm}</Button>
   const unitPrice = currentOptions?.unitPriceIdr ?? session.priceIdr
   const remaining = currentOptions?.remainingPlaces ?? session.remainingPlaces
@@ -495,7 +540,8 @@ export function Component() {
           </nav>}
         </>}
 
-        {step === 3 && <>
+        {takenOnDesktop && <TakenCard max={session.maxParticipants} left={spaceLeft} asked={quantity} text={text} schedulePath={schedulePath} />}
+        {step === 3 && !takenOnDesktop && <>
           {isDesktop && <h2 className="text-headline font-bold">{text.review}</h2>}
           <section aria-label={session.className} className="rounded-sm bg-surface-container-lowest px-4 pb-1 pt-3.5 lg:border lg:border-outline-variant">
             <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
@@ -532,8 +578,8 @@ export function Component() {
             <p className="text-on-surface-variant">{formatClubDateMedium(session.date, language)} · {session.startTime}-{session.endTime} · {session.venueName}</p>
           </div>
           <dl className="mt-auto flex flex-col px-5 py-3">
-            <div className="flex justify-between gap-4 py-2"><dt className="text-on-surface-variant">{fill(text.priceTimes, { price: formatIdr(unitPrice, language), count: quantity })}</dt><dd className="tabular-nums">{amount}</dd></div>
-            <div className="flex items-baseline justify-between gap-4 border-t border-outline-variant pb-1 pt-3"><dt className="font-bold">{text.total}</dt><dd className="text-headline font-bold tabular-nums">{amount}</dd></div>
+            <div className="flex justify-between gap-4 py-2"><dt className="text-on-surface-variant">{fill(text.priceTimes, { price: formatIdr(unitPrice, language), count: takenOnDesktop ? spaceLeft : quantity })}</dt><dd className="tabular-nums">{takenOnDesktop ? formatIdr(unitPrice * spaceLeft, language) : amount}</dd></div>
+            <div className="flex items-baseline justify-between gap-4 border-t border-outline-variant pb-1 pt-3"><dt className="font-bold">{text.total}</dt><dd className="text-headline font-bold tabular-nums">{takenOnDesktop ? formatIdr(unitPrice * spaceLeft, language) : amount}</dd></div>
           </dl>
           <div className="px-5 pb-5 pt-1">{action}</div>
         </aside>

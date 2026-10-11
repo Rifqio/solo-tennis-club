@@ -30,6 +30,8 @@
   --md-on-signboard: #FFFFFF;
   --md-on-signboard-variant: #FFFFFF;
   --md-band-tile: #0062C4;
+  /* The deeper court under small text on Deep Court screens (the phone result screens). */
+  --md-band-deep: #004E9C;
   /* Scoreboard cells (formerly post plates): ink with lime digits, 15.56:1. */
   --md-plate: #0F1112;
   --md-on-plate: #C0FC49;
@@ -116,6 +118,7 @@
   --color-on-signboard-variant: var(--md-on-signboard-variant);
   --color-band: var(--md-signboard);
   --color-band-tile: var(--md-band-tile);
+  --color-band-deep: var(--md-band-deep);
   --color-plate: var(--md-plate);
   --color-on-plate: var(--md-on-plate);
   --color-accent: var(--md-accent);
@@ -426,6 +429,75 @@ html[data-nav='pop']::view-transition-new(root) { animation: 280ms cubic-bezier(
 /* The code numerals: poster-sized, like the desktop club wordmark. */
 .error-code { font-size: 8.25rem; line-height: 0.8; letter-spacing: -0.04em; }
 @media (min-width: 64rem) { .error-code { font-size: clamp(8.75rem, 15vw, 13.75rem); } }
+
+/* Court scenes (board G2, phone feedback screens). A court seen from behind the baseline plays one outcome once and
+   holds its last frame; the base styles below ARE that last frame, so reduced motion and failed animation both show it.
+   sent: the serve lands in the far court; let: it clips the net and drops back; out: it rolls off and the lines dim;
+   rain: rain falls, the court dims and puddles spread. */
+.court-scene { display: block; width: 100%; height: auto; overflow: visible; }
+.court-scene .cs-lines { fill: none; stroke: #FFFFFF; stroke-width: 2.5; stroke-opacity: 0.28; stroke-linecap: round; }
+.court-scene .cs-baseline { stroke-opacity: 0.5; stroke-width: 4; }
+.court-scene .cs-mesh-fill { fill: #FFFFFF; fill-opacity: 0.14; }
+.court-scene .cs-mesh { stroke: #FFFFFF; stroke-opacity: 0.2; stroke-width: 1; }
+.court-scene .cs-tape { stroke: #FFFFFF; stroke-width: 3.5; stroke-linecap: round; }
+.court-scene .cs-posts { stroke: #FFFFFF; stroke-width: 3; stroke-linecap: round; }
+.court-scene .cs-shadow { fill: #0F1112; fill-opacity: 0.32; }
+.court-scene .cs-ball { fill: #C0FC49; }
+.court-scene .cs-seam { fill: none; stroke: #FFFFFF; stroke-width: 2; stroke-linecap: round; }
+.court-scene .cs-disc { fill: #FFFFFF; }
+.court-scene .cs-disc-out { fill: #FF8A7A; }
+.court-scene .cs-puddle { fill: #FFFFFF; fill-opacity: 0.14; }
+.court-scene .cs-drop { stroke: #FFFFFF; stroke-linecap: round; opacity: 0; animation: cs-drop 700ms linear 2 both; }
+.court-scene .cs-splash { fill: none; stroke: #FFFFFF; stroke-width: 1.5; opacity: 0; animation: cs-splash 700ms ease-out 2 both; }
+.court-scene .cs-disc, .court-scene .cs-splash, .court-scene .cs-puddle, .court-scene .cs-spin { transform-box: fill-box; transform-origin: center; }
+.cs-sent .cs-bx { transform: translateX(156px); animation: cs-sent-x 1400ms linear 200ms both; }
+.cs-sent .cs-by { transform: translateY(46px); animation: cs-sent-y 1400ms 200ms both; }
+.cs-sent .cs-sy { transform: translateY(52px); animation: cs-sent-sy 1400ms linear 200ms both; }
+.cs-sent .cs-bs { transform: scale(0.48); animation: cs-sent-s 1400ms linear 200ms both; }
+.cs-sent .cs-spin { transform: rotate(-540deg); animation: cs-spin-back 1400ms cubic-bezier(0.2, 0.6, 0.3, 1) 200ms both; }
+.cs-sent .cs-disc { animation: cs-disc 420ms cubic-bezier(0.16, 1, 0.3, 1) 970ms both; }
+.cs-let .cs-bx { transform: translateX(190px); animation: cs-let-x 1500ms linear 200ms both; }
+.cs-let .cs-by { transform: translateY(105px); animation: cs-let-y 1500ms 200ms both; }
+.cs-let .cs-sy { transform: translateY(114px); animation: cs-let-sy 1500ms linear 200ms both; }
+.cs-let .cs-bs { transform: scale(0.74); animation: cs-let-s 1500ms linear 200ms both; }
+.cs-let .cs-spin { transform: rotate(-300deg); animation: cs-spin-let 1500ms ease-out 200ms both; }
+.cs-let .cs-wobble { animation: cs-wobble 640ms ease-out 875ms both; }
+.cs-let .cs-disc { animation: cs-disc 420ms cubic-bezier(0.16, 1, 0.3, 1) 1250ms both; }
+.cs-out .cs-bx { transform: translateX(440px); animation: cs-out-x 1600ms 300ms both; }
+.cs-out .cs-by { transform: translateY(200px); }
+.cs-out .cs-sy { transform: translateY(212px); }
+.cs-out .cs-bs { transform: scale(0.95); }
+.cs-out .cs-spin { transform: rotate(600deg); animation: cs-out-spin 1600ms 300ms both; }
+.cs-out .cs-dim { opacity: 0.35; animation: cs-dim 1600ms 300ms both; }
+.cs-rain .cs-bx { transform: translateX(236px); }
+.cs-rain .cs-by { transform: translateY(186px); }
+.cs-rain .cs-sy { transform: translateY(197px); }
+.cs-rain .cs-bs { transform: scale(0.9); }
+.cs-rain .cs-dim { opacity: 0.6; animation: cs-dim-rain 1800ms 200ms both; }
+.cs-rain .cs-puddle { animation: cs-puddle 700ms cubic-bezier(0.16, 1, 0.3, 1) 1300ms both; }
+@keyframes cs-sent-x { 0% { transform: translateX(230px); } 55% { transform: translateX(170px); } 75% { transform: translateX(160px); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); } 100% { transform: translateX(156px); } }
+@keyframes cs-sent-y { 0% { transform: translateY(226px); animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1); } 25% { transform: translateY(20px); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.4); } 55% { transform: translateY(51px); animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1); } 67% { transform: translateY(40px); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.4); } 80%, 100% { transform: translateY(46px); } }
+@keyframes cs-sent-sy { 0% { transform: translateY(240px); } 55% { transform: translateY(58px); } 80%, 100% { transform: translateY(52px); } }
+@keyframes cs-sent-s { 0% { transform: scale(1); } 55% { transform: scale(0.55); } 100% { transform: scale(0.48); } }
+@keyframes cs-spin-back { from { transform: rotate(0); } to { transform: rotate(-540deg); } }
+@keyframes cs-disc { 0% { opacity: 0; transform: scale(0.2); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes cs-let-x { 0% { transform: translateX(230px); } 45% { transform: translateX(200px); } 70% { transform: translateX(196px); } 85% { transform: translateX(192px); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); } 100% { transform: translateX(190px); } }
+@keyframes cs-let-y { 0% { transform: translateY(226px); animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1); } 20% { transform: translateY(40px); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.4); } 45% { transform: translateY(68px); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.4); } 70% { transform: translateY(105px); animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1); } 78% { transform: translateY(96px); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.4); } 85%, 100% { transform: translateY(105px); } }
+@keyframes cs-let-sy { 0% { transform: translateY(240px); } 45% { transform: translateY(97px); } 70%, 100% { transform: translateY(114px); } }
+@keyframes cs-let-s { 0% { transform: scale(1); } 45% { transform: scale(0.68); } 70%, 100% { transform: scale(0.74); } }
+@keyframes cs-spin-let { 0% { transform: rotate(0); } 45% { transform: rotate(-260deg); } 100% { transform: rotate(-300deg); } }
+@keyframes cs-wobble { 0% { transform: translateY(0); } 20% { transform: translateY(-4px); } 45% { transform: translateY(3px); } 70% { transform: translateY(-1.5px); } 100% { transform: translateY(0); } }
+@keyframes cs-out-x { 0%, 15% { transform: translateX(150px); animation-timing-function: cubic-bezier(0.45, 0, 0.85, 0.5); } 85%, 100% { transform: translateX(440px); } }
+@keyframes cs-out-spin { 0%, 15% { transform: rotate(0); animation-timing-function: cubic-bezier(0.45, 0, 0.85, 0.5); } 85%, 100% { transform: rotate(600deg); } }
+@keyframes cs-dim { 0%, 70% { opacity: 1; } 100% { opacity: 0.35; } }
+@keyframes cs-dim-rain { 0% { opacity: 1; } 60%, 100% { opacity: 0.6; } }
+@keyframes cs-drop { 0% { opacity: 0; transform: translateY(-240px); } 8% { opacity: 0.85; } 55% { opacity: 0.85; transform: translateY(0); } 56%, 100% { opacity: 0; transform: translateY(0); } }
+@keyframes cs-splash { 0%, 55% { opacity: 0; transform: scale(0.2); } 58% { opacity: 0.9; } 100% { opacity: 0; transform: scale(1.8); } }
+@keyframes cs-puddle { 0% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
+
+/* Board D3b: a place lost while booking turns from yours (blue, raised) to taken (grey), once. */
+.seat-lost { animation: seat-lost 560ms cubic-bezier(0.2, 0.8, 0.2, 1) 480ms both; }
+@keyframes seat-lost { from { background-color: var(--color-primary); transform: translateY(-4px); } }
 
 /* Club photo: ink rising from the bottom under the club name. */
 .photo-scrim-bottom {

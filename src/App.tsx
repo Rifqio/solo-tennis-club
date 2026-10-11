@@ -2,11 +2,13 @@ import { createBrowserRouter, Navigate, RouterProvider, useLocation } from 'reac
 import { ClubPage } from './features/public/club/ClubPage'
 import { PublicLayout } from './features/public/layout/PublicLayout'
 import { SchedulePage } from './features/public/schedule/SchedulePage'
+import { RouteErrorPage } from './features/errors/RouteErrorPage'
 
 const router = createBrowserRouter([
   {
     path: '/admin',
     lazy: () => import('./features/admin/admin-routes'),
+    errorElement: <RouteErrorPage audience="admin" />,
     children: [
       { path: 'sign-in', lazy: () => import('./features/admin/auth/sign-in-route') },
       { lazy: () => import('./features/admin/auth/require-admin-route'), children: [
@@ -39,6 +41,7 @@ const router = createBrowserRouter([
   },
   {
     element: <PublicLayout />,
+    errorElement: <RouteErrorPage />,
     children: [
       { index: true, element: <HomeRoute /> },
       { path: '/schedule', element: <SchedulePage /> },
@@ -50,6 +53,8 @@ const router = createBrowserRouter([
       { path: '/bookings/:id/pay', lazy: () => import('./features/customer/payments/PayPage') },
     ],
   },
+  // Any other address: the 404 page on its own, without the app's dock or rail.
+  { path: '*', lazy: () => import('./features/errors/RouteErrorPage'), errorElement: <RouteErrorPage /> },
 ])
 
 // The club page is the home page. Schedule links from before the move (/?date=…&session=…) land on /schedule unchanged.

@@ -8,6 +8,7 @@ import { ApiError, errorHandler } from './http/errors.ts'
 import { readRuntimeConfig } from './config/runtime-config.ts'
 import { createAdminRouter } from './features/admin/admin.router.ts'
 import { createCustomerAuthRouter } from './features/customer/auth/customer-auth.router.ts'
+import { createClientErrorsRouter } from './features/client-errors/client-errors.router.ts'
 import { resolvePrivateDir, resolveUploadsDir } from './config/database-file.ts'
 
 export function createApp({ prisma, mode = 'production', distDir = resolve('dist'), viteMiddleware, developmentOrigins = [], uploadsDir = resolveUploadsDir(), privateDir = resolvePrivateDir() }: {
@@ -22,6 +23,7 @@ export function createApp({ prisma, mode = 'production', distDir = resolve('dist
   app.use('/api/customer', createCustomerAuthRouter(prisma, config, privateDir))
   app.use(express.json({ limit: '32kb' }))
   app.use('/api/public', createPublicRouter({ prisma }))
+  app.use('/api/client-errors', createClientErrorsRouter(config))
   app.use('/api', (_request, _response, next) => next(new ApiError(404, 'NOT_FOUND')))
   // Uploaded portraits: read-only files with random names, so they can be cached for a long time.
   app.use('/uploads', express.static(uploadsDir, { index: false, dotfiles: 'deny', maxAge: '30d', immutable: true }), (_request, _response, next) => next(new ApiError(404, 'NOT_FOUND')))

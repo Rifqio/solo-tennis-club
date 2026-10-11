@@ -1,3 +1,4 @@
+import { ErrorPage } from '@/features/errors/ErrorPage'
 import type { ReactNode } from 'react'
 import { ChevronLeft, ExternalLink, MessageCircle } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -11,7 +12,6 @@ import { clubContent } from '@/features/public/club/club-content'
 import { useNow } from '@/features/public/schedule/use-now'
 import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBooking } from './use-customer-bookings'
-import { setNavMotion } from '@/lib/nav-motion'
 import { ConnectionBanner } from '@/components/ui/connection-banner'
 import { Button } from '@/components/ui/button'
 import { effectiveBookingStatus } from '@shared/booking-rules'
@@ -49,13 +49,14 @@ export function Component() {
   const { loaded, retry } = useCustomerBooking(id)
   const localNow = useNow(1_000)
 
+  // A booking that does not exist or is not yours, or no sign-in: the whole page cannot be shown (G1, error page).
+  if (loaded.status === 'missing') return <ErrorPage code={404} fill={false} />
+  if (loaded.status === 'signedOut') return <ErrorPage code={401} fill={false} />
   if (loaded.status !== 'ready') {
     return <>
       <Band title={t(messages.heading)} />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
         {loaded.status === 'loading' ? <p role="status" className="appear-late">{t(messages.loading)}</p>
-          : loaded.status === 'missing' ? <StatusPanel tone="info" title={t(messages.missing)} />
-          : loaded.status === 'signedOut' ? <StatusPanel tone="info" title={t(messages.signInTitle)} action={{ label: t(messages.signIn), onAction: () => { setNavMotion('push'); navigate(`/customer/sign-in?returnTo=${encodeURIComponent(`/bookings/${id}`)}`, { viewTransition: true }) } }} />
           : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
       </div>
     </>

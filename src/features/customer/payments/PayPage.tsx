@@ -1,3 +1,4 @@
+import { ErrorPage } from '@/features/errors/ErrorPage'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -241,13 +242,13 @@ export function Component() {
   const [sent, setSent] = useState(false)
   const signIn = () => { setNavMotion('push'); navigate(`/customer/sign-in?returnTo=${encodeURIComponent(`/bookings/${id}/pay`)}`, { viewTransition: true }) }
 
+  if (load.status === 'missing') return <ErrorPage code={404} fill={false} />
+  if (load.status === 'signedOut') return <ErrorPage code={401} fill={false} />
   if (load.status !== 'ready') {
     return <>
       <PayBand />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
         {load.status === 'loading' ? <p role="status" className="appear-late">{t(messages.loading)}</p>
-          : load.status === 'signedOut' ? <StatusPanel tone="info" title={t(messages.signIn)} action={{ label: t(messages.signInAction), onAction: signIn }} />
-          : load.status === 'missing' ? <StatusPanel tone="info" title={t(messages.missing)} />
           : <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
       </div>
     </>

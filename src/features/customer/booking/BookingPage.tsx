@@ -1,3 +1,4 @@
+import { ErrorPage } from '@/features/errors/ErrorPage'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Check, ChevronLeft, Clock, Minus, Plus, UserRound } from 'lucide-react'
@@ -418,14 +419,15 @@ export function Component() {
   const band = <TaskBand title={title} step={step} steps={text.steps} stepLabel={fill(text.stepLabel, { step })} heading={heading} backLabel={step === 1 ? text.backToScheduleLabel : text.back}
     backTo={step === 1 ? schedulePath : undefined} onBack={step === 1 ? undefined : () => goToStep(step - 1)} />
 
+  // The session is gone or never existed: the whole page cannot be shown (G1, error page).
+  if (loadError === 'missing') return <ErrorPage code={404} />
   if (loadError || !session) {
     return (
       <div className="flex min-h-dvh flex-col">
         {band}
         <div className="page-gutter mx-auto w-full max-w-3xl pt-4">
           {loadError
-            ? loadError === 'missing' ? <StatusPanel tone="info" title={text.unavailable} action={{ label: text.pickAnother, onAction: () => navigate(schedulePath) }} />
-              : <StatusPanel tone="error" title={text.loadFailed} action={{ label: text.retry, onAction: () => window.location.reload() }} />
+            ? <StatusPanel tone="error" title={text.loadFailed} action={{ label: text.retry, onAction: () => window.location.reload() }} />
             : <p role="status">{text.loading}</p>}
         </div>
       </div>

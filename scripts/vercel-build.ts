@@ -26,6 +26,14 @@ const serverlessDrivers: Plugin = {
 rmSync(output, { recursive: true, force: true })
 execSync('npm run build', { stdio: 'inherit' })
 
+// Vercel passes the project's environment variables to the build, so the Turso database is brought up to date here:
+// pending migrations are applied (repeat-safe), and on the demo the sample club is seeded once (later runs skip it;
+// the nightly reset keeps it fresh). Seeding refuses NODE_ENV=production, which is meant for a real club's data.
+if (process.env.TURSO_DATABASE_URL) {
+  execSync('npx tsx scripts/db-migrate-turso.ts', { stdio: 'inherit' })
+  if (process.env.LAFU_DEMO === '1') execSync('npx tsx scripts/seed-sample.ts', { stdio: 'inherit', env: { ...process.env, NODE_ENV: 'development' } })
+}
+
 cpSync(resolve('dist'), resolve(output, 'static'), { recursive: true })
 
 await build({

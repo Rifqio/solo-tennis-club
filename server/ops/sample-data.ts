@@ -67,6 +67,10 @@ export async function seedSampleCoaches(prisma: PrismaClient) {
 
 export type SeedOutcome = 'created' | 'skipped' | 'refreshed'
 
+// Seeding makes dozens of round trips inside one transaction. Prisma's default 5-second limit is too short when the
+// database is far away (the Vercel build runs in Washington; the demo's Turso database is in Mumbai).
+export const SEED_TRANSACTION_MS = 120_000
+
 // Repeat-safe: a second run changes nothing. With refresh, the sample sessions are re-dated from today
 // (sample catalog kept) so a long-lived development database never runs out of upcoming sample sessions.
 export async function seedSampleData(prisma: PrismaClient, { now = new Date(), refresh = false } = {}): Promise<SeedOutcome> {
@@ -113,7 +117,7 @@ export async function seedSampleData(prisma: PrismaClient, { now = new Date(), r
       } })
     }
     return hadSessions ? 'refreshed' : 'created'
-  })
+  }, { maxWait: 10_000, timeout: SEED_TRANSACTION_MS })
 }
 
 export const SAMPLE_SESSION_COUNT = SESSIONS.length

@@ -5,8 +5,9 @@ export type Database = PrismaClient | Prisma.TransactionClient
 export function inTransaction<T>(
   database: PrismaClient,
   work: (transaction: Prisma.TransactionClient) => Promise<T>,
+  options?: { maxWait?: number; timeout?: number },
 ): Promise<T> {
-  return database.$transaction(work)
+  return database.$transaction(work, options)
 }
 
 export function isUniqueConstraintError(error: unknown): boolean {

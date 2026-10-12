@@ -2,7 +2,7 @@ import type { PrismaClient } from '../generated/prisma/client.ts'
 import { inTransaction } from '../database/transaction.ts'
 import type { FileStores } from '../storage/file-store.ts'
 import { ensureDemoAdmin } from '../auth/demo-admin.ts'
-import { seedSampleAlbums, seedSampleCoaches, seedSampleData } from './sample-data.ts'
+import { SEED_TRANSACTION_MS, seedSampleAlbums, seedSampleCoaches, seedSampleData } from './sample-data.ts'
 
 // The hosted demo's nightly reset (LAFU_DEMO=1, run by the daily cron). Everything visitors could have made or
 // changed goes: members, their bookings, proofs and payments, sessions, classes, coaches, venues, levels, photos and
@@ -40,7 +40,7 @@ export async function resetDemoData(prisma: PrismaClient, files: FileStores, pub
     await transaction.venue.deleteMany()
     await transaction.level.deleteMany()
     await transaction.loginAttempt.deleteMany()
-  })
+  }, { maxWait: 10_000, timeout: SEED_TRANSACTION_MS })
   await ensureDemoAdmin(prisma)
   await seedSampleData(prisma, { now })
   await seedSampleCoaches(prisma)

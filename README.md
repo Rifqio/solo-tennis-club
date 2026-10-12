@@ -162,4 +162,4 @@ Sample records are flagged as sample data, and the app labels them ("Data contoh
 
 The empty, error and offline illustrations were generated for STC with Gemini, in a style inspired by Mijke Coebergh's "The Alphabet of tennis" ([prompts](.planning/STATE-ART-PROMPTS.md)).
 
-The project was first called Lafu (Lawu Fun Tennis Club). Every identifier now uses STC. Settings written for the old name (`LAFU_*`) are still read as a fallback, so an older deployment keeps working until its settings are renamed to `STC_*`.
+The project was first called Lafu (Lawu Fun Tennis Club); every identifier now uses STC. A deployment set up before the rename needs its `LAFU_*` settings renamed to `STC_*`.

@@ -338,6 +338,28 @@
 }
 @keyframes lafu-appear { from { opacity: 0; } }
 
+/* Loading and empty states (G3). A skeleton waits 300ms, so a fast load never flickers, then fades in; one soft sweep
+   crosses each shape while the data is on its way. The state picture settles in once on phones; desktop stays quiet. */
+@utility skeleton-in { animation: lafu-appear 160ms var(--ease-standard) 300ms both; }
+@utility skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface-container-high);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-surface-container-lowest) 65%, transparent), transparent);
+    animation: g3-sweep 1400ms ease-in-out infinite;
+  }
+}
+@keyframes g3-sweep { to { transform: translateX(100%); } }
+@media (max-width: 63.99rem) {
+  .state-art-in { animation: g3-art-in 520ms var(--ease-emphasized) 80ms both; }
+}
+@keyframes g3-art-in { from { opacity: 0; transform: translateY(0.75rem) scale(0.94); } }
+
 /* The photo viewer (boards 9f, D12): the black opens on a short fade and each photo settles in from 97%. */
 .viewer-in { animation: lafu-appear 180ms var(--ease-standard) both; }
 .photo-in { animation: lafu-photo-in 260ms var(--ease-emphasized) both; }
@@ -537,6 +559,7 @@ html[data-nav='pop']::view-transition-new(root) { animation: 280ms cubic-bezier(
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
   /* Scroll-driven reveals take their progress from scrolling, not time, so a short duration would not stop them. */
   .club-reveal { animation: none; }
+  .skeleton::after { animation: none; opacity: 0; }
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

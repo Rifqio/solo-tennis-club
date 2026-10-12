@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateMedium, formatClubDateShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { apiErrorMessages } from '@/i18n/api-error-messages'
@@ -154,18 +156,13 @@ export function AdminSessionsPage() {
       {data?.truncated && <StatusPanel tone="info" title={t(messages.truncated)} />}
       {/* A 401 sends the admin to sign-in, which explains it; no second message here meanwhile. */}
       {!response || (response.kind === 'http' && response.status === 401) ? (
-        <div className="flex flex-col gap-3">
-          <p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-44 rounded-sm bg-surface-container" />)}
-        </div>
+        <Skeleton shape="session-card" label={t(messages.loading)} onRetry={retry} voice="admin" />
       ) : response.kind !== 'ok' ? (
-        <StatusPanel tone="error" title={response.kind === 'http' ? t(apiErrorMessages[response.code] ?? apiErrorMessages.INTERNAL) : t(messages.error)}
-          action={{ label: t(commonMessages.retry), onAction: retry }} />
+        <LoadFailed voice="admin" title={response.kind === 'http' ? t(apiErrorMessages[response.code] ?? apiErrorMessages.INTERNAL) : t(messages.error)} onRetry={retry} />
       ) : sessions.length === 0 ? (
-        <StatusPanel tone="info" title={t(messages.empty)}>
-          <p>{t(messages.emptyHint)}</p>
-          {data?.nextDate && <Button onClick={() => select(data.nextDate!)}>{t(messages.next)}</Button>}
-        </StatusPanel>
+        // Tambah sesi is already in the dock or rail on every admin screen, so the only action here is the next day.
+        <EmptyState scene="no-sessions" title={t(messages.empty)} body={t(messages.emptyHint)}
+          action={data?.nextDate && <Button variant="outlined" onClick={() => select(data.nextDate!)}>{t(messages.next)}</Button>} />
       ) : (
         <ul className="grid gap-3" aria-label={t(messages.heading)}>
           {sessions.map(row => <li key={row.id} data-row-id={row.id}><SessionCard row={row} selected={row.id === panelId}

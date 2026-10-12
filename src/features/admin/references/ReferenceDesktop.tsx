@@ -3,8 +3,9 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { AnimatePresence, m } from 'motion/react'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { ReferenceKind, ReferenceRecord } from '@shared/api/admin-references'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
 import { listRowMotion, selectionSpring } from '@/lib/motion'
 import { cn } from '@/lib/utils'
@@ -85,10 +86,9 @@ function ReferenceSplit({ kind, selected }: { kind: ReferenceKind; selected: str
           <div className="px-2"><ListSearch value={query} onChange={setQuery} label={t(config.search)} placeholder={t(config.search)} busy={list.searching} /></div>
           {list.items.some(row => row.isSample) && <div className="px-2"><SampleDataNotice /></div>}
           {list.status === 'loading' ? (
-            <div className="flex flex-col gap-1"><p role="status" className="sr-only">{t(messages.loading)}</p>
-              {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="appear-late h-16 rounded-md bg-surface-container" />)}</div>
+            <Skeleton shape="list-row" count={3} label={t(messages.loading)} voice="admin" onRetry={list.retry} />
           ) : list.status === 'error' ? (
-            <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
+            <LoadFailed voice="admin" title={t(messages.listLoadError, { noun: t(config.noun) })} onRetry={list.retry} />
           ) : list.total === 0 ? (
             search ? <ListNoMatch query={search} noun={config.noun} /> : <p className="px-2 text-on-surface-variant">{t(archive ? archiveEmpty : config.empty)}</p>
           ) : (

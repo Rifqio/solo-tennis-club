@@ -9,6 +9,7 @@ export const paymentMessages = {
   payBy: { id: 'Bayar sebelum {when}', en: 'Pay by {when}' },
   left: { id: 'sisa {time}', en: '{time} left' },
   loading: { id: 'Memuat pembayaran...', en: 'Loading payment...' },
+  loadErrorTitle: { id: 'Info pembayaran belum bisa dimuat', en: 'Payment details could not be loaded' },
   loadError: { id: 'Info pembayaran belum termuat. Cek koneksi kamu, lalu coba lagi.', en: 'Payment details did not load. Check your connection, then try again.' },
   missing: { id: 'Booking ini nggak ketemu.', en: 'This booking could not be found.' },
   signIn: { id: 'Login dulu buat bayar booking kamu.', en: 'Log in first to pay for your booking.' },

@@ -80,7 +80,11 @@ export function ClubPage() {
         <h2 id="club-courts" className="text-title font-bold">{t(messages.courts)}</h2>
         {!result ? (
           <div aria-hidden="true" className="flex flex-col gap-2">
-            {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-[4.5rem] rounded-sm bg-surface-container" />)}
+            {[0, 1].map(key => (
+              <div key={key} className="skeleton-in flex h-[4.5rem] flex-col justify-center gap-2 rounded-sm bg-surface-container-lowest px-4">
+                <span className="skeleton block h-3.5 w-2/5 rounded-xs" /><span className="skeleton block h-3 w-3/5 rounded-xs" />
+              </div>
+            ))}
           </div>
         ) : result.kind !== 'ok' ? (
           <StatusPanel tone="error" title={t(messages.courtsError)} action={{ label: t(commonMessages.retry), onAction: retry }} />

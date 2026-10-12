@@ -1,7 +1,7 @@
 export const accountMessages = {
   heading: { id: 'Akun', en: 'Account' },
   loading: { id: 'Memuat akun...', en: 'Loading your account...' },
-  error: { id: 'Akun belum bisa dimuat.', en: 'Your account could not be loaded.' },
+  error: { id: 'Akun kamu belum bisa dimuat', en: 'Your account could not be loaded' },
   verified: { id: 'Nomor terverifikasi', en: 'Verified number' },
   editProfile: { id: 'Ubah profil', en: 'Edit profile' },
   played: { id: 'Sesi dimainkan', en: 'Sessions played' },

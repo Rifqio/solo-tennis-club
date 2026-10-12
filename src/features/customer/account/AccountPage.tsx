@@ -6,6 +6,8 @@ import type { CustomerAccountResponse, CustomerPhoneChallengeResponse } from '@s
 import { Button, IconButton } from '@/components/ui/button'
 import { CodeBoxes } from '@/components/ui/code-boxes'
 import { Sheet } from '@/components/ui/sheet'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { TextField } from '@/components/ui/text-field'
 import { useToast } from '@/components/ui/use-toast'
@@ -249,8 +251,8 @@ export function Component() {
     <CourtBand title={t(messages.heading)} />
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4">
       {loaded.status === 'loading'
-        ? <><p role="status" className="sr-only">{t(messages.loading)}</p>{[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-32 rounded-sm bg-surface-container" />)}</>
-        : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
+        ? <Skeleton shape="card" label={t(messages.loading)} onRetry={retry} />
+        : <LoadFailed title={t(messages.error)} onRetry={retry} />}
     </div>
   </>
 

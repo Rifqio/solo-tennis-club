@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
 import { useI18n } from '@/i18n/use-i18n'
 import { AdminBand } from '../shell/AdminBand'
 import { adminBookingsMessages as messages } from './bookings.messages'
@@ -24,9 +25,9 @@ function BookingDetailScreen({ id }: { id: string }) {
     return <>
       <AdminBand title={t(messages.heading)} back={back} />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
-        {!response ? <p role="status" className="appear-late">{t(messages.loading)}</p>
+        {!response ? <Skeleton shape="detail" count={1} label={t(messages.loading)} voice="admin" onRetry={retry} />
           : response.kind === 'http' && response.status === 404 ? <StatusPanel tone="info" title={t(messages.missing)} />
-          : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
+          : <LoadFailed voice="admin" title={t(messages.error)} onRetry={retry} />}
       </div>
     </>
   }

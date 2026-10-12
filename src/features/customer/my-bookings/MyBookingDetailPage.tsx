@@ -2,8 +2,9 @@ import { ErrorPage } from '@/features/errors/ErrorPage'
 import type { ReactNode } from 'react'
 import { ChevronLeft, ExternalLink, MessageCircle } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { clubDateOf } from '@shared/club-time'
@@ -62,8 +63,8 @@ export function Component() {
     return <>
       <Band title={t(messages.heading)} />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
-        {loaded.status === 'loading' ? <p role="status" className="appear-late">{t(messages.loading)}</p>
-          : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
+        {loaded.status === 'loading' ? <Skeleton shape="detail" count={1} label={t(messages.loading)} onRetry={retry} />
+          : <LoadFailed title={t(messages.error)} onRetry={retry} />}
       </div>
     </>
   }

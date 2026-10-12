@@ -2,6 +2,9 @@ import { ChevronRight, Clock3, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { clubDayOfMonth, formatClubTime, formatClubWeekdayShort } from '@/i18n/format'
@@ -209,8 +212,7 @@ export function Component() {
         </section>
         {panelId && <div className="w-[24rem] shrink-0 xl:w-[26rem]"><BookingDetailPanel id={panelId} /></div>}
       </> : loaded.status === 'loading' ? (
-        <div className="flex flex-col gap-3"><p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-28 rounded-sm bg-surface-container" />)}</div>
+        <Skeleton shape="booking-card" label={t(messages.loading)} onRetry={retry} />
       ) : loaded.status === 'signedOut' ? (
         <section className="flex flex-col items-start gap-3 rounded-sm bg-surface-container-lowest p-5">
           <h2 className="text-title font-bold">{t(messages.signInTitle)}</h2>
@@ -218,12 +220,13 @@ export function Component() {
           <Button asChild variant="filled"><Link to={`/customer/sign-in?returnTo=${encodeURIComponent('/bookings')}`} viewTransition data-nav="push">{t(messages.signIn)}</Link></Button>
         </section>
       ) : loaded.status !== 'ready' ? (
-        <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />
+        <LoadFailed title={t(messages.error)} onRetry={retry} />
       ) : shown.length === 0 ? (
-        <section className="flex flex-col items-start gap-3 rounded-sm bg-surface-container-lowest p-5">
-          <p>{t(view === 'history' ? messages.emptyHistory : messages.emptyActive)}</p>
-          {view === 'upcoming' && <Button asChild variant="filled"><Link to="/schedule" viewTransition data-nav="tab">{t(messages.findSession)}</Link></Button>}
-        </section>
+        view === 'history'
+          ? <EmptyState scene="empty-history" title={t(messages.emptyHistory)} body={t(messages.emptyHistoryBody)}
+              action={<Button asChild variant="outlined"><Link to="/schedule" viewTransition data-nav="tab">{t(messages.seeSchedule)}</Link></Button>} />
+          : <EmptyState scene="no-bookings" title={t(messages.emptyActive)} body={t(messages.emptyActiveBody)}
+              action={<Button asChild variant="filled"><Link to="/schedule" viewTransition data-nav="tab">{t(messages.findSession)}</Link></Button>} />
       ) : view === 'upcoming' ? (
         <ul className="flex flex-col gap-3">{shown.map(booking => <li key={booking.id}><ActiveCard booking={booking} now={now} /></li>)}</ul>
       ) : <>

@@ -10,9 +10,10 @@ import { Button } from '@/components/ui/button'
 import { ConnectionBanner } from '@/components/ui/connection-banner'
 import { PopIn } from '@/components/ui/pop-in'
 import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { apiErrorMessages } from '@/i18n/api-error-messages'
-import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatClubWeekdayShort, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { setNavMotion } from '@/lib/nav-motion'
@@ -249,8 +250,8 @@ export function Component() {
     return <>
       <PayBand />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
-        {load.status === 'loading' ? <p role="status" className="appear-late">{t(messages.loading)}</p>
-          : <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
+        {load.status === 'loading' ? <Skeleton shape="detail" count={1} label={t(messages.loading)} onRetry={retry} />
+          : <LoadFailed title={t(messages.loadErrorTitle)} onRetry={retry} />}
       </div>
     </>
   }

@@ -179,4 +179,5 @@ Send one of these in the same chat when a result drifts.
 ## Change log
 
 - 2026-10-12: First version. Empty history uses a courtside bench instead of the tennis-ball can (the user said the can looked like toilet paper). Offline uses a floodlight with its lamps off.
+- 2026-10-12: The six images are in the app as `public/art/states/<name>-640.webp` and `-1200.webp`, shown by `EmptyState` (`src/components/ui/empty-state.tsx`). The sources stay out of the repo, in `data/sheets/`.
 - 2026-10-12: "How to use" spells out the two steps (sheet first, then one prompt per chat with the sheet attached). The style reference points at the local `.planning/alphabet-0.jpeg`.

@@ -1,7 +1,10 @@
 import { ChevronRight } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
+import { BookingsEmpty } from './BookingsEmpty'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
@@ -66,7 +69,6 @@ function BookingsScreen() {
   const data = list.data
   const items = list.items
   const today = data ? clubDateOf(new Date(data.serverNow)) : clubDateOf(new Date())
-  const empty = filter === 'review' ? messages.emptyReview : filter === 'unpaid' ? messages.emptyUnpaid : filter === 'confirmed' ? messages.emptyConfirmed : messages.emptyAll
 
   return <>
     <AdminBand title={t(messages.heading)}>
@@ -74,12 +76,11 @@ function BookingsScreen() {
     </AdminBand>
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-4 py-4">
       {list.status === 'loading' ? (
-        <div className="flex flex-col gap-2"><p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-36 rounded-sm bg-surface-container" />)}</div>
+        <Skeleton shape="booking-card" count={3} label={t(messages.loading)} voice="admin" onRetry={list.retry} />
       ) : list.status === 'error' || !data ? (
-        <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
+        <LoadFailed voice="admin" title={t(messages.error)} onRetry={list.retry} />
       ) : items.length === 0 ? (
-        <p className="rounded-sm bg-surface-container-lowest p-5">{t(empty)}</p>
+        <BookingsEmpty filter={filter} />
       ) : <>
         {groupBookings(items, filter, today, language).map(group => (
           <section key={group.key} className="flex flex-col gap-2">

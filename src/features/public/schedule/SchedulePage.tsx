@@ -2,9 +2,10 @@ import { AnimatePresence, LayoutGroup, m, useReducedMotion } from 'motion/react'
 import type { PanInfo } from 'motion/react'
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { useSearchParams } from 'react-router-dom'
-import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
+import { Link, useSearchParams } from 'react-router-dom'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { SlowNotice } from '@/components/ui/slow-notice'
 import { clubDayOfMonth, formatClubDateLong, formatClubDateMedium, formatClubMonthShort, formatClubMonthYear, formatClubWeekdayShort } from '@/i18n/format'
 import type { Language } from '@/i18n/types'
 import { useI18n } from '@/i18n/use-i18n'
@@ -25,7 +26,6 @@ import { useSchedule } from './use-schedule'
 import { DetailSheetHost } from './DetailSheetHost'
 import type { DetailSheetHandle } from './DetailSheetHost'
 import { CourtBand } from '../layout/CourtBand'
-import { CourtLines } from '@/components/brand/court-lines'
 import { ALL_LEVELS, AvailableOnlySwitch, LevelTabs, TimeChips } from './ScheduleFilters'
 import { isUnavailable } from './session-booking'
 import { useSessionPlayers } from './use-session-players'
@@ -208,36 +208,36 @@ export function SchedulePage() {
               <>
                 <p role="status" className="sr-only">{t(scheduleMessages.loadingFor, { date: selectedLabel })}</p>
                 <ScheduleListPlaceholder />
+                <SlowNotice onRetry={schedule.retry} />
               </>
             ) : schedule.status === 'error' ? (
-              <StatusPanel tone="error" title={t(scheduleMessages.error)} action={{ label: t(commonMessages.retry), onAction: schedule.retry }}>
-                <p>{t(scheduleMessages.errorFor, { date: selectedLabel })}</p>
-              </StatusPanel>
+              <LoadFailed title={t(scheduleMessages.errorFor, { date: selectedLabel })} onRetry={schedule.retry} />
             ) : sessionCount === 0 ? (
-              <div role="status" className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-sm bg-surface-container-lowest p-5">
-                <CourtLines className="pointer-events-none absolute -right-16 -top-10 -z-10 h-56 text-on-surface/8" />
-                <div className="flex flex-col gap-1">
-                  <p className="text-title font-bold text-on-surface">{t(scheduleMessages.emptyHeading)}</p>
-                  {schedule.data.nextDate === null && <p className="text-on-surface-variant">{t(scheduleMessages.emptyNoFuture)}</p>}
-                </div>
-                {schedule.data.nextDate !== null && (
-                  // The next post on the trail: one control carrying the next scheduled day.
-                  <button
-                    type="button"
-                    onClick={() => selectDate(schedule.data.nextDate!)}
-                    className="state-layer pressable flex w-full max-w-md items-center gap-4 rounded-sm bg-cta p-2 pr-5 text-left text-on-cta"
-                  >
-                    <span aria-hidden="true" className="flex w-14 shrink-0 flex-col items-center rounded-xs bg-primary px-1 py-2 text-on-primary">
-                      <span className="text-label font-bold">{formatClubWeekdayShort(schedule.data.nextDate, language)}</span>
-                      <span className="text-title font-bold tabular-nums">{clubDayOfMonth(schedule.data.nextDate)}</span>
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="text-label">{t(scheduleMessages.emptyShortcut)}</span>
-                      <span className="font-semibold">{formatClubDateMedium(schedule.data.nextDate, language)}</span>
-                    </span>
-                  </button>
-                )}
-              </div>
+              // The day already slides in, so the picture does not settle in on top of it.
+              schedule.data.nextDate !== null ? (
+                <EmptyState scene="no-sessions" still title={t(scheduleMessages.emptyHeading)}
+                  body={t(scheduleMessages.emptyNext, { date: formatClubDateMedium(schedule.data.nextDate, language) })}
+                  action={
+                    // The next post on the trail: one control carrying the next scheduled day.
+                    <button
+                      type="button"
+                      onClick={() => selectDate(schedule.data.nextDate!)}
+                      className="state-layer pressable flex w-full max-w-sm items-center gap-4 rounded-sm bg-cta p-2 pr-5 text-left text-on-cta"
+                    >
+                      <span aria-hidden="true" className="flex w-14 shrink-0 flex-col items-center rounded-xs bg-primary px-1 py-2 text-on-primary">
+                        <span className="text-label font-bold">{formatClubWeekdayShort(schedule.data.nextDate, language)}</span>
+                        <span className="text-title font-bold tabular-nums">{clubDayOfMonth(schedule.data.nextDate)}</span>
+                      </span>
+                      <span className="flex flex-col">
+                        <span className="text-label">{t(scheduleMessages.emptyShortcut)}</span>
+                        <span className="font-semibold">{formatClubDateMedium(schedule.data.nextDate, language)}</span>
+                      </span>
+                    </button>
+                  } />
+              ) : (
+                <EmptyState scene="no-sessions" still title={t(scheduleMessages.emptyNoFutureTitle)} body={t(scheduleMessages.emptyNoFuture)}
+                  action={<Button asChild variant="outlined"><Link to="/" viewTransition data-nav="tab">{t(scheduleMessages.seeClub)}</Link></Button>} />
+              )
             ) : (
               <>
                 {schedule.data.sessions.some(session => session.isSample) && <SampleDataNotice />}

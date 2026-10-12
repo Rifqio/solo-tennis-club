@@ -3,6 +3,7 @@ export const adminMessages = {
   add: { id: 'Tambah', en: 'Add' }, edit: { id: 'Ubah', en: 'Edit' }, cancel: { id: 'Kembali', en: 'Back' }, name: { id: 'Nama', en: 'Name' },
   address: { id: 'Alamat (opsional)', en: 'Address (optional)' }, loading: { id: 'Memuat data...', en: 'Loading records...' },
   loadError: { id: 'Data belum dapat dimuat. Coba lagi.', en: 'Records could not be loaded. Try again.' },
+  listLoadError: { id: 'Daftar {noun} belum dapat dimuat', en: 'The list of {noun} could not be loaded' },
   saveError: { id: 'Penyimpanan belum dapat dipastikan. Isian tetap tersedia. Coba simpan lagi.', en: 'The save could not be confirmed. Your entries are preserved. Try saving again.' },
   conflictTitle: { id: 'Belum tersimpan.', en: 'Not saved.' },
   conflict: { id: 'Admin lain baru mengubah data ini. Bandingkan dengan isian Anda, lalu gunakan versi terbaru sebelum menyimpan.', en: 'Another admin just changed this. Compare it with your input, then use the latest version before saving.' },

@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import { Images, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
@@ -20,7 +22,7 @@ import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
 const copy = {
   label: { id: 'Peserta', en: 'Players' },
   loading: { id: 'Memuat daftar peserta...', en: 'Loading the players...' },
-  error: { id: 'Daftar peserta belum bisa dimuat.', en: 'The players could not be loaded.' },
+  error: { id: 'Daftar peserta belum bisa dimuat', en: 'The players could not be loaded' },
   taken: { id: 'Terisi', en: 'Taken' },
   edit: { id: 'Ubah sesi', en: 'Edit session' },
   photos: { id: 'Foto', en: 'Photos' },
@@ -29,7 +31,8 @@ const copy = {
   all: { id: 'Semua', en: 'All' },
   unpaid: { id: 'Belum bayar', en: 'Awaiting payment' },
   lapsed: { id: 'Lewat batas', en: 'Past deadline' },
-  empty: { id: 'Belum ada yang booking sesi ini.', en: 'Nobody has booked this session yet.' },
+  empty: { id: 'Belum ada peserta', en: 'No players yet' },
+  emptyBody: { id: 'Peserta muncul di sini begitu ada yang booking.', en: 'Players show up here as soon as someone books.' },
   emptyFilter: { id: 'Nggak ada booking dengan status ini.', en: 'No bookings with this status.' },
   truncated: { id: 'Daftarnya panjang, jadi baru sebagian yang tampil.', en: 'The list is long, so only part of it is shown.' },
   cancelled: { id: 'Sesi ini dibatalkan.', en: 'This session is cancelled.' },
@@ -66,8 +69,8 @@ export function RosterPanel({ id }: { id: string }) {
     return (
       <m.aside aria-label={t(copy.label)} {...enter} className={cn(frame, 'p-6')}>
         {!response
-          ? <><p role="status" className="sr-only">{t(copy.loading)}</p><div aria-hidden="true" className="appear-late flex flex-col gap-3">{[0, 1, 2].map(key => <div key={key} className="h-20 rounded-sm bg-surface-container" />)}</div></>
-          : <StatusPanel tone="error" title={t(copy.error)} action={{ label: t(commonMessages.retry), onAction: () => { setResult(null); setAttempt(value => value + 1) } }} />}
+          ? <Skeleton shape="roster-row" count={4} label={t(copy.loading)} voice="admin" onRetry={() => { setResult(null); setAttempt(value => value + 1) }} />
+          : <LoadFailed voice="admin" title={t(copy.error)} onRetry={() => { setResult(null); setAttempt(value => value + 1) }} />}
       </m.aside>
     )
   }
@@ -101,7 +104,7 @@ export function RosterPanel({ id }: { id: string }) {
       </div>
       <div className="flex flex-col gap-3 p-6">
         {session.status !== 'scheduled' && <StatusPanel tone="info" title={t(copy.cancelled)} />}
-        {data.bookings.length === 0 ? <p className="text-on-surface-variant">{t(copy.empty)}</p> : <>
+        {data.bookings.length === 0 ? <EmptyState scene="no-bookings" compact title={t(copy.empty)} body={t(copy.emptyBody)} /> : <>
           <div role="group" aria-label={t(copy.filter)} className="isolate flex flex-wrap gap-2">
             {filters.map(value => {
               const on = filter === value

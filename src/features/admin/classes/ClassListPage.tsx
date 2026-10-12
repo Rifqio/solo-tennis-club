@@ -6,7 +6,8 @@ import type { ClassRecord } from '@shared/api/admin-classes'
 import { useI18n } from '@/i18n/use-i18n'
 import { listRowMotion } from '@/lib/motion'
 import { formatIdr } from '@/i18n/format'
-import { commonMessages } from '@/i18n/common.messages'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { SampleDataNotice } from '@/features/public/schedule/SampleDataNotice'
 import { useAdminList, useSettledSearch } from '../forms/use-admin-list'
@@ -52,10 +53,9 @@ export function ClassListPage() {
       <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} busy={list.searching} />
       {list.items.some(row => row.isSample) && <SampleDataNotice />}
       {list.status === 'loading' ? (
-        <div className="flex flex-col gap-2.5"><p role="status" className="sr-only">{t(messages.loading)}</p>
-          {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-36 rounded-sm bg-surface-container" />)}</div>
+        <Skeleton shape="card" count={2} label={t(messages.loading)} voice="admin" onRetry={list.retry} />
       ) : list.status === 'error' ? (
-        <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
+        <LoadFailed voice="admin" title={t(messages.listLoadError, { noun: t(copy.noun) })} onRetry={list.retry} />
       ) : list.total === 0 ? (
         search ? <ListNoMatch query={search} noun={copy.noun} /> : <StatusPanel tone="info" title={t(copy.empty)} />
       ) : (

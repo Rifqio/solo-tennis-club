@@ -29,16 +29,16 @@ export function ScheduleList({ sessions, timings, now, markedId, players, onOpen
   )
 }
 
-// Static placeholders shaped like scoreboard cards while a date loads; no shimmer or pulse.
+// Placeholders shaped like scoreboard cards while a date loads (G3 skeleton: 300ms wait, then one soft sweep).
 export function ScheduleListPlaceholder() {
   return (
-    <ul aria-hidden="true" className="appear-late grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6">
+    <ul aria-hidden="true" className="skeleton-in grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6">
       {[0, 1, 2].map(index => (
         <li key={index} className="flex flex-col gap-3 rounded-sm bg-surface-container-lowest p-4">
-          <div className="flex gap-0.5"><div className="size-12 rounded-xs bg-surface-container-high" /><div className="ml-2 size-12 rounded-xs bg-surface-container-high" /></div>
-          <div className="h-6 w-3/4 rounded-xs bg-surface-container-high" />
-          <div className="h-4 w-1/2 rounded-xs bg-surface-container" />
-          <div className="h-4 w-2/5 rounded-xs bg-surface-container" />
+          <div className="flex gap-0.5"><div className="skeleton size-12 rounded-xs" /><div className="skeleton ml-2 size-12 rounded-xs" /></div>
+          <div className="skeleton h-6 w-3/4 rounded-xs" />
+          <div className="skeleton h-4 w-1/2 rounded-xs" />
+          <div className="skeleton h-4 w-2/5 rounded-xs" />
         </li>
       ))}
     </ul>

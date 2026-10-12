@@ -50,7 +50,7 @@ test('E8 loading and failures stay distinct from an empty list; retry loads real
   await expect(page.getByText('Memuat sesi...')).toBeVisible()
   release()
   await expect(page.getByRole('alert')).toContainText('Terjadi kendala di server')
-  await expect(page.getByText('Belum ada sesi pada tanggal ini.')).toHaveCount(0)
+  await expect(page.getByText('Belum ada sesi pada tanggal ini')).toHaveCount(0)
   await page.unroute('**/api/admin/sessions?**')
   await page.route('**/api/admin/sessions?**', route => route.fulfill({ json: response([fixture(1)]) }))
   await page.getByRole('button', { name: 'Coba lagi' }).click()
@@ -60,7 +60,7 @@ test('E8 loading and failures stay distinct from an empty list; retry loads real
 for (const count of [0, 1, 3]) test(`E8 zero/one/many list: ${count} records`, async ({ page }) => {
   await page.route('**/api/admin/sessions?**', route => route.fulfill({ json: response(Array.from({ length: count }, (_, i) => fixture(i))) }))
   await page.goto('/admin/sessions')
-  if (!count) await expect(page.getByText('Belum ada sesi pada tanggal ini.')).toBeVisible()
+  if (!count) await expect(page.getByText('Belum ada sesi pada tanggal ini')).toBeVisible()
   else await expect(page.getByRole('heading', { name: /^Contoh kelas/ })).toHaveCount(count)
   await expect(page.getByRole('link', { name: 'Tambah sesi', exact: true })).toBeVisible()
 })

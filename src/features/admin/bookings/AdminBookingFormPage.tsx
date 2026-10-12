@@ -3,11 +3,12 @@ import { Clock, Phone, UserRound } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { m, useReducedMotion } from 'motion/react'
 import { Button } from '@/components/ui/button'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { StepperField } from '@/components/ui/stepper-field'
 import { TextField } from '@/components/ui/text-field'
 import { apiErrorMessages, fieldErrorMessage } from '@/i18n/api-error-messages'
-import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
@@ -40,9 +41,9 @@ export function Component() {
     return <>
       <AdminBand title={t(messages.title)} back={back} />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
-        {!response ? <p role="status" className="appear-late">{t(messages.loading)}</p>
+        {!response ? <Skeleton shape="detail" count={1} label={t(messages.loading)} voice="admin" onRetry={options.retry} />
           : response.kind === 'http' && response.status === 404 ? <StatusPanel tone="info" title={t(messages.missing)} />
-          : <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: options.retry }} />}
+          : <LoadFailed voice="admin" title={t(messages.loadError)} onRetry={options.retry} />}
       </div>
     </>
   }

@@ -1,7 +1,8 @@
 import { ExternalLink, MessageCircle } from 'lucide-react'
 import { m, useReducedMotion } from 'motion/react'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
@@ -32,12 +33,10 @@ export function BookingDetailPanel({ id }: { id: string }) {
   if (loaded.status !== 'ready') {
     return (
       <m.aside aria-label={t(messages.heading)} {...panelEnter(reduceMotion)} className={frame}>
-        {loaded.status === 'loading' ? <div aria-hidden="true" className="appear-late flex flex-col gap-3">
-          <div className="h-6 w-24 rounded-full bg-surface-container-high" /><div className="h-8 w-2/3 rounded-xs bg-surface-container-high" /><div className="h-24 rounded-md bg-surface-container" />
-        </div>
+        {loaded.status === 'loading' ? <Skeleton shape="detail" count={1} label={t(messages.loading)} onRetry={retry} />
           : loaded.status === 'missing' ? <StatusPanel tone="info" title={t(messages.missing)} />
           : loaded.status === 'signedOut' ? <StatusPanel tone="info" title={t(messages.signInTitle)} action={{ label: t(messages.signIn), onAction: () => { setNavMotion('push'); navigate(`/customer/sign-in?returnTo=${encodeURIComponent('/bookings')}`, { viewTransition: true }) } }} />
-          : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
+          : <LoadFailed title={t(messages.error)} onRetry={retry} />}
       </m.aside>
     )
   }

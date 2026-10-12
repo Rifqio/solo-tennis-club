@@ -2,7 +2,9 @@ import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Scoreboard } from '@/components/ui/scoreboard'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Sheet } from '@/components/ui/sheet'
+import { SlowNotice } from '@/components/ui/slow-notice'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
 import { clubDayOfMonth, formatClubDateMedium, formatClubWeekdayShort, formatRemainingPlaces } from '@/i18n/format'
@@ -48,18 +50,21 @@ export function BookSheet({ open, onClose }: { open: boolean; onClose: () => voi
       {upcoming.status === 'loading' ? (
         <>
           <p role="status" className="sr-only">{t(publicMessages.bookSheetLoading)}</p>
-          <ul aria-hidden="true" className="appear-late flex flex-col gap-2">
-            {[0, 1, 2].map(index => <li key={index} className="h-18 rounded-sm bg-surface-container" />)}
+          <ul aria-hidden="true" className="skeleton-in flex flex-col gap-2">
+            {[0, 1, 2].map(index => (
+              <li key={index} className="flex min-h-18 items-center gap-3 rounded-sm bg-surface-container-lowest p-2 pr-3">
+                <span className="skeleton h-13 w-12 shrink-0 rounded-xs" />
+                <span className="flex flex-1 flex-col gap-2"><span className="skeleton h-3.5 w-3/5 rounded-xs" /><span className="skeleton h-3 w-2/5 rounded-xs" /></span>
+              </li>
+            ))}
           </ul>
+          <SlowNotice onRetry={upcoming.retry} />
         </>
       ) : upcoming.status === 'error' ? (
         <StatusPanel tone="error" title={t(publicMessages.bookSheetError)} action={{ label: t(commonMessages.retry), onAction: upcoming.retry }} />
       ) : upcoming.data.sessions.length === 0 ? (
-        <div role="status" className="flex flex-col items-start gap-3">
-          <p className="text-title font-semibold text-on-surface">{t(publicMessages.bookSheetEmpty)}</p>
-          <p className="text-on-surface-variant">{t(publicMessages.bookSheetEmptyBody)}</p>
-          <Button asChild variant="outlined"><Link to="/schedule" viewTransition data-nav="tab" onClick={onClose}>{t(publicMessages.seeSchedule)}</Link></Button>
-        </div>
+        <EmptyState scene="no-sessions" compact title={t(publicMessages.bookSheetEmpty)} body={t(publicMessages.bookSheetEmptyBody)}
+          action={<Button asChild variant="outlined"><Link to="/schedule" viewTransition data-nav="tab" onClick={onClose}>{t(publicMessages.seeSchedule)}</Link></Button>} />
       ) : (
         <>
           <ul className="flex flex-col gap-2">

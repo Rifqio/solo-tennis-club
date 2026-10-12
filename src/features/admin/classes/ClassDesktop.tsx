@@ -3,8 +3,9 @@ import { Link, useLocation } from 'react-router-dom'
 import { AnimatePresence, m } from 'motion/react'
 import { Plus } from 'lucide-react'
 import type { ClassRecord } from '@shared/api/admin-classes'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
 import { formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { listRowMotion, selectionSpring } from '@/lib/motion'
@@ -62,10 +63,9 @@ export function ClassDesktop({ selected }: { selected: string | null }) {
         <ListSearch value={query} onChange={setQuery} label={t(copy.search)} placeholder={t(copy.search)} busy={list.searching} />
         {list.items.some(row => row.isSample) && <SampleDataNotice />}
         {list.status === 'loading' ? (
-          <div className="flex flex-col gap-3"><p role="status" className="sr-only">{t(messages.loading)}</p>
-            {[0, 1].map(key => <div key={key} aria-hidden="true" className="appear-late h-36 rounded-lg bg-surface-container" />)}</div>
+          <Skeleton shape="card" count={2} label={t(messages.loading)} voice="admin" onRetry={list.retry} />
         ) : list.status === 'error' ? (
-          <StatusPanel tone="error" title={t(messages.loadError)} action={{ label: t(commonMessages.retry), onAction: list.retry }} />
+          <LoadFailed voice="admin" title={t(messages.listLoadError, { noun: t(copy.noun) })} onRetry={list.retry} />
         ) : list.total === 0 ? (
           search ? <ListNoMatch query={search} noun={copy.noun} /> : <StatusPanel tone="info" title={t(copy.empty)} />
         ) : (

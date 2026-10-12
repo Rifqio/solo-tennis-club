@@ -5,7 +5,10 @@ import { Search, X } from 'lucide-react'
 import type { AdminBookingFilter } from '@shared/api/admin-bookings'
 import { clubDateOf } from '@shared/club-time'
 import { Button, IconButton } from '@/components/ui/button'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
+import { BookingsEmpty } from './BookingsEmpty'
 import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
@@ -79,12 +82,11 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
     <div className="desk-column flex items-start py-5">
       <section aria-label={t(messages.heading)} aria-busy={list.searching} className="min-w-0 flex-1 overflow-hidden rounded-lg bg-surface-container-lowest">
         {list.status === 'loading' ? (
-          <div className="flex flex-col gap-2 p-6"><p role="status" className="sr-only">{t(messages.loading)}</p>
-            {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="appear-late h-14 rounded-sm bg-surface-container" />)}</div>
+          <Skeleton shape="table-row" count={4} label={t(messages.loading)} voice="admin" onRetry={list.retry} className="p-6" />
         ) : list.status === 'error' ? (
-          <div className="p-6"><StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: list.retry }} /></div>
+          <LoadFailed voice="admin" title={t(messages.error)} onRetry={list.retry} className="p-6" />
         ) : list.items.length === 0 ? (
-          <p className="p-6 text-on-surface-variant">{search ? t(copy.noMatch, { query: search }) : t(filter === 'review' ? messages.emptyReview : filter === 'unpaid' ? messages.emptyUnpaid : filter === 'confirmed' ? messages.emptyConfirmed : messages.emptyAll)}</p>
+          search ? <p className="p-6 text-on-surface-variant">{t(copy.noMatch, { query: search })}</p> : <BookingsEmpty filter={filter} />
         ) : <>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[40rem] border-collapse">
@@ -168,9 +170,9 @@ export function AdminBookingsDesktop({ openId }: { openId: string | null }) {
               })() : (
                 <div className="flex flex-col gap-3 p-6">
                   <div className="flex justify-end"><IconButton label={t(copy.close)} onClick={close}><X aria-hidden="true" className="size-5" /></IconButton></div>
-                  {!detail.response ? <p role="status" className="appear-late">{t(messages.loading)}</p>
+                  {!detail.response ? <Skeleton shape="detail" count={1} label={t(messages.loading)} voice="admin" onRetry={detail.retry} />
                     : detail.response.kind === 'http' && detail.response.status === 404 ? <StatusPanel tone="info" title={t(messages.missing)} />
-                    : <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: detail.retry }} />}
+                    : <LoadFailed voice="admin" title={t(messages.error)} onRetry={detail.retry} />}
                 </div>
               )}
             </aside>

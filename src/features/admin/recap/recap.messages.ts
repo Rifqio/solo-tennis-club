@@ -29,7 +29,8 @@ export const recapMessages = {
   colFill: { id: 'Terisi', en: 'Filled' },
   colRevenue: { id: 'Pendapatan', en: 'Revenue' },
   export: { id: 'Ekspor ke Excel', en: 'Export to Excel' },
-  empty: { id: 'Belum ada sesi pada {month}.', en: 'No sessions in {month}.' },
+  empty: { id: 'Belum ada sesi pada {month}', en: 'No sessions in {month}' },
+  emptyBody: { id: 'Angka bulan ini muncul begitu ada sesi.', en: 'The numbers for this month show up once there are sessions.' },
   loading: { id: 'Memuat rekap...', en: 'Loading the recap...' },
-  error: { id: 'Rekap belum dapat dimuat.', en: 'The recap could not be loaded.' },
+  error: { id: 'Rekap belum dapat dimuat', en: 'The recap could not be loaded' },
 }

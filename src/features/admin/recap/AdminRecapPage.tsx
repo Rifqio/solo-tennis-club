@@ -4,8 +4,9 @@ import { Link, useSearchParams } from 'react-router-dom'
 import type { AdminRecapClassRow, AdminRecapResponse } from '@shared/api/admin-recap'
 import { addClubMonths, clubMonthOf, isClubMonth } from '@shared/club-time'
 import { Button } from '@/components/ui/button'
-import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { formatClubDayRange, formatClubMonthShort, formatClubMonthYear, formatIdr } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { useMediaQuery } from '@/lib/use-media-query'
@@ -229,12 +230,14 @@ export function Component() {
     <div className="page-gutter desk-column mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:gap-4 lg:pt-5">
       {!recap ? (
         response && response.kind !== 'ok' && response.kind !== 'aborted'
-          ? <StatusPanel tone="error" title={t(messages.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />
-          : <div className="flex flex-col gap-3"><p role="status" className="sr-only">{t(messages.loading)}</p>
-              {[0, 1, 2].map(key => <div key={key} aria-hidden="true" className="appear-late h-28 rounded-sm bg-surface-container" />)}</div>
+          ? <LoadFailed voice="admin" title={t(messages.error)} onRetry={retry} />
+          : <Skeleton shape="card" count={3} label={t(messages.loading)} voice="admin" onRetry={retry} />
       ) : <>
         <m.div key={month} {...stepEnter(direction, reduceMotion)} className="flex flex-col gap-3 lg:gap-4">
-          {empty ? <StatusPanel tone="info" title={t(messages.empty, { month: formatClubMonthYear(`${month}-01`, language) })} /> : (
+          {empty ? (
+            // The month already slides in from the side, so the picture does not settle in on top of it.
+            <EmptyState scene="empty-history" still title={t(messages.empty, { month: formatClubMonthYear(`${month}-01`, language) })} body={t(messages.emptyBody)} />
+          ) : (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
               <RevenueCard recap={recap} />
               <PendingRow recap={recap} />

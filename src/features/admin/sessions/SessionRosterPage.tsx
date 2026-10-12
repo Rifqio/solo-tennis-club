@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Images, MessageCircle, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadFailed } from '@/components/ui/load-failed'
+import { Skeleton } from '@/components/ui/skeleton'
 import { StatusPanel } from '@/components/ui/status-panel'
-import { commonMessages } from '@/i18n/common.messages'
 import { formatClubDateShort, formatClubTime } from '@/i18n/format'
 import { useI18n } from '@/i18n/use-i18n'
 import { cn } from '@/lib/utils'
@@ -22,7 +24,7 @@ const copy = {
   back: { id: 'Sesi', en: 'Sessions' },
   title: { id: 'Peserta', en: 'Players' },
   loading: { id: 'Memuat daftar peserta...', en: 'Loading the players...' },
-  error: { id: 'Daftar peserta belum bisa dimuat.', en: 'The players could not be loaded.' },
+  error: { id: 'Daftar peserta belum bisa dimuat', en: 'The players could not be loaded' },
   time: { id: 'Jam (WIB)', en: 'Time (WIB)' },
   filled: { id: 'Terisi · Min {min}', en: 'Taken · Min {min}' },
   slots: { id: '{used} / {max} slot', en: '{used} / {max} slots' },
@@ -38,7 +40,8 @@ const copy = {
   lapsedAt: { id: 'Lewat {time} WIB, slot dilepas', en: 'Passed {time} WIB, slots released' },
   chat: { id: 'Chat {name} di WhatsApp', en: 'Chat {name} on WhatsApp' },
   players: { id: 'Pemain', en: 'Players' },
-  empty: { id: 'Belum ada yang booking sesi ini.', en: 'Nobody has booked this session yet.' },
+  empty: { id: 'Belum ada peserta', en: 'No players yet' },
+  emptyBody: { id: 'Peserta muncul di sini begitu ada yang booking.', en: 'Players show up here as soon as someone books.' },
   emptyFilter: { id: 'Nggak ada booking dengan status ini.', en: 'No bookings with this status.' },
   truncated: { id: 'Daftarnya panjang, jadi baru sebagian yang tampil.', en: 'The list is long, so only part of it is shown.' },
   cancelled: { id: 'Sesi ini dibatalkan.', en: 'This session is cancelled.' },
@@ -114,8 +117,8 @@ export function Component() {
       <AdminBand title={t(copy.title)} back={back} />
       <div className="page-gutter mx-auto w-full max-w-[50rem] py-4">
         {!response
-          ? <><p role="status" className="sr-only">{t(copy.loading)}</p><div aria-hidden="true" className="appear-late flex flex-col gap-3">{[0, 1, 2].map(key => <div key={key} className="h-28 rounded-sm bg-surface-container" />)}</div></>
-          : <StatusPanel tone="error" title={t(copy.error)} action={{ label: t(commonMessages.retry), onAction: retry }} />}
+          ? <Skeleton shape="roster-row" count={4} label={t(copy.loading)} voice="admin" onRetry={retry} />
+          : <LoadFailed voice="admin" title={t(copy.error)} onRetry={retry} />}
       </div>
     </>
   }
@@ -152,7 +155,7 @@ export function Component() {
           <Link to={`/admin/sessions/${encodeURIComponent(id)}/book`} viewTransition data-nav="push"><Plus aria-hidden="true" className="size-5" />{t(copy.record)}</Link>
         </Button>
       )}
-      {data.bookings.length === 0 ? <StatusPanel tone="info" title={t(copy.empty)} /> : <>
+      {data.bookings.length === 0 ? <EmptyState scene="no-bookings" title={t(copy.empty)} body={t(copy.emptyBody)} /> : <>
         <div role="group" aria-label={t(copy.filter)} className="isolate flex flex-wrap gap-2">
           {filters.map(value => {
             const on = filter === value

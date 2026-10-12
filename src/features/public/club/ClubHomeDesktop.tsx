@@ -237,7 +237,12 @@ function NextSessions() {
         <Link to="/schedule" viewTransition data-nav="tab" className="flex min-h-12 items-center gap-1.5 font-semibold text-primary">{t(messages.allSchedule)}<ArrowRight aria-hidden="true" className="size-4" strokeWidth={2.25} /></Link>
       </div>
       {upcoming.status === 'loading' ? (
-        <ul aria-hidden="true" className="appear-late grid grid-cols-3 gap-6">{[0, 1, 2].map(key => <li key={key} className="h-40 rounded-lg bg-surface-container" />)}</ul>
+        <ul aria-hidden="true" className="skeleton-in grid grid-cols-3 gap-6">{[0, 1, 2].map(key => (
+          <li key={key} className="flex h-40 flex-col gap-3 rounded-lg bg-surface-container-lowest p-5">
+            <span className="flex gap-0.5"><span className="skeleton size-12 rounded-xs" /><span className="skeleton ml-2 size-12 rounded-xs" /></span>
+            <span className="skeleton h-5 w-3/4 rounded-xs" /><span className="skeleton h-3.5 w-1/2 rounded-xs" />
+          </li>
+        ))}</ul>
       ) : upcoming.status === 'error' ? (
         <StatusPanel tone="error" title={t(messages.nextError)} action={{ label: t(commonMessages.retry), onAction: upcoming.retry }} />
       ) : sessions.length === 0 ? (

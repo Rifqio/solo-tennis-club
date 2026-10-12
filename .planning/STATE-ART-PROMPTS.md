@@ -16,15 +16,29 @@ Status: drafted 2026-10-12. These replace the Figma "Matchday stills" set (Figma
 
 ## How to use
 
-1. Attach the style reference image (see below) to the chat.
-2. Run [prompt 1](#1-full-set-on-one-sheet). Generating all six together keeps them looking like one series.
-3. When the sheet looks right, run each prompt in [section 2](#2-single-illustrations) with the sheet attached, so every single image matches it.
-4. If a result drifts, send a follow-up from [section 3](#3-fix-up-follow-ups).
-5. Save each final image under the file name in [the table](#the-illustrations) and hand them to Claude to build into the app.
+There are two steps: first one image with all six scenes, then each scene on its own.
+
+**Step 1: the sheet.**
+
+1. Attach the [style reference](#style-reference) image to a Gemini chat.
+2. Paste [prompt 1](#1-full-set-on-one-sheet). Gemini returns one image with all six scenes in a 3×2 grid. This is the "sheet".
+3. Download the sheet. Drawing all six together keeps them in one style; the tiles are too small to use in the app.
+
+**Step 2: the six single images.** For each prompt in [section 2](#2-single-illustrations):
+
+1. Start a new Gemini chat. A new chat keeps earlier images from leaking into the next one.
+2. Attach the **sheet from step 1**, not the Dribbble image, so all six match each other.
+3. Paste only that one prompt.
+4. If the result drifts, send a follow-up from [section 3](#3-fix-up-follow-ups) in the same chat.
+5. Save the image under its file name from [the table](#the-illustrations).
+
+You can also stay in one chat and send the six prompts one after another, each as its own message. Later images may drift toward earlier ones, so section 3 matters more there.
+
+When all six are saved, hand them to Claude to build into the app.
 
 ## Style reference
 
-The style comes from **"The Alphabet of tennis" by Mijke Coebergh** on Dribbble. A screenshot is in the session scratchpad as `refs/alphabet.png`; copy it next to this file if you want to keep it. What we take from it:
+The style comes from **"The Alphabet of tennis" by Mijke Coebergh** on Dribbble. Use the full artwork, kept locally as `.planning/alphabet-0.jpeg`. It is the artist's work, so it is not committed to the repo: if the file is missing, save it again from the Dribbble shot. What we take from it:
 
 - flat shapes with no outlines;
 - one soft light source and crisp, flat cast shadows;
@@ -84,7 +98,7 @@ Make all six feel like one series by one illustrator: the same flat style, palet
 
 ## 2. Single illustrations
 
-Attach the sheet from prompt 1, then paste one prompt per chat (or per turn).
+For each one: open a new chat, attach the sheet you downloaded in step 1, and paste only that prompt (see [How to use](#how-to-use)).
 
 ### 2.1 No bookings yet → `no-bookings.webp`
 
@@ -165,3 +179,4 @@ Send one of these in the same chat when a result drifts.
 ## Change log
 
 - 2026-10-12: First version. Empty history uses a courtside bench instead of the tennis-ball can (the user said the can looked like toilet paper). Offline uses a floodlight with its lamps off.
+- 2026-10-12: "How to use" spells out the two steps (sheet first, then one prompt per chat with the sheet attached). The style reference points at the local `.planning/alphabet-0.jpeg`.

@@ -19,6 +19,7 @@ const router = createBrowserRouter([
           { path: 'sessions/:id/edit', lazy: () => import('./features/admin/sessions/SessionEditorPage') },
           { path: 'sessions/:id/roster', lazy: () => import('./features/admin/sessions/SessionRosterPage') },
           { path: 'sessions/:id/book', lazy: () => import('./features/admin/bookings/AdminBookingFormPage') },
+          { path: 'sessions/:id/photos', lazy: () => import('./features/admin/photos/AdminAlbumPage') },
           { lazy: () => import('./features/admin/bookings/bookings-route'), children: [
             { path: 'bookings', lazy: () => import('./features/admin/bookings/AdminBookingsPage') },
             { path: 'bookings/:id', lazy: () => import('./features/admin/bookings/AdminBookingDetailPage') },
@@ -53,6 +54,8 @@ const router = createBrowserRouter([
       { path: '/bookings/:id', lazy: () => import('./features/customer/my-bookings/MyBookingDetailPage') },
       { path: '/bookings/:id/pay', lazy: () => import('./features/customer/payments/PayPage') },
       { path: '/account', lazy: () => import('./features/customer/account/AccountPage') },
+      { path: '/photos', lazy: () => import('./features/photos/AlbumsPage') },
+      { path: '/sessions/:id/photos', lazy: () => import('./features/photos/AlbumPage') },
     ],
   },
   // Any other address: the 404 page on its own, without the app's dock or rail.

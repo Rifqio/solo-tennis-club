@@ -18,6 +18,7 @@ import { effectiveBookingStatus } from '@shared/booking-rules'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { ResultScreen } from '../feedback/ResultScreen'
 import { rejectionReasonMessages } from '../payments/payments.messages'
+import { PhotoMosaicLink } from '@/features/photos/SessionPhotoLinks'
 
 function Band({ title, children }: { title: string; children?: ReactNode }) {
   const { t } = useI18n()
@@ -163,6 +164,8 @@ export function Component() {
           <p>{t(messages.reviewBody)}</p>
         </StatusPanel>
       )}
+      {/* After the session: its album, once the admin has uploaded photos (board 9h). */}
+      <PhotoMosaicLink sessionId={session.id} photos={session.photos} className="bg-surface-container-lowest" />
       <section aria-labelledby="players" className="flex flex-col gap-2 rounded-sm bg-surface-container-lowest p-4">
         <h2 id="players" className="flex items-center gap-2 font-bold">{t(messages.players)}
           <span className="rounded-xs bg-primary-container px-2 text-label font-bold text-primary">{t(messages.slot, { count: booking.quantity })}</span>

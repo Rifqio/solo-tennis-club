@@ -23,6 +23,7 @@ model AdminAccount {
   updatedSessions        ClassSession[]          @relation("UpdatedBy")
   bookingOwnershipEvents BookingOwnershipEvent[]
   reviewedProofs         PaymentProof[]          @relation("ReviewedBy")
+  uploadedPhotos         SessionPhoto[]          @relation("UploadedPhotos")
   recordedPayments       PaymentRecord[]         @relation("RecordedBy")
   confirmedBookings      Booking[]               @relation("ConfirmedBy")
 }
@@ -161,8 +162,32 @@ model ClassSession {
   updatedAt        DateTime       @updatedAt
   coaches          SessionCoach[]
   bookings         Booking[]
+  photos           SessionPhoto[]
 
   @@index([startsAt])
+}
+
+// A photo in a session's public album, uploaded by an admin after the session. url is public: uploads live under
+// data/uploads/sessions/<sessionId>/ (served at /uploads), seeded sample photos under /photos/sessions. Width and height
+// come from the image's own header, so the album can lay photos out at their shape before they load. Deleting sets
+// deletedAt first, so Urungkan can bring a photo back; the file goes when the row is purged.
+model SessionPhoto {
+  id           String        @id @default(cuid())
+  sessionId    String
+  session      ClassSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  url          String
+  width        Int
+  height       Int
+  byteSize     Int
+  position     Int
+  isCover      Boolean       @default(false)
+  uploadedById String?
+  uploadedBy   AdminAccount? @relation("UploadedPhotos", fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime      @default(now())
+  deletedAt    DateTime?
+
+  @@index([sessionId, deletedAt, position])
+  @@index([createdAt])
 }
 
 model SessionCoach {

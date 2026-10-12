@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { PrismaClient } from './generated/prisma/client.ts'
 import { createPublicRouter } from './features/public/public.router.ts'
+import { createPublicPhotoRouter } from './features/session-photos/session-photo.router.ts'
 import { ApiError, errorHandler } from './http/errors.ts'
 import { readRuntimeConfig } from './config/runtime-config.ts'
 import { createAdminRouter } from './features/admin/admin.router.ts'
@@ -22,10 +23,12 @@ export function createApp({ prisma, mode = 'production', distDir = resolve('dist
   app.use('/api/admin', createAdminRouter({ prisma, config, uploadsDir, privateDir }))
   app.use('/api/customer', createCustomerAuthRouter(prisma, config, privateDir))
   app.use(express.json({ limit: '32kb' }))
+  // Seeded sample photos ship in public/ (development) or dist/ (production build); the album zip reads them there.
+  app.use('/api/public', createPublicPhotoRouter(prisma, uploadsDir, mode === 'development' ? resolve('public') : distDir))
   app.use('/api/public', createPublicRouter({ prisma }))
   app.use('/api/client-errors', createClientErrorsRouter(config))
   app.use('/api', (_request, _response, next) => next(new ApiError(404, 'NOT_FOUND')))
-  // Uploaded portraits: read-only files with random names, so they can be cached for a long time.
+  // Uploaded portraits and session photos: read-only files with random names, so they can be cached for a long time.
   app.use('/uploads', express.static(uploadsDir, { index: false, dotfiles: 'deny', maxAge: '30d', immutable: true }), (_request, _response, next) => next(new ApiError(404, 'NOT_FOUND')))
   if (mode === 'development' && viteMiddleware) app.use(viteMiddleware)
   else if (existsSync(resolve(distDir, 'index.html'))) {

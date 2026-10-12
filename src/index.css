@@ -338,6 +338,12 @@
 }
 @keyframes lafu-appear { from { opacity: 0; } }
 
+/* The photo viewer (boards 9f, D12): the black opens on a short fade and each photo settles in from 97%. */
+.viewer-in { animation: lafu-appear 180ms var(--ease-standard) both; }
+.photo-in { animation: lafu-photo-in 260ms var(--ease-emphasized) both; }
+@keyframes lafu-photo-in { from { opacity: 0; transform: scale(0.97); } }
+@media (prefers-reduced-motion: reduce) { .viewer-in, .photo-in { animation: none; } }
+
 /* Calendar month change: the same shared axis as day changes, 28px travel plus fade, emphasized easing. */
 /* Bottom sheets drop back to the screen edge on close (they rise with a transition, see sheet.tsx). Transform only,
    so the compositor runs it without layout. Reduced motion removes it with every other animation. */
@@ -507,6 +513,16 @@ html[data-nav='pop']::view-transition-new(root) { animation: 280ms cubic-bezier(
 /* Club photo: ink rising from the bottom under the club name. */
 .photo-scrim-bottom {
   background: linear-gradient(to top, rgba(15, 17, 18, 0.82) 0%, rgba(15, 17, 18, 0) 56%);
+}
+
+/* Session album cover on phones (board 9f): dark at the top for the round buttons, dark at the bottom for the title. */
+.album-scrim {
+  background: linear-gradient(180deg, rgba(15, 17, 18, 0.45) 0%, rgba(15, 17, 18, 0) 28%, rgba(15, 17, 18, 0) 48%, rgba(15, 17, 18, 0.82) 100%);
+}
+
+/* Under a floating action at the bottom of a scrolling page: the content fades into the page instead of a hard bar. */
+.fade-to-surface {
+  background: linear-gradient(180deg, transparent 0%, var(--color-surface) 45%);
 }
 
 /* The dock's notch: a circle cut from the bar around the raised book button (phones only; the rail has none). */

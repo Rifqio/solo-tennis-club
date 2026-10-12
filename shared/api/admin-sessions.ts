@@ -1,3 +1,5 @@
+import type { AlbumSession } from './session-photos.ts'
+
 export interface SessionInput {
   createRequestId: string; classId: string; date: string; startTime: string; durationMinutes: number
   levelId: string; venueId: string; coachIds: string[]; priceIdr: number; minParticipants: number; maxParticipants: number
@@ -30,4 +32,6 @@ export interface AdminSessionListResponse {
   sessions: AdminSessionDetail[]; truncated: boolean
   // Scheduled (not cancelled) sessions per club date across minDate..maxDate, for the date strip. Days without any are left out.
   dayCounts: Record<string, number>
+  // The newest session that finished in the last week without photos: the reminder card above the day (boards 10, D5).
+  photoReminder: AlbumSession | null
 }

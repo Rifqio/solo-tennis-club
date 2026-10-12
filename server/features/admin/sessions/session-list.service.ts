@@ -7,6 +7,7 @@ import { inTransaction } from '../../../database/transaction.ts'
 import { getOccupiedPlaceCounts } from '../../capacity/occupancy.ts'
 import { createSessionRepository } from './session.repository.ts'
 import { toAdminSessionDetail } from './session.mapper.ts'
+import { findPhotoReminder } from '../../session-photos/session-photo.service.ts'
 
 export async function listAdminSessions(
   database: PrismaClient,
@@ -21,6 +22,7 @@ export async function listAdminSessions(
   }
 
   const range = clubDayRange(date ?? today)
+  const photoReminder = await findPhotoReminder(database, now)
   return inTransaction(database, async transaction => {
     const repository = createSessionRepository(transaction)
     const [rows, next, starts] = await Promise.all([
@@ -40,6 +42,7 @@ export async function listAdminSessions(
       nextDate: next ? clubDateOf(next.startsAt) : null,
       truncated: rows.length > 200,
       dayCounts,
+      photoReminder,
       sessions: sessions.map(row => toAdminSessionDetail(row, occupied.get(row.id) ?? 0)),
     }
   })

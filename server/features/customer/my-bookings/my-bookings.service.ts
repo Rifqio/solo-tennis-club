@@ -36,6 +36,7 @@ function toItem(row: CustomerBookingRow, now: Date): CustomerBookingItem {
       startsAt: session.startsAt.toISOString(),
       endsAt: endsAt.toISOString(),
       cancelled: session.status !== 'scheduled',
+      photos: { count: session.status === 'scheduled' ? session._count.photos : 0, preview: session.status === 'scheduled' ? session.photos : [] },
     },
   }
 }

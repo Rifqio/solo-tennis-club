@@ -16,6 +16,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { setNavMotion } from '@/lib/nav-motion'
 import { memberStatus, memberStatusLabel } from './member-status'
 import { effectiveBookingStatus } from '@shared/booking-rules'
+import { PhotoMosaicLink } from '@/features/photos/SessionPhotoLinks'
 
 // Desktop: the chosen booking beside the list, one question per block: what, when to pay, who and where.
 export function BookingDetailPanel({ id }: { id: string }) {
@@ -88,6 +89,7 @@ export function BookingDetailPanel({ id }: { id: string }) {
         </section>
       )}
 
+      <PhotoMosaicLink sessionId={session.id} photos={session.photos} />
       <dl className="flex flex-col">
         <div className="flex items-center justify-between gap-4 border-t border-outline-variant py-3">
           <dt className="text-on-surface-variant">{t(messages.slot, { count: booking.quantity })}</dt>

@@ -21,6 +21,7 @@ import { myBookingsMessages as messages } from './my-bookings.messages'
 import { serverClock, useCustomerBookings } from './use-customer-bookings'
 import { SelectionBase, SelectionMark } from '@/components/ui/selection-mark'
 import { memberStatus, memberStatusLabel, owesPayment } from './member-status'
+import { PhotoStackLink } from '@/features/photos/SessionPhotoLinks'
 
 // "Batas 11:00" when the deadline is today, "Batas Sab 11:00" when it is another day.
 function deadlineLabel(deadline: string, now: number, language: Language) {
@@ -83,8 +84,11 @@ function HistoryRow({ booking }: { booking: CustomerBookingItem }) {
   const { t } = useI18n()
   const { session } = booking
   const lapsed = booking.status === 'expired'
+  // The row opens the booking; a finished session's album sits beside it as its own link (board 9e).
+  const album = !lapsed && session.photos.count > 0
   return (
-    <Link to={`/bookings/${booking.id}`} viewTransition className="state-layer flex items-center gap-3 py-3">
+    <div className="flex items-center gap-2">
+    <Link to={`/bookings/${booking.id}`} viewTransition className="state-layer flex min-w-0 flex-1 items-center gap-3 py-3">
       <DateTile date={session.date} muted />
       <span className="flex min-w-0 flex-1 flex-col leading-snug">
         <span className={cn('break-words font-semibold', lapsed && 'text-on-surface-variant')}>{session.className}</span>
@@ -92,9 +96,11 @@ function HistoryRow({ booking }: { booking: CustomerBookingItem }) {
           {session.startTime} · {t(messages.slot, { count: booking.quantity })}{lapsed ? ` · ${t(messages.lapsed)}` : session.cancelled ? ` · ${t(messages.cancelledSession)}` : ''}
         </span>
       </span>
-      {!lapsed && <span className="shrink-0 text-label font-semibold text-primary">{t(messages.done)}</span>}
-      <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-on-surface-variant" />
+      {!lapsed && !album && <span className="shrink-0 text-label font-semibold text-primary">{t(messages.done)}</span>}
+      {!album && <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-on-surface-variant" />}
     </Link>
+    {album && <PhotoStackLink sessionId={session.id} className={session.className} photos={session.photos} />}
+    </div>
   )
 }
 

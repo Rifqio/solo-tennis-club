@@ -1,4 +1,5 @@
 import type { EffectiveBookingStatus } from '../booking-rules.ts'
+import type { SessionPhotoPreview } from './session-photos.ts'
 
 // GET /api/customer/bookings?view=upcoming|history and GET /api/customer/bookings/:id. Only the signed-in
 // customer's own bookings; times are ISO instants, the date and times are WIB.
@@ -17,6 +18,8 @@ export interface CustomerBookingSession {
   startsAt: string
   endsAt: string
   cancelled: boolean
+  // The session's album, once the admin has uploaded photos.
+  photos: SessionPhotoPreview
 }
 
 export interface CustomerBookingItem {

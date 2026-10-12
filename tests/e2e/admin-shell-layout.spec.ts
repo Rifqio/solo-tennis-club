@@ -14,7 +14,7 @@ function fixture(index: number, long = false): AdminSessionDetail {
   }
 }
 function response(sessions: AdminSessionDetail[]): AdminSessionListResponse {
-  return { today, date: today, minDate: today, maxDate: addClubDays(today, 365), nextDate: null, sessions, truncated: false, dayCounts: {} }
+  return { today, date: today, minDate: today, maxDate: addClubDays(today, 365), nextDate: null, sessions, truncated: false, dayCounts: {}, photoReminder: null }
 }
 // A real sign-in: from 640px the rail asks the server for its own counts, which a mocked session cannot answer.
 test.beforeEach(async ({ page }) => { await browserSignIn(page) })

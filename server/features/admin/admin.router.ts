@@ -11,6 +11,7 @@ import { createClassesRouter } from './classes/classes.router.ts'
 import { createAdminBookingsRouter } from './bookings/bookings.router.ts'
 import { createRecapRouter } from './recap/recap.router.ts'
 import { createAdminEvidenceRouter } from '../payments/evidence.router.ts'
+import { createAdminPhotoRouter } from '../session-photos/session-photo.router.ts'
 export function createAdminRouter({ prisma, config, uploadsDir, privateDir }: { prisma: PrismaClient; config: RuntimeConfig; uploadsDir: string; privateDir: string }) {
   const router = Router()
   router.use((_req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next() })
@@ -18,6 +19,7 @@ export function createAdminRouter({ prisma, config, uploadsDir, privateDir }: { 
   router.use(requireAdmin(prisma, config))
   // Image bodies, so before the JSON-only guard; the photo router applies the same-origin and CSRF checks itself.
   router.use(createCoachPhotoRouter(prisma, config, uploadsDir))
+  router.use(createAdminPhotoRouter(prisma, config, uploadsDir))
   // Payment proof files (reads only), for any signed-in admin.
   router.use(createAdminEvidenceRouter(prisma, privateDir))
   router.use(requireSameOrigin(config), requireJson, requireCsrf)

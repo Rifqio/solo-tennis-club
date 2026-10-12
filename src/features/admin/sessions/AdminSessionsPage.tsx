@@ -19,6 +19,7 @@ import { useAdminAuth } from '../auth/use-admin-auth'
 import { AdminBand } from '../shell/AdminBand'
 import { sessionsMessages as messages } from './sessions.messages'
 import { RosterPanel } from './RosterPanel'
+import { PhotoReminder } from '../photos/PhotoReminder'
 import { m } from 'motion/react'
 import { selectionSpring } from '@/lib/motion'
 import { useRevealSaved } from '@/lib/use-reveal-saved'
@@ -142,6 +143,7 @@ export function AdminSessionsPage() {
       subtitle={isDesktop && <p className="text-title font-semibold">{formatClubDateShort(strip[0], language)} - {formatClubDateShort(strip[strip.length - 1], language)}</p>}>
       <DateStrip dates={strip} selected={selected} {...bounds} onSelect={select} counts={data?.dayCounts} />
     </AdminBand>
+    {data?.photoReminder && <div className="page-gutter desk-column mx-auto w-full max-w-[50rem] pt-4 lg:pt-5"><PhotoReminder session={data.photoReminder} today={data.today} wide={isDesktop} /></div>}
     <div className="page-gutter desk-column mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:flex-row lg:items-start lg:gap-5 lg:pt-5">
     <div className="flex min-w-0 flex-1 flex-col gap-3">
       <div className="flex flex-col gap-1 lg:gap-2">

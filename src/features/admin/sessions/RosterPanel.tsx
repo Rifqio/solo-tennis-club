@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Images, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { StatusPanel } from '@/components/ui/status-panel'
@@ -23,6 +23,8 @@ const copy = {
   error: { id: 'Daftar peserta belum bisa dimuat.', en: 'The players could not be loaded.' },
   taken: { id: 'Terisi', en: 'Taken' },
   edit: { id: 'Ubah sesi', en: 'Edit session' },
+  photos: { id: 'Foto', en: 'Photos' },
+  photosLabel: { id: 'Foto sesi', en: 'Session photos' },
   filter: { id: 'Saring status', en: 'Filter by status' },
   all: { id: 'Semua', en: 'All' },
   unpaid: { id: 'Belum bayar', en: 'Awaiting payment' },
@@ -94,6 +96,7 @@ export function RosterPanel({ id }: { id: string }) {
             <span className="text-title font-bold tabular-nums">{data.occupiedPlaces} / {session.maxParticipants}</span>
           </span>
           <Link to={`/admin/sessions/${encodeURIComponent(id)}/edit`} viewTransition data-nav="push" className="state-layer pressable flex min-h-12 items-center rounded-sm border border-outline-variant px-4 font-semibold">{t(copy.edit)}</Link>
+          {session.status === 'scheduled' && <Link to={`/admin/sessions/${encodeURIComponent(id)}/photos`} viewTransition data-nav="push" aria-label={t(copy.photosLabel)} className="state-layer pressable flex min-h-12 items-center gap-1.5 rounded-sm border border-outline-variant px-4 font-semibold"><Images aria-hidden="true" className="size-5" />{t(copy.photos)}</Link>}
         </div>
       </div>
       <div className="flex flex-col gap-3 p-6">

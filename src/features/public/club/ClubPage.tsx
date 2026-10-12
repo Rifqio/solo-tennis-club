@@ -12,6 +12,7 @@ import type { ApiResult } from '@/lib/api'
 import { venueMapsHref } from '@shared/maps'
 import type { PublicVenuesResponse } from '@shared/api/public'
 import { SampleDataNotice } from '../schedule/SampleDataNotice'
+import { LatestPhotos } from '@/features/photos/AlbumCard'
 import { ClubHomeDesktop } from './ClubHomeDesktop'
 import { clubContent } from './club-content'
 import { clubMessages as messages } from './club.messages'
@@ -67,6 +68,8 @@ export function ClubPage() {
           <MessageCircle aria-hidden="true" className="size-5" />{t(messages.chatAdmin)}
         </a>
       )}
+
+      <LatestPhotos />
 
       <section aria-labelledby="club-about" className="flex flex-col gap-1.5">
         <h2 id="club-about" className="text-title font-bold">{t(messages.about)}</h2>

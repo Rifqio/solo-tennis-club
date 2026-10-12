@@ -20,6 +20,8 @@ const bookingFields = {
       class: { select: { name: true } },
       level: { select: { name: true } },
       venue: { select: { name: true, address: true, mapUrl: true } },
+      photos: { where: { deletedAt: null }, orderBy: [{ isCover: 'desc' }, { position: 'asc' }, { id: 'asc' }], take: 3, select: { id: true, url: true, width: true, height: true } },
+      _count: { select: { photos: { where: { deletedAt: null } } } },
     },
   },
 } satisfies Prisma.BookingSelect

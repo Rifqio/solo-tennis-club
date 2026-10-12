@@ -1,4 +1,5 @@
 import { ArrowRight, ExternalLink, MapPin, MessageCircle, Wallet } from 'lucide-react'
+import { LatestPhotos } from '@/features/photos/AlbumCard'
 import { Link } from 'react-router-dom'
 import { BallMark } from '@/components/brand/ball-mark'
 import { CourtLines } from '@/components/brand/court-lines'
@@ -82,6 +83,7 @@ export function ClubHomeDesktop({ venues }: ClubHomeDesktopProps) {
 
       <Steps />
       <NextSessions />
+      <div className={cn(wrap, 'pt-[clamp(4.5rem,9vw,7.5rem)]')}><LatestPhotos desktop /></div>
       <Courts venues={venues} />
 
       <footer id="contact" className={cn(wrap, 'pb-[clamp(1rem,3vw,2.5rem)]')}>

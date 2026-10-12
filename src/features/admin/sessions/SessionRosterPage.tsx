@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { MessageCircle, Plus } from 'lucide-react'
+import { Images, MessageCircle, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
@@ -43,6 +43,7 @@ const copy = {
   truncated: { id: 'Daftarnya panjang, jadi baru sebagian yang tampil.', en: 'The list is long, so only part of it is shown.' },
   cancelled: { id: 'Sesi ini dibatalkan.', en: 'This session is cancelled.' },
   edit: { id: 'Ubah sesi', en: 'Edit session' },
+  photos: { id: 'Foto sesi', en: 'Session photos' },
   record: { id: 'Catat booking dari WA', en: 'Record a WhatsApp booking' },
 }
 
@@ -172,7 +173,10 @@ export function Component() {
           ? <p className="text-on-surface-variant">{t(copy.emptyFilter)}</p>
           : <ul className="flex flex-col gap-2.5"><AnimatePresence initial={false} mode="popLayout">{shown.map(row => <m.li key={row.booking.id} {...listRowMotion}><BookingGroup {...row} /></m.li>)}</AnimatePresence></ul>}
       </>}
-      <Button asChild variant="text" className="-ml-3 self-start"><Link to={`/admin/sessions/${id}/edit`} viewTransition data-nav="push">{t(copy.edit)}</Link></Button>
+      <div className="-ml-3 flex flex-wrap gap-1">
+        <Button asChild variant="text"><Link to={`/admin/sessions/${id}/edit`} viewTransition data-nav="push">{t(copy.edit)}</Link></Button>
+        {session.status === 'scheduled' && <Button asChild variant="text"><Link to={`/admin/sessions/${id}/photos`} viewTransition data-nav="push"><Images aria-hidden="true" className="size-5" />{t(copy.photos)}</Link></Button>}
+      </div>
     </div>
   </>
 }

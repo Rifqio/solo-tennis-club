@@ -24,7 +24,9 @@ export function PublicLayout() {
   const isDesktop = useMediaQuery('(min-width: 64rem)')
   const frontPage = isDesktop && location.pathname === '/'
   // Desktop sign-in (board D0m) is a full-screen split of its own.
-  const bare = focusedTask || frontPage || (isDesktop && location.pathname === '/customer/sign-in')
+  // A session album on a phone (board 9f) opens full bleed with Unduh semua floating at the bottom, so the dock steps aside.
+  const album = !isDesktop && /^\/sessions\/[^/]+\/photos$/.test(location.pathname)
+  const bare = focusedTask || frontPage || album || (isDesktop && location.pathname === '/customer/sign-in')
   const finishOnboarding = useCallback(() => {
     markOnboarded()
     setOnboarding(false)

@@ -1,4 +1,7 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import type { PrismaClient } from '../generated/prisma/client.ts'
+import { photoSize, sniffPhoto } from '../features/session-photos/photo-image.ts'
 import { addClubDays, clubDateTimeToInstant, clubToday } from '../../shared/club-time.ts'
 
 // Development-only sample catalog. Every record is isSample and the screens show the sample-data notice beside them.
@@ -115,3 +118,45 @@ export async function seedSampleData(prisma: PrismaClient, { now = new Date(), r
 
 export const SAMPLE_SESSION_COUNT = SESSIONS.length
 export const SAMPLE_COACH_COUNT = COACHES.length + SAMPLE_COACHES.length
+
+// Finished sample sessions with albums (boards 9f, D12, 18, D13), using the stock photos in public/photos/sessions.
+// [days ago, start time WIB, class index, photo files]. The newest has no photos, so the admin's upload reminder shows.
+const PHOTO_FILES = ['session-cover', ...Array.from({ length: 21 }, (_, index) => `session-${String(index + 1).padStart(2, '0')}`)]
+const PAST_SESSIONS: Array<[number, string, number, string[]]> = [
+  [1, '06:30', 2, []],
+  [2, '18:00', 0, PHOTO_FILES.slice(0, 12)],
+  [3, '07:00', 1, [PHOTO_FILES[12], ...PHOTO_FILES.slice(13, 22), PHOTO_FILES[1]]],
+  [6, '09:00', 2, [PHOTO_FILES[6], PHOTO_FILES[3], PHOTO_FILES[9], PHOTO_FILES[14], PHOTO_FILES[17], PHOTO_FILES[20], PHOTO_FILES[2], PHOTO_FILES[11], PHOTO_FILES[5]]],
+]
+
+// Repeat-safe: does nothing while sample albums exist; run after seedSampleData, whose refresh removes every sample
+// session (and so the albums). Returns how many sessions it created.
+export async function seedSampleAlbums(prisma: PrismaClient, { now = new Date(), publicDir = resolve('public') } = {}) {
+  const classes = await prisma.tennisClass.findMany({ where: { isSample: true, nameKey: { in: CLASSES.map(item => key(item.name)) } }, include: { defaultCoaches: { orderBy: { position: 'asc' } } } })
+  const byName = new Map(classes.map(item => [item.nameKey, item]))
+  // Once: a later run (another day) would otherwise add a second set of albums beside the first.
+  if (await prisma.sessionPhoto.count({ where: { session: { isSample: true } } })) return 0
+  const today = clubToday(now)
+  let created = 0
+  for (const [daysAgo, time, classIndex, files] of PAST_SESSIONS) {
+    const sample = byName.get(key(CLASSES[classIndex].name))
+    if (!sample) continue
+    const startsAt = clubDateTimeToInstant(addClubDays(today, -daysAgo), time)
+    if (await prisma.classSession.findFirst({ where: { isSample: true, classId: sample.id, startsAt } })) continue
+    const photos = files.flatMap((name, position) => {
+      const bytes = readFileSync(resolve(publicDir, 'photos', 'sessions', `${name}.webp`))
+      const kind = sniffPhoto(bytes)
+      const size = kind && photoSize(bytes, kind)
+      return size ? [{ url: `/photos/sessions/${name}.webp`, ...size, byteSize: bytes.length, position, isCover: position === 0, createdAt: new Date(startsAt.getTime() + (sample.defaultDurationMinutes + 90) * 60_000) }] : []
+    })
+    await prisma.classSession.create({ data: {
+      classId: sample.id, levelId: sample.defaultLevelId, venueId: sample.defaultVenueId, startsAt,
+      durationMinutes: sample.defaultDurationMinutes, priceIdr: sample.defaultPriceIdr,
+      minParticipants: sample.defaultMinParticipants, maxParticipants: sample.defaultMaxParticipants, isSample: true,
+      coaches: { create: sample.defaultCoaches.map(link => ({ coachId: link.coachId, position: link.position })) },
+      photos: { create: photos },
+    } })
+    created++
+  }
+  return created
+}

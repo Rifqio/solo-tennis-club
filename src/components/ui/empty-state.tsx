@@ -82,8 +82,8 @@ function PosterState({ scene, title, body, action, still, urgent, className }: O
     <div className={cn('@container', className)}>
       <div {...(urgent ? { role: 'alert' } : { role: 'status', 'aria-live': 'polite' as const })} className="relative isolate flex flex-col">
         <div aria-hidden="true" className={cn('aspect-[4/3] w-full overflow-hidden rounded-lg bg-band-deep @[56rem]:aspect-[2/1] @[72rem]:aspect-[5/2]', !still && 'state-art-in')}>
-          <img src={`${base}-640.webp`} srcSet={`${base}-640.webp 640w, ${base}-1200.webp 1200w`}
-            sizes="(min-width: 64rem) 78rem, 100vw" width={1200} height={896} alt="" decoding="async"
+          <img src={`${base}-640.webp`} srcSet={`${base}-640.webp 640w, ${base}-1200.webp 1200w, ${base}-2400.webp 2400w`}
+            sizes="100vw" width={1200} height={896} alt="" decoding="async"
             onError={event => { event.currentTarget.style.visibility = 'hidden' }}
             className={cn('size-full object-cover', poster[scene].focus)} />
         </div>
@@ -107,7 +107,7 @@ function StateArt({ scene, still, compact }: { scene: StateScene; still?: boolea
   return (
     <div aria-hidden="true" className={cn('aspect-[4/3] w-full overflow-hidden rounded-lg bg-band-deep @[40rem]:max-w-none', compact ? 'max-w-[15rem]' : 'max-w-[22rem]', !still && 'state-art-in')}>
       {/* If the picture cannot load, the Deep Court frame stays rather than a broken-image mark. */}
-      <img src={`${base}-640.webp`} srcSet={`${base}-640.webp 640w, ${base}-1200.webp 1200w`}
+      <img src={`${base}-640.webp`} srcSet={`${base}-640.webp 640w, ${base}-1200.webp 1200w, ${base}-2400.webp 2400w`}
         sizes={compact ? '15rem' : '(min-width: 64rem) 300px, min(calc(100vw - 2rem), 22rem)'} width={1200} height={896} alt="" decoding="async"
         onError={event => { event.currentTarget.style.visibility = 'hidden' }}
         className="size-full object-cover" />

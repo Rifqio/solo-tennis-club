@@ -1,6 +1,6 @@
 # Deployment plan: free on Vercel (portfolio demo)
 
-Date: 2026-10-11, updated 2026-10-12. Status: **R1 built and tested locally (2026-10-12); not deployed yet.** The user asked for R1 ahead of Phase 3 acceptance; payment screens reach the live demo as they land. What remains is account setup (section 6) and the go-live checklist (section 7). Repository: `github.com/Rifqio/solo-tennis-club`.
+Date: 2026-10-11, updated 2026-10-12. Status: **live at https://solo-tennis-club.vercel.app since 2026-10-12** (Turso `stc` and both Blob stores in Mumbai, function in bom1). A live run passed member sign-up with the on-screen code, booking, a 4.8 MB proof through Blob, the admin demo button, proof access (admin 200, other member 404), an album photo, and two members racing for the last place on Turso (one 201, one CAPACITY_UNAVAILABLE). Still open on the checklist: the cron run, a Turso restore, foreign keys on Turso, 404/500 pages and tablet/desktop checks. The user asked for R1 ahead of Phase 3 acceptance; payment screens reach the live demo as they land. What remains is account setup (section 6) and the go-live checklist (section 7). Repository: `github.com/Rifqio/solo-tennis-club`.
 
 ## 1. Context that decides this plan
 

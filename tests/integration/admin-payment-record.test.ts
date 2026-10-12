@@ -12,6 +12,7 @@ import { startTestServer } from '../support/test-server.ts'
 import { createSampleCatalog, createSampleSession } from '../support/fixtures.ts'
 import { registerCustomer } from '../support/customer-fixtures.ts'
 import { adminFetch, provisionTestAdmin, signInAs } from '../support/admin-fixtures.ts'
+import { createDiskStore } from '../../server/storage/file-store.ts'
 
 const HOUR = 60 * 60 * 1000
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46])
@@ -57,7 +58,7 @@ test('recording a cash payment confirms an unpaid booking and lists the payment 
 test('a payment recorded while a proof waits for review confirms the booking and settles the proof', async () => {
   const member = await registerCustomer(server.baseUrl, phone())
   const { booking } = await bookingIn('awaiting_payment', 2 * HOUR, 1, undefined, member.customerId)
-  await submitProof(db.prisma, privateDir, member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'a.jpg' }] })
+  await submitProof(db.prisma, createDiskStore(privateDir), member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'a.jpg' }] })
   const body = await (await record(booking.id, await payment(booking.id, { method: 'transfer', amountIdr: 100000 }))).json() as AdminRecordPaymentResponse
   expect(body.booking.status).toBe('confirmed')
   expect(body.booking.proofs[0]).toMatchObject({ status: 'approved' })

@@ -11,6 +11,7 @@ import { startTestServer } from '../support/test-server.ts'
 import { createSampleCatalog, createSampleSession } from '../support/fixtures.ts'
 import { registerCustomer } from '../support/customer-fixtures.ts'
 import { adminFetch, provisionTestAdmin, signInAs } from '../support/admin-fixtures.ts'
+import { createDiskStore } from '../../server/storage/file-store.ts'
 
 const HOUR = 60 * 60 * 1000
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46])
@@ -41,7 +42,7 @@ async function bookingWithProof(deadlineIn = 2 * HOUR, places = 2) {
     originalDeadline: deadline, participants: { create: Array.from({ length: places }, (_, index) => ({ position: index + 1, name: `P${index + 1}` })) },
   } })
   // Sent while the deadline was still ahead.
-  const sent = await submitProof(db.prisma, privateDir, member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'bukti.jpg' }] },
+  const sent = await submitProof(db.prisma, createDiskStore(privateDir), member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'bukti.jpg' }] },
     () => new Date(deadline.getTime() - 60_000))
   return { member, session, booking, proofId: sent.proof.id }
 }
@@ -85,7 +86,7 @@ test('rejecting before the deadline asks for a new proof within the same deadlin
   const stored = await db.prisma.booking.findUniqueOrThrow({ where: { id: booking.id } })
   expect(stored).toMatchObject({ status: 'needs_correction', originalDeadline: booking.originalDeadline })
   // The member can send again before the deadline.
-  const again = await submitProof(db.prisma, privateDir, member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'baru.jpg' }] })
+  const again = await submitProof(db.prisma, createDiskStore(privateDir), member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'baru.jpg' }] })
   expect(again.booking.status).toBe('awaiting_verification')
 })
 
@@ -97,7 +98,7 @@ test('rejecting after the deadline releases the places and offers no correction'
   expect(body.outcome).toBe('expired')
   expect(body.booking.status).toBe('expired')
   expect((await getOccupiedPlaceCounts(db.prisma, [session.id])).get(session.id)).toBe(0)
-  await expect(submitProof(db.prisma, privateDir, member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'x.jpg' }] }))
+  await expect(submitProof(db.prisma, createDiskStore(privateDir), member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'x.jpg' }] }))
     .rejects.toMatchObject({ code: 'PAYMENT_DEADLINE_PASSED' })
 })
 

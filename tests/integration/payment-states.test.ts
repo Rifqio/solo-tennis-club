@@ -5,7 +5,7 @@ import { afterAll, beforeAll, expect, test } from 'vitest'
 import { createApp } from '../../server/app.ts'
 import { expireDueBookings } from '../../server/features/booking-expiry/expiry.service.ts'
 import { getOccupiedPlaceCounts } from '../../server/features/capacity/occupancy.ts'
-import { evidencePath, sniffEvidence, storeEvidence } from '../../server/features/payments/evidence-storage.ts'
+import { evidenceKey, sniffEvidence, storeEvidence } from '../../server/features/payments/evidence-storage.ts'
 import { backupPrivate } from '../../server/ops/backup.ts'
 import { effectiveBookingStatus } from '../../shared/booking-rules.ts'
 import type { AdminBookingListResponse } from '../../shared/api/admin-bookings.ts'
@@ -14,6 +14,7 @@ import { startTestServer } from '../support/test-server.ts'
 import { createSampleCatalog, createSampleSession } from '../support/fixtures.ts'
 import { registerCustomer } from '../support/customer-fixtures.ts'
 import { adminFetch, provisionTestAdmin, signInAs } from '../support/admin-fixtures.ts'
+import { createDiskStore } from '../../server/storage/file-store.ts'
 
 const HOUR = 60 * 60 * 1000
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46])
@@ -96,15 +97,17 @@ test('Belum bayar lists only bookings that still owe payment, not paid ones or p
   expect(ids).not.toContain(paid.id)
 })
 
-test('evidence files are recognised by their bytes and stored without path tricks', () => {
+test('evidence files are recognised by their bytes and stored without path tricks', async () => {
   expect(sniffEvidence(JPEG)?.contentType).toBe('image/jpeg')
   expect(sniffEvidence(PDF)?.contentType).toBe('application/pdf')
   expect(sniffEvidence(Buffer.from('<script>alert(1)</script>'))).toBeNull()
-  const [stored] = storeEvidence(privateDir, 'bookingx', [{ bytes: JPEG, kind: sniffEvidence(JPEG)! }])
-  expect(readFileSync(evidencePath(privateDir, 'bookingx', stored!.fileName))).toEqual(JPEG)
-  expect(existsSync(evidencePath(privateDir, 'bookingx', stored!.fileName) + '.part')).toBe(false)
-  expect(() => evidencePath(privateDir, 'bookingx', '../lafu.db')).toThrow()
-  expect(() => evidencePath(privateDir, '../etc', stored!.fileName)).toThrow()
+  const [stored] = await storeEvidence(createDiskStore(privateDir), 'bookingx', [{ bytes: JPEG, kind: sniffEvidence(JPEG)! }])
+  const path = resolve(privateDir, evidenceKey('bookingx', stored!.fileName))
+  expect(readFileSync(path)).toEqual(JPEG)
+  expect(existsSync(path + '.part')).toBe(false)
+  expect(() => evidenceKey('bookingx', '../lafu.db')).toThrow()
+  expect(() => evidenceKey('../etc', stored!.fileName)).toThrow()
+  await expect(createDiskStore(privateDir).read('proofs/../../lafu.db')).rejects.toThrow()
 })
 
 test('a proof file reaches only its booker and admins; everyone else gets 404 or 401', async () => {
@@ -112,7 +115,7 @@ test('a proof file reaches only its booker and admins; everyone else gets 404 or
   const other = await registerCustomer(server.baseUrl, phone(), 'Dmitri')
   const session = await createSampleSession(db.prisma, { catalog, startsAt: new Date(Date.now() + 72 * HOUR) })
   const booking = await book(session.id, 'awaiting_verification', new Date(Date.now() + HOUR), 1, owner.customerId)
-  const files = storeEvidence(privateDir, booking.id, [{ bytes: JPEG, kind: sniffEvidence(JPEG)! }, { bytes: PDF, kind: sniffEvidence(PDF)! }])
+  const files = await storeEvidence(createDiskStore(privateDir), booking.id, [{ bytes: JPEG, kind: sniffEvidence(JPEG)! }, { bytes: PDF, kind: sniffEvidence(PDF)! }])
   const proof = await db.prisma.paymentProof.create({ data: {
     bookingId: booking.id, customerId: owner.customerId, submissionId: crypto.randomUUID(),
     files: { create: files.map((file, index) => ({ position: index + 1, fileName: file.fileName, originalName: index ? 'transfer.pdf' : 'bukti bayar.jpg', contentType: file.kind.contentType, byteSize: file.byteSize })) },

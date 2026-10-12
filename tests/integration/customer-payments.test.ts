@@ -10,6 +10,7 @@ import { createTestDatabase } from '../support/test-db.ts'
 import { startTestServer } from '../support/test-server.ts'
 import { createSampleCatalog, createSampleSession } from '../support/fixtures.ts'
 import { registerCustomer } from '../support/customer-fixtures.ts'
+import { createDiskStore } from '../../server/storage/file-store.ts'
 
 const HOUR = 60 * 60 * 1000
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46])
@@ -140,7 +141,7 @@ test('if the deadline passes while the upload is being saved, nothing is kept', 
   // The first reading of the clock is before the deadline (checks pass); by the time of the save it has passed.
   let reads = 0
   const clock = () => new Date(reads++ < 1 ? deadline.getTime() - 1000 : deadline.getTime() + 1000)
-  await expect(submitProof(db.prisma, privateDir, member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'a.jpg' }] }, clock))
+  await expect(submitProof(db.prisma, createDiskStore(privateDir), member.customerId, booking.id, { submissionId: crypto.randomUUID(), files: [{ bytes: JPEG, name: 'a.jpg' }] }, clock))
     .rejects.toMatchObject({ code: 'PAYMENT_DEADLINE_PASSED' })
   expect(filesOf(booking.id)).toHaveLength(0)
   expect(await db.prisma.paymentProof.count({ where: { bookingId: booking.id } })).toBe(0)

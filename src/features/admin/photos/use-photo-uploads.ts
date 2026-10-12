@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useOnline } from '@/lib/use-online'
 import type { AdminSessionPhoto } from '@shared/api/session-photos'
 import { shrinkPhoto } from './shrink-photo'
+import { uploadAlbumPhoto } from './upload-album-photo'
 
 export type UploadStatus = 'preparing' | 'waiting' | 'uploading' | 'failed'
 
@@ -32,7 +33,7 @@ export function useAlbumUploads({ sessionId, csrfToken, onUploaded, onBatchDone,
   const [items, setItems] = useState<UploadItem[]>([])
   const [skipped, setSkipped] = useState<Record<SkipReason, number> | null>(null)
   const online = useOnline()
-  const requests = useRef(new Map<string, XMLHttpRequest>())
+  const requests = useRef(new Map<string, AbortController>())
   const batch = useRef(0)
   const nextKey = useRef(0)
   const callbacks = useRef({ onUploaded, onBatchDone, onSignedOut })
@@ -62,30 +63,23 @@ export function useAlbumUploads({ sessionId, csrfToken, onUploaded, onBatchDone,
 
   const send = useCallback((item: UploadItem) => {
     if (!item.blob) return
-    const request = new XMLHttpRequest()
-    requests.current.set(item.key, request)
-    request.open('POST', `/api/admin/sessions/${encodeURIComponent(sessionId)}/photos`)
-    request.setRequestHeader('Content-Type', item.blob.type || 'image/jpeg')
-    request.setRequestHeader('Accept', 'application/json')
-    if (csrfToken) request.setRequestHeader('X-CSRF-Token', csrfToken)
-    request.upload.onprogress = event => { if (event.lengthComputable) patch(item.key, { progress: event.loaded / event.total }) }
-    const finish = (ok: boolean) => {
+    const controller = new AbortController()
+    requests.current.set(item.key, controller)
+    patch(item.key, { status: 'uploading', progress: 0 })
+    void uploadAlbumPhoto(sessionId, item.blob, csrfToken, progress => patch(item.key, { progress }), controller.signal).then(({ status, body }) => {
       requests.current.delete(item.key)
-      if (ok) {
+      if (controller.signal.aborted) return
+      if (status === 201) {
         URL.revokeObjectURL(item.preview)
         setItems(list => list.filter(entry => entry.key !== item.key))
         batch.current++
-        callbacks.current.onUploaded(JSON.parse(request.responseText) as AdminSessionPhoto)
+        callbacks.current.onUploaded(JSON.parse(body) as AdminSessionPhoto)
         return
       }
-      if (request.status === 401) callbacks.current.onSignedOut()
+      if (status === 401) callbacks.current.onSignedOut()
       // A dropped connection goes back in the queue; anything the server refused waits for Ulangi.
-      patch(item.key, request.status === 0 && !navigator.onLine ? { status: 'waiting', progress: 0 } : { status: 'failed', progress: 0 })
-    }
-    request.onload = () => finish(request.status === 201)
-    request.onerror = () => finish(false)
-    request.send(item.blob)
-    patch(item.key, { status: 'uploading', progress: 0 })
+      patch(item.key, status === 0 && !navigator.onLine ? { status: 'waiting', progress: 0 } : { status: 'failed', progress: 0 })
+    })
   }, [sessionId, csrfToken, patch])
 
   // Starts the next waiting photos while there is room and a connection.

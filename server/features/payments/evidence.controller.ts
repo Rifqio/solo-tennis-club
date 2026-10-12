@@ -5,6 +5,7 @@ import { isOpaqueToken, requireCustomerSession } from '../customer/auth/customer
 import { CUSTOMER_COOKIE } from '../customer/auth/customer-cookie.ts'
 import { readAdminEvidence, readCustomerEvidence } from './evidence.service.ts'
 import type { EvidenceFile } from './evidence.service.ts'
+import type { FileStore } from '../../storage/file-store.ts'
 
 // Private files: never cached, never sniffed into another type. Images open in place; a PDF downloads.
 function sendEvidence(response: Response, file: EvidenceFile) {
@@ -15,7 +16,7 @@ function sendEvidence(response: Response, file: EvidenceFile) {
     'Content-Type': file.contentType,
     'Content-Disposition': `${file.contentType === 'application/pdf' ? 'attachment' : 'inline'}; filename="${safeName}"`,
   })
-  response.sendFile(file.path)
+  response.send(file.bytes)
 }
 
 function customerToken(request: Request) {
@@ -23,14 +24,14 @@ function customerToken(request: Request) {
   return isOpaqueToken(token) ? token : ''
 }
 
-export function createEvidenceController(database: PrismaClient, privateDir: string) {
+export function createEvidenceController(database: PrismaClient, files: FileStore) {
   const customerFile: RequestHandler<{ id: string; proofId: string; fileId: string }> = async (request, response) => {
     const session = await requireCustomerSession(database, customerToken(request), new Date())
     const { id: bookingId, proofId, fileId } = request.params
-    sendEvidence(response, await readCustomerEvidence(database, privateDir, session.customer.id, { bookingId, proofId, fileId }))
+    sendEvidence(response, await readCustomerEvidence(database, files, session.customer.id, { bookingId, proofId, fileId }))
   }
   const adminFile: RequestHandler<{ proofId: string; fileId: string }> = async (request, response) => {
-    sendEvidence(response, await readAdminEvidence(database, privateDir, request.params))
+    sendEvidence(response, await readAdminEvidence(database, files, request.params))
   }
   return { customerFile, adminFile }
 }

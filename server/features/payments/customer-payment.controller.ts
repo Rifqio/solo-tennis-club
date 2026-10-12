@@ -8,6 +8,8 @@ import { isOpaqueToken, requireCustomerSession, requireMatchingCsrf } from '../c
 import { CUSTOMER_COOKIE } from '../customer/auth/customer-cookie.ts'
 import { getPayment, submitProof } from './customer-payment.service.ts'
 import type { IncomingFile } from './customer-payment.service.ts'
+import type { FileStores } from '../../storage/file-store.ts'
+import { issueUploadTicket, takeIncoming } from '../../storage/staged-upload.ts'
 
 // The whole multipart body: three files at the limit plus room for the form's own lines.
 const MAX_BODY_BYTES = PROOF_FILES_MAX * PROOF_FILE_MAX_BYTES + 64 * 1024
@@ -19,7 +21,8 @@ function customerToken(request: Request) {
 
 // Reads a multipart/form-data body with the platform's own parser. The declared length is checked before anything is
 // read, so an oversized upload is refused without buffering it.
-async function readProofForm(request: Request): Promise<{ submissionId: string; files: IncomingFile[] }> {
+async function readProofForm(request: Request, stores: FileStores): Promise<{ submissionId: string; files: IncomingFile[] }> {
+  if (request.is('application/json')) return readStagedProof(request, stores)
   if (!request.is('multipart/form-data')) throw new ApiError(415, 'UNSUPPORTED_MEDIA_TYPE')
   const length = Number(request.get('content-length'))
   if (!Number.isFinite(length) || length <= 0) throw new ApiError(400, 'VALIDATION_FAILED', { files: 'REQUIRED' })
@@ -39,7 +42,20 @@ async function readProofForm(request: Request): Promise<{ submissionId: string; 
   return { submissionId: typeof submissionId === 'string' ? submissionId : '', files }
 }
 
-export function createCustomerPaymentController(database: PrismaClient, privateDir: string, clock = () => new Date()) {
+// After direct uploads (hosted demo): { submissionId, files: [{ key, name }] } naming files already in Blob.
+async function readStagedProof(request: Request, stores: FileStores): Promise<{ submissionId: string; files: IncomingFile[] }> {
+  const body = request.body as { submissionId?: unknown; files?: unknown } | null
+  const listed = Array.isArray(body?.files) ? body.files as Array<{ key?: unknown; name?: unknown } | null> : []
+  if (listed.length > PROOF_FILES_MAX) throw new ApiError(400, 'VALIDATION_FAILED', { files: 'TOO_LONG' })
+  const files: IncomingFile[] = []
+  for (const [index, item] of listed.entries()) {
+    const bytes = await takeIncoming(stores.privateFiles, 'proof', item?.key, `file${index}`)
+    files.push({ bytes, name: typeof item?.name === 'string' ? item.name.slice(0, 200) : '' })
+  }
+  return { submissionId: typeof body?.submissionId === 'string' ? body.submissionId : '', files }
+}
+
+export function createCustomerPaymentController(database: PrismaClient, files: FileStores, clock = () => new Date()) {
   const payment: RequestHandler<{ id: string }> = async (request, response) => {
     const now = clock()
     const session = await requireCustomerSession(database, customerToken(request), now)
@@ -48,9 +64,15 @@ export function createCustomerPaymentController(database: PrismaClient, privateD
   const submit: RequestHandler<{ id: string }> = async (request, response) => {
     const session = await requireCustomerSession(database, customerToken(request), clock())
     requireMatchingCsrf(request.get('x-csrf-token') ?? '', session.csrfToken)
-    const form = await readProofForm(request)
-    const result = await submitProof(database, privateDir, session.customer.id, request.params.id, form, clock)
+    const form = await readProofForm(request, files)
+    const result = await submitProof(database, files.privateFiles, session.customer.id, request.params.id, form, clock)
     response.status(result.replayed ? 200 : 201).json(result)
   }
-  return { payment, submit }
+  // A ticket for one direct proof upload (hosted demo); only a signed-in member may ask.
+  const uploadTicket: RequestHandler = async (request, response) => {
+    const session = await requireCustomerSession(database, customerToken(request), clock())
+    requireMatchingCsrf(request.get('x-csrf-token') ?? '', session.csrfToken)
+    response.json(await issueUploadTicket('proof'))
+  }
+  return { payment, submit, uploadTicket }
 }

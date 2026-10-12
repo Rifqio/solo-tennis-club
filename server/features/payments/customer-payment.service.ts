@@ -5,6 +5,7 @@ import { effectiveBookingStatus } from '../../../shared/booking-rules.ts'
 import { PROOF_FILE_MAX_BYTES, PROOF_FILES_MAX } from '../../../shared/api/customer-payments.ts'
 import type { CustomerPaymentResponse, ProofRejectionReason, ProofSubmissionResponse, ProofSummary } from '../../../shared/api/customer-payments.ts'
 import { getMyBooking } from '../customer/my-bookings/my-bookings.service.ts'
+import type { FileStore } from '../../storage/file-store.ts'
 import { removeEvidence, sniffEvidence, storeEvidence } from './evidence-storage.ts'
 import { createProofRepository } from './proof.repository.ts'
 
@@ -46,7 +47,7 @@ export interface IncomingFile { bytes: Buffer; name: string }
 
 // A proof counts when the server holds every file before the original deadline (03-DECISIONS §6). The files are
 // stored first and the booking changes in one transaction afterwards; if that fails, the files are removed again.
-export async function submitProof(database: PrismaClient, privateDir: string, customerId: string, bookingId: string,
+export async function submitProof(database: PrismaClient, files: FileStore, customerId: string, bookingId: string,
   input: { submissionId: string; files: IncomingFile[] }, clock: () => Date = () => new Date()): Promise<ProofSubmissionResponse> {
   if (!idPattern.test(bookingId)) throw new ApiError(404, 'NOT_FOUND')
   if (!uuidPattern.test(input.submissionId)) throw new ApiError(400, 'VALIDATION_FAILED', { submissionId: 'INVALID_FORMAT' })
@@ -72,7 +73,7 @@ export async function submitProof(database: PrismaClient, privateDir: string, cu
   const refusal = refusalFor(booking, clock())
   if (refusal) throw new ApiError(409, refusal)
 
-  const stored = storeEvidence(privateDir, bookingId, checked.map(file => ({ bytes: file.bytes, kind: file.kind! })))
+  const stored = await storeEvidence(files, bookingId, checked.map(file => ({ bytes: file.bytes, kind: file.kind! })))
   try {
     const proof = await inWriteTransaction(database, async transaction => {
       const now = clock()
@@ -92,7 +93,7 @@ export async function submitProof(database: PrismaClient, privateDir: string, cu
     })
     return respond(database, customerId, bookingId, proof, false, clock())
   } catch (error) {
-    removeEvidence(privateDir, bookingId, stored.map(file => file.fileName))
+    await removeEvidence(files, bookingId, stored.map(file => file.fileName))
     // Two tabs sending the same submission at once: the second answers with the first one's result.
     if (isUniqueConstraintError(error)) {
       const first = await repository.findBySubmission(bookingId, input.submissionId)

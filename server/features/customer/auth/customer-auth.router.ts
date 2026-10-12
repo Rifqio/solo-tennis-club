@@ -12,8 +12,9 @@ import { createMyBookingsRouter } from '../my-bookings/my-bookings.router.ts'
 import { createAccountRouter } from '../account/account.router.ts'
 import { createAccountService } from '../account/account.service.ts'
 import { createCustomerEvidenceRouter, createCustomerProofUploadRouter } from '../../payments/evidence.router.ts'
+import type { FileStores } from '../../../storage/file-store.ts'
 
-export function createCustomerAuthRouter(database: PrismaClient, config: RuntimeConfig, privateDir: string) {
+export function createCustomerAuthRouter(database: PrismaClient, config: RuntimeConfig, files: FileStores) {
   const router = Router()
   router.use((_request, response, next) => {
     response.set('Cache-Control', 'no-store')
@@ -26,7 +27,7 @@ export function createCustomerAuthRouter(database: PrismaClient, config: Runtime
   const adapter = createMockOtpAdapter()
   const service = createCustomerAuthService(database, adapter)
   const controller = createCustomerAuthController(database, service, config)
-  router.use(createCustomerProofUploadRouter(database, config, privateDir))
+  router.use(createCustomerProofUploadRouter(database, config, files))
   router.use(requireSameOrigin(config), requireJson, json({ limit: '8kb' }))
   router.post('/auth/otp-challenges', controller.requestCode)
   router.get('/auth/otp-challenges/current', controller.readChallenge)
@@ -39,6 +40,6 @@ export function createCustomerAuthRouter(database: PrismaClient, config: Runtime
   router.use(createCustomerPlayersRouter(database))
   router.use(createMyBookingsRouter(database))
   router.use(createAccountRouter(database, createAccountService(database, service, adapter)))
-  router.use(createCustomerEvidenceRouter(database, privateDir))
+  router.use(createCustomerEvidenceRouter(database, files))
   return router
 }

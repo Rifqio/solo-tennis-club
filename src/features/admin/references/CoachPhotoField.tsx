@@ -10,6 +10,8 @@ import { coachInitials } from '../forms/coach-initials'
 import { adminMessages as messages } from '../forms/admin.messages'
 import { useToast } from '@/components/ui/use-toast'
 import { FieldError } from '@/components/ui/field-error'
+import { putDirect } from '@/lib/direct-upload'
+import type { UploadTicketResponse } from '@shared/api/uploads'
 
 const copy = {
   photoSaved: { id: 'Foto tersimpan.', en: 'Photo saved.' },
@@ -50,7 +52,15 @@ export function CoachPhotoField({ record, name, onChange }: { record: ReferenceR
     if (!file || !record) return
     if (!TYPES.includes(file.type)) { setError(t(copy.wrongType)); return }
     if (file.size > COACH_PHOTO_MAX_BYTES) { setError(t(copy.tooBig)); return }
-    void run(() => send<ReferenceRecord>('PUT', `/api/admin/coaches/${record.id}/photo`, file), t(copy.photoSaved))
+    void run(async () => {
+      const path = `/api/admin/coaches/${record.id}/photo`
+      // On the hosted demo the portrait goes straight into Blob first and the API is sent its key.
+      const ticket = await send<UploadTicketResponse>('POST', '/api/admin/uploads', { purpose: 'coach' })
+      if (ticket.kind !== 'ok') return ticket
+      if (!ticket.data.direct) return send<ReferenceRecord>('PUT', path, file)
+      try { await putDirect(ticket.data, file, () => {}) } catch { return { kind: 'network' as const } }
+      return send<ReferenceRecord>('PUT', path, { key: ticket.data.key })
+    }, t(copy.photoSaved))
   }
 
   return (

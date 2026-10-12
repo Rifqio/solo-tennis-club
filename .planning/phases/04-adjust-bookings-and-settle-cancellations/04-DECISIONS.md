@@ -115,9 +115,9 @@ Implies: a migration (new columns, existing sample bookings on cancelled session
 
 | Case | Recommended default |
 |---|---|
-| Money arrives after the booking expired or was cancelled | On the expired or cancelled booking, **"Catat uang masuk"** records the money and creates a refund item (reason `late_payment`). |
-| The member still wants to play and places remain | The admin records a new booking for them and records the payment there instead (no refund item). The expired booking stays expired. |
-| Never | Reviving an expired or cancelled booking. (Phase 3: a review cannot revive a cancelled booking.) |
+| Money arrives after an expired booking, places still free | **Phase 3 behaviour stays** (the user, 2026-10-12): "Catat pembayaran" on the expired booking makes it Lunas again when its places are still free, through the normal capacity check. |
+| Money arrives after an expired booking whose places are gone, or after a cancelled booking | **"Catat uang masuk"** records the money and creates a refund item (reason `late_payment`). The booking stays as it is. |
+| Never | Reviving a **cancelled** booking, by payment or by review. |
 
 ## 12. Administrative exceptions
 
@@ -158,3 +158,9 @@ The user chose the recommended default for all six:
 4. **Session cancellation:** no undo; a mistake is fixed by republishing.
 5. **Payment deadline extensions:** none in Phase 4.
 6. **Unpaid booking moved:** keeps its original deadline.
+
+Gaps found while planning, also settled on 2026-10-12:
+
+- **Late payment on an expired booking:** keep Phase 3's revival when places are still free (the user's choice); "Catat uang masuk" covers the rest (item 11).
+- **Paid booking moved to a dearer session:** an optional line in the payment note is enough; no "owes a top-up" state.
+- **Sample bookings on sessions already cancelled:** backfilled to `cancelled` with no refund items.

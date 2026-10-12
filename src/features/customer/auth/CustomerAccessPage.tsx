@@ -149,7 +149,7 @@ export function Component() {
     {state.stage === 'loading' ? <p role="status" className={isDesktop ? undefined : 'text-center'}>{t(messages.loading)}</p>
       : state.stage === 'loadError' ? <StatusPanel tone="error" title={errorText || t(messages.loadError)} action={{ label: t(messages.retry), onAction: access.reload }} />
       : signingIn && <>
-        {state.stage === 'code' && import.meta.env.DEV && state.challenge.development === true && state.challenge.debugCode && <StatusPanel tone="info" title={t(messages.testHeading)}>
+        {state.stage === 'code' && state.challenge.development === true && state.challenge.debugCode && <StatusPanel tone="info" title={t(messages.testHeading)}>
           <p className="text-label">{t(messages.testNotice)}</p>
           <p className="select-all text-headline font-bold tracking-[0.2em]" data-development-code>{state.challenge.debugCode}</p>
         </StatusPanel>}

@@ -10,6 +10,8 @@ export interface AdminAuthValue {
   identity: string | null
   reload: () => void
   signIn: (email: string, password: string) => Promise<AdminResult<AdminSessionInfo>>
+  // Development servers and the hosted demo only: sign in without a password.
+  signInDemo: () => Promise<AdminResult<AdminSessionInfo>>
   signOut: () => Promise<AdminResult<void>>
   get: <T>(path: string, signal?: AbortSignal) => Promise<AdminResult<T>>
   send: <T>(method: 'POST' | 'PUT' | 'DELETE', path: string, body: unknown) => Promise<AdminResult<T>>

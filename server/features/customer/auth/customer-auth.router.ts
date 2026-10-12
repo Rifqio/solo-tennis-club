@@ -20,7 +20,7 @@ export function createCustomerAuthRouter(database: PrismaClient, config: Runtime
     response.set('Cache-Control', 'no-store')
     next()
   })
-  if (!config.developmentMode || config.otpDriver !== 'mock') {
+  if (!(config.developmentMode || config.demo) || config.otpDriver !== 'mock') {
     router.use((_request, _response, next) => next(new ApiError(503, 'TEMPORARILY_UNAVAILABLE')))
     return router
   }

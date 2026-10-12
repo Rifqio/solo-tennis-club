@@ -14,8 +14,9 @@ export function createSignInRouter(database: PrismaClient, config: RuntimeConfig
     json({ limit: '32kb' }),
     controller.signIn,
   )
-  // Testing shortcut: mounted only on development servers, never in production.
-  if (config.developmentMode) {
+  // Sign-in without a password: the testing shortcut on development servers and the admin demo button on the hosted
+  // demo (LAFU_DEMO=1). Never mounted on any other server.
+  if (config.developmentMode || config.demo) {
     router.post('/auth/dev-sign-in', requireSameOrigin(config), requireJson, json({ limit: '1kb' }), controller.developmentSignIn)
   }
   return router

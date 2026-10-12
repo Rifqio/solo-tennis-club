@@ -19,6 +19,9 @@ import { useAdminAuth } from './use-admin-auth'
 import type { ApiErrorCode } from '@shared/api/errors'
 import { safeAdminReturnPath } from './return-path'
 import { revealInvalid } from '@/lib/reveal-invalid'
+import { useAppConfig } from '@/lib/app-config'
+import type { AdminResult } from '@/lib/admin-api'
+import type { AdminSessionInfo } from '@shared/api/admin-auth'
 
 // What each admin destination is for, shown beside the form on wide screens so a new admin knows what is inside.
 const areaHints = {
@@ -35,7 +38,8 @@ function formatWait(milliseconds: number) {
 }
 
 export function SignInPage({ expired = false }: { expired?: boolean }) {
-  const { state, signIn } = useAdminAuth()
+  const { state, signIn, signInDemo } = useAdminAuth()
+  const appConfig = useAppConfig()
   const { t } = useI18n()
   const location = useLocation()
   const navigate = useNavigate()
@@ -61,22 +65,12 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
 
   if (!expired && state.status === 'signedIn') return <Navigate to={destination} replace />
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (sending.current || locked) return
-    // Development builds: both fields empty signs in through the development shortcut instead of failing validation.
-    const shortcut = import.meta.env.DEV && !email.trim() && !password
-    const invalid = { email: !shortcut && !email.trim(), password: !shortcut && !password }
-    setMissing(invalid)
-    if (invalid.email || invalid.password) {
-      revealInvalid(form.current)
-      return
-    }
+  const attempt = async (request: () => Promise<AdminResult<AdminSessionInfo>>) => {
     sending.current = true
     setPending(true)
     setFailure(null)
     try {
-      const result = await signIn(email.trim(), password)
+      const result = await request()
       if (!mounted.current) return
       setPassword('')
       if (result.kind === 'ok') navigate(destination, { replace: true })
@@ -89,6 +83,23 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
       sending.current = false
       if (mounted.current) setPending(false)
     }
+  }
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (sending.current || locked) return
+    const invalid = { email: !email.trim(), password: !password }
+    setMissing(invalid)
+    if (invalid.email || invalid.password) {
+      revealInvalid(form.current)
+      return
+    }
+    await attempt(() => signIn(email.trim(), password))
+  }
+  // Development servers and the hosted demo: one button signs in without typing anything.
+  const signInAsDemo = () => {
+    if (sending.current || locked) return
+    setMissing({ email: false, password: false })
+    void attempt(signInDemo)
   }
 
   const notice = expired ? apiErrorMessages.UNAUTHENTICATED : routeState?.restricted ? authMessages.restricted : null
@@ -149,7 +160,6 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
               <p className="text-on-surface-variant">{t(authMessages.intro)}</p>
             </div>
             {notice && <StatusPanel tone="info" title={t(notice)} />}
-            {import.meta.env.DEV && <p className="rounded-sm bg-warning-container px-4 py-3 text-label font-semibold text-warning">{t(authMessages.devShortcut)}</p>}
             <form ref={form} onSubmit={submit} noValidate className="flex min-w-0 flex-col gap-5" aria-busy={pending}>
               <TextField name="email" label={t(authMessages.email)} hint={t(authMessages.emailHint)} type="email" autoComplete="username" inputMode="email" autoCapitalize="none" spellCheck={false}
                 placeholder="nama@email.com" leading={<Mail className="size-5" />}
@@ -164,6 +174,7 @@ export function SignInPage({ expired = false }: { expired?: boolean }) {
                 {locked ? t(authMessages.wait, { time: formatWait(remaining) }) : t(authMessages.submit)}
               </Button>
             </form>
+            {appConfig?.adminShortcut && <Button variant="tonal" className="min-h-14 w-full" disabled={pending || locked} onClick={signInAsDemo}>{t(authMessages.demoSignIn)}</Button>}
             <p className="mt-auto text-center text-label text-on-surface-variant lg:mt-0 lg:border-t lg:border-outline-variant lg:pt-4 lg:text-left">{t(authMessages.forgot)}</p>
           </div>
         </div>

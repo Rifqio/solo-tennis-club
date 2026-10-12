@@ -205,7 +205,7 @@ function PhoneSheet({ open, onClose, account, onChanged }: {
             value={phone} onChange={event => { setPhone(event.target.value); setError(null) }} error={error?.field === 'phone' ? error.text : undefined} required />
         </> : <>
           <p className="text-on-surface-variant">{t(messages.codeHint, { phone: challenge.maskedPhone })}</p>
-          {import.meta.env.DEV && challenge.development === true && challenge.debugCode && <StatusPanel tone="info" title={t(messages.testHeading)}>
+          {challenge.development === true && challenge.debugCode && <StatusPanel tone="info" title={t(messages.testHeading)}>
             <p className="text-label">{t(messages.testNotice)}</p>
             <p className="select-all text-headline font-bold tracking-[0.2em]" data-development-code>{challenge.debugCode}</p>
           </StatusPanel>}

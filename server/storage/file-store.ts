@@ -1,7 +1,7 @@
-import { mkdirSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { dirname, resolve, sep } from 'node:path'
-import { del, get, put } from '@vercel/blob'
+import { dirname, relative, resolve, sep } from 'node:path'
+import { del, get, list, put } from '@vercel/blob'
 
 // Where uploaded files live. Keys are relative paths such as "sessions/<id>/<random>.webp"; each feature checks its
 // own key shape before it gets here. Locally the files sit beside the database; the hosted demo keeps them in
@@ -11,6 +11,8 @@ export interface FileStore {
   put(key: string, bytes: Buffer, contentType: string): Promise<void>
   read(key: string): Promise<Buffer | null>
   remove(keys: string[]): Promise<void>
+  // Every stored key under a folder such as "sessions/" (used by the demo reset).
+  list(prefix: string): Promise<string[]>
   // The address a browser can load a public file from, or null when this app serves it itself.
   publicUrl(key: string): string | null
 }
@@ -50,6 +52,14 @@ export function createDiskStore(dir: string): FileStore {
         rmSync(`${path}.part`, { force: true })
       }
     },
+    async list(prefix) {
+      const root = resolve(dir, prefix)
+      if (!existsSync(root)) return []
+      return readdirSync(root, { recursive: true, withFileTypes: true })
+        .filter(entry => entry.isFile())
+        .map(entry => relative(resolve(dir), resolve(entry.parentPath, entry.name)).split(sep).join('/'))
+        .filter(key => keyPattern.test(key))
+    },
     publicUrl: () => null,
   }
 }
@@ -75,6 +85,16 @@ export function createBlobStore({ access, token }: { access: 'public' | 'private
     },
     async remove(keys) {
       if (keys.length) await del(keys.map(checkKey), { token })
+    },
+    async list(prefix) {
+      const keys: string[] = []
+      let cursor: string | undefined
+      do {
+        const page = await list({ prefix, token, cursor, limit: 1000 })
+        keys.push(...page.blobs.map(blob => blob.pathname))
+        cursor = page.hasMore ? page.cursor : undefined
+      } while (cursor)
+      return keys
     },
     publicUrl: key => access === 'public' ? base + checkKey(key) : null,
   }

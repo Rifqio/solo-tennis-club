@@ -5,7 +5,7 @@ import type { RuntimeConfig } from '../config/runtime-config.ts'
 import { ApiError } from '../http/errors.ts'
 import { serializeSessionCookie, clearSessionCookie } from './cookie.ts'
 import { revokeAdminSession } from './session-store.ts'
-import { signInAdmin, signInDevelopmentAdmin } from './auth.service.ts'
+import { signInAdmin, signInDemoAdmin, signInDevelopmentAdmin } from './auth.service.ts'
 
 const signInInput = z.strictObject({
   email: z.string().trim().toLowerCase().pipe(z.email().max(254)),
@@ -24,7 +24,7 @@ export function createAuthController(database: PrismaClient, config: RuntimeConf
     sendSession(response, result)
   }
   const developmentSignIn: RequestHandler = async (_request, response) => {
-    sendSession(response, await signInDevelopmentAdmin(database))
+    sendSession(response, await (config.demo ? signInDemoAdmin(database) : signInDevelopmentAdmin(database)))
   }
   function sendSession(response: Parameters<RequestHandler>[1], result: Awaited<ReturnType<typeof signInAdmin>>) {
     response.setHeader('Set-Cookie', serializeSessionCookie(result.session.token, {

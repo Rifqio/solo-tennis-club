@@ -4,6 +4,7 @@ import { verifyPassword, verifyAgainstDummy } from './password.ts'
 import { createAdminSession } from './session-store.ts'
 import { checkSignInThrottle, recordSignInAttempt, signInKeys } from './throttle.ts'
 import { DEVELOPMENT_ADMIN_ID } from './development-admin.ts'
+import { ensureDemoAdmin } from './demo-admin.ts'
 import { createAuthRepository } from './auth.repository.ts'
 
 type SignInInput = { email: string; password: string; ip: string }
@@ -25,6 +26,16 @@ export async function signInAdmin(database: PrismaClient, input: SignInInput) {
   await recordSignInAttempt(database, keys, valid)
   if (!valid || !account) throw new ApiError(401, 'SIGN_IN_FAILED')
 
+  const session = await createAdminSession(database, account.id)
+  return {
+    admin: { email: account.email, displayName: account.displayName },
+    session,
+  }
+}
+
+// Hosted demo only (LAFU_DEMO=1): "Masuk sebagai admin demo" signs in the demo admin, created on first use.
+export async function signInDemoAdmin(database: PrismaClient) {
+  const account = await ensureDemoAdmin(database)
   const session = await createAdminSession(database, account.id)
   return {
     admin: { email: account.email, displayName: account.displayName },

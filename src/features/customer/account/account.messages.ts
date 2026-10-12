@@ -39,7 +39,7 @@ export const accountMessages = {
   verifying: { id: 'Memeriksa...', en: 'Checking...' },
   otherNumber: { id: 'Nomor lain', en: 'Another number' },
   resend: { id: 'Kirim ulang', en: 'Send again' },
-  testHeading: { id: 'Kode untuk pengujian', en: 'Code for testing' },
-  testNotice: { id: 'Server pengembangan nggak kirim SMS. Pakai kode ini.', en: 'The development server sends no SMS. Use this code.' },
+  testHeading: { id: 'Kode verifikasi', en: 'Verification code' },
+  testNotice: { id: 'Versi ini nggak kirim WhatsApp atau SMS. Pakai kode di bawah.', en: 'This version sends no WhatsApp or SMS. Use the code below.' },
   phoneChanged: { id: 'Nomor HP diganti.', en: 'Phone number changed.' },
 }

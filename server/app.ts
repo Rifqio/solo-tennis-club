@@ -12,6 +12,8 @@ import { createCustomerAuthRouter } from './features/customer/auth/customer-auth
 import { createClientErrorsRouter } from './features/client-errors/client-errors.router.ts'
 import { resolvePrivateDir, resolveUploadsDir } from './config/database-file.ts'
 import { createFileStores, type FileStores } from './storage/file-store.ts'
+import { createCronRouter } from './features/cron/cron.router.ts'
+import { createAppConfigController } from './features/public/app-config.controller.ts'
 
 export function createApp({ prisma, mode = 'production', distDir = resolve('dist'), publicDir = mode === 'development' ? resolve('public') : distDir, viteMiddleware, developmentOrigins = [], uploadsDir = resolveUploadsDir(), privateDir = resolvePrivateDir(), files = createFileStores({ uploadsDir, privateDir }) }: {
   prisma: PrismaClient; mode?: 'development' | 'production'; distDir?: string; publicDir?: string; viteMiddleware?: RequestHandler; developmentOrigins?: string[]; uploadsDir?: string; privateDir?: string; files?: FileStores
@@ -27,6 +29,8 @@ export function createApp({ prisma, mode = 'production', distDir = resolve('dist
   // Seeded sample photos ship in public/ (development) or dist/ (production build); the album zip reads them there.
   app.use('/api/public', createPublicPhotoRouter(prisma, files, publicDir))
   app.use('/api/public', createPublicRouter({ prisma }))
+  app.get('/api/public/app-config', createAppConfigController(config).read)
+  app.use('/api/cron', createCronRouter(prisma, { demo: Boolean(config.demo), files, publicDir, secret: process.env.CRON_SECRET }))
   app.use('/api/client-errors', createClientErrorsRouter(config))
   app.use('/api', (_request, _response, next) => next(new ApiError(404, 'NOT_FOUND')))
   // Uploaded portraits and session photos: read-only files with random names, so they can be cached for a long time.

@@ -1,5 +1,5 @@
 import { createPrismaClient, initializeDatabase } from '../server/db.ts'
-import { resolveDatabaseFile } from '../server/config/database-file.ts'
+import { resolveDatabaseTarget } from '../server/config/database-file.ts'
 import { seedSampleAlbums, seedSampleCoaches, seedSampleData } from '../server/ops/sample-data.ts'
 
 if (process.env.NODE_ENV === 'production') {
@@ -7,10 +7,12 @@ if (process.env.NODE_ENV === 'production') {
   process.exit(1)
 }
 const refresh = process.argv.includes('--refresh')
-const file = resolveDatabaseFile()
-const prisma = createPrismaClient(file)
+// The local file, or Turso when TURSO_DATABASE_URL is set (seeding the hosted demo once after its migrations).
+const target = resolveDatabaseTarget()
+const file = target.local ? target.url : 'Turso'
+const prisma = createPrismaClient(target)
 try {
-  await initializeDatabase(prisma)
+  await initializeDatabase(prisma, { local: target.local })
   const outcome = await seedSampleData(prisma, { refresh })
   const coaches = await seedSampleCoaches(prisma)
   const albums = await seedSampleAlbums(prisma)

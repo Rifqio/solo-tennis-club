@@ -7,6 +7,7 @@
     "admin:provision": "tsx scripts/admin-provision.ts",
     "dev": "tsx watch server/dev.ts",
     "build": "prisma generate && tsc -b && vite build",
+    "vercel-build": "tsx scripts/vercel-build.ts",
     "lint": "eslint .",
     "start": "tsx server/index.ts",
     "test": "vitest run",
@@ -16,6 +17,7 @@
     "db:generate": "prisma generate",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:turso": "tsx scripts/db-migrate-turso.ts",
     "db:backup": "tsx scripts/db-backup.ts",
     "db:restore": "tsx scripts/db-restore.ts",
     "db:seed:sample": "tsx scripts/seed-sample.ts"
@@ -61,6 +63,7 @@
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
+    "esbuild": "0.28.2",
     "eslint": "^10.10.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",

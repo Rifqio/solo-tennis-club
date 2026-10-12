@@ -15,8 +15,10 @@ import { createFileStores, type FileStores } from './storage/file-store.ts'
 import { createCronRouter } from './features/cron/cron.router.ts'
 import { createAppConfigController } from './features/public/app-config.controller.ts'
 
-export function createApp({ prisma, mode = 'production', distDir = resolve('dist'), publicDir = mode === 'development' ? resolve('public') : distDir, viteMiddleware, developmentOrigins = [], uploadsDir = resolveUploadsDir(), privateDir = resolvePrivateDir(), files = createFileStores({ uploadsDir, privateDir }) }: {
+export function createApp({ prisma, mode = 'production', distDir = resolve('dist'), publicDir = mode === 'development' ? resolve('public') : distDir, viteMiddleware, developmentOrigins = [], uploadsDir = resolveUploadsDir(), privateDir = resolvePrivateDir(), files = createFileStores({ uploadsDir, privateDir }), serveClient = true }: {
   prisma: PrismaClient; mode?: 'development' | 'production'; distDir?: string; publicDir?: string; viteMiddleware?: RequestHandler; developmentOrigins?: string[]; uploadsDir?: string; privateDir?: string; files?: FileStores
+  // False on Vercel, where the CDN serves the built client and only /api and /uploads reach this app.
+  serveClient?: boolean
 }) {
   const app = express()
   app.disable('x-powered-by')
@@ -37,10 +39,10 @@ export function createApp({ prisma, mode = 'production', distDir = resolve('dist
   // On the hosted demo they live in public Blob, and /uploads/... redirects there.
   app.use('/uploads', ...uploadsHandlers(files, uploadsDir), (_request, _response, next) => next(new ApiError(404, 'NOT_FOUND')))
   if (mode === 'development' && viteMiddleware) app.use(viteMiddleware)
-  else if (existsSync(resolve(distDir, 'index.html'))) {
+  else if (serveClient && existsSync(resolve(distDir, 'index.html'))) {
     app.use(express.static(distDir))
     app.get('/{*path}', (_request, response) => response.sendFile(resolve(distDir, 'index.html')))
-  } else console.warn('Production dist missing; API remains available')
+  } else if (serveClient) console.warn('Production dist missing; API remains available')
   app.use(errorHandler)
   return app
 }

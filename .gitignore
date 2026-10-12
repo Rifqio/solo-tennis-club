@@ -33,3 +33,6 @@ playwright-report/
 *.db-wal
 *.db-shm
 *.db-journal
+
+# Vercel build output (scripts/vercel-build.ts)
+.vercel/

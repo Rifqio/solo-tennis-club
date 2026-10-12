@@ -53,6 +53,8 @@ await build({
 cpSync(resolve('public/photos/sessions'), resolve(functionDir, 'photos/sessions'), { recursive: true })
 writeFileSync(resolve(functionDir, '.vc-config.json'), JSON.stringify({
   runtime: 'nodejs22.x', handler: 'index.mjs', launcherType: 'Nodejs', shouldAddHelpers: false, maxDuration: 60,
+  // Mumbai, beside the Turso database (also bom1), so each query stays in one region.
+  regions: ['bom1'],
 }, null, 2))
 
 mkdirSync(output, { recursive: true })

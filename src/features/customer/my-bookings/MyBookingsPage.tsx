@@ -197,7 +197,7 @@ export function Component() {
     <CourtBand title={t(messages.heading)} action={isDesktop ? tabs : undefined}>
       {!isDesktop && tabs}
     </CourtBand>
-    <div aria-busy={Boolean(bookings.held)} className={cn('page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4', desktopList && 'desk-column flex-row items-start gap-6 pt-6')}>
+    <div aria-busy={Boolean(bookings.held)} className={cn('page-gutter desk-column mx-auto flex w-full max-w-[50rem] flex-col gap-3 py-4 lg:pt-6', desktopList && 'flex-row items-start gap-6')}>
       {desktopList ? <>
         <section aria-label={t(view === 'history' ? messages.history : messages.active)} className="flex min-w-0 flex-1 flex-col gap-5">
           {(view === 'history' ? byMonth(shown, language) : [{ label: t(messages.active), items: shown }]).map(group => (
@@ -223,9 +223,9 @@ export function Component() {
         <LoadFailed title={t(messages.error)} onRetry={retry} />
       ) : shown.length === 0 ? (
         view === 'history'
-          ? <EmptyState scene="empty-history" title={t(messages.emptyHistory)} body={t(messages.emptyHistoryBody)}
+          ? <EmptyState poster scene="empty-history" title={t(messages.emptyHistory)} body={t(messages.emptyHistoryBody)}
               action={<Button asChild variant="outlined"><Link to="/schedule" viewTransition data-nav="tab">{t(messages.seeSchedule)}</Link></Button>} />
-          : <EmptyState scene="no-bookings" title={t(messages.emptyActive)} body={t(messages.emptyActiveBody)}
+          : <EmptyState poster scene="no-bookings" title={t(messages.emptyActive)} body={t(messages.emptyActiveBody)}
               action={<Button asChild variant="filled"><Link to="/schedule" viewTransition data-nav="tab">{t(messages.findSession)}</Link></Button>} />
       ) : view === 'upcoming' ? (
         <ul className="flex flex-col gap-3">{shown.map(booking => <li key={booking.id}><ActiveCard booking={booking} now={now} /></li>)}</ul>

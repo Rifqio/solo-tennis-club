@@ -55,7 +55,7 @@ test('schedule load failure names the problem and retries', async ({ page }) => 
   })
   await page.goto(sampleSchedulePath)
   const alert = page.getByRole('alert')
-  await expect(alert).toContainText('Jadwal belum dapat dimuat. Coba lagi.')
+  await expect(alert).toContainText(/Jadwal .+ belum bisa dimuat/)
   await alert.getByRole('button', { name: 'Coba lagi' }).click()
   await expect(page.getByRole('listitem').filter({ hasText: 'Sample tennis class' })).toBeVisible()
   expect(requests).toBe(2)

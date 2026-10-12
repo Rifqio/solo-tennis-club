@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 3
-current_phase_name: Pay and Verify Bookings
-status: planning
-stopped_at: Phase 2 manually accepted by the user on 2026-10-11; Phase 3 policy decisions next
+current_phase: 4
+current_phase_name: Adjust Bookings and Settle Cancellations
+status: planned
+stopped_at: Phase 3 accepted by the user on 2026-10-12; Phase 4 decisions confirmed and planned, 04-01 next
 last_updated: "2026-10-12"
-last_activity: 2026-10-11
-last_activity_desc: Phase 2 accepted after the motion pass, the G1 status and feedback system and the desktop session editor; 210 unit and integration tests pass
+last_activity: 2026-10-12
+last_activity_desc: Phase 3 accepted (payment browser spec, 274 unit and integration tests, 199/200 browser tests with one screenshot flake); Phase 4 decisions confirmed and five slices planned
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 16
-  completed_plans: 16
-  percent: 40
+  completed_phases: 3
+  total_plans: 27
+  completed_plans: 22
+  percent: 60
 ---
 
 # Project State
@@ -22,15 +22,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-08)
 
 **Core value:** Customers can book tennis classes from their phones with clear, reliable availability, while club admins can manage those bookings and payments without spreadsheets.
-**Current focus:** Phase 3 - Pay and Verify Bookings: resolve the planning prerequisites (payment setup, proof storage and formats, payment edge cases, rejection, outside payments, deadline edges) before plans
+**Current focus:** Phase 4 - Adjust Bookings and Settle Cancellations: decisions confirmed ([04-DECISIONS](phases/04-adjust-bookings-and-settle-cancellations/04-DECISIONS.md)), five slices planned ([04-PLAN](phases/04-adjust-bookings-and-settle-cancellations/04-PLAN.md)); 04-01 next.
 
 ## Current Position
 
-Phase: 3 (Pay and Verify Bookings) - PLANNING; policy decisions precede plans (ROADMAP Phase 3 planning prerequisites).
+Phase: 4 (Adjust Bookings and Settle Cancellations) - PLANNED; 04-01 (cancelled status, booking cancellation, refunds due) next.
 Phase 1: accepted 2026-10-09. Phase 2: all plans implemented and manually accepted by the user on 2026-10-11, including the desktop boards (Rekap D7 and QRIS D8 belong to Phase 3), the motion pass, the G1 status and feedback system and the desktop session editor.
 Open gates carried forward: the full browser e2e run with the updated specs; hosted deployment as a free portfolio demo on Vercel + Turso + Vercel Blob: release slice R1 was built on 2026-10-12 at the user's request, ahead of Phase 3 acceptance (Turso adapter, Blob storage with direct uploads, Build Output function, daily cron, demo mode with nightly reset; 274 tests pass). Account setup and the go-live checklist remain ([DEPLOYMENT-PLAN.md](DEPLOYMENT-PLAN.md) sections 6-7). STC is a personal portfolio project, so real OTP delivery and real payment details are no longer release prerequisites; release cleanup (ONBOARDING_ALWAYS, photo licences, lafu* identifiers). The empty-form admin shortcut is gone; the "Masuk sebagai admin demo" button replaces it on development servers and the demo.
 
-Progress: 2 of 5 phases accepted (40%).
+Progress: 3 of 5 phases accepted (60%). Phase 3 accepted by the user on 2026-10-12 ([03-SUMMARY](phases/03-pay-and-verify-bookings/03-SUMMARY.md)). The hosted demo is live and complete; operations checks (cron run, Turso restore, foreign keys) are not needed for a portfolio demo (the user, 2026-10-12).
 
 ## Performance Metrics
 

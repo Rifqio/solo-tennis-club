@@ -14,6 +14,7 @@ export default defineConfig({
   webServer: {
     command: 'npx tsx tests/e2e/support/e2e-server.ts', url: 'http://127.0.0.1:4310/api/public/schedule',
     reuseExistingServer: false, timeout: 120000,
-    env: { LAFU_PORT: '4310', LAFU_DATABASE_FILE: resolve(tmpdir(), 'lafu-e2e', randomUUID() + '.db') },
+    // Demo mode: members sign in with the code shown on screen (the payment specs need a real member).
+    env: { LAFU_DEMO: '1', LAFU_PORT: '4310', LAFU_DATABASE_FILE: resolve(tmpdir(), 'lafu-e2e', randomUUID() + '.db') },
   },
 })

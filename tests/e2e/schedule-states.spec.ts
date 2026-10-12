@@ -15,7 +15,8 @@ test('E1 loading, failure, retry and empty are distinct; date controls remain us
   // No session on this date and none later: the empty state says nothing is coming up yet.
   await expect(page.getByText('Belum ada sesi mendatang', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: /Lihat jadwal berikutnya/ })).toHaveCount(0)
-  await expect(page.getByRole('button', { name: 'Tanggal berikutnya', exact: true })).toBeVisible()
+  // Phones step a day at a time; the desktop band steps a week.
+  await expect(page.getByRole('button', { name: /^(Tanggal|Minggu) berikutnya$/ }).first()).toBeVisible()
 })
 for (const count of [1,5]) test(`E1 populated and ordering: ${count} sample rows`, async ({ page }) => {
   const rows = Array.from({ length: count }, (_, index) => publicFixture('fixture' + index))

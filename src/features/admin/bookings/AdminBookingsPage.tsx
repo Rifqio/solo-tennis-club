@@ -19,7 +19,7 @@ import { useAdminBookingList } from './use-admin-booking-list'
 import { moreFailedCopy } from './bookings.messages'
 import { BookingStatusChip } from './BookingStatusChip'
 
-function BookingRow({ booking, filter }: { booking: AdminBookingSummary; filter: AdminBookingFilter }) {
+function BookingRow({ booking }: { booking: AdminBookingSummary }) {
   const { language, t } = useI18n()
   const { session } = booking
   const chip = <BookingStatusChip booking={booking} />
@@ -34,7 +34,6 @@ function BookingRow({ booking, filter }: { booking: AdminBookingSummary; filter:
         <span className="text-label tabular-nums text-on-surface-variant">
           {session.className} · {formatClubDateShort(session.date, language)}, {session.startTime}{session.cancelled ? ` · ${t(messages.cancelledSession)}` : ''}
         </span>
-        {filter !== 'unpaid' && <span className="sr-only">{booking.status}</span>}
       </span>
       <span className="flex shrink-0 items-center gap-1.5">{chip}<ChevronRight aria-hidden="true" className="size-5 text-on-surface-variant" /></span>
     </Link>
@@ -86,7 +85,7 @@ function BookingsScreen() {
           <section key={group.key} className="flex flex-col gap-2">
             <h2 className="text-label font-semibold text-on-surface-variant">{t(group.title.message, group.title.values)}</h2>
             <ul className="divide-y divide-outline-variant rounded-sm bg-surface-container-lowest px-4">
-              {group.items.map(booking => <li key={booking.id}><BookingRow booking={booking} filter={filter} /></li>)}
+              {group.items.map(booking => <li key={booking.id}><BookingRow booking={booking} /></li>)}
             </ul>
           </section>
         ))}

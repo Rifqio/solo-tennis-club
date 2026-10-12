@@ -1,6 +1,6 @@
 # Phase 3 execution plan: Pay and Verify Bookings
 
-Date: 2026-10-11. Status: 03-01 to 03-05 implemented; 03-06 next. Scope: 18 requirements (AUTH-05, PAY-01..08, OPER-05, OPER-08, OPER-12, OPER-13, UX-01, UX-02, UX-06, UX-08, UX-09). Decisions: [03-DECISIONS.md](03-DECISIONS.md), confirmed by the user. Architecture: [03-ARCHITECTURE.md](03-ARCHITECTURE.md). Boards: D8 `DeskPay` (pay screen), D7 `DeskAdminRecap` (Rekap); phone pay/review screens follow the phone boards' patterns where no board exists, as the desktop session editor did. Status and feedback: G1 (`.planning/G1-FEEDBACK-PLAN.md`).
+Date: 2026-10-11. Status: **accepted by the user on 2026-10-12** ([summary](03-SUMMARY.md)). Scope: 18 requirements (AUTH-05, PAY-01..08, OPER-05, OPER-08, OPER-12, OPER-13, UX-01, UX-02, UX-06, UX-08, UX-09). Decisions: [03-DECISIONS.md](03-DECISIONS.md), confirmed by the user. Architecture: [03-ARCHITECTURE.md](03-ARCHITECTURE.md). Boards: D8 `DeskPay` (pay screen), D7 `DeskAdminRecap` (Rekap); phone pay/review screens follow the phone boards' patterns where no board exists, as the desktop session editor did. Status and feedback: G1 (`.planning/G1-FEEDBACK-PLAN.md`).
 
 ## Slices and order
 
@@ -18,7 +18,7 @@ Date: 2026-10-11. Status: 03-01 to 03-05 implemented; 03-06 next. Scope: 18 requ
 - [x] 03-03 admin review (see 03-03-SUMMARY.md)
 - [x] 03-04 outside payments
 - [x] 03-05 Rekap and export
-- [ ] 03-06 integrated acceptance (user manual checks)
+- [x] 03-06 integrated acceptance (see 03-SUMMARY.md)
 
 Each slice owns its migration (if any, always after `npm run db:backup`), contracts (OpenAPI file), UI in ID/EN at 390/1024/1440, G1 feedback, motion vocabulary, tests and a SUMMARY. Unit and integration tests run per slice; the full browser suite runs once at the end (03-06), per the user's standing preference.
 

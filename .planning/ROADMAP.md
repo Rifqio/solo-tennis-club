@@ -24,7 +24,7 @@ Integer phases are planned first-release work. Decimal phases are reserved for l
 
 - [x] **Phase 1: Publish and Browse Sessions** - Admins publish real dated sessions that visitors can explore without signing in.
 - [x] **Phase 2: Reserve Places and See Daily Rosters** - Customers and admins reserve individual or group places with reliable deadlines and operational visibility.
-- [ ] **Phase 3: Pay and Verify Bookings** - Customers submit payment proof and admins complete the manual review and correction cycle from a phone.
+- [x] **Phase 3: Pay and Verify Bookings** - Customers submit payment proof and admins complete the manual review and correction cycle from a phone.
 - [ ] **Phase 4: Adjust Bookings and Settle Cancellations** - Admins handle booking changes, cancellations, and manual refund obligations without losing capacity or payment state.
 - [ ] **Phase 5: Run Recurring Sessions and Minimum Cutoffs** - Admins manage recurring schedules and optional minimum enforcement, with the complete bilingual experience verified across devices.
 
@@ -141,7 +141,8 @@ Plans:
 4. For paid booking or session cancellations, an administrator can see refunds due and mark a refund completed after returning the money manually.
 5. A customer can distinguish awaiting payment, awaiting verification, confirmed, correction required, expired, and cancelled bookings, with an explanation and next action whenever one is available.
 
-**Plans:** TBD
+**Decisions:** confirmed 2026-10-12 in [04-DECISIONS](phases/04-adjust-bookings-and-settle-cancellations/04-DECISIONS.md).
+**Plans:** 5 slices planned 2026-10-12, see [execution plan](phases/04-adjust-bookings-and-settle-cancellations/04-PLAN.md); 04-01 next.
 **UI hint:** yes
 
 **Planning prerequisites:** Decide edits to paid bookings, partial-group moves/cancellations, destination price differences, moved-deadline treatment, and any administrative exceptions; capacity cannot be implicitly overridden. Resolve refund entitlement/amount, completion records, late-payment reconciliation, and change/cancellation communication with manual contact fallback. Include cancellation-versus-review and failed-move scenarios. Customers continue to request booking changes through admins; no customer edit/move/cancel controls are added.
@@ -173,8 +174,8 @@ Phases execute in order: 1 → 2 → 3 → 4 → 5. Discussion, policy decisions
 |-------|----------------|--------|-----------|
 | 1. Publish and Browse Sessions | 10/10 | Accepted by user | 2026-10-09 |
 | 2. Reserve Places and See Daily Rosters | 6/6 | Accepted by user | 2026-10-11 |
-| 3. Pay and Verify Bookings | 0/6 | Planned; 03-01 next | - |
-| 4. Adjust Bookings and Settle Cancellations | 0/TBD | Not started | - |
+| 3. Pay and Verify Bookings | 6/6 | Accepted by user | 2026-10-12 |
+| 4. Adjust Bookings and Settle Cancellations | 0/5 | Decisions confirmed, planned; 04-01 next | - |
 | 5. Run Recurring Sessions and Minimum Cutoffs | 0/TBD | Not started | - |
 
 ## Coverage

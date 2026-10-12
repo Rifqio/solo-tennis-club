@@ -1,6 +1,6 @@
 # Deployment plan: free on Vercel (portfolio demo)
 
-Date: 2026-10-11, updated 2026-10-12. Status: **live at https://solo-tennis-club.vercel.app since 2026-10-12** (Turso `stc` and both Blob stores in Mumbai, function in bom1). A live run passed member sign-up with the on-screen code, booking, a 4.8 MB proof through Blob, the admin demo button, proof access (admin 200, other member 404), an album photo, and two members racing for the last place on Turso (one 201, one CAPACITY_UNAVAILABLE). Still open on the checklist: the cron run, a Turso restore, foreign keys on Turso, 404/500 pages and tablet/desktop checks. The user asked for R1 ahead of Phase 3 acceptance; payment screens reach the live demo as they land. What remains is account setup (section 6) and the go-live checklist (section 7). Repository: `github.com/Rifqio/solo-tennis-club`.
+Date: 2026-10-11, updated 2026-10-12. Status: **live at https://solo-tennis-club.vercel.app since 2026-10-12** (Turso `stc` and both Blob stores in Mumbai, function in bom1). A live run passed member sign-up with the on-screen code, booking, a 4.8 MB proof through Blob, the admin demo button, proof access (admin 200, other member 404), an album photo, and two members racing for the last place on Turso (one 201, one CAPACITY_UNAVAILABLE). Operations checks (the cron run, a Turso restore, foreign keys on Turso) are not needed for a portfolio demo (the user, 2026-10-12); the deployment is done. The user asked for R1 ahead of Phase 3 acceptance; payment screens reach the live demo as they land. What remains is account setup (section 6) and the go-live checklist (section 7). Repository: `github.com/Rifqio/solo-tennis-club`.
 
 ## 1. Context that decides this plan
 
@@ -74,6 +74,9 @@ A free `*.vercel.app` address costs nothing. A custom domain is optional.
 7. **Seed through the cron once** (optional): `curl -H "Authorization: Bearer $CRON_SECRET" https://<project>.vercel.app/api/cron/daily`.
 
 ## 7. Go-live checklist
+
+On 2026-10-12 the user closed this list: STC is a portfolio demo, so items 4, 7 and 8 (cron run, Turso restore, foreign keys) are not needed. Items 1-3 and 9 passed in the live run; the rest are covered by the local browser suite.
+
 1. No demo banner anywhere. Member sign-in with the on-screen code works. "Masuk sebagai admin demo" works.
 2. Booking, pay, and uploading 3 proof files (one over 4.5 MB) work, and admin review works. Sessions survive a reload.
 3. A coach photo uploads and shows. A proof opens only for its owner and admins (others get 404).

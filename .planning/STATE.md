@@ -4,7 +4,7 @@ current_phase: 3
 current_phase_name: Pay and Verify Bookings
 status: planning
 stopped_at: Phase 2 manually accepted by the user on 2026-10-11; Phase 3 policy decisions next
-last_updated: "2026-10-11"
+last_updated: "2026-10-12"
 last_activity: 2026-10-11
 last_activity_desc: Phase 2 accepted after the motion pass, the G1 status and feedback system and the desktop session editor; 210 unit and integration tests pass
 progress:
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 
 Phase: 3 (Pay and Verify Bookings) - PLANNING; policy decisions precede plans (ROADMAP Phase 3 planning prerequisites).
 Phase 1: accepted 2026-10-09. Phase 2: all plans implemented and manually accepted by the user on 2026-10-11, including the desktop boards (Rekap D7 and QRIS D8 belong to Phase 3), the motion pass, the G1 status and feedback system and the desktop session editor.
-Open gates carried forward: the full browser e2e run with the updated specs; hosted deployment as a free portfolio demo on Vercel + Turso + Vercel Blob with a labelled demo mode ([DEPLOYMENT-PLAN.md](DEPLOYMENT-PLAN.md); release slice R1 after Phase 3 acceptance). STC is a personal portfolio project, so real OTP delivery and real payment details are no longer release prerequisites; release cleanup (dev sign-in shortcut, ONBOARDING_ALWAYS, photo licences, lafu* identifiers).
+Open gates carried forward: the full browser e2e run with the updated specs; hosted deployment as a free portfolio demo on Vercel + Turso + Vercel Blob: release slice R1 was built on 2026-10-12 at the user's request, ahead of Phase 3 acceptance (Turso adapter, Blob storage with direct uploads, Build Output function, daily cron, demo mode with nightly reset; 274 tests pass). Account setup and the go-live checklist remain ([DEPLOYMENT-PLAN.md](DEPLOYMENT-PLAN.md) sections 6-7). STC is a personal portfolio project, so real OTP delivery and real payment details are no longer release prerequisites; release cleanup (ONBOARDING_ALWAYS, photo licences, lafu* identifiers). The empty-form admin shortcut is gone; the "Masuk sebagai admin demo" button replaces it on development servers and the demo.
 
 Progress: 2 of 5 phases accepted (40%).
 

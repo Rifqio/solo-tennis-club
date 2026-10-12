@@ -19,3 +19,12 @@ export function resolvePrivateDir(databaseFile = resolveDatabaseFile()): string 
 export function databaseUrl(file = resolveDatabaseFile()): string {
   return 'file:' + resolve(file).replaceAll('\\', '/')
 }
+
+export interface DatabaseTarget { url: string; authToken?: string; local: boolean }
+
+// Turso when TURSO_DATABASE_URL is set (the hosted demo), otherwise the local SQLite file.
+export function resolveDatabaseTarget(): DatabaseTarget {
+  const remote = process.env.TURSO_DATABASE_URL
+  if (remote) return { url: remote, authToken: process.env.TURSO_AUTH_TOKEN, local: false }
+  return { url: databaseUrl(), local: true }
+}

@@ -1,118 +1,165 @@
-# Lafu: Lawu Fun Tennis Club
+# STC: Solo Tennis Club
 
-A phone-first web app where visitors browse the club's tennis sessions without signing in, and designated administrators publish and manage them. One Node process serves the app and its API, and stores everything in a single SQLite file on local disk.
+A phone-first booking app for a small tennis club. Visitors browse the schedule without signing in. Members book places, pay by QRIS or bank transfer and upload proof of payment from their phones. Admins publish sessions, check payments and run the day from the same app. Everything works in Indonesian and English.
 
-Design system: [`DESIGN.md`](DESIGN.md). Planning: [`.planning/`](.planning/).
+**Live demo: [solo-tennis-club.vercel.app](https://solo-tennis-club.vercel.app)**
 
-## Requirements
+STC is a personal portfolio project. The club, its coaches, sessions and prices are sample data, and no real payment is ever collected. It replaces the shared spreadsheet and WhatsApp threads a club like this usually runs on.
 
-- Node.js 24
-- A persistent local disk for the database file and its backups
+## Try the demo
 
-## Install and run locally
+| Role | How |
+|---|---|
+| Visitor | Open the site. Jadwal (the schedule) and the club page need no account. |
+| Member | Akun → enter any phone number. The demo shows the sign-in code on screen; no SMS or WhatsApp is sent. |
+| Admin | Go to `/admin/sign-in` and tap **Masuk sebagai admin demo**. |
+
+The demo resets every night at 03:00 WIB: sample sessions are dated from that day, and bookings, proofs and photos added during the day are cleared.
+
+## What it does
+
+**Members**
+- Browse sessions by day, filter by level or open places, and see who is playing.
+- Book one or several places. An unpaid booking holds its places for five hours; capacity never oversells, even when two people take the last place at once.
+- Pay by QRIS or bank transfer and upload up to three proof images. A rejected proof can be replaced; the original deadline stays.
+- Follow each booking (Aktif and Riwayat) and open the session's photo album afterwards.
+
+**Admins**
+- Sessions by day with a live roster per session: who has paid, who still owes, who is past the deadline.
+- Booking masuk: proofs to check, unpaid bookings by deadline, and the full history with search.
+- Record bookings that arrive on WhatsApp, and payments made outside the app.
+- Rekap: the month's places, revenue and pending payments, with an Excel export.
+- Manage classes, coaches, venues and levels; upload session photos.
+
+**Throughout:** phone first, with tablet and desktop layouts; Indonesian and English; illustrated empty, error and offline states; and loading placeholders shaped like the content.
+
+## Stack
+
+- **Client:** React 19, TypeScript, Vite, Tailwind CSS 4, Motion.
+- **Server:** Express 5 with Prisma 7. Each feature is split into router, controller, service and repository ([conventions](.planning/BACKEND-CONVENTIONS.md)).
+- **Data:** SQLite locally (one file); Turso (hosted SQLite) on the demo.
+- **Files:** folders beside the database locally; Vercel Blob on the demo (a public store for photos, a private one for payment proofs, which only the owner and admins can open).
+- **Hosting:** Vercel. The client is served from the CDN and the API runs as one Vercel Function.
+- **Tests:** Vitest (unit and integration, against real SQLite files) and Playwright (browser).
+
+Design system: [`DESIGN.md`](DESIGN.md). Product brief: [`PRODUCT.md`](PRODUCT.md). Planning, requirements and the roadmap: [`.planning/`](.planning/).
+
+## Status
+
+Built in five phases ([roadmap](.planning/ROADMAP.md)):
+
+1. Publish and browse sessions: accepted.
+2. Reserve places and see daily rosters: accepted.
+3. Pay and verify bookings: built and on the demo; acceptance in progress.
+4. Adjust bookings and settle cancellations: next.
+5. Recurring sessions and minimum cutoffs: planned.
+
+## Run it locally
+
+Requires Node.js 24.
 
 ```sh
 npm install
 npm run db:migrate:deploy          # create or update data/lafu.db
-npm run admin:provision -- --email admin@example.com --name "Club Admin"
-npm run db:seed:sample             # optional: labeled sample sessions for development
+npm run db:seed:sample             # optional: a sample club with two weeks of sessions
 npm run dev                        # http://127.0.0.1:3000 with hot reload
 ```
 
-`npm run dev` serves through Vite. To reach it from a phone through a tunnel (for example ngrok), add the exact tunnel host to `server.allowedHosts` in `vite.config.ts`. Development admin requests also accept that host's HTTPS origin, including when the tunnel forwards HTTP to the local server. Wildcard hosts do not grant admin access. A configured `LAFU_PUBLIC_ORIGIN` takes precedence; production uses its normal origin checks.
+On a development server, **Masuk sebagai admin demo** signs in the first admin account. Add one with:
 
-## Build and start
+```sh
+npm run admin:provision -- --email admin@example.com --name "Club Admin"
+```
+
+Member sign-in uses a development code shown on screen (`LAFU_OTP_DRIVER=mock`, the development default).
+
+To reach the dev server from a phone through a tunnel (for example ngrok), add the exact tunnel host to `server.allowedHosts` in `vite.config.ts`. Admin requests from that host's HTTPS origin are then accepted; wildcard hosts are not.
+
+## Tests
+
+```sh
+npm test            # unit and integration tests
+npm run lint
+npm run test:e2e    # Playwright browser tests; builds first and runs on a throwaway database
+```
+
+## Build and run in production mode
 
 ```sh
 npm run build    # Prisma client, type check, production bundle in dist/
 npm run start    # serves dist/ and the API on LAFU_HOST:LAFU_PORT
 ```
 
-## Administrators
+## Deploying to Vercel
 
-There is no public sign-up for administrators; accounts are set up by whoever runs the server.
+`npm run vercel-build` (set in `vercel.json`) bundles the client for the CDN and the Express app as one function. The full setup and go-live checklist are in [`.planning/DEPLOYMENT-PLAN.md`](.planning/DEPLOYMENT-PLAN.md). In short:
 
-The temporary blank-sign-in shortcut was removed after the user completed manual testing on 2026-10-09. Both development and production require provisioned admin credentials; legacy mock-admin sessions are rejected.
+1. Create a Turso database and apply the migrations: `TURSO_DATABASE_URL=... TURSO_AUTH_TOKEN=... npm run db:migrate:turso`.
+2. Import the repository in Vercel (framework preset **Other**).
+3. Connect two Blob stores: a public one (prefix `BLOB`) and a private one (prefix `PRIVATE_BLOB`).
+4. Set the environment variables below and redeploy. Every push to the production branch redeploys.
 
-| Task | Command |
-|---|---|
-| Add an administrator | `npm run admin:provision -- --email <email> --name "<display name>"` (prompts for the password twice) |
-| Non-interactive password | `printf '%s' "$PASSWORD" \| npm run admin:provision -- --email <email> --name "<name>" --password-stdin` |
-| Recover a lost password | Run the add command again for the same email. It sets the new password and signs out every existing session for that account. |
-| Remove access | `npm run admin:provision -- --email <email> --deactivate` |
+A daily Vercel Cron (`/api/cron/daily`, 03:00 WIB) tidies lapsed bookings and, in demo mode, resets the demo.
 
 ## Environment variables
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `LAFU_DATABASE_FILE` | `data/lafu.db` | SQLite file. Keep it on persistent disk, outside `dist/` and `public/`. |
+| `LAFU_DATABASE_FILE` | `data/lafu.db` | Local SQLite file. Keep it on persistent disk, outside `dist/` and `public/`. |
+| `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` | unset | Use Turso instead of the local file. Required on Vercel. |
+| `BLOB_READ_WRITE_TOKEN` | unset | Public Vercel Blob store (photos). Required on Vercel. |
+| `PRIVATE_BLOB_READ_WRITE_TOKEN` | unset | Private Vercel Blob store (payment proofs). Required on Vercel. |
+| `LAFU_DEMO` | unset | `1` turns on demo mode: on-screen member codes in production, the admin demo button and the nightly reset. |
+| `CRON_SECRET` | unset | Bearer token Vercel Cron sends to `/api/cron/daily`. Without it the route answers 404. |
+| `LAFU_OTP_DRIVER` | `mock` in development, `disabled` in production | Member sign-in codes. Production accepts `mock` only with `LAFU_DEMO=1`. |
 | `LAFU_PORT` | `3000` | Listening port. |
 | `LAFU_HOST` | `127.0.0.1` | Listening address. Keep loopback behind a reverse proxy. |
+| `LAFU_PUBLIC_ORIGIN` | unset | The public HTTPS origin, used to check where admin requests come from. Leave unset on Vercel unless you use a custom domain. |
+| `LAFU_TRUST_PROXY` | unset | `1` behind a reverse proxy or on Vercel, so client addresses and HTTPS come from the proxy headers. |
+| `LAFU_COOKIE_SECURE` | secure in production | `false` only for local production-mode testing on a loopback host without HTTPS. |
 | `LAFU_BACKUP_DIR` | `backups/` | Where `db:backup` writes snapshots. Refused inside `dist/` or `public/`. |
-| `LAFU_PUBLIC_ORIGIN` | unset | The public HTTPS origin (for example `https://jadwal.example.id`), used to check where admin requests come from. Must be an origin, without a path. |
-| `LAFU_TRUST_PROXY` | unset | Set to `1` when a reverse proxy forwards requests, so client addresses come from the proxy headers. |
-| `LAFU_COOKIE_SECURE` | secure in production | Set to `false` only for local production-mode testing on a loopback host without HTTPS. |
 
-## Backup and restore
+## Administrators
 
-SQLite keeps recent writes in a write-ahead log beside the database file, so copying the live file can miss committed data. Use the backup command instead: it asks SQLite for a consistent snapshot (`VACUUM INTO`) while the server keeps running.
+There is no public sign-up for administrators.
+
+| Task | Command |
+|---|---|
+| Add an administrator | `npm run admin:provision -- --email <email> --name "<display name>"` (asks for the password twice) |
+| Non-interactive password | `printf '%s' "$PASSWORD" \| npm run admin:provision -- --email <email> --name "<name>" --password-stdin` |
+| Recover a lost password | Run the add command again for the same email. It sets the new password and signs out every session for that account. |
+| Remove access | `npm run admin:provision -- --email <email> --deactivate` |
+
+## Backup and restore (self-hosted SQLite)
+
+On the demo, Turso keeps a one-day point-in-time restore. On a self-hosted server, use the backup command rather than copying the live file: SQLite keeps recent writes in a log beside the database, so a plain copy can miss committed data. The command takes a consistent snapshot (`VACUUM INTO`) while the server keeps running.
 
 ```sh
 npm run db:backup
 # Backup written: backups/lafu-20261008-213000-WIB.db
 ```
 
-Run it on a schedule (for example nightly through cron or a systemd timer) and copy the `backups/` folder off the machine regularly.
-
-To restore:
+Run it on a schedule and copy `backups/` off the machine. To restore, stop the server, then:
 
 ```sh
-# 1. Stop the server.
-# 2. Restore. The backup is checked first (SQLite integrity and every migration recorded).
 npm run db:restore -- --from backups/lafu-20261008-213000-WIB.db --to data/lafu.db --force
-# 3. Start the server again.
 ```
 
-Without `--to`, restore targets `LAFU_DATABASE_FILE`. It refuses to replace an existing file unless `--force` is given, refuses a backup that fails verification, and never writes inside `dist/` or `public/`.
+The backup is verified first (SQLite integrity and every migration recorded). Without `--to`, restore targets `LAFU_DATABASE_FILE`; it refuses to replace an existing file without `--force` and never writes inside `dist/` or `public/`.
 
-## Deployment notes
+Self-hosting notes: run exactly one Node process per database file; put an HTTPS reverse proxy (Caddy, nginx) in front with `LAFU_PUBLIC_ORIGIN` and `LAFU_TRUST_PROXY=1`; apply migrations with `npm run db:migrate:deploy` before starting a new version.
 
-- Run exactly one Node process per database file. SQLite is owned by that process; do not point two servers at the same file.
-- Put an HTTPS reverse proxy (Caddy, nginx) in front and forward to `127.0.0.1:LAFU_PORT`. Set `LAFU_PUBLIC_ORIGIN` to the public HTTPS origin and `LAFU_TRUST_PROXY=1`.
-- Keep the database file and backups on persistent disk, outside `dist/` and `public/`.
-- Apply migrations with `npm run db:migrate:deploy` before starting a new version.
-
-## Sample data (development only)
+## Sample data
 
 ```sh
-npm run db:seed:sample             # creates the sample catalog and two weeks of sessions
-npm run db:seed:sample -- --refresh  # re-dates the sample sessions from today
+npm run db:seed:sample               # the sample club and two weeks of sessions
+npm run db:seed:sample -- --refresh  # re-date the sample sessions from today
 ```
 
-Every sample record is flagged as sample data and named "Contoh ..." (Indonesian for "example"), and the schedule shows "Data contoh untuk pengujian, bukan jadwal klub." beside them. The command refuses to run when `NODE_ENV=production`. Phase 1 has no bookings, so sample sessions show as available or cancelled; nearly-full and full states appear once bookings exist.
+Sample records are flagged as sample data, and the app labels them ("Data contoh untuk pengujian, bukan jadwal klub."). The command refuses to run with `NODE_ENV=production`. With `TURSO_DATABASE_URL` set it seeds the hosted database instead of the local file.
 
-## Testing
+## Credits
 
-Backend contributions follow the [controller/service/repository conventions](.planning/BACKEND-CONVENTIONS.md). Routes wire controllers, services own business rules and transaction boundaries, and feature repositories own Prisma queries. The [Phase 2 plan](.planning/phases/02-reserve-places-and-see-daily-rosters/02-PLAN.md) records the completed refactor and the upcoming customer/booking work.
+The empty, error and offline illustrations were generated for STC with Gemini, in a style inspired by Mijke Coebergh's "The Alphabet of tennis" ([prompts](.planning/STATE-ART-PROMPTS.md)).
 
-```sh
-npm test            # unit and integration tests against real SQLite files
-npm run lint
-npm run test:e2e    # Playwright browser tests (needs a Playwright browser installed)
-```
-
-## Customer access (development)
-
-Open **Akun / Account** or `/customer/sign-in`. Enter your phone, request a code, type/paste the development code, and complete your name for a new account. The code is shown for testing and returned as `debugCode` by the API; no WhatsApp/SMS is sent. Returning numbers sign in directly. Account supports sign-out. Session details can return you to the selected date/session after access. No reservation is created by signing in.
-
-Development defaults to `LAFU_OTP_DRIVER=mock`; `disabled` turns customer access off. Production defaults to disabled and rejects an explicit mock driver. Real delivery remains a release prerequisite. The new migration is additive; apply migrations before running a new version. [Manual checks](.planning/phases/02-reserve-places-and-see-daily-rosters/02-01-MANUAL-CHECKS.md) remain pending.
-
-## Before launch
-
-Real club content is a launch prerequisite and must come from the club: the bilingual club description, contact, and address; the logo (the app currently shows a text "LAFU" placeholder); and the real coaches, venues, levels, classes, prices, and sessions entered by an administrator. Sample data must not be present in a production database.
-
-## Phase 1 manual review
-
-Admins can manage coaches, venues and levels under **Manage**, define class defaults under **Classes**, and publish or edit dated sessions under **Sessions**. Class default edits affect future sessions. The guided editor reviews every fact before publication; visitors inspect the published details without signing in.
-
-Source implementation and non-browser checks pass (137 tests, build and lint). The user confirmed all listed manual workflows on 2026-10-09; browser automation remains disabled. See the [manual acceptance checklist](.planning/phases/01-publish-and-browse-sessions/01-PHASE1-REVIEW.md). The temporary development sign-in shortcut has been removed. Bookings, rosters and payments belong to later phases.
+The code still uses the project's earlier name in a few internal identifiers (`lafu` in environment variables, cookies and the database file name). Renaming them is on the release clean-up list.

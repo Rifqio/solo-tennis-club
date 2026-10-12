@@ -67,10 +67,10 @@ A free `*.vercel.app` address costs nothing. A custom domain is optional.
 1. **Turso** (free account at turso.tech): create a database `stc` and a token for it.
 2. **Migrate and seed it once**, from this machine:
    `TURSO_DATABASE_URL=libsql://... TURSO_AUTH_TOKEN=... npm run db:migrate:turso`, then the same two variables with `npm run db:seed:sample`. Seeding can be skipped: the first cron run seeds the demo.
-3. **Vercel:** Add New → Project → import `Rifqio/solo-tennis-club`. Framework preset **Other**; `vercel.json` already sets the build command (`npm run vercel-build`). Production branch: `main`.
+3. **Vercel:** Add New → Project → import `Rifqio/solo-tennis-club`. Framework preset **Other**; `vercel.json` already sets the build command (`npm run vercel-build`). Production branch: `gsd/phase-01-publish-and-browse-sessions`, the repository's default branch (GitHub has no `main` yet; switch the production branch if one is created later).
 4. **Storage → Blob:** create a **public** store and connect it to the project (prefix `BLOB`). Create a second store with **private** access and connect it with the prefix `PRIVATE_BLOB`.
 5. **Environment variables** from section 5, then **Redeploy**.
-6. **Merge to `main`** for the production deploy. Every other pushed branch and pull request gets a preview link.
+6. **Deploy:** the import builds the production branch straight away. Every later push to it redeploys; other branches and pull requests get preview links.
 7. **Seed through the cron once** (optional): `curl -H "Authorization: Bearer $CRON_SECRET" https://<project>.vercel.app/api/cron/daily`.
 
 ## 7. Go-live checklist

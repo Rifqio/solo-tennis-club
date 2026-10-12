@@ -5,7 +5,7 @@ export interface SessionDraft extends DefaultValues {
   owner: string; mode: 'create' | 'edit'; sessionId?: string; version?: number; createRequestId: string; step: number
   classId: string; date: string; startTime: string
 }
-export const DRAFT_KEY = 'lafu.sessionDraft'
+export const DRAFT_KEY = 'stc.sessionDraft'
 export function newSessionDraft(owner: string, date: string, requestId: string): SessionDraft { return { ...emptyDefaults, coachIds: [], owner, date, mode: 'create', createRequestId: requestId, step: 1, classId: '', startTime: '' } }
 export function applyClassDefaults(draft: SessionDraft, classId: string, defaults: SessionDefaults): SessionDraft {
   return { ...draft, classId, levelId: defaults.levelId, venueId: defaults.venueId, coachIds: [...defaults.coachIds], durationMinutes: String(defaults.durationMinutes), priceIdr: String(defaults.priceIdr), minParticipants: String(defaults.minParticipants), maxParticipants: String(defaults.maxParticipants) }

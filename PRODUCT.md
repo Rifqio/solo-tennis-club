@@ -8,7 +8,7 @@ web
 
 ## Users
 
-Customers of Lawu Fun Tennis Club (Lafu) browse classes and book tennis coaching, often for themselves and friends. Club administrators run daily sessions, review payment proof, and handle bookings. Both groups primarily use phones for quick tasks; tablet and desktop support is also required. The user specifically wants an easy, guided experience that people unfamiliar with technology can understand.
+Customers of Solo Tennis Club (STC) browse classes and book tennis coaching, often for themselves and friends. Club administrators run daily sessions, review payment proof, and handle bookings. Both groups primarily use phones for quick tasks; tablet and desktop support is also required. The user specifically wants an easy, guided experience that people unfamiliar with technology can understand.
 
 ## Product Purpose
 
@@ -50,7 +50,7 @@ A focused tennis club application that preserves the club's group-booking and ma
 
 ## Brand Commitments
 
-The confirmed name is Lawu Fun Tennis Club, abbreviated Lafu. The user likes AYO's Android app and its publisher screenshots as mobile presentation references, without copying its identity or unrelated features. Community matchday was confirmed on 2026-10-07. On 2026-10-08 the user selected the Jalur Lawu Material 3 redesign, preserving the club palette while using tonal trail-post time plates, a green signboard, system reading typography and Barlow Condensed sign numerals. DESIGN.md is the current visual authority. Light and dark follow the phone. Real club logo and photography remain unsupplied; the LAFU text identity is the fallback.
+The club is Solo Tennis Club, abbreviated STC (renamed from Lawu Fun Tennis Club, Lafu, on 2026-10-10). The user likes AYO's Android app and its publisher screenshots as mobile presentation references, without copying its identity or unrelated features. Community matchday was confirmed on 2026-10-07. On 2026-10-08 the user selected the Jalur Lawu Material 3 redesign, preserving the club palette while using tonal trail-post time plates, a green signboard, system reading typography and Barlow Condensed sign numerals. DESIGN.md is the current visual authority. Light and dark follow the phone. Real club logo and photography remain unsupplied; the LAFU text identity is the fallback.
 
 ## Evidence on Hand
 

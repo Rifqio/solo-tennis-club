@@ -72,6 +72,6 @@ test('E6 create draft survives reload, language switch and missing-reference det
   await expect(page).toHaveURL(/\/admin\/(manage|coaches)$/)
   await page.unroute('**/api/admin/session-options'); await page.route('**/api/admin/session-options', route => route.fulfill({ json: fixtures }))
   await page.goBack(); if (page.url().endsWith('/admin/manage')) await page.goBack(); await expectDuration(page, '120', 'en')
-  const draft = await page.evaluate(() => JSON.parse(sessionStorage.getItem('lafu.sessionDraft')!))
+  const draft = await page.evaluate(() => JSON.parse(sessionStorage.getItem('stc.sessionDraft')!))
   expect(draft.owner).toBeDefined(); expect(draft).not.toHaveProperty('csrfToken'); expect(draft).not.toHaveProperty('password')
 })

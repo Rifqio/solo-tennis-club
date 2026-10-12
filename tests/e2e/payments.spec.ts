@@ -10,7 +10,7 @@ import { expectNoHorizontalScroll } from './support/layout-checks.ts'
 const PROOF = 'public/icons/icon-512.png'
 
 async function memberSignIn(page: Page, name: string) {
-  await page.addInitScript(() => { try { localStorage.setItem('lafu.onboarded', '1') } catch { /* private mode */ } })
+  await page.addInitScript(() => { try { localStorage.setItem('stc.onboarded', '1') } catch { /* private mode */ } })
   await page.goto('/customer/sign-in')
   await page.getByRole('textbox', { name: 'Nomor HP', exact: true }).fill('0812' + String(Date.now()).slice(-8))
   await page.getByRole('button', { name: 'Kirim kode', exact: true }).click()

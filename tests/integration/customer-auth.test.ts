@@ -62,7 +62,7 @@ test('new phone requires code and one-use name completion, then persists a priva
   expect(response.headers.get('Cache-Control')).toBe('no-store')
   expect(await response.json()).toEqual(customer.info)
   expect(response.headers.get('Set-Cookie')).toBeNull()
-  expect(customer.cookie).toMatch(/^lafu_customer=/)
+  expect(customer.cookie).toMatch(/^stc_customer=/)
   const stored = await db.prisma.customerSession.findFirstOrThrow({ where: { customerId: customer.info.customer.id } })
   expect(stored.tokenHash).not.toContain(customer.cookie.split('=')[1])
   expect((await send('profile', { name: 'Changed' }, customer.profileCookie, customer.proof.csrfToken)).status).toBe(401)
@@ -124,7 +124,7 @@ test('customer and admin cookies cannot authorize the other role; public endpoin
 })
 
 test('mock driver is rejected in production and disabled routes never disclose a development code', async () => {
-  vi.stubEnv('LAFU_OTP_DRIVER', 'mock')
+  vi.stubEnv('STC_OTP_DRIVER', 'mock')
   expect(() => readRuntimeConfig('production')).toThrow('Mock OTP cannot run in production')
   vi.unstubAllEnvs()
   const production = await startTestServer(createApp({ prisma: db.prisma, mode: 'production' }))
@@ -213,7 +213,7 @@ test('server restart invalidates mock codes but customer identity/session surviv
   await expect(restarted.verifyCode(challenge.challengeId, challenge.debugCode!, 'restart-test', flow)).rejects.toMatchObject({ code: 'OTP_EXPIRED' })
   expect((await restarted.requestCode(number, 'restart-test', flow)).challengeId).not.toBe(challenge.challengeId)
 
-  const work = resolve(tmpdir(), 'lafu-tests', 'customer-backup-' + randomUUID())
+  const work = resolve(tmpdir(), 'stc-tests', 'customer-backup-' + randomUUID())
   mkdirSync(work, { recursive: true })
   let restored: ReturnType<typeof createPrismaClient> | undefined
   try {

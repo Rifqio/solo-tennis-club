@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Lafu (Lawu Fun Tennis Club)
+name: STC (Solo Tennis Club)
 description: Courtside. A bright, photographic tennis-club phone app on court blue and ink, where the chosen thing turns ball lime and session times read like a scoreboard.
 colors:
   primary: "#0079ED"
@@ -198,7 +198,7 @@ components:
     height: "64px"
 ---
 
-# Design System: Lafu (Lawu Fun Tennis Club)
+# Design System: STC (Solo Tennis Club)
 
 > **Status: target system, approved direction 2026-10-09; implementation pending.** This file replaces the "Jalur Lawu" world (club green, Barlow Condensed, Material shapes). The running app still shows Jalur Lawu until the rebuild lands; where code and this file disagree, this file is the target. The motion and feedback system, state rules, calendar behavior, and accessibility rules carry over unchanged.
 
@@ -206,11 +206,11 @@ components:
 
 **Creative North Star: "Courtside"**
 
-Standing at the edge of a blue hard court on a bright morning: big flat fields of court blue, white lines, one lime ball that your eye goes to first, and a black scoreboard with the numbers that matter. Lafu should feel like that. Large color fields and real court photography do the work that thin hairlines and pale tints did before; type is bigger and rounder; the one lime thing on each screen is always what you have chosen or the action you came to take.
+Standing at the edge of a blue hard court on a bright morning: big flat fields of court blue, white lines, one lime ball that your eye goes to first, and a black scoreboard with the numbers that matter. STC should feel like that. Large color fields and real court photography do the work that thin hairlines and pale tints did before; type is bigger and rounder; the one lime thing on each screen is always what you have chosen or the action you came to take.
 
-The layout grammar comes from a padel court booking app the club owner selected (Dribbble, "Padel Court Booking & Sports App UI" by Sheikh Raihan UI): a labeled bottom menu with a raised center action in a notch, a scrolling strip of date tiles with a selection bar, schedule tabs with an underline, an "available only" switch and a row of time chips, and a full-bleed photographic onboarding with a long start bar. The palette comes from the same studio's "Live Sports & Tennis Streaming App UI": court blue #0079ED, ball lime #C0FC49, and ink #0F1112, plus its scoreboard digit cells. Both are adapted, not copied: no logos, people, copy, or features from the references are reused, and anything Lafu does not have (community feeds, chat, alerts, ratings, favorites, avatar stacks) is left out.
+The layout grammar comes from a padel court booking app the club owner selected (Dribbble, "Padel Court Booking & Sports App UI" by Sheikh Raihan UI): a labeled bottom menu with a raised center action in a notch, a scrolling strip of date tiles with a selection bar, schedule tabs with an underline, an "available only" switch and a row of time chips, and a full-bleed photographic onboarding with a long start bar. The palette comes from the same studio's "Live Sports & Tennis Streaming App UI": court blue #0079ED, ball lime #C0FC49, and ink #0F1112, plus its scoreboard digit cells. Both are adapted, not copied: no logos, people, copy, or features from the references are reused, and anything STC does not have (community feeds, chat, alerts, ratings, favorites, avatar stacks) is left out.
 
-Lafu's signature is the **scoreboard**: every session time is set in Deep Court cells with white digits, the way a club scoreboard shows a set. It replaces the trail-post plate and carries the same job: the time is the first thing you read.
+STC's signature is the **scoreboard**: every session time is set in Deep Court cells with white digits, the way a club scoreboard shows a set. It replaces the trail-post plate and carries the same job: the time is the first thing you read.
 
 **Key Characteristics:**
 - Court-blue band at the top of each main screen, with white court-line art; ink dock at the bottom with a lime "Pesan" button in a notch.
@@ -276,7 +276,7 @@ Three committed colors: court blue for fields, ink for anchors and the dock, bal
 - **Body** (400, 1rem, 1.5): facts, prices, descriptions, button labels at 600.
 - **Label** (500, 0.875rem, 1.43): weekday names, chip times, tab and dock labels, availability words, notices.
 - **Scoreboard** (700, 1.5rem, tabular figures): digits inside scoreboard cells only.
-- **Wordmark** (700, 1rem, uppercase, 0.16em tracking): "LAFU" in the band and on onboarding, next to the ball mark. The only tracked uppercase in the system; it is the club's mark, not a label style.
+- **Wordmark** (700, 1rem, uppercase, 0.16em tracking): "STC" in the band and on onboarding, next to the ball mark. The only tracked uppercase in the system; it is the club's mark, not a label style.
 
 ### Named Rules
 **The Four Weights Rule.** 400 body, 500 label, 600 title and button, 700 display, headline, scoreboard, wordmark. No other weights.
@@ -323,7 +323,7 @@ Square-ish, after the padel reference: 4px for date tiles, time chips, scoreboar
 ## Components
 
 ### Court Band
-Full-bleed Court Blue under the status bar with 24px bottom corners. Row 1: ball mark + "LAFU" wordmark, language action (translate glyph + code) on the right. Row 2: screen headline in white. On the schedule, rows 3 and 4 hold the month (title, white) with previous/next/calendar icon buttons on Deep Court circles, then the date tile strip. Decorative white court lines (a top-down service box and center line at 14% white) sit behind the right side, aria-hidden. Focus outlines are white inside the band.
+Full-bleed Court Blue under the status bar with 24px bottom corners. Row 1: ball mark + "STC" wordmark, language action (translate glyph + code) on the right. Row 2: screen headline in white. On the schedule, rows 3 and 4 hold the month (title, white) with previous/next/calendar icon buttons on Deep Court circles, then the date tile strip. Decorative white court lines (a top-down service box and center line at 14% white) sit behind the right side, aria-hidden. Focus outlines are white inside the band.
 
 ### Date Tiles
 A horizontal strip of 56 by 72px tiles, 4px radius, 8px gap, after the padel date strip. Each tile stacks the weekday (label, white) over the day number (title, white) on Deep Court. Selected: Ball Lime fill, ink text, and a 16 by 3px ink bar centered at the tile's top edge (the padel selection bar). Today when unselected: 2px inset white ring. The selected fill is one shared element that springs to the new day. The calendar button opens the Club Calendar sheet.
@@ -354,7 +354,7 @@ Shown once per device on the first visit to the public app, never before a deep 
 - **Slides 1 and 2:** an ink pager capsule (after the tennis reference) with a Raised Ink previous circle, dots in the middle (current dot white, others On-ink Variant), and a lime next circle.
 - **Slide 3:** the padel start bar: a 64px bar, the left two-thirds Ball Lime with "Mulai" and three chevrons (the chevrons show the bar can be dragged forward), the right third ink track. Tap or drag to the end to finish.
 - **"Lewati" / "Skip"** sits top right on every slide (white text button on a Deep Court circle background for contrast).
-- Finishing or skipping lands on the schedule for today and stores `lafu.onboarded`.
+- Finishing or skipping lands on the schedule for today and stores `stc.onboarded`.
 
 Slides and copy (Indonesian first):
 1. Court with net photo. "Jadwal tenis, sekali lihat" / "Your tennis schedule at a glance". "Lihat kelas, pelatih, dan tempat yang tersisa tanpa perlu masuk." / "See classes, coaches and places left without signing in."
@@ -425,7 +425,7 @@ Admin screens inherit this system: court band with the screen title, ink dock wi
 - **Do** follow the phone's light or dark preference; the band stays Court Blue and the dock stays ink in both.
 
 ### Don't:
-- **Don't** add features the references show and Lafu lacks: community, chat, notifications, alerts, ratings, favorites, avatar stacks, or player counts.
+- **Don't** add features the references show and STC lacks: community, chat, notifications, alerts, ratings, favorites, avatar stacks, or player counts.
 - **Don't** put a second lime element in the same region, lime on the light page, or lime text on blue.
 - **Don't** present stock photography as the club, its courts or its members.
 - **Don't** use more than the four Outfit weights, or tracked uppercase outside the wordmark.

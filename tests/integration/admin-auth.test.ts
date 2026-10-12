@@ -19,7 +19,7 @@ afterAll(async () => { await server?.close(); await db?.cleanup() })
 const signIn = (email: string, password: string, headers: Record<string, string> = {}) => fetch(server.baseUrl + '/api/admin/auth/sign-in', { method: 'POST', headers: { Origin: server.baseUrl, 'Content-Type': 'application/json', ...headers }, body: JSON.stringify({ email, password }) })
 async function expectCode(response: Response, status: number, code: string) { expect(response.status).toBe(status); expect(await response.json()).toMatchObject({ error: { code } }) }
 test('identical failure bodies for unknown email, wrong password and deactivated account; normalized email signs in', async () => {
-  const unknown = await signIn('unknown@lafu.test', credentials.password)
+  const unknown = await signIn('unknown@stc.test', credentials.password)
   const wrong = await signIn(credentials.email, 'incorrect')
   await deactivateAdmin(db.prisma, credentials.email)
   const inactive = await signIn(credentials.email, credentials.password)
@@ -35,7 +35,7 @@ test('throttling refuses the sixth email attempt even with the correct password'
   expect(Number(response.headers.get('retry-after'))).toBeGreaterThan(0)
 })
 test('address throttling blocks the 21st failure while an unrelated address is unaffected', async () => {
-  await db.prisma.loginAttempt.createMany({ data: Array.from({ length: 20 }, (_, i) => ({ emailKey: digest('failed' + i + '@lafu.test'), ipKey: digest('127.0.0.1'), succeeded: false })) })
+  await db.prisma.loginAttempt.createMany({ data: Array.from({ length: 20 }, (_, i) => ({ emailKey: digest('failed' + i + '@stc.test'), ipKey: digest('127.0.0.1'), succeeded: false })) })
   await expectCode(await signIn(credentials.email, credentials.password), 429, 'SIGN_IN_THROTTLED')
   await db.prisma.loginAttempt.updateMany({ data: { ipKey: digest('another-address') } })
   expect((await signIn(credentials.email, credentials.password)).status).toBe(200)
@@ -48,7 +48,7 @@ test('old failures expire after 15 minutes and storage cleanup removes attempts 
 test('denial matrix protects known and unknown admin paths, including anonymous and forged cookies', async () => {
   for (const [path, method] of [['/session-options', 'GET'], ['/auth/session', 'GET'], ['/sessions', 'POST'], ['/does-not-exist', 'GET']]) {
     await expectCode(await fetch(server.baseUrl + '/api/admin' + path, { method }), 401, 'UNAUTHENTICATED')
-    await expectCode(await fetch(server.baseUrl + '/api/admin' + path, { method, headers: { Cookie: 'lafu_admin=forged' } }), 401, 'UNAUTHENTICATED')
+    await expectCode(await fetch(server.baseUrl + '/api/admin' + path, { method, headers: { Cookie: 'stc_admin=forged' } }), 401, 'UNAUTHENTICATED')
   }
   for (const body of ['{broken', JSON.stringify({ payload: 'x'.repeat(33000) })]) {
     await expectCode(await fetch(server.baseUrl + '/api/admin/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }), 401, 'UNAUTHENTICATED')
@@ -102,14 +102,14 @@ test('cookie flags enforce HttpOnly SameSite Path and a 14-day absolute expiry; 
   expect(parseCookies('a=x=y; malformed; bad=%ZZ; good=hello%20world')).toEqual({ a: 'x=y', good: 'hello world' })
 })
 test('runtime config restricts the insecure-cookie override to loopback hosts', () => {
-  const oldHost = process.env.LAFU_HOST, oldSecure = process.env.LAFU_COOKIE_SECURE
+  const oldHost = process.env.STC_HOST, oldSecure = process.env.STC_COOKIE_SECURE
   try {
-    process.env.LAFU_COOKIE_SECURE = 'false'; process.env.LAFU_HOST = '0.0.0.0'
+    process.env.STC_COOKIE_SECURE = 'false'; process.env.STC_HOST = '0.0.0.0'
     expect(readRuntimeConfig('production').cookieSecure).toBe(true)
-    process.env.LAFU_HOST = '127.0.0.1'; expect(readRuntimeConfig('production').cookieSecure).toBe(false)
+    process.env.STC_HOST = '127.0.0.1'; expect(readRuntimeConfig('production').cookieSecure).toBe(false)
   } finally {
-    if (oldHost === undefined) delete process.env.LAFU_HOST; else process.env.LAFU_HOST = oldHost
-    if (oldSecure === undefined) delete process.env.LAFU_COOKIE_SECURE; else process.env.LAFU_COOKIE_SECURE = oldSecure
+    if (oldHost === undefined) delete process.env.STC_HOST; else process.env.STC_HOST = oldHost
+    if (oldSecure === undefined) delete process.env.STC_COOKIE_SECURE; else process.env.STC_COOKIE_SECURE = oldSecure
   }
 })
 
@@ -135,15 +135,15 @@ test('blank or partially empty credentials cannot authenticate in development', 
   expect(await db.prisma.adminSession.count()).toBe(0)
 })
 test('both modes reject legacy mock-account cookies and the mock password', async () => {
-  await db.prisma.adminAccount.create({ data: { id: DEVELOPMENT_ADMIN_ID, email: 'manual-test@lafu.test', displayName: 'Legacy test admin', passwordHash: 'development-only-no-password', passwordUpdatedAt: new Date() } })
+  await db.prisma.adminAccount.create({ data: { id: DEVELOPMENT_ADMIN_ID, email: 'manual-test@stc.test', displayName: 'Legacy test admin', passwordHash: 'development-only-no-password', passwordUpdatedAt: new Date() } })
   const session = await createAdminSession(db.prisma, DEVELOPMENT_ADMIN_ID)
-  const cookie = 'lafu_admin=' + session.token
+  const cookie = 'stc_admin=' + session.token
   const production = await startTestServer(createApp({ prisma: db.prisma }))
   try {
     await expectCode(await fetch(production.baseUrl + '/api/admin/auth/dev-sign-in', {
       method: 'POST', headers: { Origin: production.baseUrl, 'Content-Type': 'application/json' }, body: '{}',
     }), 401, 'UNAUTHENTICATED')
-    await expectCode(await signIn('manual-test@lafu.test', 'development-only-no-password'), 401, 'SIGN_IN_FAILED')
+    await expectCode(await signIn('manual-test@stc.test', 'development-only-no-password'), 401, 'SIGN_IN_FAILED')
     for (const instance of [server, production]) {
       for (const path of ['/auth/session', '/sessions']) {
         await expectCode(await fetch(instance.baseUrl + '/api/admin' + path, { headers: { Cookie: cookie } }), 401, 'UNAUTHENTICATED')

@@ -14,8 +14,8 @@ export async function customerRequest<T>(
   path: string,
   options: { body?: unknown; csrfToken?: string; signal?: AbortSignal; method?: 'PUT' } = {},
 ): Promise<T> {
-  const parsed = new URL(path, 'https://lafu.invalid')
-  if (!path.startsWith('/api/customer/') || path.includes('\\') || parsed.origin !== 'https://lafu.invalid'
+  const parsed = new URL(path, 'https://stc.invalid')
+  if (!path.startsWith('/api/customer/') || path.includes('\\') || parsed.origin !== 'https://stc.invalid'
     || !parsed.pathname.startsWith('/api/customer/')) throw new Error('Customer API path required')
 
   const headers: Record<string, string> = { Accept: 'application/json' }

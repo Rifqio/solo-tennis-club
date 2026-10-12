@@ -15,7 +15,7 @@ import { provisionTestAdmin } from '../support/admin-fixtures.ts'
 
 // The hosted demo runs on Turso through the libSQL adapter. This drives the same admission race through that adapter
 // (against a local file, the closest stand-in available offline) so the capacity lock is proven there too.
-const root = resolve(tmpdir(), 'lafu-tests')
+const root = resolve(tmpdir(), 'stc-tests')
 const file = resolve(root, 'libsql-' + randomUUID() + '.db')
 const target = { url: databaseUrl(file), local: false }
 let first: PrismaClient

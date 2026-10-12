@@ -3,7 +3,7 @@ import type { PrismaClient } from '../../server/generated/prisma/client.ts'
 import type { AdminSessionInfo } from '../../shared/api/admin-auth.ts'
 import { provisionAdmin } from '../../server/auth/provisioning.ts'
 export async function provisionTestAdmin(prisma: PrismaClient, overrides: Partial<{ email: string; password: string; displayName: string }> = {}) {
-  const credentials = { email: randomUUID() + '@lafu.test', password: randomBytes(18).toString('base64url'), displayName: 'Test administrator', ...overrides }
+  const credentials = { email: randomUUID() + '@stc.test', password: randomBytes(18).toString('base64url'), displayName: 'Test administrator', ...overrides }
   await provisionAdmin(prisma, credentials)
   return credentials
 }

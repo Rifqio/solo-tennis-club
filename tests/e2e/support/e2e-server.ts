@@ -10,14 +10,14 @@ import { SAMPLE_SESSION_STARTS_AT } from './sample-session.ts'
 import { provisionAdmin } from '../../../server/auth/provisioning.ts'
 import { e2eAdminEmail, e2eAdminPassword } from './e2e-credentials.ts'
 
-const root = resolve(tmpdir(), 'lafu-e2e')
-const databaseFile = resolve(process.env.LAFU_DATABASE_FILE ?? '')
+const root = resolve(tmpdir(), 'stc-e2e')
+const databaseFile = resolve(process.env.STC_DATABASE_FILE ?? '')
 const childPath = relative(root, databaseFile)
-if (!childPath || isAbsolute(childPath) || childPath === '..' || childPath.startsWith('..' + sep)) throw new Error('E2E database must be within lafu-e2e temporary directory')
+if (!childPath || isAbsolute(childPath) || childPath === '..' || childPath.startsWith('..' + sep)) throw new Error('E2E database must be within stc-e2e temporary directory')
 mkdirSync(dirname(databaseFile), { recursive: true })
 for (const suffix of ['', '-wal', '-shm', '-journal']) rmSync(databaseFile + suffix, { force: true })
 execFileSync(process.execPath, [resolve(projectRoot, 'node_modules/prisma/build/index.js'), 'migrate', 'deploy'], {
-  cwd: projectRoot, env: { ...process.env, LAFU_DATABASE_FILE: databaseFile }, stdio: 'inherit', timeout: 30000,
+  cwd: projectRoot, env: { ...process.env, STC_DATABASE_FILE: databaseFile }, stdio: 'inherit', timeout: 30000,
 })
 const prisma = createPrismaClient(databaseFile)
 try {
@@ -25,5 +25,5 @@ try {
   await provisionAdmin(prisma, { email: e2eAdminEmail, password: e2eAdminPassword, displayName: 'E2E administrator' })
   await createSampleSession(prisma, { catalog: await createSampleCatalog(prisma), startsAt: SAMPLE_SESSION_STARTS_AT })
 } finally { await prisma.$disconnect() }
-process.env.LAFU_COOKIE_SECURE = 'false'
+process.env.STC_COOKIE_SECURE = 'false'
 await startServer({ mode: 'production', databaseFile })

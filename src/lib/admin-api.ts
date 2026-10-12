@@ -14,8 +14,8 @@ interface AdminRequestOptions {
 
 async function request<T>(method: string, path: string, body: unknown, options: AdminRequestOptions): Promise<AdminResult<T>> {
   // Never send in-memory admin credentials to a caller-supplied external URL.
-  const parsedPath = new URL(path, 'https://lafu.invalid')
-  if (!path.startsWith('/api/admin/') || path.includes('\\') || parsedPath.origin !== 'https://lafu.invalid' || !parsedPath.pathname.startsWith('/api/admin/')) throw new Error('Admin API path required')
+  const parsedPath = new URL(path, 'https://stc.invalid')
+  if (!path.startsWith('/api/admin/') || path.includes('\\') || parsedPath.origin !== 'https://stc.invalid' || !parsedPath.pathname.startsWith('/api/admin/')) throw new Error('Admin API path required')
   try {
     const headers: Record<string, string> = { Accept: 'application/json' }
     // A file (a coach portrait) goes up as itself with its own type; everything else is JSON.

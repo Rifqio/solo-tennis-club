@@ -105,9 +105,9 @@ test('evidence files are recognised by their bytes and stored without path trick
   const path = resolve(privateDir, evidenceKey('bookingx', stored!.fileName))
   expect(readFileSync(path)).toEqual(JPEG)
   expect(existsSync(path + '.part')).toBe(false)
-  expect(() => evidenceKey('bookingx', '../lafu.db')).toThrow()
+  expect(() => evidenceKey('bookingx', '../stc.db')).toThrow()
   expect(() => evidenceKey('../etc', stored!.fileName)).toThrow()
-  await expect(createDiskStore(privateDir).read('proofs/../../lafu.db')).rejects.toThrow()
+  await expect(createDiskStore(privateDir).read('proofs/../../stc.db')).rejects.toThrow()
 })
 
 test('a proof file reaches only its booker and admins; everyone else gets 404 or 401', async () => {
@@ -152,7 +152,7 @@ test('a proof file reaches only its booker and admins; everyone else gets 404 or
 test('a backup carries the private files', () => {
   const backupDir = mkdtempSync(resolve(tmpdir(), 'stc-backup-'))
   try {
-    const target = backupPrivate(privateDir, resolve(backupDir, 'lafu-test.db'))
+    const target = backupPrivate(privateDir, resolve(backupDir, 'stc-test.db'))
     expect(target && existsSync(resolve(target, 'proofs'))).toBe(true)
   } finally { rmSync(backupDir, { recursive: true, force: true }) }
 })

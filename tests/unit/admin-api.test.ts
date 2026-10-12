@@ -17,7 +17,7 @@ test('401 triggers expiry, while sign-in failure does not expire an unrelated cl
   const expire = vi.fn()
   expect(await adminGet('/api/admin/sessions', { onUnauthenticated: expire })).toMatchObject({ kind: 'http', status: 401, code: 'UNAUTHENTICATED' })
   expect(expire).toHaveBeenCalledOnce()
-  await adminSend('POST', '/api/admin/auth/sign-in', { email: 'test@lafu.test', password: 'test-only' })
+  await adminSend('POST', '/api/admin/auth/sign-in', { email: 'test@stc.test', password: 'test-only' })
   expect(expire).toHaveBeenCalledOnce()
 })
 test('preserves field/conflict/retry errors and distinguishes proxy, offline, and aborted failures', async () => {

@@ -37,7 +37,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       generation.current += 1
       const result = await request()
       if (result.kind === 'ok') {
-        if (identity !== null && identity !== result.data.admin.email) { try { sessionStorage.removeItem('lafu.sessionDraft') } catch { /* Storage is optional. */ } }
+        if (identity !== null && identity !== result.data.admin.email) { try { sessionStorage.removeItem('stc.sessionDraft') } catch { /* Storage is optional. */ } }
         setIdentity(result.data.admin.email)
         const next: AdminAuthState = { status: 'signedIn', info: result.data }
         stateRef.current = next
@@ -63,7 +63,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         })
         if (result.kind === 'ok' || (result.kind === 'http' && result.status === 401)) {
           setIdentity(null)
-          try { sessionStorage.removeItem('lafu.sessionDraft') } catch { /* Storage can be unavailable in private browsing. */ }
+          try { sessionStorage.removeItem('stc.sessionDraft') } catch { /* Storage can be unavailable in private browsing. */ }
           const next: AdminAuthState = { status: 'signedOut' }
           stateRef.current = next
           setState(next)

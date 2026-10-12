@@ -16,7 +16,7 @@ test('production assets contain no Prisma runtime, SQLite adapter, Express or da
   expect(scripts.length).toBeGreaterThan(0)
   for (const path of scripts) {
     const source = readFileSync(path, 'utf8')
-    for (const marker of ['@prisma/client', 'PrismaClient', 'PrismaBetterSqlite3', 'better-sqlite3', 'LAFU_DATABASE_FILE', 'express/lib', 'express.application', 'ZodError']) {
+    for (const marker of ['@prisma/client', 'PrismaClient', 'PrismaBetterSqlite3', 'better-sqlite3', 'data/stc.db', 'express/lib', 'express.application', 'ZodError']) {
       expect(source, path + ' contains ' + marker).not.toContain(marker)
     }
   }

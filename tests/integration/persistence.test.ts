@@ -81,7 +81,7 @@ test('process restart serves persisted sessions through the public API', async (
   for (let run = 0; run < 2; run++) {
     let output = ''
     child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
-      cwd: projectRoot, env: { ...process.env, LAFU_DATABASE_FILE: db.databaseFile, LAFU_PORT: String(port), LAFU_HOST: '127.0.0.1' },
+      cwd: projectRoot, env: { ...process.env, STC_DATABASE_FILE: db.databaseFile, STC_PORT: String(port), STC_HOST: '127.0.0.1' },
       stdio: ['ignore', 'pipe', 'pipe'],
     })
     child.stdout?.on('data', data => { output += String(data) })

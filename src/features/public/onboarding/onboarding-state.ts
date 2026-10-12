@@ -1,4 +1,4 @@
-export const ONBOARDED_KEY = 'lafu.onboarded'
+export const ONBOARDED_KEY = 'stc.onboarded'
 
 // TESTING ONLY: while true, onboarding shows on every load of the plain schedule, even after it was finished or
 // skipped, so the team can review it. Set back to false before release (DESIGN.md: first visit only).

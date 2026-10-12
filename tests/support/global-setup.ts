@@ -13,11 +13,11 @@ declare module 'vitest' {
 // Migrate one template database per run. Each test file copies it instead of running `prisma migrate deploy`
 // itself: ~15 schema-engine processes starting at once on Windows intermittently failed to initialize (0xC0000142).
 export default function setup(project: TestProject) {
-  const root = resolve(tmpdir(), 'lafu-tests')
+  const root = resolve(tmpdir(), 'stc-tests')
   mkdirSync(root, { recursive: true })
   const templateDatabaseFile = resolve(root, 'template-' + randomUUID() + '.db')
   execFileSync(process.execPath, [resolve(projectRoot, 'node_modules/prisma/build/index.js'), 'migrate', 'deploy'], {
-    cwd: projectRoot, env: { ...process.env, LAFU_DATABASE_FILE: templateDatabaseFile }, stdio: 'pipe', timeout: 60000,
+    cwd: projectRoot, env: { ...process.env, STC_DATABASE_FILE: templateDatabaseFile }, stdio: 'pipe', timeout: 60000,
   })
   project.provide('templateDatabaseFile', templateDatabaseFile)
   return () => { for (const suffix of ['', '-wal', '-shm', '-journal']) rmSync(templateDatabaseFile + suffix, { force: true }) }

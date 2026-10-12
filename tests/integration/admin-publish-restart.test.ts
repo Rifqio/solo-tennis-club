@@ -23,7 +23,7 @@ afterAll(async () => { await stop(); await db?.cleanup() })
 async function launch(port: number) {
   const url = `http://127.0.0.1:${port}`
   let output = ''
-  child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { cwd: projectRoot, env: { ...process.env, LAFU_DATABASE_FILE: db.databaseFile, LAFU_HOST: '127.0.0.1', LAFU_PORT: String(port), LAFU_COOKIE_SECURE: 'false' }, stdio: ['ignore', 'pipe', 'pipe'] })
+  child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { cwd: projectRoot, env: { ...process.env, STC_DATABASE_FILE: db.databaseFile, STC_HOST: '127.0.0.1', STC_PORT: String(port), STC_COOKIE_SECURE: 'false' }, stdio: ['ignore', 'pipe', 'pipe'] })
   child.stdout?.on('data', chunk => { output += String(chunk) })
   child.stderr?.on('data', chunk => { output += String(chunk) })
   for (let attempt = 0; attempt < 80; attempt++) {

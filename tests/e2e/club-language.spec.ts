@@ -37,7 +37,7 @@ test('visitor opens the club page (Klub tab on phones, the club mark on the rail
   await skipPhoneOnboarding(page, 'Skip')
   await expect(page.getByText('About the club', { exact: true })).toBeVisible()
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-  expect(await page.evaluate(() => window.localStorage.getItem('lafu.language'))).toBe('en')
+  expect(await page.evaluate(() => window.localStorage.getItem('stc.language'))).toBe('en')
 
   await page.getByRole('link', { name: 'Schedule', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Schedule', exact: true })).toBeAttached()
@@ -51,7 +51,7 @@ test('visitor opens the club page (Klub tab on phones, the club mark on the rail
 })
 
 test('a tampered stored language falls back to Indonesian', async ({ page }) => {
-  await page.addInitScript(() => window.localStorage.setItem('lafu.language', 'fr'))
+  await page.addInitScript(() => window.localStorage.setItem('stc.language', 'fr'))
   await page.goto('/')
   await skipPhoneOnboarding(page, 'Lewati')
   await expect(page.getByText('Tentang klub', { exact: true })).toBeVisible()

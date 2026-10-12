@@ -4,7 +4,7 @@ import type { FileStores } from '../storage/file-store.ts'
 import { ensureDemoAdmin } from '../auth/demo-admin.ts'
 import { SEED_TRANSACTION_MS, seedSampleAlbums, seedSampleCoaches, seedSampleData } from './sample-data.ts'
 
-// The hosted demo's nightly reset (LAFU_DEMO=1, run by the daily cron). Everything visitors could have made or
+// The hosted demo's nightly reset (STC_DEMO=1, run by the daily cron). Everything visitors could have made or
 // changed goes: members, their bookings, proofs and payments, sessions, classes, coaches, venues, levels, photos and
 // every uploaded file. The sample club is then seeded again from today, so the demo always starts clean and Blob stays
 // within its free limits. Admin accounts stay, so the demo admin keeps working.

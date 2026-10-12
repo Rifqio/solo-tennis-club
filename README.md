@@ -60,7 +60,7 @@ Requires Node.js 24.
 
 ```sh
 npm install
-npm run db:migrate:deploy          # create or update data/lafu.db
+npm run db:migrate:deploy          # create or update data/stc.db
 npm run db:seed:sample             # optional: a sample club with two weeks of sessions
 npm run dev                        # http://127.0.0.1:3000 with hot reload
 ```
@@ -71,7 +71,7 @@ On a development server, **Masuk sebagai admin demo** signs in the first admin a
 npm run admin:provision -- --email admin@example.com --name "Club Admin"
 ```
 
-Member sign-in uses a development code shown on screen (`LAFU_OTP_DRIVER=mock`, the development default).
+Member sign-in uses a development code shown on screen (`STC_OTP_DRIVER=mock`, the development default).
 
 To reach the dev server from a phone through a tunnel (for example ngrok), add the exact tunnel host to `server.allowedHosts` in `vite.config.ts`. Admin requests from that host's HTTPS origin are then accepted; wildcard hosts are not.
 
@@ -87,7 +87,7 @@ npm run test:e2e    # Playwright browser tests; builds first and runs on a throw
 
 ```sh
 npm run build    # Prisma client, type check, production bundle in dist/
-npm run start    # serves dist/ and the API on LAFU_HOST:LAFU_PORT
+npm run start    # serves dist/ and the API on STC_HOST:STC_PORT
 ```
 
 ## Deploying to Vercel
@@ -105,19 +105,19 @@ A daily Vercel Cron (`/api/cron/daily`, 03:00 WIB) tidies lapsed bookings and, i
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `LAFU_DATABASE_FILE` | `data/lafu.db` | Local SQLite file. Keep it on persistent disk, outside `dist/` and `public/`. |
+| `STC_DATABASE_FILE` | `data/stc.db` | Local SQLite file. Keep it on persistent disk, outside `dist/` and `public/`. |
 | `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` | unset | Use Turso instead of the local file. Required on Vercel. |
 | `BLOB_READ_WRITE_TOKEN` | unset | Public Vercel Blob store (photos). Required on Vercel. |
 | `PRIVATE_BLOB_READ_WRITE_TOKEN` | unset | Private Vercel Blob store (payment proofs). Required on Vercel. |
-| `LAFU_DEMO` | unset | `1` turns on demo mode: on-screen member codes in production, the admin demo button and the nightly reset. |
+| `STC_DEMO` | unset | `1` turns on demo mode: on-screen member codes in production, the admin demo button and the nightly reset. |
 | `CRON_SECRET` | unset | Bearer token Vercel Cron sends to `/api/cron/daily`. Without it the route answers 404. |
-| `LAFU_OTP_DRIVER` | `mock` in development, `disabled` in production | Member sign-in codes. Production accepts `mock` only with `LAFU_DEMO=1`. |
-| `LAFU_PORT` | `3000` | Listening port. |
-| `LAFU_HOST` | `127.0.0.1` | Listening address. Keep loopback behind a reverse proxy. |
-| `LAFU_PUBLIC_ORIGIN` | unset | The public HTTPS origin, used to check where admin requests come from. Leave unset on Vercel unless you use a custom domain. |
-| `LAFU_TRUST_PROXY` | unset | `1` behind a reverse proxy or on Vercel, so client addresses and HTTPS come from the proxy headers. |
-| `LAFU_COOKIE_SECURE` | secure in production | `false` only for local production-mode testing on a loopback host without HTTPS. |
-| `LAFU_BACKUP_DIR` | `backups/` | Where `db:backup` writes snapshots. Refused inside `dist/` or `public/`. |
+| `STC_OTP_DRIVER` | `mock` in development, `disabled` in production | Member sign-in codes. Production accepts `mock` only with `STC_DEMO=1`. |
+| `STC_PORT` | `3000` | Listening port. |
+| `STC_HOST` | `127.0.0.1` | Listening address. Keep loopback behind a reverse proxy. |
+| `STC_PUBLIC_ORIGIN` | unset | The public HTTPS origin, used to check where admin requests come from. Leave unset on Vercel unless you use a custom domain. |
+| `STC_TRUST_PROXY` | unset | `1` behind a reverse proxy or on Vercel, so client addresses and HTTPS come from the proxy headers. |
+| `STC_COOKIE_SECURE` | secure in production | `false` only for local production-mode testing on a loopback host without HTTPS. |
+| `STC_BACKUP_DIR` | `backups/` | Where `db:backup` writes snapshots. Refused inside `dist/` or `public/`. |
 
 ## Administrators
 
@@ -136,18 +136,18 @@ On the demo, Turso keeps a one-day point-in-time restore. On a self-hosted serve
 
 ```sh
 npm run db:backup
-# Backup written: backups/lafu-20261008-213000-WIB.db
+# Backup written: backups/stc-20261008-213000-WIB.db
 ```
 
 Run it on a schedule and copy `backups/` off the machine. To restore, stop the server, then:
 
 ```sh
-npm run db:restore -- --from backups/lafu-20261008-213000-WIB.db --to data/lafu.db --force
+npm run db:restore -- --from backups/stc-20261008-213000-WIB.db --to data/stc.db --force
 ```
 
-The backup is verified first (SQLite integrity and every migration recorded). Without `--to`, restore targets `LAFU_DATABASE_FILE`; it refuses to replace an existing file without `--force` and never writes inside `dist/` or `public/`.
+The backup is verified first (SQLite integrity and every migration recorded). Without `--to`, restore targets `STC_DATABASE_FILE`; it refuses to replace an existing file without `--force` and never writes inside `dist/` or `public/`.
 
-Self-hosting notes: run exactly one Node process per database file; put an HTTPS reverse proxy (Caddy, nginx) in front with `LAFU_PUBLIC_ORIGIN` and `LAFU_TRUST_PROXY=1`; apply migrations with `npm run db:migrate:deploy` before starting a new version.
+Self-hosting notes: run exactly one Node process per database file; put an HTTPS reverse proxy (Caddy, nginx) in front with `STC_PUBLIC_ORIGIN` and `STC_TRUST_PROXY=1`; apply migrations with `npm run db:migrate:deploy` before starting a new version.
 
 ## Sample data
 
@@ -162,4 +162,4 @@ Sample records are flagged as sample data, and the app labels them ("Data contoh
 
 The empty, error and offline illustrations were generated for STC with Gemini, in a style inspired by Mijke Coebergh's "The Alphabet of tennis" ([prompts](.planning/STATE-ART-PROMPTS.md)).
 
-The code still uses the project's earlier name in a few internal identifiers (`lafu` in environment variables, cookies and the database file name). Renaming them is on the release clean-up list.
+The project was first called Lafu (Lawu Fun Tennis Club). Every identifier now uses STC. Settings written for the old name (`LAFU_*`) are still read as a fallback, so an older deployment keeps working until its settings are renamed to `STC_*`.

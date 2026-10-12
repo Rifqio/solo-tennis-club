@@ -10,7 +10,7 @@ import { projectRoot } from '../../server/config/database-file.ts'
 // The Turso migration script, run against a local file, must build exactly the schema `prisma migrate deploy` builds
 // (the run's template database) and record the same migrations with the same checksums, and be safe to run twice.
 test('the Turso migration script matches prisma migrate deploy and is repeat-safe', () => {
-  const root = resolve(tmpdir(), 'lafu-tests')
+  const root = resolve(tmpdir(), 'stc-tests')
   mkdirSync(root, { recursive: true })
   const file = resolve(root, 'turso-' + randomUUID() + '.db')
   const run = () => execFileSync(process.execPath, [resolve(projectRoot, 'node_modules/tsx/dist/cli.mjs'), 'scripts/db-migrate-turso.ts'], {

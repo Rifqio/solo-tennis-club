@@ -16,7 +16,7 @@ import { adminFetch, provisionTestAdmin, signInAs } from '../support/admin-fixtu
 import { createSampleCatalog } from '../support/fixtures.ts'
 import { createTestDatabase } from '../support/test-db.ts'
 
-const workDir = resolve(tmpdir(), 'lafu-tests', 'backup-' + randomUUID())
+const workDir = resolve(tmpdir(), 'stc-tests', 'backup-' + randomUUID())
 let db: Awaited<ReturnType<typeof createTestDatabase>>
 let credentials: Awaited<ReturnType<typeof provisionTestAdmin>>
 const children: ChildProcess[] = []
@@ -47,7 +47,7 @@ async function launch(databaseFile: string) {
   const url = `http://127.0.0.1:${port}`
   let output = ''
   const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
-    cwd: projectRoot, env: { ...process.env, LAFU_DATABASE_FILE: databaseFile, LAFU_HOST: '127.0.0.1', LAFU_PORT: String(port), LAFU_COOKIE_SECURE: 'false' }, stdio: ['ignore', 'pipe', 'pipe'],
+    cwd: projectRoot, env: { ...process.env, STC_DATABASE_FILE: databaseFile, STC_HOST: '127.0.0.1', STC_PORT: String(port), STC_COOKIE_SECURE: 'false' }, stdio: ['ignore', 'pipe', 'pipe'],
   })
   children.push(child)
   child.stdout?.on('data', chunk => { output += String(chunk) })
@@ -71,7 +71,7 @@ test('a backup taken while the server runs restores to a fresh file that serves 
 
   // The live server keeps running and holds the file open while the snapshot is taken.
   const backup = await backupDatabase(db.prisma, resolve(workDir, 'backups'))
-  expect(backup).toMatch(/lafu-\d{8}-\d{6}-WIB\.db$/)
+  expect(backup).toMatch(/stc-\d{8}-\d{6}-WIB\.db$/)
   expect(await verifyBackup(backup)).toEqual({ ok: true })
 
   const restored = await restoreDatabase({ from: backup, to: resolve(workDir, 'restored.db') })
@@ -100,5 +100,5 @@ test('a truncated backup fails verification and is never restored', async () => 
 test('backups and restores refuse locations the web server serves', async () => {
   await expect(backupDatabase(db.prisma, resolve(projectRoot, 'dist', 'backups'))).rejects.toThrow(/dist\/ or public\//)
   const backup = await backupDatabase(db.prisma, resolve(workDir, 'backups'))
-  await expect(restoreDatabase({ from: backup, to: resolve(projectRoot, 'public', 'lafu.db') })).rejects.toThrow(/dist\/ or public\//)
+  await expect(restoreDatabase({ from: backup, to: resolve(projectRoot, 'public', 'stc.db') })).rejects.toThrow(/dist\/ or public\//)
 })

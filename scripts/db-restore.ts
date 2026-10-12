@@ -13,7 +13,7 @@ for (let index = 0; index < args.length; index++) {
 if (!values['--from']) { console.error('--from is required'); process.exit(1) }
 
 const target = values['--to'] ?? resolveDatabaseFile()
-console.log('Stop the Lafu server before restoring over the live database file.')
+console.log('Stop the STC server before restoring over the live database file.')
 try {
   console.log('Restored to: ' + await restoreDatabase({ from: values['--from'], to: target, force }))
 } catch (error) {

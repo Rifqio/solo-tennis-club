@@ -21,7 +21,7 @@ test.beforeEach(async ({ page }) => { await browserSignIn(page) })
 
 for (const width of LAYOUT_WIDTHS) for (const language of ['id', 'en']) {
   test(`E4/E8 responsive shell at ${width}px in ${language}`, async ({ page }) => {
-    await page.addInitScript(value => localStorage.setItem('lafu.language', value), language)
+    await page.addInitScript(value => localStorage.setItem('stc.language', value), language)
     await page.setViewportSize({ width, height: 700 })
     await page.route('**/api/admin/sessions?**', route => route.fulfill({ json: response([fixture(0, true), ...Array.from({ length: 8 }, (_, i) => fixture(i + 1))]) }))
     await page.goto('/admin/sessions')

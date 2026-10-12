@@ -4,7 +4,7 @@ import { I18nContext, translate } from './i18n-context'
 import { isLanguage } from './types'
 import type { Language, Message, MessageVars } from './types'
 
-export const LANGUAGE_STORAGE_KEY = 'lafu.language'
+export const LANGUAGE_STORAGE_KEY = 'stc.language'
 
 // D-13: Indonesian on the first visit, never the browser language.
 function readStoredLanguage(): Language {

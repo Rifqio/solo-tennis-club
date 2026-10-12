@@ -2,6 +2,7 @@ import { execSync } from 'node:child_process'
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { build, type Plugin } from 'esbuild'
+import { setting } from '../server/config/setting.ts'
 
 // Builds the Vercel deployment with the Build Output API (https://vercel.com/docs/build-output-api): the Vite client
 // as static files on the CDN, and the Express app bundled into one Node function that receives /api/* and /uploads/*.
@@ -32,7 +33,7 @@ execSync('npm run build', { stdio: 'inherit' })
 if (process.env.TURSO_DATABASE_URL) {
   execSync('npx tsx scripts/db-migrate-turso.ts', { stdio: 'inherit' })
   // A failed seed never blocks a deploy: the nightly reset seeds the demo too. A failed migration does.
-  if (process.env.LAFU_DEMO === '1') {
+  if (setting('DEMO') === '1') {
     try { execSync('npx tsx scripts/seed-sample.ts', { stdio: 'inherit', env: { ...process.env, NODE_ENV: 'development' } }) }
     catch { console.warn('Sample seeding failed (see above); deploying anyway.') }
   }

@@ -4,6 +4,7 @@ import type { PrismaClient } from '../generated/prisma/client.ts'
 import { projectRoot } from '../config/database-file.ts'
 import { createPrismaClient } from '../db.ts'
 import { clubDateOf } from '../../shared/club-time.ts'
+import { setting } from '../config/setting.ts'
 
 const FORBIDDEN_DIRS = ['dist', 'public'].map(name => resolve(projectRoot, name))
 
@@ -19,14 +20,14 @@ function assertWritableLocation(path: string) {
   return absolute
 }
 
-export function resolveBackupDir(input = process.env.LAFU_BACKUP_DIR) {
+export function resolveBackupDir(input = setting('BACKUP_DIR')) {
   return assertWritableLocation(resolve(projectRoot, input || 'backups'))
 }
 
-// lafu-YYYYMMDD-HHmmss-WIB.db, stamped in club time so operators read the same clock as the schedule.
+// stc-YYYYMMDD-HHmmss-WIB.db, stamped in club time so operators read the same clock as the schedule.
 function backupFileName(now: Date) {
   const wib = new Date(now.getTime() + 7 * 3_600_000).toISOString()
-  return `lafu-${clubDateOf(now).replaceAll('-', '')}-${wib.slice(11, 13)}${wib.slice(14, 16)}${wib.slice(17, 19)}-WIB.db`
+  return `stc-${clubDateOf(now).replaceAll('-', '')}-${wib.slice(11, 13)}${wib.slice(14, 16)}${wib.slice(17, 19)}-WIB.db`
 }
 
 // VACUUM INTO writes a consistent snapshot through SQLite itself, including committed WAL pages,

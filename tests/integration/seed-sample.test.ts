@@ -76,7 +76,7 @@ test('legacy "Contoh" sample coach names lose the prefix', async () => {
 test('the seed command refuses to run in production and writes nothing', async () => {
   const before = await counts()
   const result = spawnSync(process.execPath, ['--import', 'tsx', 'scripts/seed-sample.ts'], {
-    cwd: projectRoot, env: { ...process.env, NODE_ENV: 'production', LAFU_DATABASE_FILE: db.databaseFile }, encoding: 'utf8', timeout: 30000,
+    cwd: projectRoot, env: { ...process.env, NODE_ENV: 'production', STC_DATABASE_FILE: db.databaseFile }, encoding: 'utf8', timeout: 30000,
   })
   expect(result.status).toBe(1)
   expect(result.stderr).toContain('production')

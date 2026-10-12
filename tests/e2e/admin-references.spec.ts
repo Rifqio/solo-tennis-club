@@ -45,5 +45,5 @@ test('E11 sign-out asks before losing unsaved entries and clears create drafts o
   await expect(page.getByLabel(/^Nama (coach|lokasi|level)$/)).toHaveValue('Contoh unsaved coach')
   await page.getByRole('button', { name: 'Keluar', exact: true }).click(); await page.getByRole('button', { name: 'Buang perubahan', exact: true }).click()
   await expect(page).toHaveURL(/\/admin\/sign-in$/)
-  expect(await page.evaluate(() => sessionStorage.getItem('lafu.sessionDraft'))).toBeNull()
+  expect(await page.evaluate(() => sessionStorage.getItem('stc.sessionDraft'))).toBeNull()
 })

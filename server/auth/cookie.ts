@@ -1,4 +1,4 @@
-export const ADMIN_COOKIE = 'lafu_admin'
+export const ADMIN_COOKIE = 'stc_admin'
 export function parseCookies(header: string | undefined): Record<string, string> {
   const cookies: Record<string, string> = Object.create(null)
   for (const pair of (header ?? '').split(';')) {

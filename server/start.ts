@@ -5,6 +5,7 @@ import { createPrismaClient, initializeDatabase } from './db.ts'
 import { projectRoot, resolveDatabaseFile, resolveUploadsDir } from './config/database-file.ts'
 import { resolve } from 'node:path'
 import { startExpiryWorker } from './features/booking-expiry/expiry.service.ts'
+import { setting } from './config/setting.ts'
 
 export async function startServer(options: {
   mode: 'development' | 'production'; port?: number; host?: string; databaseFile?: string
@@ -26,8 +27,8 @@ export async function startServer(options: {
     expiry = startExpiryWorker(prisma)
     const app = createApp({ prisma, mode: options.mode, distDir: resolve(projectRoot, 'dist'), viteMiddleware: vite?.middlewares, developmentOrigins, uploadsDir: resolveUploadsDir(databaseFile) })
     const server = createServer(app)
-    const port = options.port ?? Number(process.env.LAFU_PORT ?? 3000)
-    const host = options.host ?? process.env.LAFU_HOST ?? '127.0.0.1'
+    const port = options.port ?? Number(setting('PORT') ?? 3000)
+    const host = options.host ?? setting('HOST') ?? '127.0.0.1'
     await new Promise<void>((resolveListen, reject) => {
       server.once('error', reject)
       server.listen(port, host, () => { server.off('error', reject); resolveListen() })

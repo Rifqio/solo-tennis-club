@@ -1,6 +1,6 @@
-export const CUSTOMER_COOKIE = 'lafu_customer'
-export const OTP_FLOW_COOKIE = 'lafu_otp_flow'
-export const PROFILE_COOKIE = 'lafu_customer_profile'
+export const CUSTOMER_COOKIE = 'stc_customer'
+export const OTP_FLOW_COOKIE = 'stc_otp_flow'
+export const PROFILE_COOKIE = 'stc_customer_profile'
 
 export function serializeCustomerCookie(name: string, token: string, expiresAt: Date, secure: boolean): string {
   return `${name}=${encodeURIComponent(token)}; HttpOnly; SameSite=Lax; Path=/api/customer; Expires=${expiresAt.toUTCString()}${secure ? '; Secure' : ''}`

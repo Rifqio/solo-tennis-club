@@ -33,7 +33,7 @@ export async function signInAdmin(database: PrismaClient, input: SignInInput) {
   }
 }
 
-// Hosted demo only (LAFU_DEMO=1): "Masuk sebagai admin demo" signs in the demo admin, created on first use.
+// Hosted demo only (STC_DEMO=1): "Masuk sebagai admin demo" signs in the demo admin, created on first use.
 export async function signInDemoAdmin(database: PrismaClient) {
   const account = await ensureDemoAdmin(database)
   const session = await createAdminSession(database, account.id)

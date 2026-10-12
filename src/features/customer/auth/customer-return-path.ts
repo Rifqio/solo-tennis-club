@@ -3,8 +3,8 @@ import { isClubDate } from '@shared/club-time'
 export function safeCustomerReturnPath(value: unknown): string {
   if (typeof value !== 'string' || !value.startsWith('/') || value.includes('\\')) return '/'
   try {
-    const url = new URL(value, 'https://lafu.invalid')
-    if (url.origin !== 'https://lafu.invalid') return '/'
+    const url = new URL(value, 'https://stc.invalid')
+    if (url.origin !== 'https://stc.invalid') return '/'
     if (url.pathname === '/club') return '/'
     // The member's own screens, opened again after signing in.
     if (url.pathname === '/account' || url.pathname === '/bookings') return url.pathname

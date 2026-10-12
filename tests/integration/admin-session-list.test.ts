@@ -27,7 +27,7 @@ beforeAll(async () => {
 afterAll(async () => { await server?.close(); await db?.cleanup() })
 
 test('protected list refuses anonymous and forged sessions without leaking records', async () => {
-  for (const headers of [{}, { Cookie: 'lafu_admin_session=forged' }] as Record<string, string>[]) {
+  for (const headers of [{}, { Cookie: 'stc_admin_session=forged' }] as Record<string, string>[]) {
     const response = await fetch(server.baseUrl + '/api/admin/sessions', { headers })
     expect(response.status).toBe(401)
     expect(await response.json()).toEqual({ error: { code: 'UNAUTHENTICATED' } })

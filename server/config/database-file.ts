@@ -1,10 +1,11 @@
 import { mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { setting } from './setting.ts'
 
 export const projectRoot = fileURLToPath(new URL('../../', import.meta.url))
-export function resolveDatabaseFile(input = process.env.LAFU_DATABASE_FILE): string {
-  const file = resolve(projectRoot, input || 'data/lafu.db')
+export function resolveDatabaseFile(input = setting('DATABASE_FILE')): string {
+  const file = resolve(projectRoot, input || 'data/stc.db')
   mkdirSync(dirname(file), { recursive: true })
   return file
 }

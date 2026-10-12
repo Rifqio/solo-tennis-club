@@ -82,7 +82,7 @@ function fill(template: string, values: Record<string, string | number>) {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''))
 }
 
-function reservationKey(customerId: string, sessionId: string) { return `lafu.booking-draft.${customerId}.${sessionId}` }
+function reservationKey(customerId: string, sessionId: string) { return `stc.booking-draft.${customerId}.${sessionId}` }
 
 // The task band: back, the step's question as the headline, and the three-step bar (current step in lime).
 function TaskBand({ title, step, steps, stepLabel, backTo, onBack, backLabel, heading }: {

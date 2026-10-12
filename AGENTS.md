@@ -87,7 +87,7 @@ Do not make direct repo edits outside a GSD workflow unless the user explicitly 
 <!-- antislop:start -->
 ## UI Design and Validation
 
-Impeccable supplied Lafu's UI brainstorming and confirmed Community matchday brief. Use `.planning/UI-BRIEF.md` and `PRODUCT.md` as direction for later UI planning and implementation. The user selected Antislop during planning and building in this project conversation.
+Impeccable supplied STC's UI brainstorming and confirmed Community matchday brief. Use `.planning/UI-BRIEF.md` and `PRODUCT.md` as direction for later UI planning and implementation. The user selected Antislop during planning and building in this project conversation.
 
 For UI planning, building, or validation, read the installed skills:
 
@@ -95,5 +95,5 @@ For UI planning, building, or validation, read the installed skills:
 - Visual/interface checks: `C:/Users/MSI KATANA/.agents/skills/antislop-ui/SKILL.md`
 - Mobile layout checks: `C:/Users/MSI KATANA/.agents/skills/antislop-layoutmobile/SKILL.md`
 
-Follow the core's mode-resolution rules; retain the explicit during-mode session choice when available and do not change global preferences. Use the confirmed direction in the design read and declare dials during detailed UI planning. Before delivering implemented UI, run the core Delivery Gate and applicable UI/mobile checklists with concrete evidence. Include working interactions, empty/loading/error states, mobile and intermediate widths, comfortable touch targets, safe areas, keyboard/focus, and readable text-based states. Browser/build checks and complete customer/admin workflow verification remain necessary. No implemented Lafu UI has passed validation yet.
+Follow the core's mode-resolution rules; retain the explicit during-mode session choice when available and do not change global preferences. Use the confirmed direction in the design read and declare dials during detailed UI planning. Before delivering implemented UI, run the core Delivery Gate and applicable UI/mobile checklists with concrete evidence. Include working interactions, empty/loading/error states, mobile and intermediate widths, comfortable touch targets, safe areas, keyboard/focus, and readable text-based states. Browser/build checks and complete customer/admin workflow verification remain necessary. No implemented STC UI has passed validation yet.
 <!-- antislop:end -->

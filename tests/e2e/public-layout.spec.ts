@@ -8,7 +8,7 @@ const languages = ['id', 'en'] as const
 for (const language of languages) {
   for (const width of LAYOUT_WIDTHS) {
     test(`public pages reflow at ${width}px in ${language}`, async ({ page }) => {
-      await page.addInitScript(value => window.localStorage.setItem('lafu.language', value), language)
+      await page.addInitScript(value => window.localStorage.setItem('stc.language', value), language)
       await page.setViewportSize({ width, height: 800 })
       for (const path of ['/schedule', '/']) {
         await page.goto(path)

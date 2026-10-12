@@ -25,15 +25,15 @@ afterAll(async () => {
 afterEach(() => { vi.unstubAllEnvs() })
 
 async function demoServer(env: Record<string, string> = {}) {
-  vi.stubEnv('LAFU_DEMO', '1')
+  vi.stubEnv('STC_DEMO', '1')
   for (const [name, value] of Object.entries(env)) vi.stubEnv(name, value)
   return startTestServer(createApp({ prisma: db.prisma, mode: 'production', uploadsDir, privateDir, publicDir: resolve('public') }))
 }
 
-test('the mock OTP runs in production only with LAFU_DEMO=1', () => {
-  vi.stubEnv('LAFU_OTP_DRIVER', 'mock')
+test('the mock OTP runs in production only with STC_DEMO=1', () => {
+  vi.stubEnv('STC_OTP_DRIVER', 'mock')
   expect(() => readRuntimeConfig('production')).toThrow('Mock OTP cannot run in production')
-  vi.stubEnv('LAFU_DEMO', '1')
+  vi.stubEnv('STC_DEMO', '1')
   expect(readRuntimeConfig('production')).toMatchObject({ demo: true, otpDriver: 'mock' })
   vi.unstubAllEnvs()
   expect(readRuntimeConfig('production')).toMatchObject({ demo: false, otpDriver: 'disabled' })

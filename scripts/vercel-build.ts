@@ -31,7 +31,11 @@ execSync('npm run build', { stdio: 'inherit' })
 // the nightly reset keeps it fresh). Seeding refuses NODE_ENV=production, which is meant for a real club's data.
 if (process.env.TURSO_DATABASE_URL) {
   execSync('npx tsx scripts/db-migrate-turso.ts', { stdio: 'inherit' })
-  if (process.env.LAFU_DEMO === '1') execSync('npx tsx scripts/seed-sample.ts', { stdio: 'inherit', env: { ...process.env, NODE_ENV: 'development' } })
+  // A failed seed never blocks a deploy: the nightly reset seeds the demo too. A failed migration does.
+  if (process.env.LAFU_DEMO === '1') {
+    try { execSync('npx tsx scripts/seed-sample.ts', { stdio: 'inherit', env: { ...process.env, NODE_ENV: 'development' } }) }
+    catch { console.warn('Sample seeding failed (see above); deploying anyway.') }
+  }
 }
 
 cpSync(resolve('dist'), resolve(output, 'static'), { recursive: true })

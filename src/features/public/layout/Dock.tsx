@@ -3,7 +3,7 @@ import type { LucideIcon } from 'lucide-react'
 import { m } from 'motion/react'
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { BallMark } from '@/components/brand/ball-mark'
+import { ClubCrest } from '@/components/brand/club-crest'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { useToast } from '@/components/ui/use-toast'
 import { clubContent } from '@/features/public/club/club-content'
@@ -105,7 +105,7 @@ export function Dock({ onBook }: { onBook: () => void }) {
         <div className="relative flex h-full flex-col items-center gap-2 pb-4 pt-[calc(1rem+env(safe-area-inset-top))]">
           <Link to="/" viewTransition aria-label={t(publicMessages.home, { club: clubContent.name })} title={t(publicMessages.home, { club: clubContent.name })}
             className="pressable flex size-12 items-center justify-center rounded-full">
-            <BallMark className="size-8 text-band" seamClassName="stroke-on-signboard" />
+            <ClubCrest className="h-9 w-7 text-band" detailClassName="fill-white" />
           </Link>
           <div className="mb-1 mt-2"><BookButton onOpen={onBook} /></div>
           <Destination {...leading[0]} />

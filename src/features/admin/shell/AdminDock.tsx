@@ -3,7 +3,7 @@ import type { LucideIcon } from 'lucide-react'
 import { m } from 'motion/react'
 import { Link, NavLink, useLocation, useSearchParams } from 'react-router-dom'
 import { isClubDate } from '@shared/club-time'
-import { BallMark } from '@/components/brand/ball-mark'
+import { ClubCrest } from '@/components/brand/club-crest'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { useI18n } from '@/i18n/use-i18n'
 import type { Message } from '@/i18n/types'
@@ -64,7 +64,7 @@ export function AdminDock() {
       <div aria-hidden="true" className="dock-notch absolute inset-0 rounded-t-lg bg-dock sm:rounded-none" />
       <div className="relative grid h-18 grid-cols-[1fr_1fr_5.5rem_1fr_1fr] sm:flex sm:h-full sm:flex-col sm:items-center sm:gap-2 sm:pb-4 sm:pt-[calc(1.25rem+env(safe-area-inset-top))]">
         <span className="hidden flex-col items-center gap-1.5 sm:order-first sm:flex">
-          <BallMark className="size-8 text-on-ink" seamClassName="stroke-ink" />
+          <ClubCrest className="h-9 w-7 text-band" detailClassName="fill-white" />
           <span className="rounded-full bg-ink-raised px-2 text-label font-semibold text-on-ink">{t(shellMessages.admin)}</span>
         </span>
         {adminNavLeading.map(item => <Tab key={item.to} {...item} />)}

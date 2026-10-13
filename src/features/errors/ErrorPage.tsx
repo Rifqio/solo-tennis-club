@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { BallMark } from '@/components/brand/ball-mark'
+import { ClubCrest } from '@/components/brand/club-crest'
 import { Button } from '@/components/ui/button'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { useI18n } from '@/i18n/use-i18n'
@@ -72,7 +72,7 @@ function ClubMark({ onBand }: { onBand: boolean }) {
   const { t } = useI18n()
   return (
     <Link to="/" aria-label={t(messages.clubLabel)} className={cn('flex min-h-12 items-center gap-2.5', onBand ? 'text-on-signboard' : 'text-on-surface')}>
-      <BallMark className={onBand ? 'text-white' : 'size-7 text-band'} seamClassName={onBand ? 'stroke-band-tile' : 'stroke-white'} />
+      <ClubCrest className={cn('h-9 w-7', onBand ? 'text-white' : 'text-band')} detailClassName={onBand ? 'fill-band' : 'fill-white'} lettered={false} ballRim={!onBand} />
       <span className="text-body font-bold uppercase leading-none tracking-[0.16em]">{clubContent.shortName}</span>
     </Link>
   )

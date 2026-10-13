@@ -1,6 +1,6 @@
 import type { ReactNode, Ref } from 'react'
 import { CourtLines } from '@/components/brand/court-lines'
-import { Wordmark } from '@/components/brand/ball-mark'
+import { Wordmark } from '@/components/brand/club-crest'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { cn } from '@/lib/utils'
 import { clubContent } from '../club/club-content'

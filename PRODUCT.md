@@ -50,7 +50,7 @@ A focused tennis club application that preserves the club's group-booking and ma
 
 ## Brand Commitments
 
-The club is Solo Tennis Club, abbreviated STC (renamed from Lawu Fun Tennis Club, Lafu, on 2026-10-10). The user likes AYO's Android app and its publisher screenshots as mobile presentation references, without copying its identity or unrelated features. Community matchday was confirmed on 2026-10-07. On 2026-10-08 the user selected the Jalur Lawu Material 3 redesign, preserving the club palette while using tonal trail-post time plates, a green signboard, system reading typography and Barlow Condensed sign numerals. DESIGN.md is the current visual authority. Light and dark follow the phone. Real club logo and photography remain unsupplied; the LAFU text identity is the fallback.
+The club is Solo Tennis Club, abbreviated STC (renamed from Lawu Fun Tennis Club, Lafu, on 2026-10-10). The user likes AYO's Android app and its publisher screenshots as mobile presentation references, without copying its identity or unrelated features. Community matchday was confirmed on 2026-10-07. On 2026-10-08 the user selected the Jalur Lawu Material 3 redesign, preserving the club palette while using tonal trail-post time plates, a green signboard, system reading typography and Barlow Condensed sign numerals. DESIGN.md is the current visual authority. Light and dark follow the phone. The club crest (blue shield lettered STC, lime ball seated in a notch) was approved on 2026-10-13; masters and the generator live in brand/logo, and the app uses a small cut (src/components/brand/club-crest.tsx). Real club photography remains unsupplied.
 
 ## Evidence on Hand
 

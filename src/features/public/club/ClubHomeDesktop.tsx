@@ -1,7 +1,7 @@
 import { ArrowRight, ExternalLink, MapPin, MessageCircle, Wallet } from 'lucide-react'
 import { LatestPhotos } from '@/features/photos/AlbumCard'
 import { Link } from 'react-router-dom'
-import { BallMark } from '@/components/brand/ball-mark'
+import { ClubCrest } from '@/components/brand/club-crest'
 import { CourtLines } from '@/components/brand/court-lines'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { StatusPanel } from '@/components/ui/status-panel'
@@ -49,8 +49,8 @@ export function ClubHomeDesktop({ venues }: ClubHomeDesktopProps) {
     <div className="bg-surface text-on-surface">
       <header className={cn(wrap, 'club-in grid min-h-20 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6')}>
         <Link to="/" aria-label={t(messages.homeLabel, { club: clubContent.name })} className="flex min-h-12 items-center gap-2.5 justify-self-start text-primary">
-          <BallMark className="size-7 text-band" seamClassName="stroke-on-signboard" />
-          <span className="text-title font-bold uppercase tracking-[0.16em] text-on-surface">{clubContent.shortName}</span>
+          <ClubCrest className="h-10 w-8 text-band" detailClassName="fill-white" ballRim />
+          <span className="text-title font-bold uppercase tracking-[0.16em] text-on-surface">{clubContent.name}</span>
         </Link>
         <nav aria-label={t(messages.pagesNav)} className="flex items-center gap-1">
           <Link to="/schedule" viewTransition data-nav="tab" className="state-layer flex min-h-12 items-center whitespace-nowrap rounded-full px-3 font-medium xl:px-4">{t(messages.navSchedule)}</Link>

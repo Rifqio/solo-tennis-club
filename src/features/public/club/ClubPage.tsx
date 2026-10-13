@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowUpRight, ExternalLink, MessageCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Wordmark } from '@/components/brand/ball-mark'
+import { Wordmark } from '@/components/brand/club-crest'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { StatusPanel } from '@/components/ui/status-panel'
 import { commonMessages } from '@/i18n/common.messages'
@@ -42,7 +42,7 @@ export function ClubPage() {
   return (
     <div className="page-gutter mx-auto flex w-full max-w-[50rem] flex-col gap-5 pb-6 pt-[env(safe-area-inset-top)]">
       <header className="flex h-14 items-center justify-between gap-3">
-        <p aria-label={clubContent.name} className="text-primary"><Wordmark name={clubContent.shortName} seamClassName="stroke-on-signboard" /></p>
+        <p aria-label={clubContent.name} className="text-primary"><Wordmark name={clubContent.shortName} detailClassName="fill-white" ballRim /></p>
         <LanguageMenu className="-mr-3 text-on-surface" />
       </header>
 

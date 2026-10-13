@@ -1,6 +1,6 @@
 import { ChevronLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Wordmark } from '@/components/brand/ball-mark'
+import { Wordmark } from '@/components/brand/club-crest'
 import { LanguageMenu } from '@/components/ui/language-switch'
 import { cn } from '@/lib/utils'
 import { clubContent } from '@/features/public/club/club-content'
